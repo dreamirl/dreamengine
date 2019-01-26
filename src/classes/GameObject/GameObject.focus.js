@@ -42,13 +42,18 @@ GameObject.prototype.applyFocus = function()
     return;
   }
   
-  var pos = this.target;
-  
-  if ( this.target.getGlobalPosition ) {
-    pos = this.target.getGlobalPosition();
+  let pos = this.target;
+  if ( this.target.getWorldPos ) {
+    pos = this.target.getWorldPos();
   }
   
-  var parentPos = this.parent.getGlobalPosition();
+  let parentPos = {};
+  if ( this.parent.getWorldPos ) {
+    parentPos = this.parent.getWorldPos();
+  }
+  else {
+    parentPos = this.parent;
+  }
   
   if ( this._focusOptions.x ) {
     this.x = pos.x + ( this._focusOffsets.x || 0 ) - parentPos.x;
