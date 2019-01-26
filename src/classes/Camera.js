@@ -42,13 +42,11 @@ function Camera( x, y, width, height, params )
 {
   PIXI.Container.call( this );
   
-  this.x = x;
-  this.y = y;
   this.renderSizes = new PIXI.Point( width, height );
-  this.pivot.set( width / 2 >> 0, height / 2 >> 0 );
+  this.pivot.set( x + width / 2 >> 0, y + height / 2 >> 0 );
   
-  this.x += this.pivot.x;
-  this.y += this.pivot.y;
+  this.x = this.renderSizes.x / 2 >> 0;
+  this.y = this.renderSizes.y / 2 >> 0;
   
   var _params = params || {};
   
@@ -418,11 +416,14 @@ Camera.prototype.applyFocus = function()
     return;
   }
   var pos = this.target.getWorldPos();
-  if ( !this.focusLock.x ) {
-    this.x = -( pos.x - this.renderSizes.x + ( this.focusOffset.x || 0 ) );
+  if ( this._focusOptions.x ) {
+    this.pivot.x = pos.x + this._focusOffsets.x;
   }
-  if ( !this.focusLock.y ) {
-    this.y = -( pos.y - this.renderSizes.y + ( this.focusOffset.y || 0 ) );
+  if ( this._focusOptions.y ) {
+    this.pivot.y = pos.y + this._focusOffsets.y;
+  }
+  if ( this._focusOptions.rotation ) {
+    this.rotation = -this.target.rotation;
   }
 };
 
