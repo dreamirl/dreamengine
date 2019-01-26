@@ -739,7 +739,7 @@ GameObject.prototype.trigger = GameObject.prototype.emit;
  * @public
  * @memberOf GameObject
  */
-GameObject.prototype.getPos  = GameObject.prototype.getGlobalPosition;
+GameObject.prototype.getPos = GameObject.prototype.getGlobalPosition;
 
 // a tester
 GameObject.prototype.getWorldPos = function()

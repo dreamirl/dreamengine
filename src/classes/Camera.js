@@ -272,6 +272,7 @@ Camera.prototype._customPointerUpOutside = function(){};
  */
 Camera.prototype.renderUpdate = function( qualityRatio )
 {
+  this.applyFocus();
   this.checkLimits( qualityRatio );
   this.calculatePerspective();
   
@@ -372,6 +373,45 @@ Camera.prototype.checkLimits = function( qualityRatio )
     this.y = limits.maxY * qualityRatio * this.scale.y - this.renderSizes.y;
   }
 };
+
+/**
+ * give a target to this camera, then camera will focus it until you changed or removed it
+ * you can lock independent axes, or set offsets
+ * @public
+ * @memberOf Camera
+ * @param {GameObject} gameObject is the target to focus on
+ * @param {Object} [params] optional parameters, set offsets or lock
+ * @example // focus the player, decal a little on right, and lock y
+ * myCamera.focus( player, { lock: { y: true }, offsets: { x: 200, y: 0 } } );
+ */
+Camera.prototype.focus = function( gameObject, params )
+{
+  params = params || {};
+  this.target = gameObject;
+  this.focusLock  = params.lock || {};
+  this.focusOffset= params.offsets || { x: 0, y: 0 };
+};
+
+/**
+ * apply focus on target if there is one
+ * You shouldn't call or change this method
+ * @protected
+ * @memberOf Camera
+ */
+Camera.prototype.applyFocus = function()
+{
+  if ( !this.target ) {
+    return;
+  }
+  var pos = this.target.getWorldPos();
+  if ( !this.focusLock.x ) {
+    this.x = -( pos.x - this.renderSizes.x + ( this.focusOffset.x || 0 ) );
+  }
+  if ( !this.focusLock.y ) {
+    this.y = -( pos.y - this.renderSizes.y + ( this.focusOffset.y || 0 ) );
+  }
+};
+
 
 // name registered in engine declaration
 Camera.prototype.DEName = "Camera";
