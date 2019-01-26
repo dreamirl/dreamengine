@@ -5,6 +5,9 @@ import Time           from 'DE.Time';
 import RectRenderer   from 'DE.RectRenderer';
 import TilingRenderer from 'DE.TilingRenderer';
 
+// update is the one requiring all the features, so prototype is complete
+import GameObject     from 'DE.GameObject.update';
+
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
  */
@@ -82,6 +85,19 @@ function Camera( x, y, width, height, params )
     ,maxX: _params.maxX != undefined ? _params.maxX : undefined
     ,minY: _params.minY != undefined ? _params.minY : undefined
     ,maxY: _params.maxY != undefined ? _params.maxY : undefined
+  };
+
+  /**
+   * object used to apply fade transition
+   * @protected
+   * @memberOf GameObject
+   * @type {Object}
+   */
+  this._fadeData = {
+    "from"     : 1
+    ,"to"      : 0
+    ,"duration": 1000
+    ,"done"    : true
   };
   
   /**
@@ -203,6 +219,9 @@ Object.defineProperties( Camera.prototype, {
   }
 } );
 
+// support trigger
+Camera.prototype.trigger = Camera.prototype.emit;
+
 /**
  * handle pointerevents before calling your custom function
  * this method add an argument "pos" which is the pointer event position + local camera position (to retrieve the true position of the event)
@@ -273,6 +292,7 @@ Camera.prototype._customPointerUpOutside = function(){};
 Camera.prototype.renderUpdate = function( qualityRatio )
 {
   this.applyFocus();
+  this.applyFade();
   this.checkLimits( qualityRatio );
   this.calculatePerspective();
   
@@ -384,13 +404,7 @@ Camera.prototype.checkLimits = function( qualityRatio )
  * @example // focus the player, decal a little on right, and lock y
  * myCamera.focus( player, { lock: { y: true }, offsets: { x: 200, y: 0 } } );
  */
-Camera.prototype.focus = function( gameObject, params )
-{
-  params = params || {};
-  this.target = gameObject;
-  this.focusLock  = params.lock || {};
-  this.focusOffset= params.offsets || { x: 0, y: 0 };
-};
+Camera.prototype.focus = GameObject.prototype.focus;
 
 /**
  * apply focus on target if there is one
@@ -411,6 +425,18 @@ Camera.prototype.applyFocus = function()
     this.y = -( pos.y - this.renderSizes.y + ( this.focusOffset.y || 0 ) );
   }
 };
+
+/**
+ * check the documentation on GameObject for all fade features
+ * @protected
+ * @memberOf GameObject
+ */
+Camera.prototype.fade = GameObject.prototype.fade;
+Camera.prototype.fadeTo = GameObject.prototype.fadeTo;
+Camera.prototype.fadeOut = GameObject.prototype.fadeOut;
+Camera.prototype.fadeIn = GameObject.prototype.fadeIn;
+Camera.prototype.applyFade = GameObject.prototype.applyFade;
+
 
 
 // name registered in engine declaration
