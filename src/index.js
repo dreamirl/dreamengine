@@ -1,3 +1,5 @@
+import '../css/default.css';
+
 import * as PIXI  from 'PIXI';
 import extendPIXI from 'DE.extendPIXI';
 import config     from 'DE.config';
