@@ -31,12 +31,6 @@ import TextRenderer          from 'DE.TextRenderer';
 import RectRenderer          from 'DE.RectRenderer';
 import GraphicRenderer       from 'DE.GraphicRenderer';
 import GameObject            from 'DE.GameObject';
-import GameObject_automatism from 'DE.GameObject.automatisms';
-import GameObject_fade       from 'DE.GameObject.fade';
-import GameObject_focus      from 'DE.GameObject.focus';
-import GameObject_moveTo     from 'DE.GameObject.moveTo';
-import GameObject_scale      from 'DE.GameObject.scale';
-import GameObject_shake      from 'DE.GameObject.shake';
 import GameObject_update     from 'DE.GameObject.update';
 
 var DE = {

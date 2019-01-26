@@ -1,4 +1,11 @@
 import GameObject from 'DE.GameObject';
+import GameObject_automatism from 'DE.GameObject.automatisms';
+import GameObject_fade       from 'DE.GameObject.fade';
+import GameObject_focus      from 'DE.GameObject.focus';
+import GameObject_moveTo     from 'DE.GameObject.moveTo';
+import GameObject_scale      from 'DE.GameObject.scale';
+import GameObject_shake      from 'DE.GameObject.shake';
+
 import Time from 'DE.Time';
 
 GameObject.prototype.update = function( time )
