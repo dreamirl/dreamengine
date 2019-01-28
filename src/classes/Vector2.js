@@ -381,6 +381,58 @@ Vector2.prototype.getAnglesDifference = function( angleA, angleB )
   return Math.abs( difference );
 };
 
+/**
+ * this turn your vector with the angle you provide, or by default using it's own rotation
+ * @public
+ * @memberOf Vector2
+ */
+Vector2.prototype.turnVector = function( angle )
+{
+  var cos = this._cosAngle;
+  var sin = this._sinAngle;
+  if ( angle !== undefined ) {
+    cos = Math.cos( angle );
+    sin = Math.sin( angle );
+  }
+
+  // why calling this function otherwise?
+  if ( cos !== 0 || sin !== 0 ) {
+    var x = this.x;
+    var y = this.y;
+    this.x = -x * cos + y * sin;
+    this.y = -x * sin + y * -cos;
+  }
+
+  return this;
+};
+
+/**
+ * return a turned vector with the angle you provide, or by default using it's own rotation
+ * same as turnVector, but not modifying the instance
+ * @public
+ * @memberOf Vector2
+ */
+Vector2.prototype.getTurnedVector = function( angle )
+{
+  var cos = this._cosAngle;
+  var sin = this._sinAngle;
+  if ( angle !== undefined ) {
+    cos = Math.cos( angle );
+    sin = Math.sin( angle );
+  }
+
+  var x = this.x;
+  var y = this.y;
+
+  // why calling this function otherwise?
+  if ( cos !== 0 || sin !== 0 ) {
+    x = -this.x * cos + this.y * sin;
+    y = -this.x * sin + this.y * -cos;
+  }
+
+  return { x, y };
+};
+
 Vector2.prototype.DEName = "Vector2";
 
 export default Vector2;
