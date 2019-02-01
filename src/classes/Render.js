@@ -54,10 +54,12 @@ function Render( id, params )
       , roundPixels          : _params[ "roundPixels" ] || false
       , forceFXAA            : _params[ "forceFXAA" ] || false
       , legacy               : _params[ "legacy" ] || false
-      , powerPreference      : _params[ "powerPreference" ] || "" //"high-performance" only for "gamers setup"
       , autoResize           : true
     }
   );
+
+  if( _params[ "scaleMode" ])
+    PIXI.settings.SCALE_MODE = _params[ "scaleMode" ];
   
   // this.pixiRenderer.plugins.interaction.mousedown
   
