@@ -4,11 +4,11 @@
   "description": "A simple and fast 2D engine based on PIXI",
   "main": "src/index.js",
   "dependencies": {
-    "howler": "^2.0.5",
-    "pixi.js": "4.5.6",
-    "pixijs-charm": "^0.1.4"
+    "howler": "^2.1.1",
+    "pixi.js": "^4.8.5"
   },
   "devDependencies": {
+    "cross-env": "^5.2.0",
     "parallel-webpack": "^2.2.0",
     "webpack": "^3.8.1",
     "webpack-dev-server": "^2.9.4",
@@ -17,10 +17,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified this is a TODO\" && exit 1",
     "watch": "echo TODO",
-    "build": "DEV_BUILD=true FINAL_BUILD=true parallel-webpack --config webpack.config.js --verbose --no-stats",
-    "build-dev": "DEV_BUILD=true parallel-webpack --config webpack.config.js --verbose --no-stats",
-    "win-build": "set DEV_BUILD=true && set FINAL_BUILD=true&& parallel-webpack --config webpack.config.js --verbose --no-stats",
-    "win-build-dev": "set DEV_BUILD=true && parallel-webpack --config webpack.config.js --verbose --no-stats"
+    "build": "cross-env DEV_BUILD=true FINAL_BUILD=true parallel-webpack --config webpack.config.js --verbose --no-stats",
+    "build-dev": "cross-env DEV_BUILD=true parallel-webpack --config webpack.config.js --verbose --no-stats"
   },
   "repository": {
     "type": "git",
@@ -42,7 +40,6 @@
   "homepage": "https://github.com/Dreamirl/Dreamengine#readme",
   "alias": {
     "PIXI": "pixi.js",
-    "P_Charm": "pixijs-charm",
     "stash": "./src/ext_libs/stash",
     "howler-spatial": "node_modules/howler/dist/howler.spatial.min",
     "DE.MainLoop": "./src/MainLoop",
