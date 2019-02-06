@@ -59,6 +59,7 @@
     "DE.ImageManager": "./src/utils/ImageManager",
     "DE.Render": "./src/classes/Render",
     "DE.Scene": "./src/classes/Scene",
+    "DE.Gui": "./src/classes/Gui",
     "DE.Vector2": "./src/classes/Vector2",
     "DE.Camera": "./src/classes/Camera",
     "DE.BaseRenderer": "./src/classes/renderer/BaseRenderer",
