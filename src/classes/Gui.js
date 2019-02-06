@@ -1,6 +1,6 @@
 import * as PIXI      from 'PIXI';
 import Scene          from 'DE.Scene';
-import GameObject     from 'DE.GameObject';
+import GameObject     from 'DE.GameObject.update';
 
 /**
  * @author Grimka / http://dreamirl.com
@@ -17,6 +17,26 @@ import GameObject     from 'DE.GameObject';
 function Gui( name )
 {
   Scene.call( this, name );
+
+  /**
+   * object used to apply fade transition
+   * @protected
+   * @memberOf GameObject
+   * @type {Object}
+   */
+  this._fadeData = {
+    "from"     : 1
+    ,"to"      : 0
+    ,"duration": 1000
+    ,"done"    : true
+  };
+
+  /**
+   * zindex used to place the gui over everything
+   * @public
+   * @memberof GameObject
+   * @type {Number}
+   */
   this.zindex = 1000;
 }
 
@@ -25,7 +45,7 @@ Gui.prototype.constructor = Gui;
 
 /**
  * this update the lifecycle of the Gui, binded on rendering because if a Gui is "off" it doesn't need to be updated
- * @memberOf Camera
+ * @memberOf Gui
  * @protected
  */
 Gui.prototype.renderUpdate = function()
