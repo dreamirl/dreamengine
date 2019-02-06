@@ -24,7 +24,7 @@ Gui.prototype = Object.create( Scene.prototype );
 Gui.prototype.constructor = Gui;
 
 /**
- * this update the lifecycle of the camera, binded on rendering because if a Camera is "off" it doesn't need to be updated
+ * this update the lifecycle of the Gui, binded on rendering because if a Gui is "off" it doesn't need to be updated
  * @memberOf Camera
  * @protected
  */
