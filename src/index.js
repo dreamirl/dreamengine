@@ -19,6 +19,7 @@ import Achievements  from 'DE.Achievements';
 import ImageManager  from 'DE.ImageManager';
 import Render        from 'DE.Render';
 import Scene         from 'DE.Scene';
+import Gui           from 'DE.Gui';
 import Camera        from 'DE.Camera';
 import Vector2       from 'DE.Vector2';
 
@@ -49,6 +50,7 @@ var DE = {
   ImageManager   : ImageManager,
   Render         : Render,
   Scene          : Scene,
+  Gui            : Gui,
   Camera         : Camera,
   Vector2        : Vector2,
   BaseRenderer   : BaseRenderer,

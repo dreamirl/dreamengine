@@ -31,6 +31,7 @@ var resolve = {
     
     , 'DE.Render$' : path.resolve( __dirname, 'src/classes/Render' )
     , 'DE.Scene$'  : path.resolve( __dirname, 'src/classes/Scene' )
+    , 'DE.Gui$'    : path.resolve( __dirname, 'src/classes/Gui' )
     , 'DE.Vector2$': path.resolve( __dirname, 'src/classes/Vector2' )
     , 'DE.Camera$' : path.resolve( __dirname, 'src/classes/Camera' )
     
