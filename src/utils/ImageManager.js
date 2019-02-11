@@ -48,10 +48,6 @@ var ImageManager = new function()
   this._waitingPools = []; // cannot load multiple resources / pools // have to queue
   this._waitingSolo = []; // cannot load multiple resources / pools // have to queue
   
-  // when you load multiple times resources with the same loader
-  //, it goes over 100%, this "fix" this bug
-  this._nLoads = 0
-  
   /**
    * main init function, create pool and set baseUrl in an object, used to load things later
    * call ImageManager.loadPool( poolName ) to start loading things
@@ -152,7 +148,7 @@ var ImageManager = new function()
   {
     Events.trigger( "ImageManager-pool-progress"
       , poolName
-      , ( loader.progress - 100 * this._nLoads ).toString().slice( 0, 5 ) );
+      , ( loader.progress ).toString().slice( 0, 5 ) );
     Events.trigger( "ImageManager-pool-" + poolName + "-progress"
       , poolName
       , loader.progress.toString().slice( 0, 5 ) );
@@ -172,9 +168,7 @@ var ImageManager = new function()
     Events.trigger( "ImageManager-pool-complete", poolName );
     Events.trigger( "ImageManager-pool-" + poolName + "-loaded" );
     Events.trigger( "ImageManager-" + customEventName + "-loaded" );
-    
-    ++this._nLoads;
-    
+
     // dequeue waiting pools here
     if ( this._waitingPools.length ) {
       var pool = this._waitingPools.shift();

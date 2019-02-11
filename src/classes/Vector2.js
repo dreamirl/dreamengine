@@ -19,7 +19,6 @@ function Vector2( x, y, gameObject )
   this.gameObject = gameObject;
 }
 
-console.log(PIXI)
 Vector2.prototype = Object.create( PIXI.Container.prototype );
 Vector2.prototype.constructor = Vector2;
 
