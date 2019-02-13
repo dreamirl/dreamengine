@@ -46,6 +46,26 @@ Gui.prototype.constructor = Gui;
 // support trigger
 Gui.prototype.trigger = Gui.prototype.emit;
 
+Object.defineProperties( Gui.prototype, {
+  /**
+   * easy way to shutdown gui rendering/updating
+   * @public
+   * @memberOf Gui
+   * @type {Boolean}
+   */
+  enable: {
+    get: function()
+    {
+      return this.renderable && this.visible;
+    }
+    , set: function( bool )
+    {
+      this.visible = bool;
+      this.renderable = bool;
+    }
+  }
+} );
+
 /**
  * this update the lifecycle of the Gui, binded on rendering because if a Gui is "off" it doesn't need to be updated
  * @memberOf Gui

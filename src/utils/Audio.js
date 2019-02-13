@@ -58,6 +58,11 @@ const Audio = new function()
     this.setVolume( this.volume );
   }
   
+  this.isMuted = function()
+  {
+  	return howler.Howler._muted;
+  }
+
   this.mute = function()
   {
     howler.Howler.mute( true );
