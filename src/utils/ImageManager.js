@@ -82,7 +82,7 @@ var ImageManager = new function()
             totalLine    : data[ 2 ].totalLine || 1
             ,totalFrame  : data[ 2 ].totalFrame || 1
             ,startFrame  : data[ 2 ].startFrame || 0
-            ,endFrame    : data[ 2 ].endFrame || data[ 2 ].totalFrame || 1
+            ,endFrame    : data[ 2 ].endFrame || ( data[ 2 ].totalFrame - 1 ) || 0
             ,interval    : data[ 2 ].interval || 16
             ,reversed    : data[ 2 ].reversed || false
             ,loop        : data[ 2 ].loop !== undefined ? data[ 2 ].loop : true
@@ -200,7 +200,7 @@ var ImageManager = new function()
         totalLine    : data[ 2 ].totalLine || 1
         ,totalFrame  : data[ 2 ].totalFrame || 1
         ,startFrame  : data[ 2 ].startFrame || 0
-        ,endFrame    : data[ 2 ].endFrame || data[ 2 ].totalFrame || 1
+        ,endFrame    : data[ 2 ].endFrame || ( data[ 2 ].totalFrame - 1 ) || 0
         ,interval    : data[ 2 ].interval || 16
         ,reversed    : data[ 2 ].reversed || false
         ,loop        : data[ 2 ].loop !== undefined ? data[ 2 ].loop : true

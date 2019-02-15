@@ -175,8 +175,8 @@ Object.defineProperties( SpriteRenderer.prototype, {
     get: function(){ return this._currentFrame; }
     ,set: function( frame )
     {
-      if ( frame + 1 >= this.endFrame ) {
-        this._currentFrame = this.endFrame - 1;
+      if ( frame >= this.endFrame ) {
+        this._currentFrame = this.endFrame;
       }
       else if ( frame < this.startFrame ) {
         this._currentFrame = this.startFrame;
@@ -199,8 +199,8 @@ Object.defineProperties( SpriteRenderer.prototype, {
     get: function(){ return this._currentLine; }
     ,set: function( line )
     {
-      if ( line + 1 >= this.endLine ) {
-        this._currentLine = this.endLine - 1;
+      if ( line >= this.endLine ) {
+        this._currentLine = this.endLine;
       }
       else if ( line < this.startLine ) {
         this._currentLine = this.startLine;
@@ -435,7 +435,7 @@ SpriteRenderer.prototype.update = function()
   this.lastAnim = Date.now();
   
   this._currentFrame += this.reversed ? -1 : 1;
-  if ( this._currentFrame >= this.endFrame ) {
+  if ( this._currentFrame > this.endFrame ) {
     
     if ( this.loop ) {
       this._currentFrame = this.startFrame;
@@ -445,7 +445,7 @@ SpriteRenderer.prototype.update = function()
       }
     }
     else {
-      this._currentFrame = this.endFrame - 1;
+      this._currentFrame = this.endFrame;
       this.isOver = true;
       this.onAnimEnd();
     }
@@ -454,10 +454,10 @@ SpriteRenderer.prototype.update = function()
   else if ( this._currentFrame < this.startFrame ) {
     
     if ( this.loop ) {
-      this._currentFrame = this.endFrame - 1;
+      this._currentFrame = this.endFrame;
       if ( this.pingPongMode ) {
         this.reversed = false;
-        this._currentFrame = this.startFrame;
+        this._currentFrame = this.startFrame + 1;
       }
     }
     else {
@@ -589,11 +589,13 @@ SpriteRenderer.prototype.changeSprite = function( spriteName, params )
   var d = ImageManager.spritesData[ this.spriteName ];
   
   this.startFrame    = params.startFrame || d.startFrame || 0;
-  this.endFrame      = params.endFrame || d.endFrame
-                      || d.totalFrame || 0;
+  this.endFrame      = params.endFrame || d.endFrame || (d.totalFrame - 1) || 0;
+
   this._currentFrame = this.startFrame || params.currentFrame || 0;
   this._currentLine  = params.startLine || 0;
+  
   this.startLine     = params.startLine || 0;
+  this.endLine       = params.endLine || d.endLine || (d.totalLine - 1) || 0;
   
   this.totalFrame   = d.totalFrame || 0;
   this.totalLine    = params.totalLine || d.totalLine || 0;
