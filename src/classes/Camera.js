@@ -88,7 +88,7 @@ function Camera( x, y, width, height, params )
   /**
    * object used to apply fade transition
    * @protected
-   * @memberOf GameObject
+   * @memberOf Camera
    * @type {Object}
    */
   this._fadeData = {
@@ -96,6 +96,18 @@ function Camera( x, y, width, height, params )
     ,"to"      : 0
     ,"duration": 1000
     ,"done"    : true
+  };
+
+  /**
+   * object used to apply shake
+   * @protected
+   * @memberOf Camera
+   * @type {Object}
+   */
+  this._shakeData = {
+    "done": true
+    ,"prevX": 0
+    ,"prevY": 0
   };
   
   /**
@@ -291,6 +303,7 @@ Camera.prototype.renderUpdate = function( qualityRatio )
 {
   this.applyFocus();
   this.applyFade();
+  this.applyShake();
   this.checkLimits( qualityRatio );
   this.calculatePerspective();
   
@@ -438,6 +451,13 @@ Camera.prototype.fadeOut = GameObject.prototype.fadeOut;
 Camera.prototype.fadeIn = GameObject.prototype.fadeIn;
 Camera.prototype.applyFade = GameObject.prototype.applyFade;
 
+/**
+ * check the documentation on GameObject for all shake features
+ * @protected
+ * @memberOf GameObject
+ */
+Camera.prototype.shake = GameObject.prototype.shake;
+Camera.prototype.applyShake = GameObject.prototype.applyShake;
 
 
 // name registered in engine declaration
