@@ -32,6 +32,20 @@ function Scene( name )
    * @memberOf Scene
    */
   this.gameObjects = this.children;
+  /**
+   * contain all gameObjects but in a map by id
+   * @readonly
+   * @memberOf Scene
+   */
+  this.gameObjectsById = {};
+
+  /**
+   * contain all gameObjects sorted by tags
+   * if the tag pool doesn't exist when adding a gameObject, it is automatically created
+   * @readonly
+   * @memberOf Scene
+   */
+  this.gameObjectsByTag = {};
   
   // TODO when required this.objectsByTag = {};
   // TODO when required this.objectsByName = {};
@@ -69,7 +83,7 @@ Scene.prototype.add = function()
   var args = Array.prototype.slice.call( arguments );
   for ( var i = 0; i < args.length; ++i )
   {
-    if ( args[ i ].length ) {
+    if ( args[ i ] && args[ i ].length ) {
       for ( var o = 0, m = args[ i ].length || 1; o < m; ++o )
       {
         this.addOne( args[ i ][ o ] );
@@ -100,6 +114,15 @@ Scene.prototype.addOne = function( gameObject )
   
   // add in PIXI Container
   this.addChild( gameObject );
+  this.gameObjectsById[ gameObject.id ] = gameObject;
+  
+  if ( gameObject.tag ) {
+    if ( !this.gameObjectsByTag[ gameObject.tag ] ) {
+      this.gameObjectsByTag[ gameObject.tag ] = new Array();
+    }
+    this.gameObjectsByTag[ gameObject.tag ].push( gameObject );
+  }
+  
   this._shouldSortChildren = true;
   
   this.emit( "update-children" );
@@ -190,6 +213,11 @@ Scene.prototype.remove = function( object )
 {
   var target;
   
+  delete this.gameObjectsById[ object.id ];
+  if ( object.tag ) {
+    this.gameObjectsByTag[ object.tag ].splice( this.gameObjectsByTag[ object.tag ].indexOf( object ), 1 );
+  }
+
   // if it's an index, it's dangerous D: (excepted when it came from update, which is faster than idnexindexOf)
   if ( isNaN( object ) ) {
     var index = this.children.indexOf( object );
