@@ -285,7 +285,7 @@ Vector2.prototype.getDistance = function( other )
     x *= x;
   var y = this.y - other.y;
     y *= y;
-  return Math.sqrt( x + y ) >> 0;
+  return Math.sqrt( x + y );
 };
 
 /**
