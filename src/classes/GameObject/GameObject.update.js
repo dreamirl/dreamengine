@@ -65,7 +65,7 @@ GameObject.prototype.update = function( time )
     for ( var i = 0, r; r = this.renderers[ i ]; ++i )
     {
       if ( r.update ) {
-        r.update();
+        r.update(time);
       }
       
       if ( r.applyFade ) {
