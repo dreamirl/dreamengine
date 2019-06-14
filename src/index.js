@@ -97,6 +97,13 @@ DE.init = function( params )
   
   // set achievements with your custom list
   DE.Achievements.init( params.achievements || [] );
+
+  DE.Time.onTimeStop = () => {
+    DE.trigger( "window-lost-focus" );
+  };
+  DE.Time.onTimeResume = () => {
+    DE.trigger( "window-focus" );
+  }
   
   if ( !params.ignoreNotifications
     && params.useNotifications !== false

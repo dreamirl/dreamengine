@@ -13,7 +13,7 @@ const Time = new function ()
   this.timeSinceLastFrame       = 0;
   this.timeSinceLastFrameScaled = 0;
 
-  this.onTimeStopped = () => {};
+  this.onTimeStop = () => {};
   this.onTimeResume = () => {};
   
   /****
@@ -87,11 +87,11 @@ if ( typeof document.hidden !== "undefined" ) { // Opera 12.10 and Firefox 18 an
 function handleVisibilityChange() {
   if ( document[hidden] ) {
     Time.stopped = true;
-    this.onTimeStopped();
+    Time.onTimeStop();
   } else {
     Time.lastCalcul = Date.now();
     Time.stopped = false;
-    this.onTimeResume();
+    Time.onTimeResume();
   }
 }
 
