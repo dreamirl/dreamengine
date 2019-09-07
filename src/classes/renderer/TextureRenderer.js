@@ -19,12 +19,12 @@ import BaseRenderer from 'DE.BaseRenderer';
 
 function TextureRenderer( params )
 {
-  if ( !params.spriteName && !params.spriteUrl && !params.textureName ) {
-    console.error( "A TextureRenderer need a spriteName or a spriteUrl argument" );
+  if ( !params.spriteName && !params.spriteUrl && !params.textureName && !params.texture ) {
+    console.error( "A TextureRenderer need a spriteName, a spriteUrl argument or a texture" );
     return;
   }
   
-  PIXI.Sprite.call( this, PIXI.utils.TextureCache[ params.spriteName || params.spriteUrl || params.textureName ] );
+  PIXI.Sprite.call( this, params.texture ? params.texture : PIXI.utils.TextureCache[ params.spriteName || params.spriteUrl || params.textureName ] );
   BaseRenderer.instantiate( this, params );
 }
 
