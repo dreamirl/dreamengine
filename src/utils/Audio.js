@@ -432,13 +432,13 @@ const Audio = new function()
     {
       if ( !preserve ){ preserve = []; }
       if ( !preserve.push ){ preserve = [ preserve ]; }
-      for ( var m in this.fxs )
+      for ( var f in this._fxs )
       {
-        if ( preserve.indexOf( m ) != -1 ) {
+        if ( preserve.indexOf( f ) != -1 ) {
           continue;
         }
         else {
-          this.fxs[ m ].stop();
+          this._fxs[ f ].stop();
         }
       }
       return this;
