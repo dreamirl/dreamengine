@@ -401,6 +401,48 @@ const Audio = new function()
     {
       this._fxs[ name ].stop();
     }
+
+    /****
+     * stop all musics and play one, can preserve specific musics
+     * @memberOf Audio.music
+     * @public
+     * @param {String} name - name of the music to play
+     * @param {String} sprite - name of the sprite to play (optional)
+     * @param {String or Array of String} preserve - name of music to preserve (can be an array)
+     * @example: Audio.music.stopAllAndPlay( "game", null, "ambiance" )
+     */
+    this.stopAllAndPlay = function( name, sprite, preserve )
+    {
+      this.stopAll( preserve );
+      if ( name != preserve ) {
+        this.play( name, sprite );
+      }
+      
+      return this;
+    }
+
+    /****
+     * stop all musics to play "name", can preserve a specific music
+     * @memberOf Audio.music
+     * @public
+     * @param {String or Array of String} preserve - name of music to preserve (can be an array)
+     * @example: Audio.music.stopAll( [ "bossFight", "lavaExplosions" ] )
+     */
+    this.stopAll = function( preserve )
+    {
+      if ( !preserve ){ preserve = []; }
+      if ( !preserve.push ){ preserve = [ preserve ]; }
+      for ( var m in this._musics )
+      {
+        if ( preserve.indexOf( m ) != -1 ) {
+          continue;
+        }
+        else {
+          this._musics[ m ].stop();
+        }
+      }
+      return this;
+    }
     
     /**
      * change mute state for all fx
