@@ -100,18 +100,18 @@ const MainLoop = new function()
     
     gamepad.update( Time.currentTime );
     
-    while( Time.missedFrame >= 0 )
+    while( Time.timeSinceLastFrame >= Time.frameDelay )
     {
       /* TODO
         => update MainLoop.customLoop (keep it ?)
         */
       for ( var r in MainLoop.additionalModules )
-        MainLoop.additionalModules[ r ].update(( Time.currentTime - Time.timeSinceLastFrameScaled ) + ( 16 * Time.deltaTime ));
+        MainLoop.additionalModules[ r ].update( Time.frameDelayScaled );
       
       for ( var i = 0, s; s = MainLoop.scenes[ i ]; ++i )
       {
         if ( s.enable ) {
-          s.update(( Time.currentTime - Time.timeSinceLastFrameScaled ) + ( 16 * Time.deltaTime ));
+          s.update( Time.frameDelayScaled );
         }
       }
       
@@ -119,10 +119,7 @@ const MainLoop = new function()
         => update Renders GUIs ?
       */
       
-      Time.timeSinceLastFrameScaled -= ( 16 * Time.deltaTime * Time.scaleDelta );
-      Time.timeSinceLastFrame -= ( 16 * Time.deltaTime );
-      Time.deltaTime = 1;
-      --Time.missedFrame;
+      Time.timeSinceLastFrame -= Time.frameDelay;
     }
   }
   

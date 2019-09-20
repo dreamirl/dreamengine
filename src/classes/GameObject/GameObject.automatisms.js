@@ -47,9 +47,7 @@ GameObject.prototype.addAutomatism = function( id, methodName, params )
     return false;
   }
   params.interval = params.interval || Time.frameDelay;
-  if ( params.interval ) {
-    params.lastCall = Time.currentTime;
-  }
+  params.timeSinceLastCall = 0;
   
   params.methodName = methodName;
   params.value1     = params.value1 || undefined;
