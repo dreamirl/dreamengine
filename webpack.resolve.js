@@ -3,7 +3,7 @@ var path = require( 'path' );
 var resolve = {
   alias: {
     'PIXI$'            : path.resolve( __dirname, 'node_modules/pixi.js/dist/pixi' )
-    , 'stash$'         : path.resolve( __dirname, 'src/ext_libs/stash' )
+    , 'localStorage$'  : path.resolve( __dirname, 'node_modules/local-storage/local-storage/.js' )
     , 'howler$'        : path.resolve( __dirname, 'node_modules/howler/dist/howler.min' )
     , 'howler-spatial$': path.resolve( __dirname, 'node_modules/howler/dist/howler.spatial.min' )
     

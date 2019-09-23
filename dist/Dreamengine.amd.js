@@ -60,117 +60,11 @@ define("DREAM_ENGINE", [], function() { return /******/ (function(modules) { // 
 /******/ 	__webpack_require__.p = "/assets/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 23);
+/******/ 	return __webpack_require__(__webpack_require__.s = 25);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-const Time = new function ()
-{
-  this.DEName      = "Time";
-  this.deltaTime   = 1;
-  this.missedFrame = 0;
-  this.lastCalcul  = Date.now();
-  this.scaleDelta  = 1;
-  this.currentTime = Date.now();
-  this.fps         = 0;
-  this.frameDelay  = 16;
-  this.stopped     = false;
-  
-  this.timeSinceLastFrame       = 0;
-  this.timeSinceLastFrameScaled = 0;
-  
-  /****
-   * update@Bool
-    update frames
-    TODO - add a paused state (to pause the engine, when changed tab by example)
-    */
-  this.update = function()
-  {
-    if ( this.stopped ) {
-      return false;
-    }
-    
-    this.currentTime = Date.now();
-    this.timeSinceLastFrame = ( this.currentTime - this.lastCalcul );
-    
-    if ( this.timeSinceLastFrame < this.frameDelay ) {
-      return false;
-    }
-    
-    this.fps = Math.floor( 1000 / this.timeSinceLastFrame );
-    
-    this.deltaTime = this.timeSinceLastFrame / this.frameDelay * this.scaleDelta;
-    this.missedFrame = this.deltaTime;
-    if ( this.deltaTime > 2 ) {
-      this.deltaTime = this.deltaTime % 1;
-      if ( this.deltaTime < 1 )
-        this.deltaTime += 1;
-    }
-    if ( this.deltaTime < 0 ) {
-      this.deltaTime += 1;
-    }
-    this.missedFrame = this.missedFrame - this.deltaTime;
-    this.timeSinceLastFrameScaled = ( this.currentTime - this.lastCalcul ) * this.scaleDelta;
-    this.lastCalcul = this.currentTime;
-    
-    return true;
-  }
-  
-  /****
-   * getDelta@Float
-    previously it was private
-    */
-  this.getDelta = function(){ return this.deltaTime; }
-};
-
-// TODO
-// Event.on( "isInited", function()
-// {
-//   Time.deltaTime = 0;
-//   Time.lastCalcul = Date.now();
-// } );
-
-// Set the name of the hidden property and the change event for visibility
-var hidden, visibilityChange; 
-if ( typeof document.hidden !== "undefined" ) { // Opera 12.10 and Firefox 18 and later support 
-  hidden = "hidden";
-  visibilityChange = "visibilitychange";
-} else if ( typeof document.mozHidden !== "undefined" ) {
-  hidden = "mozHidden";
-  visibilityChange = "mozvisibilitychange";
-} else if ( typeof document.msHidden !== "undefined" ) {
-  hidden = "msHidden";
-  visibilityChange = "msvisibilitychange";
-} else if ( typeof document.webkitHidden !== "undefined" ) {
-  hidden = "webkitHidden";
-  visibilityChange = "webkitvisibilitychange";
-}
-
-// lock Time if page is hidden (no loop then)
-function handleVisibilityChange() {
-  if ( document[hidden] ) {
-    Time.stopped = true;
-  } else {
-    Time.lastCalcul = Date.now();
-    Time.stopped = false;
-  }
-}
-
-if ( typeof document.addEventListener === "undefined"
-    || typeof hidden === "undefined" ) {
-  // no possibility to handle hidden page
-} else {
-  document.addEventListener( visibilityChange, handleVisibilityChange, false );
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (Time);
-
-/***/ }),
-/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var require;var require;/*!
@@ -42166,7 +42060,118 @@ global.PIXI = exports; // eslint-disable-line
 
 //# sourceMappingURL=pixi.js.map
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)))
+
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+const Time = new function ()
+{
+  this.DEName      = "Time";
+  this.deltaTime   = 1;
+  this.missedFrame = 0;
+  this.lastCalcul  = Date.now();
+  this.scaleDelta  = 1;
+  this.currentTime = Date.now();
+  this.fps         = 0;
+  this.frameDelay  = 16;
+  this.stopped     = false;
+  
+  this.timeSinceLastFrame       = 0;
+  this.timeSinceLastFrameScaled = 0;
+
+  this.onTimeStop = () => {};
+  this.onTimeResume = () => {};
+  
+  /****
+   * update@Bool
+    update frames
+    TODO - add a paused state (to pause the engine, when changed tab by example)
+    */
+  this.update = function()
+  {
+    if ( this.stopped ) {
+      return false;
+    }
+    
+    this.currentTime = Date.now();
+    this.timeSinceLastFrame = ( this.currentTime - this.lastCalcul );
+    
+    if ( this.timeSinceLastFrame < this.frameDelay ) {
+      return false;
+    }
+    
+    this.fps = Math.floor( 1000 / this.timeSinceLastFrame );
+    
+    this.deltaTime = this.timeSinceLastFrame / this.frameDelay * this.scaleDelta;
+    this.missedFrame = this.deltaTime;
+    if ( this.deltaTime > 2 ) {
+      this.deltaTime = this.deltaTime % 1;
+      if ( this.deltaTime < 1 )
+        this.deltaTime += 1;
+    }
+    if ( this.deltaTime < 0 ) {
+      this.deltaTime += 1;
+    }
+    this.missedFrame = this.missedFrame - this.deltaTime;
+    this.timeSinceLastFrameScaled = ( this.currentTime - this.lastCalcul ) * this.scaleDelta;
+    this.lastCalcul = this.currentTime;
+    
+    return true;
+  }
+  
+  /****
+   * getDelta@Float
+    previously it was private
+    */
+  this.getDelta = function(){ return this.deltaTime; }
+};
+
+// TODO
+// Event.on( "isInited", function()
+// {
+//   Time.deltaTime = 0;
+//   Time.lastCalcul = Date.now();
+// } );
+
+// Set the name of the hidden property and the change event for visibility
+var hidden, visibilityChange; 
+if ( typeof document.hidden !== "undefined" ) { // Opera 12.10 and Firefox 18 and later support 
+  hidden = "hidden";
+  visibilityChange = "visibilitychange";
+} else if ( typeof document.mozHidden !== "undefined" ) {
+  hidden = "mozHidden";
+  visibilityChange = "mozvisibilitychange";
+} else if ( typeof document.msHidden !== "undefined" ) {
+  hidden = "msHidden";
+  visibilityChange = "msvisibilitychange";
+} else if ( typeof document.webkitHidden !== "undefined" ) {
+  hidden = "webkitHidden";
+  visibilityChange = "webkitvisibilitychange";
+}
+
+// lock Time if page is hidden (no loop then)
+function handleVisibilityChange() {
+  if ( document[hidden] ) {
+    Time.stopped = true;
+    Time.onTimeStop();
+  } else {
+    Time.lastCalcul = Date.now();
+    Time.stopped = false;
+    Time.onTimeResume();
+  }
+}
+
+if ( typeof document.addEventListener === "undefined"
+    || typeof hidden === "undefined" ) {
+  // no possibility to handle hidden page
+} else {
+  document.addEventListener( visibilityChange, handleVisibilityChange, false );
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Time);
 
 /***/ }),
 /* 2 */
@@ -42242,7 +42247,7 @@ config.notifications = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_eventemitter3__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_eventemitter3__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_eventemitter3___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_eventemitter3__);
 
 
@@ -42260,12 +42265,12 @@ Events.trigger = Events.emit;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_PIXI__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Vector2__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Vector2__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_config__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_GraphicRenderer__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_DE_sortGameObjects__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_GraphicRenderer__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_DE_sortGameObjects__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_DE_Events__ = __webpack_require__(3);
 
 
@@ -43038,7 +43043,7 @@ GameObject.prototype.DEName = "GameObject";
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_Time__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_Time__ = __webpack_require__(1);
 
 
 var _inherits = [
@@ -43489,17 +43494,44 @@ about.set = function( values )
 
 /***/ }),
 /* 8 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_Time__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_gamepad__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_Time__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_gamepad__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_GameObject__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_PIXI__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_PIXI__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_PIXI___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_PIXI__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_DE_Events__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_DE_TextRenderer__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_DE_SpriteRenderer__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_DE_TextRenderer__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_DE_SpriteRenderer__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_DE_Localization__ = __webpack_require__(6);
 
 
@@ -43677,13 +43709,13 @@ function checkGameObjectsTextRenderer( go ) {
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_config__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Events__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_Notifications__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_Notifications__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_Localization__ = __webpack_require__(6);
 ﻿
 
@@ -44311,7 +44343,7 @@ var gamepads = new function()
 /* harmony default export */ __webpack_exports__["a"] = (gamepads);
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -44477,11 +44509,11 @@ var Notifications = new function()
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_PIXI__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_config__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_Events__ = __webpack_require__(3);
@@ -44536,10 +44568,6 @@ var ImageManager = new function()
   this._waitingPools = []; // cannot load multiple resources / pools // have to queue
   this._waitingSolo = []; // cannot load multiple resources / pools // have to queue
   
-  // when you load multiple times resources with the same loader
-  //, it goes over 100%, this "fix" this bug
-  this._nLoads = 0
-  
   /**
    * main init function, create pool and set baseUrl in an object, used to load things later
    * call ImageManager.loadPool( poolName ) to start loading things
@@ -44574,7 +44602,7 @@ var ImageManager = new function()
             totalLine    : data[ 2 ].totalLine || 1
             ,totalFrame  : data[ 2 ].totalFrame || 1
             ,startFrame  : data[ 2 ].startFrame || 0
-            ,endFrame    : data[ 2 ].endFrame || data[ 2 ].totalFrame || 1
+            ,endFrame    : data[ 2 ].endFrame || ( data[ 2 ].totalFrame - 1 ) || 0
             ,interval    : data[ 2 ].interval || 16
             ,reversed    : data[ 2 ].reversed || false
             ,loop        : data[ 2 ].loop !== undefined ? data[ 2 ].loop : true
@@ -44640,7 +44668,7 @@ var ImageManager = new function()
   {
     __WEBPACK_IMPORTED_MODULE_2_DE_Events__["a" /* default */].trigger( "ImageManager-pool-progress"
       , poolName
-      , ( loader.progress - 100 * this._nLoads ).toString().slice( 0, 5 ) );
+      , ( loader.progress ).toString().slice( 0, 5 ) );
     __WEBPACK_IMPORTED_MODULE_2_DE_Events__["a" /* default */].trigger( "ImageManager-pool-" + poolName + "-progress"
       , poolName
       , loader.progress.toString().slice( 0, 5 ) );
@@ -44660,9 +44688,7 @@ var ImageManager = new function()
     __WEBPACK_IMPORTED_MODULE_2_DE_Events__["a" /* default */].trigger( "ImageManager-pool-complete", poolName );
     __WEBPACK_IMPORTED_MODULE_2_DE_Events__["a" /* default */].trigger( "ImageManager-pool-" + poolName + "-loaded" );
     __WEBPACK_IMPORTED_MODULE_2_DE_Events__["a" /* default */].trigger( "ImageManager-" + customEventName + "-loaded" );
-    
-    ++this._nLoads;
-    
+
     // dequeue waiting pools here
     if ( this._waitingPools.length ) {
       var pool = this._waitingPools.shift();
@@ -44694,7 +44720,7 @@ var ImageManager = new function()
         totalLine    : data[ 2 ].totalLine || 1
         ,totalFrame  : data[ 2 ].totalFrame || 1
         ,startFrame  : data[ 2 ].startFrame || 0
-        ,endFrame    : data[ 2 ].endFrame || data[ 2 ].totalFrame || 1
+        ,endFrame    : data[ 2 ].endFrame || ( data[ 2 ].totalFrame - 1 ) || 0
         ,interval    : data[ 2 ].interval || 16
         ,reversed    : data[ 2 ].reversed || false
         ,loop        : data[ 2 ].loop !== undefined ? data[ 2 ].loop : true
@@ -44753,40 +44779,128 @@ var ImageManager = new function()
 
 
 /***/ }),
-/* 12 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
 /* 13 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_GameObject__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_GameObject_automatisms__ = __webpack_require__(39);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_GameObject_fade__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_GameObject_focus__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_DE_GameObject_moveTo__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_DE_GameObject_scale__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_DE_GameObject_shake__ = __webpack_require__(44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_DE_Time__ = __webpack_require__(1);
+
+
+
+
+
+
+
+
+
+
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.update = function( time )
+{
+  if ( !this.updatable ) {
+    return;
+  }
+  
+  // execute registered automatisms
+  for ( var a in this._automatisms )
+  {
+    var auto = this._automatisms[ a ];
+    auto.timeSinceLastCall = time - auto.lastCall;
+    if ( auto.timeSinceLastCall < auto.interval / __WEBPACK_IMPORTED_MODULE_7_DE_Time__["a" /* default */].scaleDelta ){
+      continue;
+    }
+    
+    if ( auto.timeSinceLastCall - auto.interval < auto.interval ) {
+      auto.lastCall = time - ( auto.timeSinceLastCall - auto.interval / __WEBPACK_IMPORTED_MODULE_7_DE_Time__["a" /* default */].scaleDelta );
+    }
+    else {
+      auto.lastCall = time;
+    }
+
+    // i think calling apply each update is slower than calling v1/v2. Should benchmark this
+    if ( auto.args ) {
+      this[ auto.methodName ].apply( this, auto.args );
+    }
+    else {
+      this[ auto.methodName ]( auto.value1, auto.value2 );
+    }
+    
+    // if this one isn't persistent delete it
+    if ( !auto.persistent ) {
+      delete this._automatisms[ a ];
+    }
+  }
+  
+  // childs update
+  for ( var c = 0, g; g = this.gameObjects[ c ]; c++ )
+  {
+    if ( g.flag !== null ) {
+      switch( g.flag )
+      {
+        case "delete":
+          this.delete( c );
+          --c;
+          continue;
+          break;
+      }
+    }
+    g.update( time );
+  }
+  
+  // this apply update on each renderer
+  if ( this.visible ) {
+    for ( var i = 0, r; r = this.renderers[ i ]; ++i )
+    {
+      if ( r.update ) {
+        r.update();
+      }
+      
+      if ( r.applyFade ) {
+        r.applyFade();
+        r.applyScale();
+      }
+    }
+  }
+  
+  // TODO
+  this.applyFocus();
+  this.applyShake();
+  this.applyMove();
+  this.applyFade();
+  this.applyScale();
+  
+  if ( this._shouldSortChildren ) {
+    this.sortGameObjects();
+  }
+  
+  // update the hasMoved
+  if ( this._lastLocalID != this.position.scope._localID ) {
+    this._hasMoved = true;
+  }
+  else {
+    this._hasMoved = false;
+  }
+  
+  this._lastLocalID = this.position.scope._localID;
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */]);
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_PIXI__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Time__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Time__ = __webpack_require__(1);
 
 
 
@@ -44808,7 +44922,6 @@ function Vector2( x, y, gameObject )
   this.gameObject = gameObject;
 }
 
-console.log(__WEBPACK_IMPORTED_MODULE_0_PIXI__)
 Vector2.prototype = Object.create( __WEBPACK_IMPORTED_MODULE_0_PIXI__["Container"].prototype );
 Vector2.prototype.constructor = Vector2;
 
@@ -45075,7 +45188,7 @@ Vector2.prototype.getDistance = function( other )
     x *= x;
   var y = this.y - other.y;
     y *= y;
-  return Math.sqrt( x + y ) >> 0;
+  return Math.sqrt( x + y );
 };
 
 /**
@@ -45228,11 +45341,11 @@ Vector2.prototype.DEName = "Vector2";
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_PIXI__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_BaseRenderer__ = __webpack_require__(5);
 
@@ -45286,7 +45399,7 @@ GraphicRenderer.prototype.DEName = "GraphicRenderer";
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -45356,11 +45469,11 @@ GraphicRenderer.prototype.DEName = "GraphicRenderer";
 });
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_PIXI__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_BaseRenderer__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_Localization__ = __webpack_require__(6);
@@ -45423,15 +45536,15 @@ TextRenderer.prototype.DEName = "TextRenderer";
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_PIXI__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_ImageManager__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_ImageManager__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_config__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_Time__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_Time__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_DE_Events__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_DE_BaseRenderer__ = __webpack_require__(5);
 
@@ -45611,8 +45724,8 @@ Object.defineProperties( SpriteRenderer.prototype, {
     get: function(){ return this._currentFrame; }
     ,set: function( frame )
     {
-      if ( frame + 1 >= this.endFrame ) {
-        this._currentFrame = this.endFrame - 1;
+      if ( frame >= this.endFrame ) {
+        this._currentFrame = this.endFrame;
       }
       else if ( frame < this.startFrame ) {
         this._currentFrame = this.startFrame;
@@ -45635,8 +45748,8 @@ Object.defineProperties( SpriteRenderer.prototype, {
     get: function(){ return this._currentLine; }
     ,set: function( line )
     {
-      if ( line + 1 >= this.endLine ) {
-        this._currentLine = this.endLine - 1;
+      if ( line >= this.endLine ) {
+        this._currentLine = this.endLine;
       }
       else if ( line < this.startLine ) {
         this._currentLine = this.startLine;
@@ -45871,7 +45984,7 @@ SpriteRenderer.prototype.update = function()
   this.lastAnim = Date.now();
   
   this._currentFrame += this.reversed ? -1 : 1;
-  if ( this._currentFrame >= this.endFrame ) {
+  if ( this._currentFrame > this.endFrame ) {
     
     if ( this.loop ) {
       this._currentFrame = this.startFrame;
@@ -45881,7 +45994,7 @@ SpriteRenderer.prototype.update = function()
       }
     }
     else {
-      this._currentFrame = this.endFrame - 1;
+      this._currentFrame = this.endFrame;
       this.isOver = true;
       this.onAnimEnd();
     }
@@ -45890,10 +46003,10 @@ SpriteRenderer.prototype.update = function()
   else if ( this._currentFrame < this.startFrame ) {
     
     if ( this.loop ) {
-      this._currentFrame = this.endFrame - 1;
+      this._currentFrame = this.endFrame;
       if ( this.pingPongMode ) {
         this.reversed = false;
-        this._currentFrame = this.startFrame;
+        this._currentFrame = this.startFrame + 1;
       }
     }
     else {
@@ -46025,11 +46138,13 @@ SpriteRenderer.prototype.changeSprite = function( spriteName, params )
   var d = __WEBPACK_IMPORTED_MODULE_1_DE_ImageManager__["a" /* default */].spritesData[ this.spriteName ];
   
   this.startFrame    = params.startFrame || d.startFrame || 0;
-  this.endFrame      = params.endFrame || d.endFrame
-                      || d.totalFrame || 0;
+  this.endFrame      = params.endFrame || d.endFrame || (d.totalFrame - 1) || 0;
+
   this._currentFrame = this.startFrame || params.currentFrame || 0;
   this._currentLine  = params.startLine || 0;
+  
   this.startLine     = params.startLine || 0;
+  this.endLine       = params.endLine || d.endLine || (d.totalLine - 1) || 0;
   
   this.totalFrame   = d.totalFrame || 0;
   this.totalLine    = params.totalLine || d.totalLine || 0;
@@ -46142,11 +46257,12 @@ SpriteRenderer.prototype.changeSprite = function( spriteName, params )
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_stash__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_local_storage__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_local_storage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_local_storage__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_config__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_about__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_Events__ = __webpack_require__(3);
@@ -46198,7 +46314,7 @@ var Save = new function()
     
     this.version = __WEBPACK_IMPORTED_MODULE_2_DE_about__["a" /* default */].version;
     if ( ignoreVersion ) {
-      this.version = __WEBPACK_IMPORTED_MODULE_0_stash__["a" /* default */].get( this.namespace );
+      this.version = __WEBPACK_IMPORTED_MODULE_0_local_storage___default.a.get( this.namespace );
     }
     
     this.saveModel = saveModel;
@@ -46206,7 +46322,7 @@ var Save = new function()
     // load save from storage
     for ( var i in this.saveModel )
     {
-      this.saveModel[ i ] = __WEBPACK_IMPORTED_MODULE_0_stash__["a" /* default */].get( this.namespace + this.version + i ) || this.saveModel[ i ];
+      this.saveModel[ i ] = __WEBPACK_IMPORTED_MODULE_0_local_storage___default.a.get( this.namespace + this.version + i ) || this.saveModel[ i ];
     }
     
     this.loadSave( this.saveModel, true );
@@ -46220,15 +46336,15 @@ var Save = new function()
     // clean the localStorage to prevent zombie storage because upgraded version
     for ( var i in this.saveModel )
     {
-      __WEBPACK_IMPORTED_MODULE_0_stash__["a" /* default */].cut( this.namespace + this.version + i );
+      __WEBPACK_IMPORTED_MODULE_0_local_storage___default.a.remove( this.namespace + this.version + i );
     }
     
     // setup the last version of the game, and rewrite datas
     this.version = __WEBPACK_IMPORTED_MODULE_2_DE_about__["a" /* default */].version;
-    __WEBPACK_IMPORTED_MODULE_0_stash__["a" /* default */].set( this.namespace, this.version );
+    __WEBPACK_IMPORTED_MODULE_0_local_storage___default.a.set( this.namespace, this.version );
     for ( var i in this.saveModel )
     {
-      __WEBPACK_IMPORTED_MODULE_0_stash__["a" /* default */].set( this.namespace + this.version + i, this.saveModel[ i ] );
+      __WEBPACK_IMPORTED_MODULE_0_local_storage___default.a.set( this.namespace + this.version + i, this.saveModel[ i ] );
     }
   };
   
@@ -46266,7 +46382,7 @@ var Save = new function()
   this.get = function( key )
   {
     if ( !( key in this.saveModel ) ) {
-      this.saveModel[ key ] = __WEBPACK_IMPORTED_MODULE_0_stash__["a" /* default */].get( this.namespace + this.version + key )
+      this.saveModel[ key ] = __WEBPACK_IMPORTED_MODULE_0_local_storage___default.a.get( this.namespace + this.version + key )
         || this.saveModel[ key ];
     }
     return this.saveModel[ key ];
@@ -46293,7 +46409,7 @@ var Save = new function()
       this.saveModel[ nkey ][ path[ 1 ] ] = value;
       
       if ( this.useLocalStorage ) {
-        __WEBPACK_IMPORTED_MODULE_0_stash__["a" /* default */].set( this.namespace + this.version + nkey, this.saveModel[ nkey ] );
+        __WEBPACK_IMPORTED_MODULE_0_local_storage___default.a.set( this.namespace + this.version + nkey, this.saveModel[ nkey ] );
       }
     }
     else if ( path.length == 1 ) {
@@ -46303,7 +46419,7 @@ var Save = new function()
       this.saveModel[ nkey ] = value;
       
       if ( this.useLocalStorage ) {
-        __WEBPACK_IMPORTED_MODULE_0_stash__["a" /* default */].set( this.namespace + this.version + nkey, value );
+        __WEBPACK_IMPORTED_MODULE_0_local_storage___default.a.set( this.namespace + this.version + nkey, value );
       }
     }
     __WEBPACK_IMPORTED_MODULE_3_DE_Events__["a" /* default */].trigger( "Save-save", this.saveModel );
@@ -46323,7 +46439,7 @@ var Save = new function()
     }
     for ( var i in this.saveModel )
     {
-      __WEBPACK_IMPORTED_MODULE_0_stash__["a" /* default */].set( this.namespace + this.version + i, this.saveModel[ i ] );
+      __WEBPACK_IMPORTED_MODULE_0_local_storage___default.a.set( this.namespace + this.version + i, this.saveModel[ i ] );
     }
   };
   __WEBPACK_IMPORTED_MODULE_3_DE_Events__["a" /* default */].on( "unload-game", this.saveAll, this );
@@ -46340,12 +46456,12 @@ var Save = new function()
     if ( !this.useLocalStorage ) {
       return;
     }
-    __WEBPACK_IMPORTED_MODULE_0_stash__["a" /* default */].set( this.namespace + "achievements", userAchievements );
+    __WEBPACK_IMPORTED_MODULE_0_local_storage___default.a.set( this.namespace + "achievements", userAchievements );
   };
   
   this.loadAchievements = function()
   {
-    return __WEBPACK_IMPORTED_MODULE_0_stash__["a" /* default */].get( this.namespace + "achievements" ) || {};
+    return __WEBPACK_IMPORTED_MODULE_0_local_storage___default.a.get( this.namespace + "achievements" ) || {};
   };
 }
 
@@ -46353,12 +46469,40 @@ var Save = new function()
 
 
 /***/ }),
-/* 19 */
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function parse (rawValue) {
+  const parsed = parseValue(rawValue);
+
+  if (parsed === undefined) {
+    return null;
+  }
+
+  return parsed;
+}
+
+function parseValue (rawValue) {
+  try {
+    return JSON.parse(rawValue);
+  } catch (err) {
+    return rawValue;
+  }
+}
+
+module.exports = parse;
+
+
+/***/ }),
+/* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_config__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_howler__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_howler__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_howler___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_howler__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_Events__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_about__ = __webpack_require__(7);
@@ -46422,6 +46566,11 @@ const Audio = new function()
     this.setVolume( this.volume );
   }
   
+  this.isMuted = function()
+  {
+  	return __WEBPACK_IMPORTED_MODULE_1_howler___default.a.Howler._muted;
+  }
+
   this.mute = function()
   {
     __WEBPACK_IMPORTED_MODULE_1_howler___default.a.Howler.mute( true );
@@ -46760,6 +46909,48 @@ const Audio = new function()
     {
       this._fxs[ name ].stop();
     }
+
+    /****
+     * stop all musics and play one, can preserve specific musics
+     * @memberOf Audio.music
+     * @public
+     * @param {String} name - name of the music to play
+     * @param {String} sprite - name of the sprite to play (optional)
+     * @param {String or Array of String} preserve - name of music to preserve (can be an array)
+     * @example: Audio.music.stopAllAndPlay( "game", null, "ambiance" )
+     */
+    this.stopAllAndPlay = function( name, sprite, preserve )
+    {
+      this.stopAll( preserve );
+      if ( name != preserve ) {
+        this.play( name, sprite );
+      }
+      
+      return this;
+    }
+
+    /****
+     * stop all musics to play "name", can preserve a specific music
+     * @memberOf Audio.music
+     * @public
+     * @param {String or Array of String} preserve - name of music to preserve (can be an array)
+     * @example: Audio.music.stopAll( [ "bossFight", "lavaExplosions" ] )
+     */
+    this.stopAll = function( preserve )
+    {
+      if ( !preserve ){ preserve = []; }
+      if ( !preserve.push ){ preserve = [ preserve ]; }
+      for ( var f in this._fxs )
+      {
+        if ( preserve.indexOf( f ) != -1 ) {
+          continue;
+        }
+        else {
+          this._fxs[ f ].stop();
+        }
+      }
+      return this;
+    }
     
     /**
      * change mute state for all fx
@@ -46811,11 +47002,265 @@ const Audio = new function()
 
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_PIXI__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_MainLoop__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_GameObject__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_sortGameObjects__ = __webpack_require__(16);
+
+
+
+
+
+/**
+ * @author Inateno / http://inateno.com / http://dreamirl.com
+ */
+
+/**
+ * @constructor Scene
+ * @class a Scene is a world. You push GameObjects inside this world.
+ * There is no world Size, just objects inside
+ * For rendering convenience it use a PIXI.Container
+ * a Scene can be added to a Render or a Camera can look at this Scene
+ * @example Game.scene = new DE.Scene( "Test" );
+ */
+function Scene( name )
+{
+  __WEBPACK_IMPORTED_MODULE_0_PIXI__["Container"].call( this );
+  
+  /**
+   * @public
+   * @memberOf Scene
+   * @type {String}
+   */
+  this.name = name || "NoName-" + ( Date.now() + Math.random() * Date.now() >> 0 );
+  
+  /**
+   * it's a copy of PIXI.children, used by sortGameObjects middle-ware
+   * @readonly
+   * @memberOf Scene
+   */
+  this.gameObjects = this.children;
+  /**
+   * contain all gameObjects but in a map by id
+   * @readonly
+   * @memberOf Scene
+   */
+  this.gameObjectsById = {};
+
+  /**
+   * contain all gameObjects sorted by tags
+   * if the tag pool doesn't exist when adding a gameObject, it is automatically created
+   * @readonly
+   * @memberOf Scene
+   */
+  this.gameObjectsByTag = {};
+  
+  // TODO when required this.objectsByTag = {};
+  // TODO when required this.objectsByName = {};
+  
+  /**
+   * if this world is sleeping, update will be ignored
+   * @public
+   * @memberOf Scene
+   * @type {Boolean}
+   */
+  this.enable = true;
+  
+  __WEBPACK_IMPORTED_MODULE_1_DE_MainLoop__["a" /* default */].addScene( this );
+}
+
+Scene.prototype = Object.create( __WEBPACK_IMPORTED_MODULE_0_PIXI__["Container"].prototype );
+Scene.prototype.constructor = Scene;
+
+/**
+ * add all given gameObjects inside the scene, if you add only one gameObject, call addOne
+ * you can call this method with array, single object, or multi arguments objects, look at examples.
+ * @public
+ * @memberOf Scene
+ * @param {GameObject} gameObject gameObject to add
+ * @example myScene.add( car ); // just one object, you should call addOne instead
+ * @example myScene.add( car, car2, car3, banana, turtle ); // using multi arguments
+ * @example var myArray = [ object1, object2, object3 ]; // declare an array with object inside as you wish
+ * myScene.add( myArray ); // then call add with array directly
+ * @example var myArray = [ object1, object2, object3 ]; // declare an array with object inside as you wish
+ * var myArray2 = [ object4, object5, object6 ]; // declare a second array with object inside as you wish
+ * myScene.add( myArray, myArray2 ); // then call add with array and multi arguments
+ */
+Scene.prototype.add = function()
+{
+  var args = Array.prototype.slice.call( arguments );
+  for ( var i = 0; i < args.length; ++i )
+  {
+    if ( args[ i ] && args[ i ].length ) {
+      for ( var o = 0, m = args[ i ].length || 1; o < m; ++o )
+      {
+        this.addOne( args[ i ][ o ] );
+      }
+    }
+    else {
+      this.addOne( args[ i ] );
+    }
+  }
+};
+
+/**
+ * add one gameObject inside the scene, call this one if you have only 1 gameObject to add, it's faster
+ * @public
+ * @memberOf Scene
+ * @param {GameObject} gameObject gameObject to add
+ * @example myScene.addOne( car );
+ */
+Scene.prototype.addOne = function( gameObject )
+{
+  // accept only gameObject to avoid errors
+  if ( !( gameObject instanceof __WEBPACK_IMPORTED_MODULE_2_DE_GameObject__["a" /* default */] ) ) {
+    console.error( "Tried to add something in a scene that is not a GameObject. Please inherit from GameObject" );
+    return;
+  }
+  
+  // TODO add in byTags, byNames, pools objects
+  
+  // add in PIXI Container
+  this.addChild( gameObject );
+  this.gameObjectsById[ gameObject.id ] = gameObject;
+  
+  if ( gameObject.tag ) {
+    if ( !this.gameObjectsByTag[ gameObject.tag ] ) {
+      this.gameObjectsByTag[ gameObject.tag ] = new Array();
+    }
+    this.gameObjectsByTag[ gameObject.tag ].push( gameObject );
+  }
+  
+  this._shouldSortChildren = true;
+  
+  this.emit( "update-children" );
+};
+
+/**
+ * scene update
+ * @protected
+ * @memberOf Scene
+ */
+Scene.prototype.update = function( time )
+{
+  if ( !this.enable ) {
+    return;
+  }
+  
+  for ( var i = 0, t = this.children.length, g; i < t; ++i )
+  {
+    g = this.children[ i ];
+    
+    if ( !g ) {
+      continue;
+    }
+    
+    if ( g.flag !== null ) {
+      switch( g.flag )
+      {
+        case "delete":
+          this.delete( i );
+          --t;
+          continue;
+          break;
+      }
+    }
+    
+    // need an octree here for physic ?
+    // passing other gameObjects for physic ? (still looking how to do it)
+    g.update( time /*, this.gameObjects*/ );
+  }
+  
+  // TODO ? // It seems that PIXI Ticker is calling his own requestAnimationFrame, not needed here ?
+  // but it could be cool to have Ticker associated to a scene lifetime (PIXI.Ticker can be dis-activated and manually called ?)
+  // for ( var i = 0, t = this.timers.length; i < t; ++tk )
+  // {
+  //   this.timers[ i ].update();
+  // }
+  
+  // TODO ?
+  if ( this._shouldSortChildren ) {
+    this.sortGameObjects();
+  }
+};
+
+/**
+ * Sort gameObjects in the scene along z axis or using z-index for objects on the same same plan.
+ * The priority is the following, z, z-index, y, x
+ * You shouldn't call this method directly because engine do it for you, but in some case it can be useful to do it yourself
+ * @protected
+ * @memberOf Scene
+ */
+Scene.prototype.sortGameObjects = __WEBPACK_IMPORTED_MODULE_3_DE_sortGameObjects__["a" /* default */];
+
+// name registered in engine declaration
+Scene.prototype.DEName = "Scene";
+
+/**
+ * Delete and remove an object in the scene.
+ * You should prefer askToKill GameObject's method because it's safer (if you know what you do go crazy).
+ * @public
+ * @memberOf Scene
+ * @param {GameObject} object can be the index of the GameObject in the gameObjects array
+ */
+Scene.prototype.delete = function( object )
+{
+  var target = this.remove( object );
+  target.killMePlease();
+  
+  return this;
+};
+
+/**
+ * Remove an object on this scene (it is not deleted !).
+ * @public
+ * @memberOf Scene
+ * @param {GameObject} object can be the index of the GameObject in the gameObjects array
+ */
+Scene.prototype.remove = function( object )
+{
+  var target;
+  
+  delete this.gameObjectsById[ object.id ];
+  if ( object.tag ) {
+    this.gameObjectsByTag[ object.tag ].splice( this.gameObjectsByTag[ object.tag ].indexOf( object ), 1 );
+  }
+
+  // if it's an index, it's dangerous D: (excepted when it came from update, which is faster than idnexindexOf)
+  if ( isNaN( object ) ) {
+    var index = this.children.indexOf( object );
+    
+    if ( index !== - 1 ) {
+      // remove from PIXI Container
+      this.removeChild( object );
+    }
+    target = object;
+  }
+  else {
+    target = this.children[ object ];
+    
+    // remove from PIXI Container
+    this.removeChild( target );
+  }
+  
+  this.emit( "update-children" );
+  return target;
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (Scene);
+
+
+/***/ }),
+/* 23 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_PIXI__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_BaseRenderer__ = __webpack_require__(5);
 
@@ -46903,11 +47348,11 @@ RectRenderer.prototype.DEName = "RectRenderer";
 
 
 /***/ }),
-/* 21 */
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_PIXI__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_BaseRenderer__ = __webpack_require__(5);
 
@@ -46951,157 +47396,43 @@ TilingRenderer.prototype.DEName = "TilingRenderer";
 
 
 /***/ }),
-/* 22 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_GameObject__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_GameObject_automatisms__ = __webpack_require__(36);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_GameObject_fade__ = __webpack_require__(37);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_GameObject_focus__ = __webpack_require__(38);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_DE_GameObject_moveTo__ = __webpack_require__(39);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_DE_GameObject_scale__ = __webpack_require__(40);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_DE_GameObject_shake__ = __webpack_require__(41);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_DE_Time__ = __webpack_require__(0);
-
-
-
-
-
-
-
-
-
-
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.update = function( time )
-{
-  if ( !this.updatable ) {
-    return;
-  }
-  
-  // execute registered automatisms
-  for ( var a in this._automatisms )
-  {
-    var auto = this._automatisms[ a ];
-    auto.timeSinceLastCall = time - auto.lastCall;
-    if ( auto.timeSinceLastCall < auto.interval / __WEBPACK_IMPORTED_MODULE_7_DE_Time__["a" /* default */].scaleDelta ){
-      continue;
-    }
-    
-    if ( auto.timeSinceLastCall - auto.interval < auto.interval ) {
-      auto.lastCall = time - ( auto.timeSinceLastCall - auto.interval / __WEBPACK_IMPORTED_MODULE_7_DE_Time__["a" /* default */].scaleDelta );
-    }
-    else {
-      auto.lastCall = time;
-    }
-
-    // i think calling apply each update is slower than calling v1/v2. Should benchmark this
-    if ( auto.args ) {
-      this[ auto.methodName ].apply( this, auto.args );
-    }
-    else {
-      this[ auto.methodName ]( auto.value1, auto.value2 );
-    }
-    
-    // if this one isn't persistent delete it
-    if ( !auto.persistent ) {
-      delete this._automatisms[ a ];
-    }
-  }
-  
-  // childs update
-  for ( var c = 0, g; g = this.gameObjects[ c ]; c++ )
-  {
-    if ( g.flag !== null ) {
-      switch( g.flag )
-      {
-        case "delete":
-          this.delete( c );
-          --c;
-          continue;
-          break;
-      }
-    }
-    g.update( time );
-  }
-  
-  // this apply update on each renderer
-  if ( this.visible ) {
-    for ( var i = 0, r; r = this.renderers[ i ]; ++i )
-    {
-      if ( r.update ) {
-        r.update();
-      }
-      
-      if ( r.applyFade ) {
-        r.applyFade();
-        r.applyScale();
-      }
-    }
-  }
-  
-  // TODO
-  this.applyFocus();
-  this.applyShake();
-  this.applyMove();
-  this.applyFade();
-  this.applyScale();
-  
-  if ( this._shouldSortChildren ) {
-    this.sortGameObjects();
-  }
-  
-  // update the hasMoved
-  if ( this._lastLocalID != this.position.scope._localID ) {
-    this._hasMoved = true;
-  }
-  else {
-    this._hasMoved = false;
-  }
-  
-  this._lastLocalID = this.position.scope._localID;
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */]);
-
-
-/***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function(module) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__css_default_css__ = __webpack_require__(25);
+/* WEBPACK VAR INJECTION */(function(module) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__css_default_css__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__css_default_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__css_default_css__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_PIXI__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_PIXI__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_PIXI___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_PIXI__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_extendPIXI__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_extendPIXI__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_config__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_DE_about__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_DE_Events__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_DE_Time__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_DE_MainLoop__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_DE_Save__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_DE_Inputs__ = __webpack_require__(29);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_DE_gamepad__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_DE_Audio__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_DE_Time__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_DE_MainLoop__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_DE_Save__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_DE_Inputs__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_DE_gamepad__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11_DE_Audio__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12_DE_Localization__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13_DE_Notifications__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_DE_Achievements__ = __webpack_require__(32);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_DE_ImageManager__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16_DE_Render__ = __webpack_require__(33);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17_DE_Scene__ = __webpack_require__(34);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18_DE_Camera__ = __webpack_require__(35);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19_DE_Vector2__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20_DE_BaseRenderer__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21_DE_TextureRenderer__ = __webpack_require__(42);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22_DE_SpriteRenderer__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23_DE_TilingRenderer__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24_DE_TextRenderer__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25_DE_RectRenderer__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26_DE_GraphicRenderer__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27_DE_GameObject__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28_DE_GameObject_update__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13_DE_Notifications__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_DE_Achievements__ = __webpack_require__(36);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15_DE_ImageManager__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16_DE_Render__ = __webpack_require__(37);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17_DE_Scene__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18_DE_Gui__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19_DE_Camera__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20_DE_Vector2__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21_DE_BaseRenderer__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22_DE_TextureRenderer__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23_DE_SpriteRenderer__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24_DE_TilingRenderer__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25_DE_TextRenderer__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26_DE_RectRenderer__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27_DE_GraphicRenderer__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28_DE_GameObject__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_29_DE_GameObject_update__ = __webpack_require__(13);
 
 
 
@@ -47113,6 +47444,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 // utils
+
 
 
 
@@ -47153,16 +47485,17 @@ var DE = {
   ImageManager   : __WEBPACK_IMPORTED_MODULE_15_DE_ImageManager__["a" /* default */],
   Render         : __WEBPACK_IMPORTED_MODULE_16_DE_Render__["a" /* default */],
   Scene          : __WEBPACK_IMPORTED_MODULE_17_DE_Scene__["a" /* default */],
-  Camera         : __WEBPACK_IMPORTED_MODULE_18_DE_Camera__["a" /* default */],
-  Vector2        : __WEBPACK_IMPORTED_MODULE_19_DE_Vector2__["a" /* default */],
-  BaseRenderer   : __WEBPACK_IMPORTED_MODULE_20_DE_BaseRenderer__["a" /* default */],
-  TextureRenderer: __WEBPACK_IMPORTED_MODULE_21_DE_TextureRenderer__["a" /* default */],
-  SpriteRenderer : __WEBPACK_IMPORTED_MODULE_22_DE_SpriteRenderer__["a" /* default */],
-  TilingRenderer : __WEBPACK_IMPORTED_MODULE_23_DE_TilingRenderer__["a" /* default */],
-  TextRenderer   : __WEBPACK_IMPORTED_MODULE_24_DE_TextRenderer__["a" /* default */],
-  RectRenderer   : __WEBPACK_IMPORTED_MODULE_25_DE_RectRenderer__["a" /* default */],
-  GraphicRenderer: __WEBPACK_IMPORTED_MODULE_26_DE_GraphicRenderer__["a" /* default */],
-  GameObject     : __WEBPACK_IMPORTED_MODULE_27_DE_GameObject__["a" /* default */],
+  Gui            : __WEBPACK_IMPORTED_MODULE_18_DE_Gui__["a" /* default */],
+  Camera         : __WEBPACK_IMPORTED_MODULE_19_DE_Camera__["a" /* default */],
+  Vector2        : __WEBPACK_IMPORTED_MODULE_20_DE_Vector2__["a" /* default */],
+  BaseRenderer   : __WEBPACK_IMPORTED_MODULE_21_DE_BaseRenderer__["a" /* default */],
+  TextureRenderer: __WEBPACK_IMPORTED_MODULE_22_DE_TextureRenderer__["a" /* default */],
+  SpriteRenderer : __WEBPACK_IMPORTED_MODULE_23_DE_SpriteRenderer__["a" /* default */],
+  TilingRenderer : __WEBPACK_IMPORTED_MODULE_24_DE_TilingRenderer__["a" /* default */],
+  TextRenderer   : __WEBPACK_IMPORTED_MODULE_25_DE_TextRenderer__["a" /* default */],
+  RectRenderer   : __WEBPACK_IMPORTED_MODULE_26_DE_RectRenderer__["a" /* default */],
+  GraphicRenderer: __WEBPACK_IMPORTED_MODULE_27_DE_GraphicRenderer__["a" /* default */],
+  GameObject     : __WEBPACK_IMPORTED_MODULE_28_DE_GameObject__["a" /* default */],
   PIXI           : __WEBPACK_IMPORTED_MODULE_1_PIXI__
 };
 
@@ -47199,6 +47532,13 @@ DE.init = function( params )
   
   // set achievements with your custom list
   DE.Achievements.init( params.achievements || [] );
+
+  DE.Time.onTimeStop = () => {
+    DE.trigger( "window-lost-focus" );
+  };
+  DE.Time.onTimeResume = () => {
+    DE.trigger( "window-focus" );
+  }
   
   if ( !params.ignoreNotifications
     && params.useNotifications !== false
@@ -47298,10 +47638,10 @@ DE.emit    = function() { this.Events.emit.apply( this.Events, arguments ); };
 DE.trigger = function() { this.Events.emit.apply( this.Events, arguments ); };
 
 module.exports = DE;
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(24)(module)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(26)(module)))
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ (function(module, exports) {
 
 module.exports = function(originalModule) {
@@ -47331,13 +47671,13 @@ module.exports = function(originalModule) {
 
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, exports) {
 
 throw new Error("Module parse failed: Unexpected token (12:0)\nYou may need an appropriate loader to handle this file type.\n|     font-style: normal;\r\n| }*/\r\n| * {\r\n|   webkit-box-sizing: border-box;\r\n|   -moz-box-sizing: border-box;\r");
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47370,7 +47710,7 @@ throw new Error("Module parse failed: Unexpected token (12:0)\nYou may need an a
 
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47688,201 +48028,176 @@ if (true) {
 
 
 /***/ }),
-/* 28 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/*! Stash v1.2.4 MIT/GPL2 @rezitech */
-var win = window, ls = window.document.localStorage || window.localStorage, doc = document;
+/* WEBPACK VAR INJECTION */(function(global) {
 
-// Returns whether a constructor is the constructor of a value
-function isType(Ctor, val) {
-  return val !== undefined && val !== null && val.constructor === Ctor;
-}
+var stub = __webpack_require__(31);
+var parse = __webpack_require__(20);
+var tracking = __webpack_require__(32);
+var ls = 'localStorage' in global && global.localStorage ? global.localStorage : stub;
 
-// Returns a safely quoted string
-function quoteStr(str) {
-  return "'" +
-  String(str)
-  .replace(/\\/g, '\\\\')
-  .replace(/'/g, "\\'")
-  .replace(/\n/g, '\\n')
-  .replace(/\r/g, '\\r')
-  .replace(/\t/g, '\\t') +
-  "'";
-}
-
-// Return an element from HTML
-function elementFromHtml(html) {
-  var container = doc.createElement('_');
-  container.innerHTML = html;
-  return container.firstChild;
-}
-
-// Return HTML from an element
-function HtmlFromElement(el) {
-  if (el.outerHTML) return el.outerHTML;
-  var container = doc.createElement('_');
-  container.appendChild(el.cloneNode(true));
-  return container.innerHTML;
-}
-
-// Returns a string version of JavaScript
-function stringify(val) {
-  var valArr = [], valLen, i = -1, e;
-  // string
-  if (isType(String, val)) return quoteStr(val);
-  // boolean, function, number, regexp, undefined, null
-  if (
-    val === undefined ||
-    val === null ||
-    isType(Boolean, val) ||
-    isType(Number, val) ||
-    isType(RegExp, val) ||
-    (isType(Function, val) && !/^function[^\{]+\{\s*\[native code\]/.test(String(val)))
-  ) return String(val);
-  // date
-  if (isType(Date, val)) {
-    return 'new Date(' + val.getTime() + ')';
+function accessor (key, value) {
+  if (arguments.length === 1) {
+    return get(key);
   }
-  // array
-  if (isType(Array, val)) {
-    valLen = val.length;
-    while (++i < valLen) valArr.push(arguments.callee(val[i]));
-    return '[' + valArr + ']';
-  }
-  // object
-  if (isType(Object, val)) {
-    for (e in val) valArr.push(quoteStr(e) + ':' + arguments.callee(val[e]));
-    return '{' + valArr + '}';
-  }
-  // native
-  if (val === win) return 'window';
-  for (e in win) if (val === win[e]) return 'window.'+e;
-  for (e in doc) if (val === doc[e]) return 'document.'+e;
-  // node
-  if (val.nodeName) return 'h('+quoteStr(HtmlFromElement(val))+')';
+  return set(key, value);
 }
 
-// Returns a JavaScript version of a string
-function unstringify(str) {
-  return new Function('var a=arguments;h=a[0];return ' + str).apply(win,[elementFromHtml]);
+function get (key) {
+  const raw = ls.getItem(key);
+  const parsed = parse(raw);
+  return parsed;
 }
 
-// Returns an extended object from arguments
-function extendObject() {
-  var extObj = {}, arg = arguments, argLen = arg.length, i = -1, e;
-  while (++i < argLen)
-    if (isType(Object, arg[i]))
-      for (e in arg[i])
-        extObj[e] = isType(Object, extObj[e]) && isType(Object, arg[i][e]) ? arg.callee(extObj[e], arg[i][e]) : arg[i][e];
-  return extObj;
-}
-
-// Writes to and extends local storage
-function setAndReturnIfValueChanged(attr, newValue, extend) {
-  var rawValue = ls[attr], oldValue;
-  if (extend) {
-    oldValue = unstringify(rawValue);
-    // if the existing item is an array
-    if (isType(Array, oldValue)) newValue = oldValue.concat(newValue);
-    // if the existing item is a boolean
-    else if (isType(Boolean, oldValue)) newValue = oldValue && !!newValue;
-    // if the existing item is a date and the new item can be a number
-    else if (isType(Date, oldValue) && !isNaN(newValue * 1)) newValue = new Date(oldValue.getTime() + (newValue * 1));
-    // if both the existing item and the new item are a function
-    else if (isType(Function, oldValue) && isType(Function, newValue)) newValue = new Function('return(' + String(oldValue) + ').apply(this, arguments)&&(' + String(newValue) + ').apply(this, arguments)');
-    // if the existing item is a number and the new item can be a number
-    else if (isType(Number, oldValue) && !isNaN(newValue * 1)) newValue = oldValue + (newValue * 1);
-    // if both the existing item and the new item are an object
-    else if (isType(Object, oldValue) && isType(Object, newValue)) newValue = extendObject(oldValue, newValue);
-    // if both the existing item and the new item are a regular expression
-    else if (isType(RegExp, oldValue) && isType(RegExp, newValue)) {
-      var
-      regExpMatch = /^\/([\W\w]*)\/([a-z]*?)$/, 
-      regExpA = String(oldValue).match(regExpMatch),
-      regExpB = String(newValue).match(regExpMatch);
-      newValue = new RegExp(regExpA[1] + regExpB[1], regExpA[2] + regExpB[2]);
-    }
-    // if the existing item is a string
-    else if (isType(String, oldValue)) newValue = oldValue + String(newValue);
-    else return 2;
-  }
-  newValue = stringify(newValue);
-  if (rawValue === newValue) return 2;
-  return (ls[attr] = newValue) && 1;
-}
-
-// Stash
-var stash = {
-  // returns whether a storage item exists or not
-  has: function () {
-    var args = [].concat.apply([], arguments), arg, i = -1;
-    //
-    while ((arg = args[++i])) if (ls[arg] === undefined) return false;
+function set (key, value) {
+  try {
+    ls.setItem(key, JSON.stringify(value));
     return true;
-  },
-  // returns a local storage item
-  get: function (attr) {
-    var args = [].concat.apply([], arguments), arg, i = -1, items = {};
-    //
-    if (args.length === 1) return unstringify(ls[attr]);
-    while ((arg = args[++i])) items[arg] = unstringify(ls[arg]);
-    return items;
-  },
-  // returns all local storage items
-  getAll: function () {
-    var e, items = {};
-    for (e in ls) items[e] = ls[e];
-    return items;
-  },
-  // sets a local storage item, returns 1 if item(s) changed and 2 if not
-  set: function (attr, val) {
-    var args = [].concat.apply([], arguments), arg, i = -1, e, returnValue = 2;
-    //
-    if (isType(String, attr)) return setAndReturnIfValueChanged(attr, val);
-    //
-    while ((arg = args[++i])) for (e in arg) returnValue = Math.min(returnValue, setAndReturnIfValueChanged(e, arg[e]));
-    //
-    return returnValue;
-  },
-  // adds to a local storage item, returns 1 if item(s) changed and 2 if not
-  add: function (attr, val) {
-    var args = [].concat.apply([], arguments), arg, i = -1, e, returnValue = 2;
-    //
-    if (isType(String, attr)) return setAndReturnIfValueChanged(attr, val, true);
-    //
-    while ((arg = args[++i])) for (e in arg) returnValue = Math.min(returnValue, setAndReturnIfValueChanged(e, arg[e], true));
-    //
-    return returnValue;
-  },
-  // removals a local storage item
-  cut: function (attr) {
-    var args = [].concat.apply([], arguments), arg, i = -1;
-    //
-    while ((arg = args[++i])) delete ls[arg];
-    return true;
-  },
-  // removes all items from local storage
-  cutAll: function () {
-    for (var e in ls) delete ls[e];
-    return true;
+  } catch (e) {
+    return false;
   }
+}
+
+function remove (key) {
+  return ls.removeItem(key);
+}
+
+function clear () {
+  return ls.clear();
+}
+
+function backend (store) {
+  store && (ls = store);
+
+  return ls;
+}
+
+accessor.set = set;
+accessor.get = get;
+accessor.remove = remove;
+accessor.clear = clear;
+accessor.backend = backend;
+accessor.on = tracking.on;
+accessor.off = tracking.off;
+
+module.exports = accessor;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)))
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var ms = {};
+
+function getItem (key) {
+  return key in ms ? ms[key] : null;
+}
+
+function setItem (key, value) {
+  ms[key] = value;
+  return true;
+}
+
+function removeItem (key) {
+  var found = key in ms;
+  if (found) {
+    return delete ms[key];
+  }
+  return false;
+}
+
+function clear () {
+  ms = {};
+  return true;
+}
+
+module.exports = {
+  getItem: getItem,
+  setItem: setItem,
+  removeItem: removeItem,
+  clear: clear
 };
-
-/* harmony default export */ __webpack_exports__["a"] = (stash);
 
 
 /***/ }),
-/* 29 */
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {
+
+var parse = __webpack_require__(20);
+var listeners = {};
+var listening = false;
+
+function listen () {
+  if (global.addEventListener) {
+    global.addEventListener('storage', change, false);
+  } else if (global.attachEvent) {
+    global.attachEvent('onstorage', change);
+  } else {
+    global.onstorage = change;
+  }
+}
+
+function change (e) {
+  if (!e) {
+    e = global.event;
+  }
+  var all = listeners[e.key];
+  if (all) {
+    all.forEach(fire);
+  }
+
+  function fire (listener) {
+    listener(parse(e.newValue), parse(e.oldValue), e.url || e.uri);
+  }
+}
+
+function on (key, fn) {
+  if (listeners[key]) {
+    listeners[key].push(fn);
+  } else {
+    listeners[key] = [fn];
+  }
+  if (listening === false) {
+    listen();
+  }
+}
+
+function off (key, fn) {
+  var ns = listeners[key];
+  if (ns.length > 1) {
+    ns.splice(ns.indexOf(fn), 1);
+  } else {
+    listeners[key] = [];
+  }
+}
+
+module.exports = {
+  on: on,
+  off: off
+};
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)))
+
+/***/ }),
+/* 33 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_config__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Events__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_gamepad__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_gamepad__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_Localization__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_DE_Time__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_DE_Time__ = __webpack_require__(1);
 ﻿
 
 
@@ -48367,18 +48682,18 @@ window.onunload = function( e )
 
 
 /***/ }),
-/* 30 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! howler.js v2.1.1 | (c) 2013-2018, James Simpson of GoldFire Studios | MIT License | howlerjs.com */
-!function(){"use strict";var e=function(){this.init()};e.prototype={init:function(){var e=this||n;return e._counter=1e3,e._html5AudioPool=[],e.html5PoolSize=10,e._codecs={},e._howls=[],e._muted=!1,e._volume=1,e._canPlayEvent="canplaythrough",e._navigator="undefined"!=typeof window&&window.navigator?window.navigator:null,e.masterGain=null,e.noAudio=!1,e.usingWebAudio=!0,e.autoSuspend=!0,e.ctx=null,e.autoUnlock=!0,e._setup(),e},volume:function(e){var o=this||n;if(e=parseFloat(e),o.ctx||_(),void 0!==e&&e>=0&&e<=1){if(o._volume=e,o._muted)return o;o.usingWebAudio&&o.masterGain.gain.setValueAtTime(e,n.ctx.currentTime);for(var t=0;t<o._howls.length;t++)if(!o._howls[t]._webAudio)for(var r=o._howls[t]._getSoundIds(),a=0;a<r.length;a++){var u=o._howls[t]._soundById(r[a]);u&&u._node&&(u._node.volume=u._volume*e)}return o}return o._volume},mute:function(e){var o=this||n;o.ctx||_(),o._muted=e,o.usingWebAudio&&o.masterGain.gain.setValueAtTime(e?0:o._volume,n.ctx.currentTime);for(var t=0;t<o._howls.length;t++)if(!o._howls[t]._webAudio)for(var r=o._howls[t]._getSoundIds(),a=0;a<r.length;a++){var u=o._howls[t]._soundById(r[a]);u&&u._node&&(u._node.muted=!!e||u._muted)}return o},unload:function(){for(var e=this||n,o=e._howls.length-1;o>=0;o--)e._howls[o].unload();return e.usingWebAudio&&e.ctx&&void 0!==e.ctx.close&&(e.ctx.close(),e.ctx=null,_()),e},codecs:function(e){return(this||n)._codecs[e.replace(/^x-/,"")]},_setup:function(){var e=this||n;if(e.state=e.ctx?e.ctx.state||"suspended":"suspended",e._autoSuspend(),!e.usingWebAudio)if("undefined"!=typeof Audio)try{var o=new Audio;void 0===o.oncanplaythrough&&(e._canPlayEvent="canplay")}catch(n){e.noAudio=!0}else e.noAudio=!0;try{var o=new Audio;o.muted&&(e.noAudio=!0)}catch(e){}return e.noAudio||e._setupCodecs(),e},_setupCodecs:function(){var e=this||n,o=null;try{o="undefined"!=typeof Audio?new Audio:null}catch(n){return e}if(!o||"function"!=typeof o.canPlayType)return e;var t=o.canPlayType("audio/mpeg;").replace(/^no$/,""),r=e._navigator&&e._navigator.userAgent.match(/OPR\/([0-6].)/g),a=r&&parseInt(r[0].split("/")[1],10)<33;return e._codecs={mp3:!(a||!t&&!o.canPlayType("audio/mp3;").replace(/^no$/,"")),mpeg:!!t,opus:!!o.canPlayType('audio/ogg; codecs="opus"').replace(/^no$/,""),ogg:!!o.canPlayType('audio/ogg; codecs="vorbis"').replace(/^no$/,""),oga:!!o.canPlayType('audio/ogg; codecs="vorbis"').replace(/^no$/,""),wav:!!o.canPlayType('audio/wav; codecs="1"').replace(/^no$/,""),aac:!!o.canPlayType("audio/aac;").replace(/^no$/,""),caf:!!o.canPlayType("audio/x-caf;").replace(/^no$/,""),m4a:!!(o.canPlayType("audio/x-m4a;")||o.canPlayType("audio/m4a;")||o.canPlayType("audio/aac;")).replace(/^no$/,""),mp4:!!(o.canPlayType("audio/x-mp4;")||o.canPlayType("audio/mp4;")||o.canPlayType("audio/aac;")).replace(/^no$/,""),weba:!!o.canPlayType('audio/webm; codecs="vorbis"').replace(/^no$/,""),webm:!!o.canPlayType('audio/webm; codecs="vorbis"').replace(/^no$/,""),dolby:!!o.canPlayType('audio/mp4; codecs="ec-3"').replace(/^no$/,""),flac:!!(o.canPlayType("audio/x-flac;")||o.canPlayType("audio/flac;")).replace(/^no$/,"")},e},_unlockAudio:function(){var e=this||n,o=/iPhone|iPad|iPod|Android|BlackBerry|BB10|Silk|Mobi|Chrome|Safari/i.test(e._navigator&&e._navigator.userAgent);if(!e._audioUnlocked&&e.ctx&&o){e._audioUnlocked=!1,e.autoUnlock=!1,e._mobileUnloaded||44100===e.ctx.sampleRate||(e._mobileUnloaded=!0,e.unload()),e._scratchBuffer=e.ctx.createBuffer(1,1,22050);var t=function(n){for(var o=0;o<e.html5PoolSize;o++){var r=new Audio;r._unlocked=!0,e._releaseHtml5Audio(r)}for(var o=0;o<e._howls.length;o++)if(!e._howls[o]._webAudio)for(var a=e._howls[o]._getSoundIds(),u=0;u<a.length;u++){var i=e._howls[o]._soundById(a[u]);i&&i._node&&!i._node._unlocked&&(i._node._unlocked=!0,i._node.load())}e._autoResume();var d=e.ctx.createBufferSource();d.buffer=e._scratchBuffer,d.connect(e.ctx.destination),void 0===d.start?d.noteOn(0):d.start(0),"function"==typeof e.ctx.resume&&e.ctx.resume(),d.onended=function(){d.disconnect(0),e._audioUnlocked=!0,document.removeEventListener("touchstart",t,!0),document.removeEventListener("touchend",t,!0),document.removeEventListener("click",t,!0);for(var n=0;n<e._howls.length;n++)e._howls[n]._emit("unlock")}};return document.addEventListener("touchstart",t,!0),document.addEventListener("touchend",t,!0),document.addEventListener("click",t,!0),e}},_obtainHtml5Audio:function(){var e=this||n;if(e._html5AudioPool.length)return e._html5AudioPool.pop();var o=(new Audio).play();return o&&"undefined"!=typeof Promise&&(o instanceof Promise||"function"==typeof o.then)&&o.catch(function(){console.warn("HTML5 Audio pool exhausted, returning potentially locked audio object.")}),new Audio},_releaseHtml5Audio:function(e){var o=this||n;return e._unlocked&&o._html5AudioPool.push(e),o},_autoSuspend:function(){var e=this;if(e.autoSuspend&&e.ctx&&void 0!==e.ctx.suspend&&n.usingWebAudio){for(var o=0;o<e._howls.length;o++)if(e._howls[o]._webAudio)for(var t=0;t<e._howls[o]._sounds.length;t++)if(!e._howls[o]._sounds[t]._paused)return e;return e._suspendTimer&&clearTimeout(e._suspendTimer),e._suspendTimer=setTimeout(function(){e.autoSuspend&&(e._suspendTimer=null,e.state="suspending",e.ctx.suspend().then(function(){e.state="suspended",e._resumeAfterSuspend&&(delete e._resumeAfterSuspend,e._autoResume())}))},3e4),e}},_autoResume:function(){var e=this;if(e.ctx&&void 0!==e.ctx.resume&&n.usingWebAudio)return"running"===e.state&&e._suspendTimer?(clearTimeout(e._suspendTimer),e._suspendTimer=null):"suspended"===e.state?(e.ctx.resume().then(function(){e.state="running";for(var n=0;n<e._howls.length;n++)e._howls[n]._emit("resume")}),e._suspendTimer&&(clearTimeout(e._suspendTimer),e._suspendTimer=null)):"suspending"===e.state&&(e._resumeAfterSuspend=!0),e}};var n=new e,o=function(e){var n=this;if(!e.src||0===e.src.length)return void console.error("An array of source files must be passed with any new Howl.");n.init(e)};o.prototype={init:function(e){var o=this;return n.ctx||_(),o._autoplay=e.autoplay||!1,o._format="string"!=typeof e.format?e.format:[e.format],o._html5=e.html5||!1,o._muted=e.mute||!1,o._loop=e.loop||!1,o._pool=e.pool||5,o._preload="boolean"!=typeof e.preload||e.preload,o._rate=e.rate||1,o._sprite=e.sprite||{},o._src="string"!=typeof e.src?e.src:[e.src],o._volume=void 0!==e.volume?e.volume:1,o._xhrWithCredentials=e.xhrWithCredentials||!1,o._duration=0,o._state="unloaded",o._sounds=[],o._endTimers={},o._queue=[],o._playLock=!1,o._onend=e.onend?[{fn:e.onend}]:[],o._onfade=e.onfade?[{fn:e.onfade}]:[],o._onload=e.onload?[{fn:e.onload}]:[],o._onloaderror=e.onloaderror?[{fn:e.onloaderror}]:[],o._onplayerror=e.onplayerror?[{fn:e.onplayerror}]:[],o._onpause=e.onpause?[{fn:e.onpause}]:[],o._onplay=e.onplay?[{fn:e.onplay}]:[],o._onstop=e.onstop?[{fn:e.onstop}]:[],o._onmute=e.onmute?[{fn:e.onmute}]:[],o._onvolume=e.onvolume?[{fn:e.onvolume}]:[],o._onrate=e.onrate?[{fn:e.onrate}]:[],o._onseek=e.onseek?[{fn:e.onseek}]:[],o._onunlock=e.onunlock?[{fn:e.onunlock}]:[],o._onresume=[],o._webAudio=n.usingWebAudio&&!o._html5,void 0!==n.ctx&&n.ctx&&n.autoUnlock&&n._unlockAudio(),n._howls.push(o),o._autoplay&&o._queue.push({event:"play",action:function(){o.play()}}),o._preload&&o.load(),o},load:function(){var e=this,o=null;if(n.noAudio)return void e._emit("loaderror",null,"No audio support.");"string"==typeof e._src&&(e._src=[e._src]);for(var r=0;r<e._src.length;r++){var u,i;if(e._format&&e._format[r])u=e._format[r];else{if("string"!=typeof(i=e._src[r])){e._emit("loaderror",null,"Non-string found in selected audio sources - ignoring.");continue}u=/^data:audio\/([^;,]+);/i.exec(i),u||(u=/\.([^.]+)$/.exec(i.split("?",1)[0])),u&&(u=u[1].toLowerCase())}if(u||console.warn('No file extension was found. Consider using the "format" property or specify an extension.'),u&&n.codecs(u)){o=e._src[r];break}}return o?(e._src=o,e._state="loading","https:"===window.location.protocol&&"http:"===o.slice(0,5)&&(e._html5=!0,e._webAudio=!1),new t(e),e._webAudio&&a(e),e):void e._emit("loaderror",null,"No codec support for selected audio sources.")},play:function(e,o){var t=this,r=null;if("number"==typeof e)r=e,e=null;else{if("string"==typeof e&&"loaded"===t._state&&!t._sprite[e])return null;if(void 0===e&&(e="__default",!t._playLock)){for(var a=0,u=0;u<t._sounds.length;u++)t._sounds[u]._paused&&!t._sounds[u]._ended&&(a++,r=t._sounds[u]._id);1===a?e=null:r=null}}var i=r?t._soundById(r):t._inactiveSound();if(!i)return null;if(r&&!e&&(e=i._sprite||"__default"),"loaded"!==t._state){i._sprite=e,i._ended=!1;var d=i._id;return t._queue.push({event:"play",action:function(){t.play(d)}}),d}if(r&&!i._paused)return o||t._loadQueue("play"),i._id;t._webAudio&&n._autoResume();var _=Math.max(0,i._seek>0?i._seek:t._sprite[e][0]/1e3),s=Math.max(0,(t._sprite[e][0]+t._sprite[e][1])/1e3-_),l=1e3*s/Math.abs(i._rate),c=t._sprite[e][0]/1e3,f=(t._sprite[e][0]+t._sprite[e][1])/1e3,p=!(!i._loop&&!t._sprite[e][2]);i._sprite=e,i._ended=!1;var m=function(){i._paused=!1,i._seek=_,i._start=c,i._stop=f,i._loop=p};if(_>=f)return void t._ended(i);var v=i._node;if(t._webAudio){var h=function(){t._playLock=!1,m(),t._refreshBuffer(i);var e=i._muted||t._muted?0:i._volume;v.gain.setValueAtTime(e,n.ctx.currentTime),i._playStart=n.ctx.currentTime,void 0===v.bufferSource.start?i._loop?v.bufferSource.noteGrainOn(0,_,86400):v.bufferSource.noteGrainOn(0,_,s):i._loop?v.bufferSource.start(0,_,86400):v.bufferSource.start(0,_,s),l!==1/0&&(t._endTimers[i._id]=setTimeout(t._ended.bind(t,i),l)),o||setTimeout(function(){t._emit("play",i._id),t._loadQueue()},0)};"running"===n.state?h():(t._playLock=!0,t.once("resume",h),t._clearTimer(i._id))}else{var y=function(){v.currentTime=_,v.muted=i._muted||t._muted||n._muted||v.muted,v.volume=i._volume*n.volume(),v.playbackRate=i._rate;try{var r=v.play();if(r&&"undefined"!=typeof Promise&&(r instanceof Promise||"function"==typeof r.then)?(t._playLock=!0,m(),r.then(function(){t._playLock=!1,v._unlocked=!0,o||(t._emit("play",i._id),t._loadQueue())}).catch(function(){t._playLock=!1,t._emit("playerror",i._id,"Playback was unable to start. This is most commonly an issue on mobile devices and Chrome where playback was not within a user interaction."),i._ended=!0,i._paused=!0})):o||(t._playLock=!1,m(),t._emit("play",i._id),t._loadQueue()),v.playbackRate=i._rate,v.paused)return void t._emit("playerror",i._id,"Playback was unable to start. This is most commonly an issue on mobile devices and Chrome where playback was not within a user interaction.");"__default"!==e||i._loop?t._endTimers[i._id]=setTimeout(t._ended.bind(t,i),l):(t._endTimers[i._id]=function(){t._ended(i),v.removeEventListener("ended",t._endTimers[i._id],!1)},v.addEventListener("ended",t._endTimers[i._id],!1))}catch(e){t._emit("playerror",i._id,e)}},g=window&&window.ejecta||!v.readyState&&n._navigator.isCocoonJS;if(v.readyState>=3||g)y();else{t._playLock=!0;var b=function(){y(),v.removeEventListener(n._canPlayEvent,b,!1)};v.addEventListener(n._canPlayEvent,b,!1),t._clearTimer(i._id)}}return i._id},pause:function(e){var n=this;if("loaded"!==n._state||n._playLock)return n._queue.push({event:"pause",action:function(){n.pause(e)}}),n;for(var o=n._getSoundIds(e),t=0;t<o.length;t++){n._clearTimer(o[t]);var r=n._soundById(o[t]);if(r&&!r._paused&&(r._seek=n.seek(o[t]),r._rateSeek=0,r._paused=!0,n._stopFade(o[t]),r._node))if(n._webAudio){if(!r._node.bufferSource)continue;void 0===r._node.bufferSource.stop?r._node.bufferSource.noteOff(0):r._node.bufferSource.stop(0),n._cleanBuffer(r._node)}else isNaN(r._node.duration)&&r._node.duration!==1/0||r._node.pause();arguments[1]||n._emit("pause",r?r._id:null)}return n},stop:function(e,n){var o=this;if("loaded"!==o._state||o._playLock)return o._queue.push({event:"stop",action:function(){o.stop(e)}}),o;for(var t=o._getSoundIds(e),r=0;r<t.length;r++){o._clearTimer(t[r]);var a=o._soundById(t[r]);a&&(a._seek=a._start||0,a._rateSeek=0,a._paused=!0,a._ended=!0,o._stopFade(t[r]),a._node&&(o._webAudio?a._node.bufferSource&&(void 0===a._node.bufferSource.stop?a._node.bufferSource.noteOff(0):a._node.bufferSource.stop(0),o._cleanBuffer(a._node)):isNaN(a._node.duration)&&a._node.duration!==1/0||(a._node.currentTime=a._start||0,a._node.pause())),n||o._emit("stop",a._id))}return o},mute:function(e,o){var t=this;if("loaded"!==t._state||t._playLock)return t._queue.push({event:"mute",action:function(){t.mute(e,o)}}),t;if(void 0===o){if("boolean"!=typeof e)return t._muted;t._muted=e}for(var r=t._getSoundIds(o),a=0;a<r.length;a++){var u=t._soundById(r[a]);u&&(u._muted=e,u._interval&&t._stopFade(u._id),t._webAudio&&u._node?u._node.gain.setValueAtTime(e?0:u._volume,n.ctx.currentTime):u._node&&(u._node.muted=!!n._muted||e),t._emit("mute",u._id))}return t},volume:function(){var e,o,t=this,r=arguments;if(0===r.length)return t._volume;if(1===r.length||2===r.length&&void 0===r[1]){t._getSoundIds().indexOf(r[0])>=0?o=parseInt(r[0],10):e=parseFloat(r[0])}else r.length>=2&&(e=parseFloat(r[0]),o=parseInt(r[1],10));var a;if(!(void 0!==e&&e>=0&&e<=1))return a=o?t._soundById(o):t._sounds[0],a?a._volume:0;if("loaded"!==t._state||t._playLock)return t._queue.push({event:"volume",action:function(){t.volume.apply(t,r)}}),t;void 0===o&&(t._volume=e),o=t._getSoundIds(o);for(var u=0;u<o.length;u++)(a=t._soundById(o[u]))&&(a._volume=e,r[2]||t._stopFade(o[u]),t._webAudio&&a._node&&!a._muted?a._node.gain.setValueAtTime(e,n.ctx.currentTime):a._node&&!a._muted&&(a._node.volume=e*n.volume()),t._emit("volume",a._id));return t},fade:function(e,o,t,r){var a=this;if("loaded"!==a._state||a._playLock)return a._queue.push({event:"fade",action:function(){a.fade(e,o,t,r)}}),a;e=parseFloat(e),o=parseFloat(o),t=parseFloat(t),a.volume(e,r);for(var u=a._getSoundIds(r),i=0;i<u.length;i++){var d=a._soundById(u[i]);if(d){if(r||a._stopFade(u[i]),a._webAudio&&!d._muted){var _=n.ctx.currentTime,s=_+t/1e3;d._volume=e,d._node.gain.setValueAtTime(e,_),d._node.gain.linearRampToValueAtTime(o,s)}a._startFadeInterval(d,e,o,t,u[i],void 0===r)}}return a},_startFadeInterval:function(e,n,o,t,r,a){var u=this,i=n,d=o-n,_=Math.abs(d/.01),s=Math.max(4,_>0?t/_:t),l=Date.now();e._fadeTo=o,e._interval=setInterval(function(){var r=(Date.now()-l)/t;l=Date.now(),i+=d*r,i=Math.max(0,i),i=Math.min(1,i),i=Math.round(100*i)/100,u._webAudio?e._volume=i:u.volume(i,e._id,!0),a&&(u._volume=i),(o<n&&i<=o||o>n&&i>=o)&&(clearInterval(e._interval),e._interval=null,e._fadeTo=null,u.volume(o,e._id),u._emit("fade",e._id))},s)},_stopFade:function(e){var o=this,t=o._soundById(e);return t&&t._interval&&(o._webAudio&&t._node.gain.cancelScheduledValues(n.ctx.currentTime),clearInterval(t._interval),t._interval=null,o.volume(t._fadeTo,e),t._fadeTo=null,o._emit("fade",e)),o},loop:function(){var e,n,o,t=this,r=arguments;if(0===r.length)return t._loop;if(1===r.length){if("boolean"!=typeof r[0])return!!(o=t._soundById(parseInt(r[0],10)))&&o._loop;e=r[0],t._loop=e}else 2===r.length&&(e=r[0],n=parseInt(r[1],10));for(var a=t._getSoundIds(n),u=0;u<a.length;u++)(o=t._soundById(a[u]))&&(o._loop=e,t._webAudio&&o._node&&o._node.bufferSource&&(o._node.bufferSource.loop=e,e&&(o._node.bufferSource.loopStart=o._start||0,o._node.bufferSource.loopEnd=o._stop)));return t},rate:function(){var e,o,t=this,r=arguments;if(0===r.length)o=t._sounds[0]._id;else if(1===r.length){var a=t._getSoundIds(),u=a.indexOf(r[0]);u>=0?o=parseInt(r[0],10):e=parseFloat(r[0])}else 2===r.length&&(e=parseFloat(r[0]),o=parseInt(r[1],10));var i;if("number"!=typeof e)return i=t._soundById(o),i?i._rate:t._rate;if("loaded"!==t._state||t._playLock)return t._queue.push({event:"rate",action:function(){t.rate.apply(t,r)}}),t;void 0===o&&(t._rate=e),o=t._getSoundIds(o);for(var d=0;d<o.length;d++)if(i=t._soundById(o[d])){t.playing(o[d])&&(i._rateSeek=t.seek(o[d]),i._playStart=t._webAudio?n.ctx.currentTime:i._playStart),i._rate=e,t._webAudio&&i._node&&i._node.bufferSource?i._node.bufferSource.playbackRate.setValueAtTime(e,n.ctx.currentTime):i._node&&(i._node.playbackRate=e);var _=t.seek(o[d]),s=(t._sprite[i._sprite][0]+t._sprite[i._sprite][1])/1e3-_,l=1e3*s/Math.abs(i._rate);!t._endTimers[o[d]]&&i._paused||(t._clearTimer(o[d]),t._endTimers[o[d]]=setTimeout(t._ended.bind(t,i),l)),t._emit("rate",i._id)}return t},seek:function(){var e,o,t=this,r=arguments;if(0===r.length)o=t._sounds[0]._id;else if(1===r.length){var a=t._getSoundIds(),u=a.indexOf(r[0]);u>=0?o=parseInt(r[0],10):t._sounds.length&&(o=t._sounds[0]._id,e=parseFloat(r[0]))}else 2===r.length&&(e=parseFloat(r[0]),o=parseInt(r[1],10));if(void 0===o)return t;if("loaded"!==t._state||t._playLock)return t._queue.push({event:"seek",action:function(){t.seek.apply(t,r)}}),t;var i=t._soundById(o);if(i){if(!("number"==typeof e&&e>=0)){if(t._webAudio){var d=t.playing(o)?n.ctx.currentTime-i._playStart:0,_=i._rateSeek?i._rateSeek-i._seek:0;return i._seek+(_+d*Math.abs(i._rate))}return i._node.currentTime}var s=t.playing(o);s&&t.pause(o,!0),i._seek=e,i._ended=!1,t._clearTimer(o),t._webAudio||!i._node||isNaN(i._node.duration)||(i._node.currentTime=e);var l=function(){t._emit("seek",o),s&&t.play(o,!0)};if(s&&!t._webAudio){var c=function(){t._playLock?setTimeout(c,0):l()};setTimeout(c,0)}else l()}return t},playing:function(e){var n=this;if("number"==typeof e){var o=n._soundById(e);return!!o&&!o._paused}for(var t=0;t<n._sounds.length;t++)if(!n._sounds[t]._paused)return!0;return!1},duration:function(e){var n=this,o=n._duration,t=n._soundById(e);return t&&(o=n._sprite[t._sprite][1]/1e3),o},state:function(){return this._state},unload:function(){for(var e=this,o=e._sounds,t=0;t<o.length;t++){if(o[t]._paused||e.stop(o[t]._id),!e._webAudio){/MSIE |Trident\//.test(n._navigator&&n._navigator.userAgent)||(o[t]._node.src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"),o[t]._node.removeEventListener("error",o[t]._errorFn,!1),o[t]._node.removeEventListener(n._canPlayEvent,o[t]._loadFn,!1),n._releaseHtml5Audio(o[t]._node)}delete o[t]._node,e._clearTimer(o[t]._id)}var a=n._howls.indexOf(e);a>=0&&n._howls.splice(a,1);var u=!0;for(t=0;t<n._howls.length;t++)if(n._howls[t]._src===e._src||e._src.indexOf(n._howls[t]._src)>=0){u=!1;break}return r&&u&&delete r[e._src],n.noAudio=!1,e._state="unloaded",e._sounds=[],e=null,null},on:function(e,n,o,t){var r=this,a=r["_on"+e];return"function"==typeof n&&a.push(t?{id:o,fn:n,once:t}:{id:o,fn:n}),r},off:function(e,n,o){var t=this,r=t["_on"+e],a=0;if("number"==typeof n&&(o=n,n=null),n||o)for(a=0;a<r.length;a++){var u=o===r[a].id;if(n===r[a].fn&&u||!n&&u){r.splice(a,1);break}}else if(e)t["_on"+e]=[];else{var i=Object.keys(t);for(a=0;a<i.length;a++)0===i[a].indexOf("_on")&&Array.isArray(t[i[a]])&&(t[i[a]]=[])}return t},once:function(e,n,o){var t=this;return t.on(e,n,o,1),t},_emit:function(e,n,o){for(var t=this,r=t["_on"+e],a=r.length-1;a>=0;a--)r[a].id&&r[a].id!==n&&"load"!==e||(setTimeout(function(e){e.call(this,n,o)}.bind(t,r[a].fn),0),r[a].once&&t.off(e,r[a].fn,r[a].id));return t._loadQueue(e),t},_loadQueue:function(e){var n=this;if(n._queue.length>0){var o=n._queue[0];o.event===e&&(n._queue.shift(),n._loadQueue()),e||o.action()}return n},_ended:function(e){var o=this,t=e._sprite;if(!o._webAudio&&e._node&&!e._node.paused&&!e._node.ended&&e._node.currentTime<e._stop)return setTimeout(o._ended.bind(o,e),100),o;var r=!(!e._loop&&!o._sprite[t][2]);if(o._emit("end",e._id),!o._webAudio&&r&&o.stop(e._id,!0).play(e._id),o._webAudio&&r){o._emit("play",e._id),e._seek=e._start||0,e._rateSeek=0,e._playStart=n.ctx.currentTime;var a=1e3*(e._stop-e._start)/Math.abs(e._rate);o._endTimers[e._id]=setTimeout(o._ended.bind(o,e),a)}return o._webAudio&&!r&&(e._paused=!0,e._ended=!0,e._seek=e._start||0,e._rateSeek=0,o._clearTimer(e._id),o._cleanBuffer(e._node),n._autoSuspend()),o._webAudio||r||o.stop(e._id,!0),o},_clearTimer:function(e){var n=this;if(n._endTimers[e]){if("function"!=typeof n._endTimers[e])clearTimeout(n._endTimers[e]);else{var o=n._soundById(e);o&&o._node&&o._node.removeEventListener("ended",n._endTimers[e],!1)}delete n._endTimers[e]}return n},_soundById:function(e){for(var n=this,o=0;o<n._sounds.length;o++)if(e===n._sounds[o]._id)return n._sounds[o];return null},_inactiveSound:function(){var e=this;e._drain();for(var n=0;n<e._sounds.length;n++)if(e._sounds[n]._ended)return e._sounds[n].reset();return new t(e)},_drain:function(){var e=this,n=e._pool,o=0,t=0;if(!(e._sounds.length<n)){for(t=0;t<e._sounds.length;t++)e._sounds[t]._ended&&o++;for(t=e._sounds.length-1;t>=0;t--){if(o<=n)return;e._sounds[t]._ended&&(e._webAudio&&e._sounds[t]._node&&e._sounds[t]._node.disconnect(0),e._sounds.splice(t,1),o--)}}},_getSoundIds:function(e){var n=this;if(void 0===e){for(var o=[],t=0;t<n._sounds.length;t++)o.push(n._sounds[t]._id);return o}return[e]},_refreshBuffer:function(e){var o=this;return e._node.bufferSource=n.ctx.createBufferSource(),e._node.bufferSource.buffer=r[o._src],e._panner?e._node.bufferSource.connect(e._panner):e._node.bufferSource.connect(e._node),e._node.bufferSource.loop=e._loop,e._loop&&(e._node.bufferSource.loopStart=e._start||0,e._node.bufferSource.loopEnd=e._stop||0),e._node.bufferSource.playbackRate.setValueAtTime(e._rate,n.ctx.currentTime),o},_cleanBuffer:function(e){var o=this,t=n._navigator&&n._navigator.vendor.indexOf("Apple")>=0;if(n._scratchBuffer&&e.bufferSource&&(e.bufferSource.onended=null,e.bufferSource.disconnect(0),t))try{e.bufferSource.buffer=n._scratchBuffer}catch(e){}return e.bufferSource=null,o}};var t=function(e){this._parent=e,this.init()};t.prototype={init:function(){var e=this,o=e._parent;return e._muted=o._muted,e._loop=o._loop,e._volume=o._volume,e._rate=o._rate,e._seek=0,e._paused=!0,e._ended=!0,e._sprite="__default",e._id=++n._counter,o._sounds.push(e),e.create(),e},create:function(){var e=this,o=e._parent,t=n._muted||e._muted||e._parent._muted?0:e._volume;return o._webAudio?(e._node=void 0===n.ctx.createGain?n.ctx.createGainNode():n.ctx.createGain(),e._node.gain.setValueAtTime(t,n.ctx.currentTime),e._node.paused=!0,e._node.connect(n.masterGain)):(e._node=n._obtainHtml5Audio(),e._errorFn=e._errorListener.bind(e),e._node.addEventListener("error",e._errorFn,!1),e._loadFn=e._loadListener.bind(e),e._node.addEventListener(n._canPlayEvent,e._loadFn,!1),e._node.src=o._src,e._node.preload="auto",e._node.volume=t*n.volume(),e._node.load()),e},reset:function(){var e=this,o=e._parent;return e._muted=o._muted,e._loop=o._loop,e._volume=o._volume,e._rate=o._rate,e._seek=0,e._rateSeek=0,e._paused=!0,e._ended=!0,e._sprite="__default",e._id=++n._counter,e},_errorListener:function(){var e=this;e._parent._emit("loaderror",e._id,e._node.error?e._node.error.code:0),e._node.removeEventListener("error",e._errorFn,!1)},_loadListener:function(){var e=this,o=e._parent;o._duration=Math.ceil(10*e._node.duration)/10,0===Object.keys(o._sprite).length&&(o._sprite={__default:[0,1e3*o._duration]}),"loaded"!==o._state&&(o._state="loaded",o._emit("load"),o._loadQueue()),e._node.removeEventListener(n._canPlayEvent,e._loadFn,!1)}};var r={},a=function(e){var n=e._src;if(r[n])return e._duration=r[n].duration,void d(e);if(/^data:[^;]+;base64,/.test(n)){for(var o=atob(n.split(",")[1]),t=new Uint8Array(o.length),a=0;a<o.length;++a)t[a]=o.charCodeAt(a);i(t.buffer,e)}else{var _=new XMLHttpRequest;_.open("GET",n,!0),_.withCredentials=e._xhrWithCredentials,_.responseType="arraybuffer",_.onload=function(){var n=(_.status+"")[0];if("0"!==n&&"2"!==n&&"3"!==n)return void e._emit("loaderror",null,"Failed loading audio file with status: "+_.status+".");i(_.response,e)},_.onerror=function(){e._webAudio&&(e._html5=!0,e._webAudio=!1,e._sounds=[],delete r[n],e.load())},u(_)}},u=function(e){try{e.send()}catch(n){e.onerror()}},i=function(e,o){var t=function(){o._emit("loaderror",null,"Decoding audio data failed.")},a=function(e){e&&o._sounds.length>0?(r[o._src]=e,d(o,e)):t()};"undefined"!=typeof Promise&&1===n.ctx.decodeAudioData.length?n.ctx.decodeAudioData(e).then(a).catch(t):n.ctx.decodeAudioData(e,a,t)},d=function(e,n){n&&!e._duration&&(e._duration=n.duration),0===Object.keys(e._sprite).length&&(e._sprite={__default:[0,1e3*e._duration]}),"loaded"!==e._state&&(e._state="loaded",e._emit("load"),e._loadQueue())},_=function(){if(n.usingWebAudio){try{"undefined"!=typeof AudioContext?n.ctx=new AudioContext:"undefined"!=typeof webkitAudioContext?n.ctx=new webkitAudioContext:n.usingWebAudio=!1}catch(e){n.usingWebAudio=!1}n.ctx||(n.usingWebAudio=!1);var e=/iP(hone|od|ad)/.test(n._navigator&&n._navigator.platform),o=n._navigator&&n._navigator.appVersion.match(/OS (\d+)_(\d+)_?(\d+)?/),t=o?parseInt(o[1],10):null;if(e&&t&&t<9){var r=/safari/.test(n._navigator&&n._navigator.userAgent.toLowerCase());(n._navigator&&n._navigator.standalone&&!r||n._navigator&&!n._navigator.standalone&&!r)&&(n.usingWebAudio=!1)}n.usingWebAudio&&(n.masterGain=void 0===n.ctx.createGain?n.ctx.createGainNode():n.ctx.createGain(),n.masterGain.gain.setValueAtTime(n._muted?0:1,n.ctx.currentTime),n.masterGain.connect(n.ctx.destination)),n._setup()}};"function"=="function"&&__webpack_require__(31)&&!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function(){return{Howler:n,Howl:o}}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+!function(){"use strict";var e=function(){this.init()};e.prototype={init:function(){var e=this||n;return e._counter=1e3,e._html5AudioPool=[],e.html5PoolSize=10,e._codecs={},e._howls=[],e._muted=!1,e._volume=1,e._canPlayEvent="canplaythrough",e._navigator="undefined"!=typeof window&&window.navigator?window.navigator:null,e.masterGain=null,e.noAudio=!1,e.usingWebAudio=!0,e.autoSuspend=!0,e.ctx=null,e.autoUnlock=!0,e._setup(),e},volume:function(e){var o=this||n;if(e=parseFloat(e),o.ctx||_(),void 0!==e&&e>=0&&e<=1){if(o._volume=e,o._muted)return o;o.usingWebAudio&&o.masterGain.gain.setValueAtTime(e,n.ctx.currentTime);for(var t=0;t<o._howls.length;t++)if(!o._howls[t]._webAudio)for(var r=o._howls[t]._getSoundIds(),a=0;a<r.length;a++){var u=o._howls[t]._soundById(r[a]);u&&u._node&&(u._node.volume=u._volume*e)}return o}return o._volume},mute:function(e){var o=this||n;o.ctx||_(),o._muted=e,o.usingWebAudio&&o.masterGain.gain.setValueAtTime(e?0:o._volume,n.ctx.currentTime);for(var t=0;t<o._howls.length;t++)if(!o._howls[t]._webAudio)for(var r=o._howls[t]._getSoundIds(),a=0;a<r.length;a++){var u=o._howls[t]._soundById(r[a]);u&&u._node&&(u._node.muted=!!e||u._muted)}return o},unload:function(){for(var e=this||n,o=e._howls.length-1;o>=0;o--)e._howls[o].unload();return e.usingWebAudio&&e.ctx&&void 0!==e.ctx.close&&(e.ctx.close(),e.ctx=null,_()),e},codecs:function(e){return(this||n)._codecs[e.replace(/^x-/,"")]},_setup:function(){var e=this||n;if(e.state=e.ctx?e.ctx.state||"suspended":"suspended",e._autoSuspend(),!e.usingWebAudio)if("undefined"!=typeof Audio)try{var o=new Audio;void 0===o.oncanplaythrough&&(e._canPlayEvent="canplay")}catch(n){e.noAudio=!0}else e.noAudio=!0;try{var o=new Audio;o.muted&&(e.noAudio=!0)}catch(e){}return e.noAudio||e._setupCodecs(),e},_setupCodecs:function(){var e=this||n,o=null;try{o="undefined"!=typeof Audio?new Audio:null}catch(n){return e}if(!o||"function"!=typeof o.canPlayType)return e;var t=o.canPlayType("audio/mpeg;").replace(/^no$/,""),r=e._navigator&&e._navigator.userAgent.match(/OPR\/([0-6].)/g),a=r&&parseInt(r[0].split("/")[1],10)<33;return e._codecs={mp3:!(a||!t&&!o.canPlayType("audio/mp3;").replace(/^no$/,"")),mpeg:!!t,opus:!!o.canPlayType('audio/ogg; codecs="opus"').replace(/^no$/,""),ogg:!!o.canPlayType('audio/ogg; codecs="vorbis"').replace(/^no$/,""),oga:!!o.canPlayType('audio/ogg; codecs="vorbis"').replace(/^no$/,""),wav:!!o.canPlayType('audio/wav; codecs="1"').replace(/^no$/,""),aac:!!o.canPlayType("audio/aac;").replace(/^no$/,""),caf:!!o.canPlayType("audio/x-caf;").replace(/^no$/,""),m4a:!!(o.canPlayType("audio/x-m4a;")||o.canPlayType("audio/m4a;")||o.canPlayType("audio/aac;")).replace(/^no$/,""),mp4:!!(o.canPlayType("audio/x-mp4;")||o.canPlayType("audio/mp4;")||o.canPlayType("audio/aac;")).replace(/^no$/,""),weba:!!o.canPlayType('audio/webm; codecs="vorbis"').replace(/^no$/,""),webm:!!o.canPlayType('audio/webm; codecs="vorbis"').replace(/^no$/,""),dolby:!!o.canPlayType('audio/mp4; codecs="ec-3"').replace(/^no$/,""),flac:!!(o.canPlayType("audio/x-flac;")||o.canPlayType("audio/flac;")).replace(/^no$/,"")},e},_unlockAudio:function(){var e=this||n,o=/iPhone|iPad|iPod|Android|BlackBerry|BB10|Silk|Mobi|Chrome|Safari/i.test(e._navigator&&e._navigator.userAgent);if(!e._audioUnlocked&&e.ctx&&o){e._audioUnlocked=!1,e.autoUnlock=!1,e._mobileUnloaded||44100===e.ctx.sampleRate||(e._mobileUnloaded=!0,e.unload()),e._scratchBuffer=e.ctx.createBuffer(1,1,22050);var t=function(n){for(var o=0;o<e.html5PoolSize;o++){var r=new Audio;r._unlocked=!0,e._releaseHtml5Audio(r)}for(var o=0;o<e._howls.length;o++)if(!e._howls[o]._webAudio)for(var a=e._howls[o]._getSoundIds(),u=0;u<a.length;u++){var i=e._howls[o]._soundById(a[u]);i&&i._node&&!i._node._unlocked&&(i._node._unlocked=!0,i._node.load())}e._autoResume();var d=e.ctx.createBufferSource();d.buffer=e._scratchBuffer,d.connect(e.ctx.destination),void 0===d.start?d.noteOn(0):d.start(0),"function"==typeof e.ctx.resume&&e.ctx.resume(),d.onended=function(){d.disconnect(0),e._audioUnlocked=!0,document.removeEventListener("touchstart",t,!0),document.removeEventListener("touchend",t,!0),document.removeEventListener("click",t,!0);for(var n=0;n<e._howls.length;n++)e._howls[n]._emit("unlock")}};return document.addEventListener("touchstart",t,!0),document.addEventListener("touchend",t,!0),document.addEventListener("click",t,!0),e}},_obtainHtml5Audio:function(){var e=this||n;if(e._html5AudioPool.length)return e._html5AudioPool.pop();var o=(new Audio).play();return o&&"undefined"!=typeof Promise&&(o instanceof Promise||"function"==typeof o.then)&&o.catch(function(){console.warn("HTML5 Audio pool exhausted, returning potentially locked audio object.")}),new Audio},_releaseHtml5Audio:function(e){var o=this||n;return e._unlocked&&o._html5AudioPool.push(e),o},_autoSuspend:function(){var e=this;if(e.autoSuspend&&e.ctx&&void 0!==e.ctx.suspend&&n.usingWebAudio){for(var o=0;o<e._howls.length;o++)if(e._howls[o]._webAudio)for(var t=0;t<e._howls[o]._sounds.length;t++)if(!e._howls[o]._sounds[t]._paused)return e;return e._suspendTimer&&clearTimeout(e._suspendTimer),e._suspendTimer=setTimeout(function(){e.autoSuspend&&(e._suspendTimer=null,e.state="suspending",e.ctx.suspend().then(function(){e.state="suspended",e._resumeAfterSuspend&&(delete e._resumeAfterSuspend,e._autoResume())}))},3e4),e}},_autoResume:function(){var e=this;if(e.ctx&&void 0!==e.ctx.resume&&n.usingWebAudio)return"running"===e.state&&e._suspendTimer?(clearTimeout(e._suspendTimer),e._suspendTimer=null):"suspended"===e.state?(e.ctx.resume().then(function(){e.state="running";for(var n=0;n<e._howls.length;n++)e._howls[n]._emit("resume")}),e._suspendTimer&&(clearTimeout(e._suspendTimer),e._suspendTimer=null)):"suspending"===e.state&&(e._resumeAfterSuspend=!0),e}};var n=new e,o=function(e){var n=this;if(!e.src||0===e.src.length)return void console.error("An array of source files must be passed with any new Howl.");n.init(e)};o.prototype={init:function(e){var o=this;return n.ctx||_(),o._autoplay=e.autoplay||!1,o._format="string"!=typeof e.format?e.format:[e.format],o._html5=e.html5||!1,o._muted=e.mute||!1,o._loop=e.loop||!1,o._pool=e.pool||5,o._preload="boolean"!=typeof e.preload||e.preload,o._rate=e.rate||1,o._sprite=e.sprite||{},o._src="string"!=typeof e.src?e.src:[e.src],o._volume=void 0!==e.volume?e.volume:1,o._xhrWithCredentials=e.xhrWithCredentials||!1,o._duration=0,o._state="unloaded",o._sounds=[],o._endTimers={},o._queue=[],o._playLock=!1,o._onend=e.onend?[{fn:e.onend}]:[],o._onfade=e.onfade?[{fn:e.onfade}]:[],o._onload=e.onload?[{fn:e.onload}]:[],o._onloaderror=e.onloaderror?[{fn:e.onloaderror}]:[],o._onplayerror=e.onplayerror?[{fn:e.onplayerror}]:[],o._onpause=e.onpause?[{fn:e.onpause}]:[],o._onplay=e.onplay?[{fn:e.onplay}]:[],o._onstop=e.onstop?[{fn:e.onstop}]:[],o._onmute=e.onmute?[{fn:e.onmute}]:[],o._onvolume=e.onvolume?[{fn:e.onvolume}]:[],o._onrate=e.onrate?[{fn:e.onrate}]:[],o._onseek=e.onseek?[{fn:e.onseek}]:[],o._onunlock=e.onunlock?[{fn:e.onunlock}]:[],o._onresume=[],o._webAudio=n.usingWebAudio&&!o._html5,void 0!==n.ctx&&n.ctx&&n.autoUnlock&&n._unlockAudio(),n._howls.push(o),o._autoplay&&o._queue.push({event:"play",action:function(){o.play()}}),o._preload&&o.load(),o},load:function(){var e=this,o=null;if(n.noAudio)return void e._emit("loaderror",null,"No audio support.");"string"==typeof e._src&&(e._src=[e._src]);for(var r=0;r<e._src.length;r++){var u,i;if(e._format&&e._format[r])u=e._format[r];else{if("string"!=typeof(i=e._src[r])){e._emit("loaderror",null,"Non-string found in selected audio sources - ignoring.");continue}u=/^data:audio\/([^;,]+);/i.exec(i),u||(u=/\.([^.]+)$/.exec(i.split("?",1)[0])),u&&(u=u[1].toLowerCase())}if(u||console.warn('No file extension was found. Consider using the "format" property or specify an extension.'),u&&n.codecs(u)){o=e._src[r];break}}return o?(e._src=o,e._state="loading","https:"===window.location.protocol&&"http:"===o.slice(0,5)&&(e._html5=!0,e._webAudio=!1),new t(e),e._webAudio&&a(e),e):void e._emit("loaderror",null,"No codec support for selected audio sources.")},play:function(e,o){var t=this,r=null;if("number"==typeof e)r=e,e=null;else{if("string"==typeof e&&"loaded"===t._state&&!t._sprite[e])return null;if(void 0===e&&(e="__default",!t._playLock)){for(var a=0,u=0;u<t._sounds.length;u++)t._sounds[u]._paused&&!t._sounds[u]._ended&&(a++,r=t._sounds[u]._id);1===a?e=null:r=null}}var i=r?t._soundById(r):t._inactiveSound();if(!i)return null;if(r&&!e&&(e=i._sprite||"__default"),"loaded"!==t._state){i._sprite=e,i._ended=!1;var d=i._id;return t._queue.push({event:"play",action:function(){t.play(d)}}),d}if(r&&!i._paused)return o||t._loadQueue("play"),i._id;t._webAudio&&n._autoResume();var _=Math.max(0,i._seek>0?i._seek:t._sprite[e][0]/1e3),s=Math.max(0,(t._sprite[e][0]+t._sprite[e][1])/1e3-_),l=1e3*s/Math.abs(i._rate),c=t._sprite[e][0]/1e3,f=(t._sprite[e][0]+t._sprite[e][1])/1e3,p=!(!i._loop&&!t._sprite[e][2]);i._sprite=e,i._ended=!1;var m=function(){i._paused=!1,i._seek=_,i._start=c,i._stop=f,i._loop=p};if(_>=f)return void t._ended(i);var v=i._node;if(t._webAudio){var h=function(){t._playLock=!1,m(),t._refreshBuffer(i);var e=i._muted||t._muted?0:i._volume;v.gain.setValueAtTime(e,n.ctx.currentTime),i._playStart=n.ctx.currentTime,void 0===v.bufferSource.start?i._loop?v.bufferSource.noteGrainOn(0,_,86400):v.bufferSource.noteGrainOn(0,_,s):i._loop?v.bufferSource.start(0,_,86400):v.bufferSource.start(0,_,s),l!==1/0&&(t._endTimers[i._id]=setTimeout(t._ended.bind(t,i),l)),o||setTimeout(function(){t._emit("play",i._id),t._loadQueue()},0)};"running"===n.state?h():(t._playLock=!0,t.once("resume",h),t._clearTimer(i._id))}else{var y=function(){v.currentTime=_,v.muted=i._muted||t._muted||n._muted||v.muted,v.volume=i._volume*n.volume(),v.playbackRate=i._rate;try{var r=v.play();if(r&&"undefined"!=typeof Promise&&(r instanceof Promise||"function"==typeof r.then)?(t._playLock=!0,m(),r.then(function(){t._playLock=!1,v._unlocked=!0,o||(t._emit("play",i._id),t._loadQueue())}).catch(function(){t._playLock=!1,t._emit("playerror",i._id,"Playback was unable to start. This is most commonly an issue on mobile devices and Chrome where playback was not within a user interaction."),i._ended=!0,i._paused=!0})):o||(t._playLock=!1,m(),t._emit("play",i._id),t._loadQueue()),v.playbackRate=i._rate,v.paused)return void t._emit("playerror",i._id,"Playback was unable to start. This is most commonly an issue on mobile devices and Chrome where playback was not within a user interaction.");"__default"!==e||i._loop?t._endTimers[i._id]=setTimeout(t._ended.bind(t,i),l):(t._endTimers[i._id]=function(){t._ended(i),v.removeEventListener("ended",t._endTimers[i._id],!1)},v.addEventListener("ended",t._endTimers[i._id],!1))}catch(e){t._emit("playerror",i._id,e)}},g=window&&window.ejecta||!v.readyState&&n._navigator.isCocoonJS;if(v.readyState>=3||g)y();else{t._playLock=!0;var b=function(){y(),v.removeEventListener(n._canPlayEvent,b,!1)};v.addEventListener(n._canPlayEvent,b,!1),t._clearTimer(i._id)}}return i._id},pause:function(e){var n=this;if("loaded"!==n._state||n._playLock)return n._queue.push({event:"pause",action:function(){n.pause(e)}}),n;for(var o=n._getSoundIds(e),t=0;t<o.length;t++){n._clearTimer(o[t]);var r=n._soundById(o[t]);if(r&&!r._paused&&(r._seek=n.seek(o[t]),r._rateSeek=0,r._paused=!0,n._stopFade(o[t]),r._node))if(n._webAudio){if(!r._node.bufferSource)continue;void 0===r._node.bufferSource.stop?r._node.bufferSource.noteOff(0):r._node.bufferSource.stop(0),n._cleanBuffer(r._node)}else isNaN(r._node.duration)&&r._node.duration!==1/0||r._node.pause();arguments[1]||n._emit("pause",r?r._id:null)}return n},stop:function(e,n){var o=this;if("loaded"!==o._state||o._playLock)return o._queue.push({event:"stop",action:function(){o.stop(e)}}),o;for(var t=o._getSoundIds(e),r=0;r<t.length;r++){o._clearTimer(t[r]);var a=o._soundById(t[r]);a&&(a._seek=a._start||0,a._rateSeek=0,a._paused=!0,a._ended=!0,o._stopFade(t[r]),a._node&&(o._webAudio?a._node.bufferSource&&(void 0===a._node.bufferSource.stop?a._node.bufferSource.noteOff(0):a._node.bufferSource.stop(0),o._cleanBuffer(a._node)):isNaN(a._node.duration)&&a._node.duration!==1/0||(a._node.currentTime=a._start||0,a._node.pause())),n||o._emit("stop",a._id))}return o},mute:function(e,o){var t=this;if("loaded"!==t._state||t._playLock)return t._queue.push({event:"mute",action:function(){t.mute(e,o)}}),t;if(void 0===o){if("boolean"!=typeof e)return t._muted;t._muted=e}for(var r=t._getSoundIds(o),a=0;a<r.length;a++){var u=t._soundById(r[a]);u&&(u._muted=e,u._interval&&t._stopFade(u._id),t._webAudio&&u._node?u._node.gain.setValueAtTime(e?0:u._volume,n.ctx.currentTime):u._node&&(u._node.muted=!!n._muted||e),t._emit("mute",u._id))}return t},volume:function(){var e,o,t=this,r=arguments;if(0===r.length)return t._volume;if(1===r.length||2===r.length&&void 0===r[1]){t._getSoundIds().indexOf(r[0])>=0?o=parseInt(r[0],10):e=parseFloat(r[0])}else r.length>=2&&(e=parseFloat(r[0]),o=parseInt(r[1],10));var a;if(!(void 0!==e&&e>=0&&e<=1))return a=o?t._soundById(o):t._sounds[0],a?a._volume:0;if("loaded"!==t._state||t._playLock)return t._queue.push({event:"volume",action:function(){t.volume.apply(t,r)}}),t;void 0===o&&(t._volume=e),o=t._getSoundIds(o);for(var u=0;u<o.length;u++)(a=t._soundById(o[u]))&&(a._volume=e,r[2]||t._stopFade(o[u]),t._webAudio&&a._node&&!a._muted?a._node.gain.setValueAtTime(e,n.ctx.currentTime):a._node&&!a._muted&&(a._node.volume=e*n.volume()),t._emit("volume",a._id));return t},fade:function(e,o,t,r){var a=this;if("loaded"!==a._state||a._playLock)return a._queue.push({event:"fade",action:function(){a.fade(e,o,t,r)}}),a;e=parseFloat(e),o=parseFloat(o),t=parseFloat(t),a.volume(e,r);for(var u=a._getSoundIds(r),i=0;i<u.length;i++){var d=a._soundById(u[i]);if(d){if(r||a._stopFade(u[i]),a._webAudio&&!d._muted){var _=n.ctx.currentTime,s=_+t/1e3;d._volume=e,d._node.gain.setValueAtTime(e,_),d._node.gain.linearRampToValueAtTime(o,s)}a._startFadeInterval(d,e,o,t,u[i],void 0===r)}}return a},_startFadeInterval:function(e,n,o,t,r,a){var u=this,i=n,d=o-n,_=Math.abs(d/.01),s=Math.max(4,_>0?t/_:t),l=Date.now();e._fadeTo=o,e._interval=setInterval(function(){var r=(Date.now()-l)/t;l=Date.now(),i+=d*r,i=Math.max(0,i),i=Math.min(1,i),i=Math.round(100*i)/100,u._webAudio?e._volume=i:u.volume(i,e._id,!0),a&&(u._volume=i),(o<n&&i<=o||o>n&&i>=o)&&(clearInterval(e._interval),e._interval=null,e._fadeTo=null,u.volume(o,e._id),u._emit("fade",e._id))},s)},_stopFade:function(e){var o=this,t=o._soundById(e);return t&&t._interval&&(o._webAudio&&t._node.gain.cancelScheduledValues(n.ctx.currentTime),clearInterval(t._interval),t._interval=null,o.volume(t._fadeTo,e),t._fadeTo=null,o._emit("fade",e)),o},loop:function(){var e,n,o,t=this,r=arguments;if(0===r.length)return t._loop;if(1===r.length){if("boolean"!=typeof r[0])return!!(o=t._soundById(parseInt(r[0],10)))&&o._loop;e=r[0],t._loop=e}else 2===r.length&&(e=r[0],n=parseInt(r[1],10));for(var a=t._getSoundIds(n),u=0;u<a.length;u++)(o=t._soundById(a[u]))&&(o._loop=e,t._webAudio&&o._node&&o._node.bufferSource&&(o._node.bufferSource.loop=e,e&&(o._node.bufferSource.loopStart=o._start||0,o._node.bufferSource.loopEnd=o._stop)));return t},rate:function(){var e,o,t=this,r=arguments;if(0===r.length)o=t._sounds[0]._id;else if(1===r.length){var a=t._getSoundIds(),u=a.indexOf(r[0]);u>=0?o=parseInt(r[0],10):e=parseFloat(r[0])}else 2===r.length&&(e=parseFloat(r[0]),o=parseInt(r[1],10));var i;if("number"!=typeof e)return i=t._soundById(o),i?i._rate:t._rate;if("loaded"!==t._state||t._playLock)return t._queue.push({event:"rate",action:function(){t.rate.apply(t,r)}}),t;void 0===o&&(t._rate=e),o=t._getSoundIds(o);for(var d=0;d<o.length;d++)if(i=t._soundById(o[d])){t.playing(o[d])&&(i._rateSeek=t.seek(o[d]),i._playStart=t._webAudio?n.ctx.currentTime:i._playStart),i._rate=e,t._webAudio&&i._node&&i._node.bufferSource?i._node.bufferSource.playbackRate.setValueAtTime(e,n.ctx.currentTime):i._node&&(i._node.playbackRate=e);var _=t.seek(o[d]),s=(t._sprite[i._sprite][0]+t._sprite[i._sprite][1])/1e3-_,l=1e3*s/Math.abs(i._rate);!t._endTimers[o[d]]&&i._paused||(t._clearTimer(o[d]),t._endTimers[o[d]]=setTimeout(t._ended.bind(t,i),l)),t._emit("rate",i._id)}return t},seek:function(){var e,o,t=this,r=arguments;if(0===r.length)o=t._sounds[0]._id;else if(1===r.length){var a=t._getSoundIds(),u=a.indexOf(r[0]);u>=0?o=parseInt(r[0],10):t._sounds.length&&(o=t._sounds[0]._id,e=parseFloat(r[0]))}else 2===r.length&&(e=parseFloat(r[0]),o=parseInt(r[1],10));if(void 0===o)return t;if("loaded"!==t._state||t._playLock)return t._queue.push({event:"seek",action:function(){t.seek.apply(t,r)}}),t;var i=t._soundById(o);if(i){if(!("number"==typeof e&&e>=0)){if(t._webAudio){var d=t.playing(o)?n.ctx.currentTime-i._playStart:0,_=i._rateSeek?i._rateSeek-i._seek:0;return i._seek+(_+d*Math.abs(i._rate))}return i._node.currentTime}var s=t.playing(o);s&&t.pause(o,!0),i._seek=e,i._ended=!1,t._clearTimer(o),t._webAudio||!i._node||isNaN(i._node.duration)||(i._node.currentTime=e);var l=function(){t._emit("seek",o),s&&t.play(o,!0)};if(s&&!t._webAudio){var c=function(){t._playLock?setTimeout(c,0):l()};setTimeout(c,0)}else l()}return t},playing:function(e){var n=this;if("number"==typeof e){var o=n._soundById(e);return!!o&&!o._paused}for(var t=0;t<n._sounds.length;t++)if(!n._sounds[t]._paused)return!0;return!1},duration:function(e){var n=this,o=n._duration,t=n._soundById(e);return t&&(o=n._sprite[t._sprite][1]/1e3),o},state:function(){return this._state},unload:function(){for(var e=this,o=e._sounds,t=0;t<o.length;t++){if(o[t]._paused||e.stop(o[t]._id),!e._webAudio){/MSIE |Trident\//.test(n._navigator&&n._navigator.userAgent)||(o[t]._node.src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"),o[t]._node.removeEventListener("error",o[t]._errorFn,!1),o[t]._node.removeEventListener(n._canPlayEvent,o[t]._loadFn,!1),n._releaseHtml5Audio(o[t]._node)}delete o[t]._node,e._clearTimer(o[t]._id)}var a=n._howls.indexOf(e);a>=0&&n._howls.splice(a,1);var u=!0;for(t=0;t<n._howls.length;t++)if(n._howls[t]._src===e._src||e._src.indexOf(n._howls[t]._src)>=0){u=!1;break}return r&&u&&delete r[e._src],n.noAudio=!1,e._state="unloaded",e._sounds=[],e=null,null},on:function(e,n,o,t){var r=this,a=r["_on"+e];return"function"==typeof n&&a.push(t?{id:o,fn:n,once:t}:{id:o,fn:n}),r},off:function(e,n,o){var t=this,r=t["_on"+e],a=0;if("number"==typeof n&&(o=n,n=null),n||o)for(a=0;a<r.length;a++){var u=o===r[a].id;if(n===r[a].fn&&u||!n&&u){r.splice(a,1);break}}else if(e)t["_on"+e]=[];else{var i=Object.keys(t);for(a=0;a<i.length;a++)0===i[a].indexOf("_on")&&Array.isArray(t[i[a]])&&(t[i[a]]=[])}return t},once:function(e,n,o){var t=this;return t.on(e,n,o,1),t},_emit:function(e,n,o){for(var t=this,r=t["_on"+e],a=r.length-1;a>=0;a--)r[a].id&&r[a].id!==n&&"load"!==e||(setTimeout(function(e){e.call(this,n,o)}.bind(t,r[a].fn),0),r[a].once&&t.off(e,r[a].fn,r[a].id));return t._loadQueue(e),t},_loadQueue:function(e){var n=this;if(n._queue.length>0){var o=n._queue[0];o.event===e&&(n._queue.shift(),n._loadQueue()),e||o.action()}return n},_ended:function(e){var o=this,t=e._sprite;if(!o._webAudio&&e._node&&!e._node.paused&&!e._node.ended&&e._node.currentTime<e._stop)return setTimeout(o._ended.bind(o,e),100),o;var r=!(!e._loop&&!o._sprite[t][2]);if(o._emit("end",e._id),!o._webAudio&&r&&o.stop(e._id,!0).play(e._id),o._webAudio&&r){o._emit("play",e._id),e._seek=e._start||0,e._rateSeek=0,e._playStart=n.ctx.currentTime;var a=1e3*(e._stop-e._start)/Math.abs(e._rate);o._endTimers[e._id]=setTimeout(o._ended.bind(o,e),a)}return o._webAudio&&!r&&(e._paused=!0,e._ended=!0,e._seek=e._start||0,e._rateSeek=0,o._clearTimer(e._id),o._cleanBuffer(e._node),n._autoSuspend()),o._webAudio||r||o.stop(e._id,!0),o},_clearTimer:function(e){var n=this;if(n._endTimers[e]){if("function"!=typeof n._endTimers[e])clearTimeout(n._endTimers[e]);else{var o=n._soundById(e);o&&o._node&&o._node.removeEventListener("ended",n._endTimers[e],!1)}delete n._endTimers[e]}return n},_soundById:function(e){for(var n=this,o=0;o<n._sounds.length;o++)if(e===n._sounds[o]._id)return n._sounds[o];return null},_inactiveSound:function(){var e=this;e._drain();for(var n=0;n<e._sounds.length;n++)if(e._sounds[n]._ended)return e._sounds[n].reset();return new t(e)},_drain:function(){var e=this,n=e._pool,o=0,t=0;if(!(e._sounds.length<n)){for(t=0;t<e._sounds.length;t++)e._sounds[t]._ended&&o++;for(t=e._sounds.length-1;t>=0;t--){if(o<=n)return;e._sounds[t]._ended&&(e._webAudio&&e._sounds[t]._node&&e._sounds[t]._node.disconnect(0),e._sounds.splice(t,1),o--)}}},_getSoundIds:function(e){var n=this;if(void 0===e){for(var o=[],t=0;t<n._sounds.length;t++)o.push(n._sounds[t]._id);return o}return[e]},_refreshBuffer:function(e){var o=this;return e._node.bufferSource=n.ctx.createBufferSource(),e._node.bufferSource.buffer=r[o._src],e._panner?e._node.bufferSource.connect(e._panner):e._node.bufferSource.connect(e._node),e._node.bufferSource.loop=e._loop,e._loop&&(e._node.bufferSource.loopStart=e._start||0,e._node.bufferSource.loopEnd=e._stop||0),e._node.bufferSource.playbackRate.setValueAtTime(e._rate,n.ctx.currentTime),o},_cleanBuffer:function(e){var o=this,t=n._navigator&&n._navigator.vendor.indexOf("Apple")>=0;if(n._scratchBuffer&&e.bufferSource&&(e.bufferSource.onended=null,e.bufferSource.disconnect(0),t))try{e.bufferSource.buffer=n._scratchBuffer}catch(e){}return e.bufferSource=null,o}};var t=function(e){this._parent=e,this.init()};t.prototype={init:function(){var e=this,o=e._parent;return e._muted=o._muted,e._loop=o._loop,e._volume=o._volume,e._rate=o._rate,e._seek=0,e._paused=!0,e._ended=!0,e._sprite="__default",e._id=++n._counter,o._sounds.push(e),e.create(),e},create:function(){var e=this,o=e._parent,t=n._muted||e._muted||e._parent._muted?0:e._volume;return o._webAudio?(e._node=void 0===n.ctx.createGain?n.ctx.createGainNode():n.ctx.createGain(),e._node.gain.setValueAtTime(t,n.ctx.currentTime),e._node.paused=!0,e._node.connect(n.masterGain)):(e._node=n._obtainHtml5Audio(),e._errorFn=e._errorListener.bind(e),e._node.addEventListener("error",e._errorFn,!1),e._loadFn=e._loadListener.bind(e),e._node.addEventListener(n._canPlayEvent,e._loadFn,!1),e._node.src=o._src,e._node.preload="auto",e._node.volume=t*n.volume(),e._node.load()),e},reset:function(){var e=this,o=e._parent;return e._muted=o._muted,e._loop=o._loop,e._volume=o._volume,e._rate=o._rate,e._seek=0,e._rateSeek=0,e._paused=!0,e._ended=!0,e._sprite="__default",e._id=++n._counter,e},_errorListener:function(){var e=this;e._parent._emit("loaderror",e._id,e._node.error?e._node.error.code:0),e._node.removeEventListener("error",e._errorFn,!1)},_loadListener:function(){var e=this,o=e._parent;o._duration=Math.ceil(10*e._node.duration)/10,0===Object.keys(o._sprite).length&&(o._sprite={__default:[0,1e3*o._duration]}),"loaded"!==o._state&&(o._state="loaded",o._emit("load"),o._loadQueue()),e._node.removeEventListener(n._canPlayEvent,e._loadFn,!1)}};var r={},a=function(e){var n=e._src;if(r[n])return e._duration=r[n].duration,void d(e);if(/^data:[^;]+;base64,/.test(n)){for(var o=atob(n.split(",")[1]),t=new Uint8Array(o.length),a=0;a<o.length;++a)t[a]=o.charCodeAt(a);i(t.buffer,e)}else{var _=new XMLHttpRequest;_.open("GET",n,!0),_.withCredentials=e._xhrWithCredentials,_.responseType="arraybuffer",_.onload=function(){var n=(_.status+"")[0];if("0"!==n&&"2"!==n&&"3"!==n)return void e._emit("loaderror",null,"Failed loading audio file with status: "+_.status+".");i(_.response,e)},_.onerror=function(){e._webAudio&&(e._html5=!0,e._webAudio=!1,e._sounds=[],delete r[n],e.load())},u(_)}},u=function(e){try{e.send()}catch(n){e.onerror()}},i=function(e,o){var t=function(){o._emit("loaderror",null,"Decoding audio data failed.")},a=function(e){e&&o._sounds.length>0?(r[o._src]=e,d(o,e)):t()};"undefined"!=typeof Promise&&1===n.ctx.decodeAudioData.length?n.ctx.decodeAudioData(e).then(a).catch(t):n.ctx.decodeAudioData(e,a,t)},d=function(e,n){n&&!e._duration&&(e._duration=n.duration),0===Object.keys(e._sprite).length&&(e._sprite={__default:[0,1e3*e._duration]}),"loaded"!==e._state&&(e._state="loaded",e._emit("load"),e._loadQueue())},_=function(){if(n.usingWebAudio){try{"undefined"!=typeof AudioContext?n.ctx=new AudioContext:"undefined"!=typeof webkitAudioContext?n.ctx=new webkitAudioContext:n.usingWebAudio=!1}catch(e){n.usingWebAudio=!1}n.ctx||(n.usingWebAudio=!1);var e=/iP(hone|od|ad)/.test(n._navigator&&n._navigator.platform),o=n._navigator&&n._navigator.appVersion.match(/OS (\d+)_(\d+)_?(\d+)?/),t=o?parseInt(o[1],10):null;if(e&&t&&t<9){var r=/safari/.test(n._navigator&&n._navigator.userAgent.toLowerCase());(n._navigator&&n._navigator.standalone&&!r||n._navigator&&!n._navigator.standalone&&!r)&&(n.usingWebAudio=!1)}n.usingWebAudio&&(n.masterGain=void 0===n.ctx.createGain?n.ctx.createGainNode():n.ctx.createGain(),n.masterGain.gain.setValueAtTime(n._muted?0:1,n.ctx.currentTime),n.masterGain.connect(n.ctx.destination)),n._setup()}};"function"=="function"&&__webpack_require__(35)&&!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function(){return{Howler:n,Howl:o}}).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)),"undefined"!=typeof exports&&(exports.Howler=n,exports.Howl=o),"undefined"!=typeof window?(window.HowlerGlobal=e,window.Howler=n,window.Howl=o,window.Sound=t):"undefined"!=typeof global&&(global.HowlerGlobal=e,global.Howler=n,global.Howl=o,global.Sound=t)}();
 /*! Spatial Plugin */
 !function(){"use strict";HowlerGlobal.prototype._pos=[0,0,0],HowlerGlobal.prototype._orientation=[0,0,-1,0,1,0],HowlerGlobal.prototype.stereo=function(e){var n=this;if(!n.ctx||!n.ctx.listener)return n;for(var t=n._howls.length-1;t>=0;t--)n._howls[t].stereo(e);return n},HowlerGlobal.prototype.pos=function(e,n,t){var r=this;return r.ctx&&r.ctx.listener?(n="number"!=typeof n?r._pos[1]:n,t="number"!=typeof t?r._pos[2]:t,"number"!=typeof e?r._pos:(r._pos=[e,n,t],void 0!==r.ctx.listener.positionX?(r.ctx.listener.positionX.setTargetAtTime(r._pos[0],Howler.ctx.currentTime,.1),r.ctx.listener.positionY.setTargetAtTime(r._pos[1],Howler.ctx.currentTime,.1),r.ctx.listener.positionZ.setTargetAtTime(r._pos[2],Howler.ctx.currentTime,.1)):r.ctx.listener.setPosition(r._pos[0],r._pos[1],r._pos[2]),r)):r},HowlerGlobal.prototype.orientation=function(e,n,t,r,o,i){var a=this;if(!a.ctx||!a.ctx.listener)return a;var s=a._orientation;return n="number"!=typeof n?s[1]:n,t="number"!=typeof t?s[2]:t,r="number"!=typeof r?s[3]:r,o="number"!=typeof o?s[4]:o,i="number"!=typeof i?s[5]:i,"number"!=typeof e?s:(a._orientation=[e,n,t,r,o,i],void 0!==a.ctx.listener.forwardX?(a.ctx.listener.forwardX.setTargetAtTime(e,Howler.ctx.currentTime,.1),a.ctx.listener.forwardY.setTargetAtTime(n,Howler.ctx.currentTime,.1),a.ctx.listener.forwardZ.setTargetAtTime(t,Howler.ctx.currentTime,.1),a.ctx.listener.upX.setTargetAtTime(e,Howler.ctx.currentTime,.1),a.ctx.listener.upY.setTargetAtTime(n,Howler.ctx.currentTime,.1),a.ctx.listener.upZ.setTargetAtTime(t,Howler.ctx.currentTime,.1)):a.ctx.listener.setOrientation(e,n,t,r,o,i),a)},Howl.prototype.init=function(e){return function(n){var t=this;return t._orientation=n.orientation||[1,0,0],t._stereo=n.stereo||null,t._pos=n.pos||null,t._pannerAttr={coneInnerAngle:void 0!==n.coneInnerAngle?n.coneInnerAngle:360,coneOuterAngle:void 0!==n.coneOuterAngle?n.coneOuterAngle:360,coneOuterGain:void 0!==n.coneOuterGain?n.coneOuterGain:0,distanceModel:void 0!==n.distanceModel?n.distanceModel:"inverse",maxDistance:void 0!==n.maxDistance?n.maxDistance:1e4,panningModel:void 0!==n.panningModel?n.panningModel:"HRTF",refDistance:void 0!==n.refDistance?n.refDistance:1,rolloffFactor:void 0!==n.rolloffFactor?n.rolloffFactor:1},t._onstereo=n.onstereo?[{fn:n.onstereo}]:[],t._onpos=n.onpos?[{fn:n.onpos}]:[],t._onorientation=n.onorientation?[{fn:n.onorientation}]:[],e.call(this,n)}}(Howl.prototype.init),Howl.prototype.stereo=function(n,t){var r=this;if(!r._webAudio)return r;if("loaded"!==r._state)return r._queue.push({event:"stereo",action:function(){r.stereo(n,t)}}),r;var o=void 0===Howler.ctx.createStereoPanner?"spatial":"stereo";if(void 0===t){if("number"!=typeof n)return r._stereo;r._stereo=n,r._pos=[n,0,0]}for(var i=r._getSoundIds(t),a=0;a<i.length;a++){var s=r._soundById(i[a]);if(s){if("number"!=typeof n)return s._stereo;s._stereo=n,s._pos=[n,0,0],s._node&&(s._pannerAttr.panningModel="equalpower",s._panner&&s._panner.pan||e(s,o),"spatial"===o?void 0!==s._panner.positionX?(s._panner.positionX.setValueAtTime(n,Howler.ctx.currentTime),s._panner.positionY.setValueAtTime(0,Howler.ctx.currentTime),s._panner.positionZ.setValueAtTime(0,Howler.ctx.currentTime)):s._panner.setPosition(n,0,0):s._panner.pan.setValueAtTime(n,Howler.ctx.currentTime)),r._emit("stereo",s._id)}}return r},Howl.prototype.pos=function(n,t,r,o){var i=this;if(!i._webAudio)return i;if("loaded"!==i._state)return i._queue.push({event:"pos",action:function(){i.pos(n,t,r,o)}}),i;if(t="number"!=typeof t?0:t,r="number"!=typeof r?-.5:r,void 0===o){if("number"!=typeof n)return i._pos;i._pos=[n,t,r]}for(var a=i._getSoundIds(o),s=0;s<a.length;s++){var p=i._soundById(a[s]);if(p){if("number"!=typeof n)return p._pos;p._pos=[n,t,r],p._node&&(p._panner&&!p._panner.pan||e(p,"spatial"),void 0!==p._panner.positionX?(p._panner.positionX.setValueAtTime(n,Howler.ctx.currentTime),p._panner.positionY.setValueAtTime(t,Howler.ctx.currentTime),p._panner.positionZ.setValueAtTime(r,Howler.ctx.currentTime)):p._panner.setPosition(n,t,r)),i._emit("pos",p._id)}}return i},Howl.prototype.orientation=function(n,t,r,o){var i=this;if(!i._webAudio)return i;if("loaded"!==i._state)return i._queue.push({event:"orientation",action:function(){i.orientation(n,t,r,o)}}),i;if(t="number"!=typeof t?i._orientation[1]:t,r="number"!=typeof r?i._orientation[2]:r,void 0===o){if("number"!=typeof n)return i._orientation;i._orientation=[n,t,r]}for(var a=i._getSoundIds(o),s=0;s<a.length;s++){var p=i._soundById(a[s]);if(p){if("number"!=typeof n)return p._orientation;p._orientation=[n,t,r],p._node&&(p._panner||(p._pos||(p._pos=i._pos||[0,0,-.5]),e(p,"spatial")),void 0!==p._panner.orientationX?(p._panner.orientationX.setValueAtTime(n,Howler.ctx.currentTime),p._panner.orientationY.setValueAtTime(t,Howler.ctx.currentTime),p._panner.orientationZ.setValueAtTime(r,Howler.ctx.currentTime)):p._panner.setOrientation(n,t,r)),i._emit("orientation",p._id)}}return i},Howl.prototype.pannerAttr=function(){var n,t,r,o=this,i=arguments;if(!o._webAudio)return o;if(0===i.length)return o._pannerAttr;if(1===i.length){if("object"!=typeof i[0])return r=o._soundById(parseInt(i[0],10)),r?r._pannerAttr:o._pannerAttr;n=i[0],void 0===t&&(n.pannerAttr||(n.pannerAttr={coneInnerAngle:n.coneInnerAngle,coneOuterAngle:n.coneOuterAngle,coneOuterGain:n.coneOuterGain,distanceModel:n.distanceModel,maxDistance:n.maxDistance,refDistance:n.refDistance,rolloffFactor:n.rolloffFactor,panningModel:n.panningModel}),o._pannerAttr={coneInnerAngle:void 0!==n.pannerAttr.coneInnerAngle?n.pannerAttr.coneInnerAngle:o._coneInnerAngle,coneOuterAngle:void 0!==n.pannerAttr.coneOuterAngle?n.pannerAttr.coneOuterAngle:o._coneOuterAngle,coneOuterGain:void 0!==n.pannerAttr.coneOuterGain?n.pannerAttr.coneOuterGain:o._coneOuterGain,distanceModel:void 0!==n.pannerAttr.distanceModel?n.pannerAttr.distanceModel:o._distanceModel,maxDistance:void 0!==n.pannerAttr.maxDistance?n.pannerAttr.maxDistance:o._maxDistance,refDistance:void 0!==n.pannerAttr.refDistance?n.pannerAttr.refDistance:o._refDistance,rolloffFactor:void 0!==n.pannerAttr.rolloffFactor?n.pannerAttr.rolloffFactor:o._rolloffFactor,panningModel:void 0!==n.pannerAttr.panningModel?n.pannerAttr.panningModel:o._panningModel})}else 2===i.length&&(n=i[0],t=parseInt(i[1],10));for(var a=o._getSoundIds(t),s=0;s<a.length;s++)if(r=o._soundById(a[s])){var p=r._pannerAttr;p={coneInnerAngle:void 0!==n.coneInnerAngle?n.coneInnerAngle:p.coneInnerAngle,coneOuterAngle:void 0!==n.coneOuterAngle?n.coneOuterAngle:p.coneOuterAngle,coneOuterGain:void 0!==n.coneOuterGain?n.coneOuterGain:p.coneOuterGain,distanceModel:void 0!==n.distanceModel?n.distanceModel:p.distanceModel,maxDistance:void 0!==n.maxDistance?n.maxDistance:p.maxDistance,refDistance:void 0!==n.refDistance?n.refDistance:p.refDistance,rolloffFactor:void 0!==n.rolloffFactor?n.rolloffFactor:p.rolloffFactor,panningModel:void 0!==n.panningModel?n.panningModel:p.panningModel};var c=r._panner;c?(c.coneInnerAngle=p.coneInnerAngle,c.coneOuterAngle=p.coneOuterAngle,c.coneOuterGain=p.coneOuterGain,c.distanceModel=p.distanceModel,c.maxDistance=p.maxDistance,c.refDistance=p.refDistance,c.rolloffFactor=p.rolloffFactor,c.panningModel=p.panningModel):(r._pos||(r._pos=o._pos||[0,0,-.5]),e(r,"spatial"))}return o},Sound.prototype.init=function(e){return function(){var n=this,t=n._parent;n._orientation=t._orientation,n._stereo=t._stereo,n._pos=t._pos,n._pannerAttr=t._pannerAttr,e.call(this),n._stereo?t.stereo(n._stereo):n._pos&&t.pos(n._pos[0],n._pos[1],n._pos[2],n._id)}}(Sound.prototype.init),Sound.prototype.reset=function(e){return function(){var n=this,t=n._parent;return n._orientation=t._orientation,n._stereo=t._stereo,n._pos=t._pos,n._pannerAttr=t._pannerAttr,n._stereo?t.stereo(n._stereo):n._pos?t.pos(n._pos[0],n._pos[1],n._pos[2],n._id):n._panner&&(n._panner.disconnect(0),n._panner=void 0,t._refreshBuffer(n)),e.call(this)}}(Sound.prototype.reset);var e=function(e,n){n=n||"spatial","spatial"===n?(e._panner=Howler.ctx.createPanner(),e._panner.coneInnerAngle=e._pannerAttr.coneInnerAngle,e._panner.coneOuterAngle=e._pannerAttr.coneOuterAngle,e._panner.coneOuterGain=e._pannerAttr.coneOuterGain,e._panner.distanceModel=e._pannerAttr.distanceModel,e._panner.maxDistance=e._pannerAttr.maxDistance,e._panner.refDistance=e._pannerAttr.refDistance,e._panner.rolloffFactor=e._pannerAttr.rolloffFactor,e._panner.panningModel=e._pannerAttr.panningModel,void 0!==e._panner.positionX?(e._panner.positionX.setValueAtTime(e._pos[0],Howler.ctx.currentTime),e._panner.positionY.setValueAtTime(e._pos[1],Howler.ctx.currentTime),e._panner.positionZ.setValueAtTime(e._pos[2],Howler.ctx.currentTime)):e._panner.setPosition(e._pos[0],e._pos[1],e._pos[2]),void 0!==e._panner.orientationX?(e._panner.orientationX.setValueAtTime(e._orientation[0],Howler.ctx.currentTime),e._panner.orientationY.setValueAtTime(e._orientation[1],Howler.ctx.currentTime),e._panner.orientationZ.setValueAtTime(e._orientation[2],Howler.ctx.currentTime)):e._panner.setOrientation(e._orientation[0],e._orientation[1],e._orientation[2])):(e._panner=Howler.ctx.createStereoPanner(),e._panner.pan.setValueAtTime(e._stereo,Howler.ctx.currentTime)),e._panner.connect(e._node),e._paused||e._parent.pause(e._id,!0).play(e._id,!0)}}();
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)))
 
 /***/ }),
-/* 31 */
+/* 35 */
 /***/ (function(module, exports) {
 
 /* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {/* globals __webpack_amd_options__ */
@@ -48387,17 +48702,17 @@ module.exports = __webpack_amd_options__;
 /* WEBPACK VAR INJECTION */}.call(exports, {}))
 
 /***/ }),
-/* 32 */
+/* 36 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_config__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_about__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_Events__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_Audio__ = __webpack_require__(19);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_DE_Notifications__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_Audio__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_DE_Notifications__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_DE_Localization__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_DE_Save__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_DE_Save__ = __webpack_require__(19);
 
 
 
@@ -48585,15 +48900,15 @@ const Achievements = new function()
 
 
 /***/ }),
-/* 33 */
+/* 37 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_PIXI__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_config__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_Time__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_MainLoop__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_Time__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_MainLoop__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_DE_Events__ = __webpack_require__(3);
 
 
@@ -49034,244 +49349,868 @@ Render.prototype.DEName = "Render";
 /* harmony default export */ __webpack_exports__["a"] = (Render);
 
 /***/ }),
-/* 34 */
+/* 38 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_PIXI__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_MainLoop__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_GameObject__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_sortGameObjects__ = __webpack_require__(15);
-
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Scene__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_GameObject_update__ = __webpack_require__(13);
 
 
 
 
 /**
- * @author Inateno / http://inateno.com / http://dreamirl.com
+ * @author Grimka / http://dreamirl.com
  */
 
 /**
- * @constructor Scene
- * @class a Scene is a world. You push GameObjects inside this world.
- * There is no world Size, just objects inside
- * For rendering convenience it use a PIXI.Container
- * a Scene can be added to a Render or a Camera can look at this Scene
- * @example Game.scene = new DE.Scene( "Test" );
+ * @constructor Gui
+ * @class a Gui is over a world. You push GameObjects inside this.
+ * There is no Gui Size, just objects inside
+ * For rendering convenience it inherit from Scene
+ * a Gui can be added to a Render and should be on top of everything
+ * @example Game.gui = new DE.Gui( "Test" );
  */
-function Scene( name )
+function Gui( name )
 {
-  __WEBPACK_IMPORTED_MODULE_0_PIXI__["Container"].call( this );
-  
+  __WEBPACK_IMPORTED_MODULE_1_DE_Scene__["a" /* default */].call( this, name );
+
   /**
+   * object used to apply fade transition
+   * @protected
+   * @memberOf GameObject
+   * @type {Object}
+   */
+  this._fadeData = {
+    "from"     : 1
+    ,"to"      : 0
+    ,"duration": 1000
+    ,"done"    : true
+  };
+
+  /**
+   * zindex used to place the gui over everything
    * @public
-   * @memberOf Scene
-   * @type {String}
+   * @memberof GameObject
+   * @type {Number}
    */
-  this.name = name || "NoName-" + ( Date.now() + Math.random() * Date.now() >> 0 );
-  
-  /**
-   * it's a copy of PIXI.children, used by sortGameObjects middle-ware
-   * @readonly
-   * @memberOf Scene
-   */
-  this.gameObjects = this.children;
-  
-  // TODO when required this.objectsByTag = {};
-  // TODO when required this.objectsByName = {};
-  
-  /**
-   * if this world is sleeping, update will be ignored
-   * @public
-   * @memberOf Scene
-   * @type {Boolean}
-   */
-  this.enable = true;
-  
-  __WEBPACK_IMPORTED_MODULE_1_DE_MainLoop__["a" /* default */].addScene( this );
+  this.zindex = 1000;
 }
 
-Scene.prototype = Object.create( __WEBPACK_IMPORTED_MODULE_0_PIXI__["Container"].prototype );
-Scene.prototype.constructor = Scene;
+Gui.prototype = Object.create( __WEBPACK_IMPORTED_MODULE_1_DE_Scene__["a" /* default */].prototype );
+Gui.prototype.constructor = Gui;
 
-/**
- * add all given gameObjects inside the scene, if you add only one gameObject, call addOne
- * you can call this method with array, single object, or multi arguments objects, look at examples.
- * @public
- * @memberOf Scene
- * @param {GameObject} gameObject gameObject to add
- * @example myScene.add( car ); // just one object, you should call addOne instead
- * @example myScene.add( car, car2, car3, banana, turtle ); // using multi arguments
- * @example var myArray = [ object1, object2, object3 ]; // declare an array with object inside as you wish
- * myScene.add( myArray ); // then call add with array directly
- * @example var myArray = [ object1, object2, object3 ]; // declare an array with object inside as you wish
- * var myArray2 = [ object4, object5, object6 ]; // declare a second array with object inside as you wish
- * myScene.add( myArray, myArray2 ); // then call add with array and multi arguments
- */
-Scene.prototype.add = function()
-{
-  var args = Array.prototype.slice.call( arguments );
-  for ( var i = 0; i < args.length; ++i )
-  {
-    if ( args[ i ].length ) {
-      for ( var o = 0, m = args[ i ].length || 1; o < m; ++o )
-      {
-        this.addOne( args[ i ][ o ] );
-      }
+// support trigger
+Gui.prototype.trigger = Gui.prototype.emit;
+
+Object.defineProperties( Gui.prototype, {
+  /**
+   * easy way to shutdown gui rendering/updating
+   * @public
+   * @memberOf Gui
+   * @type {Boolean}
+   */
+  enable: {
+    get: function()
+    {
+      return this.renderable && this.visible;
     }
-    else {
-      this.addOne( args[ i ] );
+    , set: function( bool )
+    {
+      this.visible = bool;
+      this.renderable = bool;
     }
   }
+} );
+
+/**
+ * this update the lifecycle of the Gui, binded on rendering because if a Gui is "off" it doesn't need to be updated
+ * @memberOf Gui
+ * @protected
+ */
+Gui.prototype.renderUpdate = function()
+{
+  this.applyFade();
 };
 
 /**
- * add one gameObject inside the scene, call this one if you have only 1 gameObject to add, it's faster
- * @public
- * @memberOf Scene
- * @param {GameObject} gameObject gameObject to add
- * @example myScene.addOne( car );
+ * check the documentation on GameObject for all fade features
+ * @protected
+ * @memberOf GameObject
  */
-Scene.prototype.addOne = function( gameObject )
+Gui.prototype.fade = __WEBPACK_IMPORTED_MODULE_2_DE_GameObject_update__["a" /* default */].prototype.fade;
+Gui.prototype.fadeTo = __WEBPACK_IMPORTED_MODULE_2_DE_GameObject_update__["a" /* default */].prototype.fadeTo;
+Gui.prototype.fadeOut = __WEBPACK_IMPORTED_MODULE_2_DE_GameObject_update__["a" /* default */].prototype.fadeOut;
+Gui.prototype.fadeIn = __WEBPACK_IMPORTED_MODULE_2_DE_GameObject_update__["a" /* default */].prototype.fadeIn;
+Gui.prototype.applyFade = __WEBPACK_IMPORTED_MODULE_2_DE_GameObject_update__["a" /* default */].prototype.applyFade;
+
+/* harmony default export */ __webpack_exports__["a"] = (Gui);
+
+/***/ }),
+/* 39 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_GameObject__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Time__ = __webpack_require__(1);
+
+
+
+/**
+ * This provide you a way to make your custom update / logic<br>
+ * You have to set a name on your automatism (to be able to remove it/change it later)
+ * if you provide a name already used you automatism will be overred<br>
+ * - if you set an interval, this automatism will be called each MS given<br>
+ * - if you set persistent to false, it will be removed after the first call<br>
+ *<b>This method call only a protected/public method member of your GameObject</b>
+  * @public
+  * @memberOf GameObject
+  * @param {String} id unique id to be able to remove it later
+  * @param {String} methodName the method to call each time
+  * @param {Object} [params] parameters see below
+  * @property {Int} [interval] delay between 2 calls
+  * @property {Boolean} [persistent] if false, your automatism will be called only once
+  * @property {Undefined} [value1] you can provide a first value
+  * @property {undefined} [value2] you can provide a second value
+  * @example
+  * // this will call myObject.gameLogic() each updates
+  * myObject.addAutomatism( "logic", "gameLogic" );
+  * @example
+  * // this will call myObject.checkInputs() each 500ms
+  * myObject.addAutomatism( "inputs", "checkInputs", { "interval": 500 } );
+  * @example
+  * // this will call myObject.translate() once in 2.5 seconds
+  * myObject.addAutomatism( "killMeLater", "askToKill", {
+  *   "interval": 2500
+  *   , "args": [ { x: 10, y: 10 } ] // we want prevent the kills events fired when die
+  *   , "persistent": false
+  * } );
+*/
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.addAutomatism = function( id, methodName, params )
 {
-  // accept only gameObject to avoid errors
-  if ( !( gameObject instanceof __WEBPACK_IMPORTED_MODULE_2_DE_GameObject__["a" /* default */] ) ) {
-    console.error( "Tried to add something in a scene that is not a GameObject. Please inherit from GameObject" );
+  params = params || {};
+  methodName = methodName || id;
+  
+  // if using the old way - TODO - remove it on version 0.2.0
+  if ( methodName.type ) {
+    console.error( "Call arguments Deprecated: You use the old way to call addAutomatism, check the doc please" );
+    params = methodName;
+    methodName = params.type;
+  }
+  if ( !this[ methodName ] ) {
+    console.warn( "%cCouldn't found the method " + methodName + " in your GameObject prototype", 1, "color:red" );
+    return false;
+  }
+  params.interval = params.interval || __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].frameDelay;
+  if ( params.interval ) {
+    params.lastCall = __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].currentTime;
+  }
+  
+  params.methodName = methodName;
+  params.value1     = params.value1 || undefined;
+  params.value2     = params.value2 || undefined;
+  params.args       = params.args || undefined;
+  params.persistent = ( params.persistent != false ) ? true : false;
+  this._automatisms[ id ] = params;
+};
+
+/**
+ * remove the automatism by id (the one you provided on creation)
+ * @public
+ * @memberOf GameObject
+ * @param {String} id automatism id to remove
+ * @example
+ * myObject.removeAutomatism( "logic" );
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.removeAutomatism = function( id )
+{
+  if ( !this._automatisms[ id ] ) {
+    // console.warn( "%c[RemoveAutomatism] Automatism " + id + " not found", 1, "color:orange" );
     return;
   }
-  
-  // TODO add in byTags, byNames, pools objects
-  
-  // add in PIXI Container
-  this.addChild( gameObject );
-  this._shouldSortChildren = true;
-  
-  this.emit( "update-children" );
+  delete this._automatisms[ id ];
 };
 
 /**
- * scene update
- * @protected
- * @memberOf Scene
- */
-Scene.prototype.update = function( time )
-{
-  if ( !this.enable ) {
-    return;
-  }
-  
-  for ( var i = 0, t = this.children.length, g; i < t; ++i )
-  {
-    g = this.children[ i ];
-    
-    if ( !g ) {
-      continue;
-    }
-    
-    if ( g.flag !== null ) {
-      switch( g.flag )
-      {
-        case "delete":
-          this.delete( i );
-          --t;
-          continue;
-          break;
-      }
-    }
-    
-    // need an octree here for physic ?
-    // passing other gameObjects for physic ? (still looking how to do it)
-    g.update( time /*, this.gameObjects*/ );
-  }
-  
-  // TODO ? // It seems that PIXI Ticker is calling his own requestAnimationFrame, not needed here ?
-  // but it could be cool to have Ticker associated to a scene lifetime (PIXI.Ticker can be dis-activated and manually called ?)
-  // for ( var i = 0, t = this.timers.length; i < t; ++tk )
-  // {
-  //   this.timers[ i ].update();
-  // }
-  
-  // TODO ?
-  if ( this._shouldSortChildren ) {
-    this.sortGameObjects();
-  }
-};
-
-/**
- * Sort gameObjects in the scene along z axis or using z-index for objects on the same same plan.
- * The priority is the following, z, z-index, y, x
- * You shouldn't call this method directly because engine do it for you, but in some case it can be useful to do it yourself
- * @protected
- * @memberOf Scene
- */
-Scene.prototype.sortGameObjects = __WEBPACK_IMPORTED_MODULE_3_DE_sortGameObjects__["a" /* default */];
-
-// name registered in engine declaration
-Scene.prototype.DEName = "Scene";
-
-/**
- * Delete and remove an object in the scene.
- * You should prefer askToKill GameObject's method because it's safer (if you know what you do go crazy).
+ * remove all automatisms
  * @public
- * @memberOf Scene
- * @param {GameObject} object can be the index of the GameObject in the gameObjects array
+ * @memberOf GameObject
  */
-Scene.prototype.delete = function( object )
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.removeAutomatisms = function()
 {
-  var target = this.remove( object );
-  target.killMePlease();
+  for ( var i in this._automatisms )
+  {
+    delete this._automatisms[ i ];
+  }
+};
+
+/**
+ * inverse values of an automatism
+ * useful for "ping-pong" moves, fades, snaking, and patrols logics
+ * this works with args OR value1 and value2
+ * @public
+ * @memberOf GameObject
+ * @example
+ * myObject.inverseAutomatism( "translateY" ); // this will inverse the value applied on the automatized translateY action
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.inverseAutomatism = function( autoName )
+{
+  var at = this._automatisms[ autoName ];
+  
+  if ( at.args ) {
+    for ( var i = 0; i < at.args.length; ++i )
+    {
+      at.args[ i ] = -at.args[ i ];
+    }
+  }
+  else {
+    at.value1 = -at.value1;
+    at.value2 = -at.value2;
+  }
+};
+
+/* unused harmony default export */ var _unused_webpack_default_export = (__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */]);
+
+/***/ }),
+/* 40 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_GameObject__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Time__ = __webpack_require__(1);
+
+
+
+/**
+ * create a fade from alpha to alpha, with given duration time
+ * @public
+ * @memberOf GameObject
+ * @param {Float} from start value
+ * @param {Float} [to=0] end value
+ * @param {Int} [duration=500] fade duration in ms
+ * @example myObject.fade( 0.5, 1, 850 );
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.fade = function( from, to, duration, force, callback )
+{
+  if ( force ) {
+    this.enable = true;
+  }
+  
+  var data = {
+    from      : from != undefined ? from : 1
+    ,to       : to != undefined ? to : 0
+    ,duration : duration || 500
+    ,oDuration: duration || 500
+    ,fadeScale: Math.abs( from - to )
+    ,done     : false
+    ,callback : callback
+  };
+  
+  data.dir       = data.from > to ? -1 : 1;
+  this.alpha     = from;
+  this._fadeData = data;
+  
+  if ( !this.visible && to > 0 ) {
+    this.visible = true;
+  }
   
   return this;
 };
 
 /**
- * Remove an object on this scene (it is not deleted !).
+ * create a fade from current alpha to given value with given duration time
  * @public
- * @memberOf Scene
- * @param {GameObject} object can be the index of the GameObject in the gameObjects array
+ * @memberOf GameObject
+ * @param {Float} [to=0] end value
+ * @param {Int} [duration=500] fade duration in ms
+ * @example myObject.fadeTo( 0.5, 850 ); // don't care if alpha is 0.2 or 0.8
  */
-Scene.prototype.remove = function( object )
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.fadeTo = function( to, duration, force, callback )
 {
-  var target;
+  this.fade( this.alpha, to, duration, force, callback );
   
-  // if it's an index, it's dangerous D: (excepted when it came from update, which is faster than idnexindexOf)
-  if ( isNaN( object ) ) {
-    var index = this.children.indexOf( object );
-    
-    if ( index !== - 1 ) {
-      // remove from PIXI Container
-      this.removeChild( object );
-    }
-    target = object;
-  }
-  else {
-    target = this.children[ object ];
-    
-    // remove from PIXI Container
-    this.removeChild( target );
-  }
-  
-  this.emit( "update-children" );
-  return target;
+  return this;
 };
 
-/* harmony default export */ __webpack_exports__["a"] = (Scene);
+/**
+ * fade to alpha 0 with given duration time
+ * fade start to the current alpha or 1 if force is true
+ * @public
+ * @memberOf GameObject
+ * @param {Int} [duration=500] fade duration in ms
+ * @param {Boolean} [force=false] if true will set alpha at 1 before fade
+ * @example // alpha = 0 in 850ms
+ * myObject.fadeOut( 850 );
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.fadeOut = function( duration, force, callback )
+{
+  if ( force ) {
+    this.enable = true;
+    this.alpha = 1;
+  }
+  
+  this.fade( this.alpha, 0, duration, force, callback );
+  return this;
+};
+
+/**
+ * fade to alpha 1 with given duration time
+ * fade start to the current alpha, or 0 if force is true
+ * @public
+ * @memberOf GameObject
+ * @param {Int} [duration=500] fade duration in ms
+ * @param {Boolean} [force=false] if true will set alpha at 0
+ * @example // alpha = 1 in 850ms
+ * myObject.fadeIn( 850 );
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.fadeIn = function( duration, force, callback )
+{
+  if ( force ) {
+    this.enable = true;
+    this.alpha = 0;
+  }
+  
+  this.fade( this.alpha, 1, duration, force, callback );
+  return this;
+};
+
+/**
+ * apply the current fade
+ * @protected
+ * @memberOf GameObject
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.applyFade = function()
+{
+  if ( !this._fadeData.done ) {
+    this._fadeData.stepVal = __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame / this._fadeData.oDuration
+                            * this._fadeData.dir * this._fadeData.fadeScale;
+    this.alpha += this._fadeData.stepVal * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
+    this._fadeData.duration -= __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
+    
+    if ( ( this._fadeData.dir < 0 && this.alpha <= this._fadeData.to )
+        || ( this._fadeData.dir > 0 && this.alpha >= this._fadeData.to )
+        || this.alpha < 0 || this.alpha > 1 ) {
+      this.alpha = this._fadeData.to;
+    }
+    
+    if ( this._fadeData.duration <= 0 ) {
+      this._fadeData.done = true;
+      
+      if ( this.alpha == 0 ) {
+        this.visible = false;
+      }
+      
+      this.trigger( "fadeEnd", this );
+      
+      if ( this._fadeData.callback ) {
+        this._fadeData.callback.call( this );
+      }
+    }
+  }
+};
+
+/* unused harmony default export */ var _unused_webpack_default_export = (__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */]);
 
 
 /***/ }),
-/* 35 */
+/* 41 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_GameObject__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Time__ = __webpack_require__(1);
+
+
+
+/**
+ * give a target to this gameObject, then it will focus it until you changed or removed it
+ * you can lock independent axes, and set offsets
+ * @public
+ * @memberOf GameObject
+ * @param {GameObject} gameObject is the target to focus on
+ * @param {Object} [params] optional parameters, set offsets or lock
+ * @example // create a fx for your ship, decal a little on left, and lock y
+ * fx.focus( player, { lock: { y: true }, offsets: { x: -200, y: 0 } } );
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.focus = function( gameObject, params )
+{
+  params = params || {};
+  this.target = gameObject;
+  this._focusOptions = Object.assign( {
+    x: true,
+    y: true,
+    rotation: false,
+  }, params.options );
+
+  // focus default x/y
+  this._focusOptions.x = this._focusOptions.x !== false ? true : false;
+  this._focusOptions.y = this._focusOptions.y !== false ? true : false;
+
+  this._focusOffsets = Object.assign( { x: 0, y: 0 }, params.offsets || params.offset );
+  
+  return this;
+};
+
+/**
+ * apply focus on target if there is one
+ * You shouldn't call or change this method
+ * @protected
+ * @memberOf Camera
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.applyFocus = function()
+{
+  if ( !this.target ) {
+    return;
+  }
+  
+  let pos = this.target;
+  if ( this.target.getWorldPos ) {
+    pos = this.target.getWorldPos();
+  }
+  
+  let parentPos = {};
+  if ( this.parent.getWorldPos ) {
+    parentPos = this.parent.getWorldPos();
+  }
+  else {
+    parentPos = this.parent;
+  }
+  
+  if ( this._focusOptions.x ) {
+    this.x = pos.x + ( this._focusOffsets.x || 0 ) - parentPos.x;
+  }
+  if ( this._focusOptions.y ) {
+    this.y = pos.y + ( this._focusOffsets.y || 0 ) - parentPos.y;
+  }
+  if ( this._focusOptions.rotation ) {
+    this.rotation = this.target.rotation;
+  }
+};
+
+/* unused harmony default export */ var _unused_webpack_default_export = (__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */]);
+
+/***/ }),
+/* 42 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_GameObject__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Time__ = __webpack_require__(1);
+
+
+
+/**
+ * create a fluid move translation
+ * you can only have one at a time
+ * @public
+ * @memberOf GameObject
+ * @param {Object / GameObject / PIXI.DisplayObject} pos give x, y, and z destination
+ * @param {Int} [duration=500] time duration
+ * @param {Function} callback will be called in the current object context
+ * @example // move to 100,100 in 1 second
+ * player.moveTo( { x: 100, y: 100 }, 1000 );
+ * @example // move to bonus position
+ * player.moveTo( bonus, 1000, function(){ console.log( this ) } );
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.moveTo = function( pos, duration, callback, curveName, forceLocalPos ) // TODO add curveName (not coded)
+{
+  if ( pos.getWorldPos ) {
+    pos = pos.getWorldPos();
+  }
+  
+  var myPos = this;
+  var parentPos = null;
+  
+  if ( !forceLocalPos ) {
+    myPos = this.getWorldPos();
+    
+    if ( this.parent && this.parent.getWorldPos ) {
+      parentPos = this.parent.getWorldPos();
+    }
+  }
+  
+  this._moveData = {
+    "distX"     : - ( myPos.x - ( pos.x !== undefined ? pos.x : myPos.x ) )
+    ,"distY"    : - ( myPos.y - ( pos.y !== undefined ? pos.y : myPos.y ) )
+    ,"distZ"    : - ( myPos.z - ( pos.z !== undefined ? pos.z : myPos.z ) )
+    ,"dirX"     : myPos.x > pos.x ? 1 : -1
+    ,"dirY"     : myPos.y > pos.y ? 1 : -1
+    ,"dirZ"     : myPos.z > pos.z ? 1 : -1
+    ,"duration" : duration || 500
+    ,"oDuration": duration || 500
+    ,"curveName": curveName || "linear"
+    ,"done"     : false
+    ,"stepValX" : 0
+    ,"stepValY" : 0
+    ,"stepValZ" : 0
+    ,"destX"    : parentPos ? pos.x - parentPos.x : pos.x
+    ,"destY"    : parentPos ? pos.y - parentPos.y : pos.y
+    ,"destZ"    : pos.z
+    ,"callback" : callback
+  };
+  this._moveData.leftX = this._moveData.distX;
+  this._moveData.leftY = this._moveData.distY;
+  this._moveData.leftZ = this._moveData.distZ;
+  
+  return this;
+};
+
+/**
+ * apply the move transition each update
+ * You shouldn't call or change this method
+ * @protected
+ * @memberOf GameObject
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.applyMove = function()
+{
+  if ( this._moveData.done )
+    return;
+  
+  var move = this._moveData;
+  
+  if ( move.distX != 0 ) {
+    move.stepValX = __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame / move.oDuration * move.distX * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
+    move.leftX -= move.stepValX;
+    this.x += move.stepValX;
+  }
+  
+  if ( move.distY != 0 ) {
+    move.stepValY = __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame / move.oDuration * move.distY * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
+    move.leftY -= move.stepValY * move.dirY; // * dirY because y is inverted
+    this.y += move.stepValY;
+  }
+  
+  if ( move.distZ != 0 ) {
+    move.stepValZ = __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame / move.oDuration * move.distZ * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
+    move.leftZ -= move.stepValZ * move.dirZ; // * dirZ because z is inverted
+    this.z += move.stepValZ;
+  }
+  
+  move.duration -= __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
+  
+  // check pos
+  if ( move.dirX < 0 && move.leftX < 0 ) {
+    this.x += move.leftX;
+  }
+  else if ( move.dirX > 0 && move.leftX > 0 ) {
+    this.x -= move.leftX;
+  }
+  
+  if ( move.dirY < 0 && move.leftY < 0 ) {
+    this.y += move.leftY;
+  }
+  else if ( move.dirY > 0 && move.leftY > 0 ) {
+    this.y -= move.leftY;
+  }
+  
+  if ( move.dirZ < 0 && move.leftZ < 0 ) {
+    this.z += move.leftZ;
+  }
+  else if ( move.dirZ > 0 && move.leftZ > 0 ) {
+    this.z -= move.leftZ;
+  }
+  
+  if ( move.duration <= 0 ) {
+    this._moveData.done = true;
+    this.position.set(
+      move.destX !== undefined ? move.destX : this.x
+      , move.destY !== undefined ? move.destY : this.y
+    );
+    this.z = move.destZ !== undefined ? move.destZ : this.z;
+    
+    this.trigger( "moveEnd" );
+    
+    if ( move.callback ) {
+      move.callback.call( this, move.callback );
+    }
+  }
+};
+
+/* unused harmony default export */ var _unused_webpack_default_export = (__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */]);
+
+
+/***/ }),
+/* 43 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_GameObject__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Time__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_config__ = __webpack_require__(2);
+
+
+
+
+/**
+ * Because we use a complex scaling system (with z modifier), we have to use this middle-ware to trigger updateScale
+ * if you call directly .scale.set it will work but not if there is a z modifier
+ * @public
+ * @memberOf GameObject
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.setScale = function( x, y )
+{
+  this.scale.set( x, y );
+  this._updateScale();
+  
+  return this;
+};
+
+/**
+ * when z change we restore saved scale, then change it again to final values and update worldScale
+ * @private
+ * @memberOf GameObject
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype._updateZScale = function()
+{
+  // this come from old Camera render (working fine as excepted...)
+  // zMaxDepth is 10 by default so if z is 1 scale modifier will be 0.9 (1 - 0.1)
+  var zscale = 1 - ( this.z / __WEBPACK_IMPORTED_MODULE_2_DE_config__["a" /* default */].zMaxDepth );
+  this._zscale = zscale;
+  
+  this.scale.x = zscale * this.savedScale.x;
+  this.scale.y = zscale * this.savedScale.y;
+  
+  // update worldScale
+  this._updateWorldScale();
+  for ( var i = 0; i < this.gameObjects.length; ++i )
+  {
+    this.gameObjects[ i ]._updateWorldScale();
+  }
+};
+
+/**
+ * when we change the scale manually, we need to re-apply z deformation
+ * directly save the old scale before zscale applies (this way we can recalculate things from the beginning)
+ * @private
+ * @memberOf GameObject
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype._updateScale = function()
+{
+  this.savedScale.copy( this.scale );
+  this.scale.x = this._zscale * this.scale.x;
+  this.scale.y = this._zscale * this.scale.y;
+  
+  // PIXI update worldScale
+  this._updateWorldScale();
+  for ( var i = 0; i < this.gameObjects.length; ++i )
+  {
+    this.gameObjects[ i ]._updateWorldScale();
+  }
+};
+
+/**
+ * _updateWorldScale is the same as _updateScale but it take every parent scale in consideration.
+ * use worldScale when you want to know what is the "real" scale of the current object
+ * for example, with Ship contain Reactor.
+ * if Ship.scale = 0.5 then Reactor.wordScale = 0.5
+ * if Ship.scale = 0.5 and Reactor.scale = 0.5 then Reactor.worldScale = 0.25
+ * @private
+ * @memberOf GameObject
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype._updateWorldScale = function()
+{
+  this.worldScale.set( this.scale.x, this.scale.y );
+  
+  if ( !this.parent || !this.parent._isGameObject ) {
+    return;
+  }
+  
+  this.worldScale.x = this.worldScale.x * this.parent.worldScale.x;
+  this.worldScale.y = this.worldScale.y * this.parent.worldScale.y;
+  
+  return this;
+};
+
+/**
+ * create a fluid scale
+ * you can only have one at a time
+ * @public
+ * @memberOf GameObject
+ * @param {Object} scale give final x, and final y
+ * @param {Int} [duration=500] time duration
+ * @example // scale to 2,3 in 1 second
+ * myGameObject.scaleTo( { x: 2, y: 3 }, 1000 );
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.scaleTo = function( scale, duration, callback )
+{
+  var dscale = {
+    "x"     : !isNaN( scale ) ? scale : scale.x
+    ,"y"    : !isNaN( scale ) ? scale : scale.y
+  };
+  this._scaleData = {
+    "valX"      : - ( this.savedScale.x - ( dscale.x !== undefined ? dscale.x : this.savedScale.x ) )
+    ,"valY"     : - ( this.savedScale.y - ( dscale.y !== undefined ? dscale.y : this.savedScale.y ) )
+    ,"dirX"     : this.savedScale.x > dscale.x ? 1 : -1
+    ,"dirY"     : this.savedScale.y > dscale.y ? 1 : -1
+    ,"duration" : duration || 500
+    ,"oDuration": duration || 500
+    ,"done"     : false
+    ,"stepValX" : 0
+    ,"stepValY" : 0
+    ,"destX"    : dscale.x
+    ,"destY"    : dscale.y
+    ,"scaleX"   : this.savedScale.x
+    ,"scaleY"   : this.savedScale.y
+    ,"callback" : callback
+  };
+  this._scaleData.leftX = this._scaleData.valX;
+  this._scaleData.leftY = this._scaleData.valY;
+  
+  return this;
+};
+
+/**
+ * apply the current scale
+ * @protected
+ * @memberOf GameObject
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.applyScale = function()
+{
+  if ( this._scaleData.done ) {
+    return;
+  }
+  
+  var scaleD = this._scaleData;
+  
+  if ( scaleD.valX != 0 ) {
+    scaleD.stepValX = __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame / scaleD.oDuration * scaleD.valX * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
+    scaleD.leftX    -= scaleD.stepValX;
+    scaleD.scaleX   += scaleD.stepValX;
+  }
+  
+  if ( scaleD.valY != 0 ) {
+    scaleD.stepValY = __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame / scaleD.oDuration * scaleD.valY * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
+    scaleD.leftY    -= scaleD.stepValY;
+    scaleD.scaleY   += scaleD.stepValY;
+  }
+  scaleD.duration -= __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
+  
+  // check scale
+  if ( scaleD.dirX < 0 && scaleD.leftX < 0 ) {
+    scaleD.scaleX += scaleD.leftX;
+  }
+  else if ( scaleD.dirX > 0 && scaleD.leftX > 0 ) {
+    scaleD.scaleX -= scaleD.leftX;
+  }
+  
+  if ( scaleD.dirY < 0 && scaleD.leftY < 0 ) {
+    scaleD.scaleY += scaleD.leftY;
+  }
+  else if ( scaleD.dirY > 0 && scaleD.leftY > 0 ) {
+    scaleD.scaleY -= scaleD.leftY;
+  }
+  
+  this.scale.set( scaleD.scaleX, scaleD.scaleY );
+  
+  if ( scaleD.duration <= 0 ) {     
+    this._scaleData.done = true;
+    this.scale.set( scaleD.destX, scaleD.destY );
+    
+    this.emit( "scale-end", this );
+          
+    if ( this._scaleData.callback ) {
+      this._scaleData.callback.call( this );
+    }
+  }
+  
+  this._updateScale();
+};
+
+/* unused harmony default export */ var _unused_webpack_default_export = (__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */]);
+
+
+/***/ }),
+/* 44 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_GameObject__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Time__ = __webpack_require__(1);
+
+
+
+/**
+ * create a shake with given range
+ * you can only have one at a time
+ * @public
+ * @memberOf GameObject
+ * @param {Int} xRange max X gameObject will move to shake
+ * @param {Int} yRange max Y gameObject will move to shake
+ * @param {Int} [duration=500] time duration
+ * @example // shake with 10-10 force during 1sec
+ * player.shake( 10, 10, 1000 );
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.shake = function( xRange, yRange, duration, callback )
+{
+  this._shakeData = {
+    // "startedAt" : Date.now()
+    "duration"  : duration || 500
+    ,"xRange"   : xRange
+    ,"yRange"   : yRange
+    ,"prevX"    : this._shakeData ? this._shakeData.prevX : 0
+    ,"prevY"    : this._shakeData ? this._shakeData.prevY : 0
+    ,"callback" : callback
+  };
+  
+  return this;
+};
+
+/**
+ * apply the shake each update
+ * You shouldn't call or change this method
+ * @protected
+ * @memberOf GameObject
+ */
+__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.applyShake = function()
+{
+  if ( this._shakeData.done ) {
+    return;
+  }
+  
+  var shake = this._shakeData;
+  // restore previous shake
+  this.x -= shake.prevX;
+  this.y -= shake.prevY;
+  shake.duration -= __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
+  // old way - Date.now() - this._shakeData.startedAt > this._shakeData.duration )
+  if ( shake.duration <= 0 ) {
+    shake.done = true;
+    shake.prevX = 0;
+    shake.prevY = 0;
+    
+    this.trigger( "shakeEnd" );
+    
+    if ( shake.callback ) {
+      shake.callback.call( this );
+    }
+    return;
+  }
+  
+  shake.prevX = - ( Math.random() * shake.xRange ) + ( Math.random() * shake.xRange ) >> 0;
+  shake.prevY = - ( Math.random() * shake.yRange ) + ( Math.random() * shake.yRange ) >> 0;
+  
+  this.x += shake.prevX;
+  this.y += shake.prevY;
+};
+
+/* unused harmony default export */ var _unused_webpack_default_export = (__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */]);
+
+
+/***/ }),
+/* 45 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_PIXI__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_config__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_ImageManager__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_Time__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_DE_RectRenderer__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_DE_TilingRenderer__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_DE_GameObject_update__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_ImageManager__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_DE_Time__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_DE_RectRenderer__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_DE_TilingRenderer__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_DE_GameObject_update__ = __webpack_require__(13);
 
 
 
@@ -49362,7 +50301,7 @@ function Camera( x, y, width, height, params )
   /**
    * object used to apply fade transition
    * @protected
-   * @memberOf GameObject
+   * @memberOf Camera
    * @type {Object}
    */
   this._fadeData = {
@@ -49370,6 +50309,18 @@ function Camera( x, y, width, height, params )
     ,"to"      : 0
     ,"duration": 1000
     ,"done"    : true
+  };
+
+  /**
+   * object used to apply shake
+   * @protected
+   * @memberOf Camera
+   * @type {Object}
+   */
+  this._shakeData = {
+    "done": true
+    ,"prevX": 0
+    ,"prevY": 0
   };
   
   /**
@@ -49565,6 +50516,7 @@ Camera.prototype.renderUpdate = function( qualityRatio )
 {
   this.applyFocus();
   this.applyFade();
+  this.applyShake();
   this.checkLimits( qualityRatio );
   this.calculatePerspective();
   
@@ -49712,6 +50664,13 @@ Camera.prototype.fadeOut = __WEBPACK_IMPORTED_MODULE_6_DE_GameObject_update__["a
 Camera.prototype.fadeIn = __WEBPACK_IMPORTED_MODULE_6_DE_GameObject_update__["a" /* default */].prototype.fadeIn;
 Camera.prototype.applyFade = __WEBPACK_IMPORTED_MODULE_6_DE_GameObject_update__["a" /* default */].prototype.applyFade;
 
+/**
+ * check the documentation on GameObject for all shake features
+ * @protected
+ * @memberOf GameObject
+ */
+Camera.prototype.shake = __WEBPACK_IMPORTED_MODULE_6_DE_GameObject_update__["a" /* default */].prototype.shake;
+Camera.prototype.applyShake = __WEBPACK_IMPORTED_MODULE_6_DE_GameObject_update__["a" /* default */].prototype.applyShake;
 
 
 // name registered in engine declaration
@@ -49720,761 +50679,11 @@ Camera.prototype.DEName = "Camera";
 /* harmony default export */ __webpack_exports__["a"] = (Camera);
 
 /***/ }),
-/* 36 */
+/* 46 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_GameObject__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Time__ = __webpack_require__(0);
-
-
-
-/**
- * This provide you a way to make your custom update / logic<br>
- * You have to set a name on your automatism (to be able to remove it/change it later)
- * if you provide a name already used you automatism will be overred<br>
- * - if you set an interval, this automatism will be called each MS given<br>
- * - if you set persistent to false, it will be removed after the first call<br>
- *<b>This method call only a protected/public method member of your GameObject</b>
-  * @public
-  * @memberOf GameObject
-  * @param {String} id unique id to be able to remove it later
-  * @param {String} methodName the method to call each time
-  * @param {Object} [params] parameters see below
-  * @property {Int} [interval] delay between 2 calls
-  * @property {Boolean} [persistent] if false, your automatism will be called only once
-  * @property {Undefined} [value1] you can provide a first value
-  * @property {undefined} [value2] you can provide a second value
-  * @example
-  * // this will call myObject.gameLogic() each updates
-  * myObject.addAutomatism( "logic", "gameLogic" );
-  * @example
-  * // this will call myObject.checkInputs() each 500ms
-  * myObject.addAutomatism( "inputs", "checkInputs", { "interval": 500 } );
-  * @example
-  * // this will call myObject.translate() once in 2.5 seconds
-  * myObject.addAutomatism( "killMeLater", "askToKill", {
-  *   "interval": 2500
-  *   , "args": [ { x: 10, y: 10 } ] // we want prevent the kills events fired when die
-  *   , "persistent": false
-  * } );
-*/
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.addAutomatism = function( id, methodName, params )
-{
-  params = params || {};
-  methodName = methodName || id;
-  
-  // if using the old way - TODO - remove it on version 0.2.0
-  if ( methodName.type ) {
-    console.error( "Call arguments Deprecated: You use the old way to call addAutomatism, check the doc please" );
-    params = methodName;
-    methodName = params.type;
-  }
-  if ( !this[ methodName ] ) {
-    console.warn( "%cCouldn't found the method " + methodName + " in your GameObject prototype", 1, "color:red" );
-    return false;
-  }
-  params.interval = params.interval || __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].frameDelay;
-  if ( params.interval ) {
-    params.lastCall = __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].currentTime;
-  }
-  
-  params.methodName = methodName;
-  params.value1     = params.value1 || undefined;
-  params.value2     = params.value2 || undefined;
-  params.args       = params.args || undefined;
-  params.persistent = ( params.persistent != false ) ? true : false;
-  this._automatisms[ id ] = params;
-};
-
-/**
- * remove the automatism by id (the one you provided on creation)
- * @public
- * @memberOf GameObject
- * @param {String} id automatism id to remove
- * @example
- * myObject.removeAutomatism( "logic" );
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.removeAutomatism = function( id )
-{
-  if ( !this._automatisms[ id ] ) {
-    // console.warn( "%c[RemoveAutomatism] Automatism " + id + " not found", 1, "color:orange" );
-    return;
-  }
-  delete this._automatisms[ id ];
-};
-
-/**
- * remove all automatisms
- * @public
- * @memberOf GameObject
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.removeAutomatisms = function()
-{
-  for ( var i in this._automatisms )
-  {
-    delete this._automatisms[ i ];
-  }
-};
-
-/**
- * inverse values of an automatism
- * useful for "ping-pong" moves, fades, snaking, and patrols logics
- * this works with args OR value1 and value2
- * @public
- * @memberOf GameObject
- * @example
- * myObject.inverseAutomatism( "translateY" ); // this will inverse the value applied on the automatized translateY action
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.inverseAutomatism = function( autoName )
-{
-  var at = this._automatisms[ autoName ];
-  
-  if ( at.args ) {
-    for ( var i = 0; i < at.args.length; ++i )
-    {
-      at.args[ i ] = -at.args[ i ];
-    }
-  }
-  else {
-    at.value1 = -at.value1;
-    at.value2 = -at.value2;
-  }
-};
-
-/* unused harmony default export */ var _unused_webpack_default_export = (__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */]);
-
-/***/ }),
-/* 37 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_GameObject__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Time__ = __webpack_require__(0);
-
-
-
-/**
- * create a fade from alpha to alpha, with given duration time
- * @public
- * @memberOf GameObject
- * @param {Float} from start value
- * @param {Float} [to=0] end value
- * @param {Int} [duration=500] fade duration in ms
- * @example myObject.fade( 0.5, 1, 850 );
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.fade = function( from, to, duration, force, callback )
-{
-  if ( force ) {
-    this.enable = true;
-  }
-  
-  var data = {
-    from      : from != undefined ? from : 1
-    ,to       : to != undefined ? to : 0
-    ,duration : duration || 500
-    ,oDuration: duration || 500
-    ,fadeScale: Math.abs( from - to )
-    ,done     : false
-    ,callback : callback
-  };
-  
-  data.dir       = data.from > to ? -1 : 1;
-  this.alpha     = from;
-  this._fadeData = data;
-  
-  if ( !this.visible && to > 0 ) {
-    this.visible = true;
-  }
-  
-  return this;
-};
-
-/**
- * create a fade from current alpha to given value with given duration time
- * @public
- * @memberOf GameObject
- * @param {Float} [to=0] end value
- * @param {Int} [duration=500] fade duration in ms
- * @example myObject.fadeTo( 0.5, 850 ); // don't care if alpha is 0.2 or 0.8
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.fadeTo = function( to, duration, force, callback )
-{
-  this.fade( this.alpha, to, duration, force, callback );
-  
-  return this;
-};
-
-/**
- * fade to alpha 0 with given duration time
- * fade start to the current alpha or 1 if force is true
- * @public
- * @memberOf GameObject
- * @param {Int} [duration=500] fade duration in ms
- * @param {Boolean} [force=false] if true will set alpha at 1 before fade
- * @example // alpha = 0 in 850ms
- * myObject.fadeOut( 850 );
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.fadeOut = function( duration, force, callback )
-{
-  if ( force ) {
-    this.enable = true;
-    this.alpha = 1;
-  }
-  
-  this.fade( this.alpha, 0, duration, force, callback );
-  return this;
-};
-
-/**
- * fade to alpha 1 with given duration time
- * fade start to the current alpha, or 0 if force is true
- * @public
- * @memberOf GameObject
- * @param {Int} [duration=500] fade duration in ms
- * @param {Boolean} [force=false] if true will set alpha at 0
- * @example // alpha = 1 in 850ms
- * myObject.fadeIn( 850 );
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.fadeIn = function( duration, force, callback )
-{
-  if ( force ) {
-    this.enable = true;
-    this.alpha = 0;
-  }
-  
-  this.fade( this.alpha, 1, duration, force, callback );
-  return this;
-};
-
-/**
- * apply the current fade
- * @protected
- * @memberOf GameObject
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.applyFade = function()
-{
-  if ( !this._fadeData.done ) {
-    this._fadeData.stepVal = __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame / this._fadeData.oDuration
-                            * this._fadeData.dir * this._fadeData.fadeScale;
-    this.alpha += this._fadeData.stepVal * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
-    this._fadeData.duration -= __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
-    
-    if ( ( this._fadeData.dir < 0 && this.alpha <= this._fadeData.to )
-        || ( this._fadeData.dir > 0 && this.alpha >= this._fadeData.to )
-        || this.alpha < 0 || this.alpha > 1 ) {
-      this.alpha = this._fadeData.to;
-    }
-    
-    if ( this._fadeData.duration <= 0 ) {
-      this._fadeData.done = true;
-      
-      if ( this.alpha == 0 ) {
-        this.visible = false;
-      }
-      
-      this.trigger( "fadeEnd", this );
-      
-      if ( this._fadeData.callback ) {
-        this._fadeData.callback.call( this );
-      }
-    }
-  }
-};
-
-/* unused harmony default export */ var _unused_webpack_default_export = (__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */]);
-
-
-/***/ }),
-/* 38 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_GameObject__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Time__ = __webpack_require__(0);
-
-
-
-/**
- * give a target to this gameObject, then it will focus it until you changed or removed it
- * you can lock independent axes, and set offsets
- * @public
- * @memberOf GameObject
- * @param {GameObject} gameObject is the target to focus on
- * @param {Object} [params] optional parameters, set offsets or lock
- * @example // create a fx for your ship, decal a little on left, and lock y
- * fx.focus( player, { lock: { y: true }, offsets: { x: -200, y: 0 } } );
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.focus = function( gameObject, params )
-{
-  params = params || {};
-  this.target = gameObject;
-  this._focusOptions = Object.assign( {
-    x: true,
-    y: true,
-    rotation: false,
-  }, params.options );
-
-  // focus default x/y
-  this._focusOptions.x = this._focusOptions.x !== false ? true : false;
-  this._focusOptions.y = this._focusOptions.y !== false ? true : false;
-
-  this._focusOffsets = Object.assign( { x: 0, y: 0 }, params.offsets || params.offset );
-  
-  return this;
-};
-
-/**
- * apply focus on target if there is one
- * You shouldn't call or change this method
- * @protected
- * @memberOf Camera
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.applyFocus = function()
-{
-  if ( !this.target ) {
-    return;
-  }
-  
-  let pos = this.target;
-  if ( this.target.getWorldPos ) {
-    pos = this.target.getWorldPos();
-  }
-  
-  let parentPos = {};
-  if ( this.parent.getWorldPos ) {
-    parentPos = this.parent.getWorldPos();
-  }
-  else {
-    parentPos = this.parent;
-  }
-  
-  if ( this._focusOptions.x ) {
-    this.x = pos.x + ( this._focusOffsets.x || 0 ) - parentPos.x;
-  }
-  if ( this._focusOptions.y ) {
-    this.y = pos.y + ( this._focusOffsets.y || 0 ) - parentPos.y;
-  }
-  if ( this._focusOptions.rotation ) {
-    this.rotation = this.target.rotation;
-  }
-};
-
-/* unused harmony default export */ var _unused_webpack_default_export = (__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */]);
-
-/***/ }),
-/* 39 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_GameObject__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Time__ = __webpack_require__(0);
-
-
-
-/**
- * create a fluid move translation
- * you can only have one at a time
- * @public
- * @memberOf GameObject
- * @param {Object / GameObject / PIXI.DisplayObject} pos give x, y, and z destination
- * @param {Int} [duration=500] time duration
- * @param {Function} callback will be called in the current object context
- * @example // move to 100,100 in 1 second
- * player.moveTo( { x: 100, y: 100 }, 1000 );
- * @example // move to bonus position
- * player.moveTo( bonus, 1000, function(){ console.log( this ) } );
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.moveTo = function( pos, duration, callback, curveName, forceLocalPos ) // TODO add curveName (not coded)
-{
-  if ( pos.getWorldPos ) {
-    pos = pos.getWorldPos();
-  }
-  
-  var myPos = this;
-  var parentPos = null;
-  
-  if ( !forceLocalPos ) {
-    myPos = this.getWorldPos();
-    
-    if ( this.parent && this.parent.getWorldPos ) {
-      parentPos = this.parent.getWorldPos();
-    }
-  }
-  
-  this._moveData = {
-    "distX"     : - ( myPos.x - ( pos.x !== undefined ? pos.x : myPos.x ) )
-    ,"distY"    : - ( myPos.y - ( pos.y !== undefined ? pos.y : myPos.y ) )
-    ,"distZ"    : - ( myPos.z - ( pos.z !== undefined ? pos.z : myPos.z ) )
-    ,"dirX"     : myPos.x > pos.x ? 1 : -1
-    ,"dirY"     : myPos.y > pos.y ? 1 : -1
-    ,"dirZ"     : myPos.z > pos.z ? 1 : -1
-    ,"duration" : duration || 500
-    ,"oDuration": duration || 500
-    ,"curveName": curveName || "linear"
-    ,"done"     : false
-    ,"stepValX" : 0
-    ,"stepValY" : 0
-    ,"stepValZ" : 0
-    ,"destX"    : parentPos ? pos.x - parentPos.x : pos.x
-    ,"destY"    : parentPos ? pos.y - parentPos.y : pos.y
-    ,"destZ"    : pos.z
-    ,"callback" : callback
-  };
-  this._moveData.leftX = this._moveData.distX;
-  this._moveData.leftY = this._moveData.distY;
-  this._moveData.leftZ = this._moveData.distZ;
-  
-  return this;
-};
-
-/**
- * apply the move transition each update
- * You shouldn't call or change this method
- * @protected
- * @memberOf GameObject
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.applyMove = function()
-{
-  if ( this._moveData.done )
-    return;
-  
-  var move = this._moveData;
-  
-  if ( move.distX != 0 ) {
-    move.stepValX = __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame / move.oDuration * move.distX * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
-    move.leftX -= move.stepValX;
-    this.x += move.stepValX;
-  }
-  
-  if ( move.distY != 0 ) {
-    move.stepValY = __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame / move.oDuration * move.distY * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
-    move.leftY -= move.stepValY * move.dirY; // * dirY because y is inverted
-    this.y += move.stepValY;
-  }
-  
-  if ( move.distZ != 0 ) {
-    move.stepValZ = __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame / move.oDuration * move.distZ * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
-    move.leftZ -= move.stepValZ * move.dirZ; // * dirZ because z is inverted
-    this.z += move.stepValZ;
-  }
-  
-  move.duration -= __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
-  
-  // check pos
-  if ( move.dirX < 0 && move.leftX < 0 ) {
-    this.x += move.leftX;
-  }
-  else if ( move.dirX > 0 && move.leftX > 0 ) {
-    this.x -= move.leftX;
-  }
-  
-  if ( move.dirY < 0 && move.leftY < 0 ) {
-    this.y += move.leftY;
-  }
-  else if ( move.dirY > 0 && move.leftY > 0 ) {
-    this.y -= move.leftY;
-  }
-  
-  if ( move.dirZ < 0 && move.leftZ < 0 ) {
-    this.z += move.leftZ;
-  }
-  else if ( move.dirZ > 0 && move.leftZ > 0 ) {
-    this.z -= move.leftZ;
-  }
-  
-  if ( move.duration <= 0 ) {
-    this._moveData.done = true;
-    this.position.set(
-      move.destX !== undefined ? move.destX : this.x
-      , move.destY !== undefined ? move.destY : this.y
-    );
-    this.z = move.destZ !== undefined ? move.destZ : this.z;
-    
-    this.trigger( "moveEnd" );
-    
-    if ( move.callback ) {
-      move.callback.call( this, move.callback );
-    }
-  }
-};
-
-/* unused harmony default export */ var _unused_webpack_default_export = (__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */]);
-
-
-/***/ }),
-/* 40 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_GameObject__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Time__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_DE_config__ = __webpack_require__(2);
-
-
-
-
-/**
- * Because we use a complex scaling system (with z modifier), we have to use this middle-ware to trigger updateScale
- * if you call directly .scale.set it will work but not if there is a z modifier
- * @public
- * @memberOf GameObject
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.setScale = function( x, y )
-{
-  this.scale.set( x, y );
-  this._updateScale();
-  
-  return this;
-};
-
-/**
- * when z change we restore saved scale, then change it again to final values and update worldScale
- * @private
- * @memberOf GameObject
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype._updateZScale = function()
-{
-  // this come from old Camera render (working fine as excepted...)
-  // zMaxDepth is 10 by default so if z is 1 scale modifier will be 0.9 (1 - 0.1)
-  var zscale = 1 - ( this.z / __WEBPACK_IMPORTED_MODULE_2_DE_config__["a" /* default */].zMaxDepth );
-  this._zscale = zscale;
-  
-  this.scale.x = zscale * this.savedScale.x;
-  this.scale.y = zscale * this.savedScale.y;
-  
-  // update worldScale
-  this._updateWorldScale();
-  for ( var i = 0; i < this.gameObjects.length; ++i )
-  {
-    this.gameObjects[ i ]._updateWorldScale();
-  }
-};
-
-/**
- * when we change the scale manually, we need to re-apply z deformation
- * directly save the old scale before zscale applies (this way we can recalculate things from the beginning)
- * @private
- * @memberOf GameObject
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype._updateScale = function()
-{
-  this.savedScale.copy( this.scale );
-  this.scale.x = this._zscale * this.scale.x;
-  this.scale.y = this._zscale * this.scale.y;
-  
-  // PIXI update worldScale
-  this._updateWorldScale();
-  for ( var i = 0; i < this.gameObjects.length; ++i )
-  {
-    this.gameObjects[ i ]._updateWorldScale();
-  }
-};
-
-/**
- * _updateWorldScale is the same as _updateScale but it take every parent scale in consideration.
- * use worldScale when you want to know what is the "real" scale of the current object
- * for example, with Ship contain Reactor.
- * if Ship.scale = 0.5 then Reactor.wordScale = 0.5
- * if Ship.scale = 0.5 and Reactor.scale = 0.5 then Reactor.worldScale = 0.25
- * @private
- * @memberOf GameObject
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype._updateWorldScale = function()
-{
-  this.worldScale.set( this.scale.x, this.scale.y );
-  
-  if ( !this.parent || !this.parent._isGameObject ) {
-    return;
-  }
-  
-  this.worldScale.x = this.worldScale.x * this.parent.worldScale.x;
-  this.worldScale.y = this.worldScale.y * this.parent.worldScale.y;
-  
-  return this;
-};
-
-/**
- * create a fluid scale
- * you can only have one at a time
- * @public
- * @memberOf GameObject
- * @param {Object} scale give final x, and final y
- * @param {Int} [duration=500] time duration
- * @example // scale to 2,3 in 1 second
- * myGameObject.scaleTo( { x: 2, y: 3 }, 1000 );
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.scaleTo = function( scale, duration, callback )
-{
-  var dscale = {
-    "x"     : !isNaN( scale ) ? scale : scale.x
-    ,"y"    : !isNaN( scale ) ? scale : scale.y
-  };
-  this._scaleData = {
-    "valX"      : - ( this.savedScale.x - ( dscale.x !== undefined ? dscale.x : this.savedScale.x ) )
-    ,"valY"     : - ( this.savedScale.y - ( dscale.y !== undefined ? dscale.y : this.savedScale.y ) )
-    ,"dirX"     : this.savedScale.x > dscale.x ? 1 : -1
-    ,"dirY"     : this.savedScale.y > dscale.y ? 1 : -1
-    ,"duration" : duration || 500
-    ,"oDuration": duration || 500
-    ,"done"     : false
-    ,"stepValX" : 0
-    ,"stepValY" : 0
-    ,"destX"    : dscale.x
-    ,"destY"    : dscale.y
-    ,"scaleX"   : this.savedScale.x
-    ,"scaleY"   : this.savedScale.y
-    ,"callback" : callback
-  };
-  this._scaleData.leftX = this._scaleData.valX;
-  this._scaleData.leftY = this._scaleData.valY;
-  
-  return this;
-};
-
-/**
- * apply the current scale
- * @protected
- * @memberOf GameObject
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.applyScale = function()
-{
-  if ( this._scaleData.done ) {
-    return;
-  }
-  
-  var scaleD = this._scaleData;
-  
-  if ( scaleD.valX != 0 ) {
-    scaleD.stepValX = __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame / scaleD.oDuration * scaleD.valX * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
-    scaleD.leftX    -= scaleD.stepValX;
-    scaleD.scaleX   += scaleD.stepValX;
-  }
-  
-  if ( scaleD.valY != 0 ) {
-    scaleD.stepValY = __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame / scaleD.oDuration * scaleD.valY * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
-    scaleD.leftY    -= scaleD.stepValY;
-    scaleD.scaleY   += scaleD.stepValY;
-  }
-  scaleD.duration -= __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
-  
-  // check scale
-  if ( scaleD.dirX < 0 && scaleD.leftX < 0 ) {
-    scaleD.scaleX += scaleD.leftX;
-  }
-  else if ( scaleD.dirX > 0 && scaleD.leftX > 0 ) {
-    scaleD.scaleX -= scaleD.leftX;
-  }
-  
-  if ( scaleD.dirY < 0 && scaleD.leftY < 0 ) {
-    scaleD.scaleY += scaleD.leftY;
-  }
-  else if ( scaleD.dirY > 0 && scaleD.leftY > 0 ) {
-    scaleD.scaleY -= scaleD.leftY;
-  }
-  
-  this.scale.set( scaleD.scaleX, scaleD.scaleY );
-  
-  if ( scaleD.duration <= 0 ) {     
-    this._scaleData.done = true;
-    this.scale.set( scaleD.destX, scaleD.destY );
-    
-    this.emit( "scale-end", this );
-          
-    if ( this._scaleData.callback ) {
-      this._scaleData.callback.call( this );
-    }
-  }
-  
-  this._updateScale();
-};
-
-/* unused harmony default export */ var _unused_webpack_default_export = (__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */]);
-
-
-/***/ }),
-/* 41 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_DE_GameObject__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_Time__ = __webpack_require__(0);
-
-
-
-/**
- * create a shake with given range
- * you can only have one at a time
- * @public
- * @memberOf GameObject
- * @param {Int} xRange max X gameObject will move to shake
- * @param {Int} yRange max Y gameObject will move to shake
- * @param {Int} [duration=500] time duration
- * @example // shake with 10-10 force during 1sec
- * player.shake( 10, 10, 1000 );
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.shake = function( xRange, yRange, duration, callback )
-{
-  this._shakeData = {
-    // "startedAt" : Date.now()
-    "duration"  : duration || 500
-    ,"xRange"   : xRange
-    ,"yRange"   : yRange
-    ,"prevX"    : this._shakeData ? this._shakeData.prevX : 0
-    ,"prevY"    : this._shakeData ? this._shakeData.prevY : 0
-    ,"callback" : callback
-  };
-  
-  return this;
-};
-
-/**
- * apply the shake each update
- * You shouldn't call or change this method
- * @protected
- * @memberOf GameObject
- */
-__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.applyShake = function()
-{
-  if ( this._shakeData.done ) {
-    return;
-  }
-  
-  var shake = this._shakeData;
-  // restore previous shake
-  this.x -= shake.prevX;
-  this.y -= shake.prevY;
-  shake.duration -= __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].timeSinceLastFrame * __WEBPACK_IMPORTED_MODULE_1_DE_Time__["a" /* default */].scaleDelta;
-  // old way - Date.now() - this._shakeData.startedAt > this._shakeData.duration )
-  if ( shake.duration <= 0 ) {
-    shake.done = true;
-    shake.prevX = 0;
-    shake.prevY = 0;
-    
-    this.trigger( "shakeEnd" );
-    
-    if ( shake.callback ) {
-      shake.callback.call( this );
-    }
-    return;
-  }
-  
-  shake.prevX = - ( Math.random() * shake.xRange ) + ( Math.random() * shake.xRange ) >> 0;
-  shake.prevY = - ( Math.random() * shake.yRange ) + ( Math.random() * shake.yRange ) >> 0;
-  
-  this.x += shake.prevX;
-  this.y += shake.prevY;
-};
-
-/* unused harmony default export */ var _unused_webpack_default_export = (__WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */]);
-
-
-/***/ }),
-/* 42 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_PIXI___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_PIXI__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_DE_BaseRenderer__ = __webpack_require__(5);
 
@@ -50498,12 +50707,12 @@ __WEBPACK_IMPORTED_MODULE_0_DE_GameObject__["a" /* default */].prototype.applySh
 
 function TextureRenderer( params )
 {
-  if ( !params.spriteName && !params.spriteUrl && !params.textureName ) {
-    console.error( "A TextureRenderer need a spriteName or a spriteUrl argument" );
+  if ( !params.spriteName && !params.spriteUrl && !params.textureName && !params.texture ) {
+    console.error( "A TextureRenderer need a spriteName, a spriteUrl argument or a texture" );
     return;
   }
   
-  __WEBPACK_IMPORTED_MODULE_0_PIXI__["Sprite"].call( this, __WEBPACK_IMPORTED_MODULE_0_PIXI__["utils"].TextureCache[ params.spriteName || params.spriteUrl || params.textureName ] );
+  __WEBPACK_IMPORTED_MODULE_0_PIXI__["Sprite"].call( this, params.texture ? params.texture : __WEBPACK_IMPORTED_MODULE_0_PIXI__["utils"].TextureCache[ params.spriteName || params.spriteUrl || params.textureName ] );
   __WEBPACK_IMPORTED_MODULE_1_DE_BaseRenderer__["a" /* default */].instantiate( this, params );
 }
 

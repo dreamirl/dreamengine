@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "dependencies": {
     "howler": "^2.1.1",
+    "local-storage": "^2.0.0",
     "pixi.js": "^4.8.5"
   },
   "devDependencies": {
@@ -40,7 +41,6 @@
   "homepage": "https://github.com/Dreamirl/Dreamengine#readme",
   "alias": {
     "PIXI": "pixi.js",
-    "stash": "./src/ext_libs/stash",
     "howler-spatial": "node_modules/howler/dist/howler.spatial.min",
     "DE.MainLoop": "./src/MainLoop",
     "DE.about": "./src/about",
