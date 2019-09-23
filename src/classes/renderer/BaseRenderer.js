@@ -99,10 +99,12 @@ BaseRenderer.applyFade = function()
     return;
   }
 
-  this.fadeData.stepVal = Time.timeSinceLastFrame / this.fadeData.oDuration
+  this.fadeData.stepVal = Time.frameDelay / this.fadeData.oDuration
                           * this.fadeData.dir * this.fadeData.fadeScale;
+
   this.alpha += this.fadeData.stepVal * Time.scaleDelta;
-  this.fadeData.duration -= Time.timeSinceLastFrame * Time.scaleDelta;
+  this.fadeData.duration -= Time.frameDelayScaled;
+
   if ( ( this.fadeData.dir < 0 && this.alpha <= this.fadeData.to )
       || ( this.fadeData.dir > 0 && this.alpha >= this.fadeData.to )
       || this.alpha < 0 || this.alpha > 1 ) {
@@ -250,18 +252,18 @@ BaseRenderer.applyScale = function()
   var scaleD = this.scaleData;
   
   if ( scaleD.valX != 0 ) {
-    scaleD.stepValX = Time.timeSinceLastFrame / scaleD.oDuration * scaleD.valX * Time.scaleDelta;
+    scaleD.stepValX = Time.frameDelayScaled / scaleD.oDuration * scaleD.valX;
     scaleD.leftX    -= scaleD.stepValX;
     scaleD.scaleX   += scaleD.stepValX;
   }
   
   if ( scaleD.valY != 0 ) {
-    scaleD.stepValY = Time.timeSinceLastFrame / scaleD.oDuration * scaleD.valY * Time.scaleDelta;
+    scaleD.stepValY = Time.frameDelayScaled / scaleD.oDuration * scaleD.valY;
     scaleD.leftY    -= scaleD.stepValY;
     scaleD.scaleY   += scaleD.stepValY;
   }
   
-  scaleD.duration -= Time.timeSinceLastFrame * Time.scaleDelta;
+  scaleD.duration -= Time.frameDelayScaled;
   
   // check scale
   if ( scaleD.dirX < 0 && scaleD.leftX < 0 ) {

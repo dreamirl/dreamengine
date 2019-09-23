@@ -102,10 +102,10 @@ GameObject.prototype.fadeIn = function( duration, force, callback )
 GameObject.prototype.applyFade = function()
 {
   if ( !this._fadeData.done ) {
-    this._fadeData.stepVal = Time.timeSinceLastFrame / this._fadeData.oDuration
+    this._fadeData.stepVal = Time.frameDelayScaled / this._fadeData.oDuration
                             * this._fadeData.dir * this._fadeData.fadeScale;
-    this.alpha += this._fadeData.stepVal * Time.scaleDelta;
-    this._fadeData.duration -= Time.timeSinceLastFrame * Time.scaleDelta;
+    this.alpha += this._fadeData.stepVal;
+    this._fadeData.duration -= Time.frameDelayScaled;
     
     if ( ( this._fadeData.dir < 0 && this.alpha <= this._fadeData.to )
         || ( this._fadeData.dir > 0 && this.alpha >= this._fadeData.to )

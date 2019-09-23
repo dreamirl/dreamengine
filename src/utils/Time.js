@@ -28,26 +28,13 @@ const Time = new function ()
     }
     
     this.currentTime = Date.now();
-    this.timeSinceLastFrame = ( this.currentTime - this.lastCalcul );
-    
-    if ( this.timeSinceLastFrame < this.frameDelay ) {
-      return false;
-    }
+    this.timeSinceLastFrame += ( this.currentTime - this.lastCalcul );
+    this.timeSinceLastFrame = Math.min( this.timeSinceLastFrame, this.frameDelay * 6 );
     
     this.fps = Math.floor( 1000 / this.timeSinceLastFrame );
     
     this.deltaTime = this.timeSinceLastFrame / this.frameDelay * this.scaleDelta;
-    this.missedFrame = this.deltaTime;
-    if ( this.deltaTime > 2 ) {
-      this.deltaTime = this.deltaTime % 1;
-      if ( this.deltaTime < 1 )
-        this.deltaTime += 1;
-    }
-    if ( this.deltaTime < 0 ) {
-      this.deltaTime += 1;
-    }
-    this.missedFrame = this.missedFrame - this.deltaTime;
-    this.timeSinceLastFrameScaled = ( this.currentTime - this.lastCalcul ) * this.scaleDelta;
+    this.frameDelayScaled = this.frameDelay * this.scaleDelta;
     this.lastCalcul = this.currentTime;
     
     return true;

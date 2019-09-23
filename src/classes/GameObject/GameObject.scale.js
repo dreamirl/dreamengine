@@ -134,17 +134,17 @@ GameObject.prototype.applyScale = function()
   var scaleD = this._scaleData;
   
   if ( scaleD.valX != 0 ) {
-    scaleD.stepValX = Time.timeSinceLastFrame / scaleD.oDuration * scaleD.valX * Time.scaleDelta;
+    scaleD.stepValX = Time.frameDelayScaled / scaleD.oDuration * scaleD.valX;
     scaleD.leftX    -= scaleD.stepValX;
     scaleD.scaleX   += scaleD.stepValX;
   }
   
   if ( scaleD.valY != 0 ) {
-    scaleD.stepValY = Time.timeSinceLastFrame / scaleD.oDuration * scaleD.valY * Time.scaleDelta;
+    scaleD.stepValY = Time.frameDelayScaled / scaleD.oDuration * scaleD.valY;
     scaleD.leftY    -= scaleD.stepValY;
     scaleD.scaleY   += scaleD.stepValY;
   }
-  scaleD.duration -= Time.timeSinceLastFrame * Time.scaleDelta;
+  scaleD.duration -= Time.frameDelayScaled;
   
   // check scale
   if ( scaleD.dirX < 0 && scaleD.leftX < 0 ) {

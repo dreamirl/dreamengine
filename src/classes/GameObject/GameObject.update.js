@@ -18,29 +18,22 @@ GameObject.prototype.update = function( time )
   for ( var a in this._automatisms )
   {
     var auto = this._automatisms[ a ];
-    auto.timeSinceLastCall = time - auto.lastCall;
-    if ( auto.timeSinceLastCall < auto.interval / Time.scaleDelta ){
-      continue;
-    }
+    auto.timeSinceLastCall += Time.frameDelayScaled;
     
-    if ( auto.timeSinceLastCall - auto.interval < auto.interval ) {
-      auto.lastCall = time - ( auto.timeSinceLastCall - auto.interval / Time.scaleDelta );
-    }
-    else {
-      auto.lastCall = time;
-    }
-
-    // i think calling apply each update is slower than calling v1/v2. Should benchmark this
-    if ( auto.args ) {
-      this[ auto.methodName ].apply( this, auto.args );
-    }
-    else {
-      this[ auto.methodName ]( auto.value1, auto.value2 );
-    }
-    
-    // if this one isn't persistent delete it
-    if ( !auto.persistent ) {
-      delete this._automatisms[ a ];
+    if( auto.timeSinceLastCall > auto.interval )  {
+      auto.timeSinceLastCall -= auto.interval;
+      // i think calling apply each update is slower than calling v1/v2. Should benchmark this
+      if ( auto.args ) {
+        this[ auto.methodName ].apply( this, auto.args );
+      }
+      else {
+        this[ auto.methodName ]( auto.value1, auto.value2 );
+      }
+      
+      // if this one isn't persistent delete it
+      if ( !auto.persistent ) {
+        delete this._automatisms[ a ];
+      }
     }
   }
   
@@ -65,7 +58,7 @@ GameObject.prototype.update = function( time )
     for ( var i = 0, r; r = this.renderers[ i ]; ++i )
     {
       if ( r.update ) {
-        r.update();
+        r.update( Time.deltaTime );
       }
       
       if ( r.applyFade ) {
