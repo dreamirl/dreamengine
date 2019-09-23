@@ -33,7 +33,7 @@ const Time = new function ()
     
     this.fps = Math.floor( 1000 / this.timeSinceLastFrame );
     
-    this.deltaTime = this.timeSinceLastFrame / this.frameDelay * this.scaleDelta;
+    this.deltaTime = this.scaleDelta;
     this.frameDelayScaled = this.frameDelay * this.scaleDelta;
     this.lastCalcul = this.currentTime;
     
