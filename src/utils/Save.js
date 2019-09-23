@@ -1,4 +1,4 @@
-import stash from 'stash';
+import localStorage from 'local-storage';
 import config from 'DE.config';
 import about from 'DE.about';
 import Events from 'DE.Events';
@@ -46,7 +46,7 @@ var Save = new function()
     
     this.version = about.version;
     if ( ignoreVersion ) {
-      this.version = stash.get( this.namespace );
+      this.version = localStorage.get( this.namespace );
     }
     
     this.saveModel = saveModel;
@@ -54,7 +54,7 @@ var Save = new function()
     // load save from storage
     for ( var i in this.saveModel )
     {
-      this.saveModel[ i ] = stash.get( this.namespace + this.version + i ) || this.saveModel[ i ];
+      this.saveModel[ i ] = localStorage.get( this.namespace + this.version + i ) || this.saveModel[ i ];
     }
     
     this.loadSave( this.saveModel, true );
@@ -68,15 +68,15 @@ var Save = new function()
     // clean the localStorage to prevent zombie storage because upgraded version
     for ( var i in this.saveModel )
     {
-      stash.cut( this.namespace + this.version + i );
+      localStorage.remove( this.namespace + this.version + i );
     }
     
     // setup the last version of the game, and rewrite datas
     this.version = about.version;
-    stash.set( this.namespace, this.version );
+    localStorage.set( this.namespace, this.version );
     for ( var i in this.saveModel )
     {
-      stash.set( this.namespace + this.version + i, this.saveModel[ i ] );
+      localStorage.set( this.namespace + this.version + i, this.saveModel[ i ] );
     }
   };
   
@@ -114,7 +114,7 @@ var Save = new function()
   this.get = function( key )
   {
     if ( !( key in this.saveModel ) ) {
-      this.saveModel[ key ] = stash.get( this.namespace + this.version + key )
+      this.saveModel[ key ] = localStorage.get( this.namespace + this.version + key )
         || this.saveModel[ key ];
     }
     return this.saveModel[ key ];
@@ -141,7 +141,7 @@ var Save = new function()
       this.saveModel[ nkey ][ path[ 1 ] ] = value;
       
       if ( this.useLocalStorage ) {
-        stash.set( this.namespace + this.version + nkey, this.saveModel[ nkey ] );
+        localStorage.set( this.namespace + this.version + nkey, this.saveModel[ nkey ] );
       }
     }
     else if ( path.length == 1 ) {
@@ -151,7 +151,7 @@ var Save = new function()
       this.saveModel[ nkey ] = value;
       
       if ( this.useLocalStorage ) {
-        stash.set( this.namespace + this.version + nkey, value );
+        localStorage.set( this.namespace + this.version + nkey, value );
       }
     }
     Events.trigger( "Save-save", this.saveModel );
@@ -171,7 +171,7 @@ var Save = new function()
     }
     for ( var i in this.saveModel )
     {
-      stash.set( this.namespace + this.version + i, this.saveModel[ i ] );
+      localStorage.set( this.namespace + this.version + i, this.saveModel[ i ] );
     }
   };
   Events.on( "unload-game", this.saveAll, this );
@@ -188,12 +188,12 @@ var Save = new function()
     if ( !this.useLocalStorage ) {
       return;
     }
-    stash.set( this.namespace + "achievements", userAchievements );
+    localStorage.set( this.namespace + "achievements", userAchievements );
   };
   
   this.loadAchievements = function()
   {
-    return stash.get( this.namespace + "achievements" ) || {};
+    return localStorage.get( this.namespace + "achievements" ) || {};
   };
 }
 
