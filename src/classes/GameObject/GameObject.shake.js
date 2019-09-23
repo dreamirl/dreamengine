@@ -43,7 +43,7 @@ GameObject.prototype.applyShake = function()
   // restore previous shake
   this.x -= shake.prevX;
   this.y -= shake.prevY;
-  shake.duration -= Time.timeSinceLastFrame * Time.scaleDelta;
+  shake.duration -= Time.frameDelayScaled;
   // old way - Date.now() - this._shakeData.startedAt > this._shakeData.duration )
   if ( shake.duration <= 0 ) {
     shake.done = true;

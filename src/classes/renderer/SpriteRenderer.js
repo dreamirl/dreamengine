@@ -426,7 +426,7 @@ SpriteRenderer.prototype.update = function()
     return;
   }
   
-  this._nextAnim -= Time.timeSinceLastFrameScaled;
+  this._nextAnim -= Time.frameDelayScaled;
   if ( this._nextAnim > 0 ) {
     return;
   }

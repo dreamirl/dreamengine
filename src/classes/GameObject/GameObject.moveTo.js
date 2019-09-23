@@ -71,24 +71,24 @@ GameObject.prototype.applyMove = function()
   var move = this._moveData;
   
   if ( move.distX != 0 ) {
-    move.stepValX = Time.timeSinceLastFrame / move.oDuration * move.distX * Time.scaleDelta;
+    move.stepValX = Time.frameDelayScaled / move.oDuration * move.distX;
     move.leftX -= move.stepValX;
     this.x += move.stepValX;
   }
   
   if ( move.distY != 0 ) {
-    move.stepValY = Time.timeSinceLastFrame / move.oDuration * move.distY * Time.scaleDelta;
+    move.stepValY = Time.frameDelayScaled / move.oDuration * move.distY;
     move.leftY -= move.stepValY * move.dirY; // * dirY because y is inverted
     this.y += move.stepValY;
   }
   
   if ( move.distZ != 0 ) {
-    move.stepValZ = Time.timeSinceLastFrame / move.oDuration * move.distZ * Time.scaleDelta;
+    move.stepValZ = Time.frameDelayScaled / move.oDuration * move.distZ;
     move.leftZ -= move.stepValZ * move.dirZ; // * dirZ because z is inverted
     this.z += move.stepValZ;
   }
   
-  move.duration -= Time.timeSinceLastFrame * Time.scaleDelta;
+  move.duration -= Time.frameDelayScaled;
   
   // check pos
   if ( move.dirX < 0 && move.leftX < 0 ) {
