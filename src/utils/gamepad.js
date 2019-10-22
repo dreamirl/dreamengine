@@ -127,6 +127,10 @@ var gamepads = new function()
         }
       }*/
     }
+
+    window.addEventListener( "MozGamepadConnected", gamepadConnected, false );
+    window.addEventListener( "gamepadconnected", gamepadConnected, false );
+    // window.addEventListener( "gamepaddisconnected", gamepadDisconnected, false ); // TODO
   }
   
   var bindWindowController = function( gamepadState )
@@ -247,10 +251,6 @@ var gamepads = new function()
     }
     _gamepads.length++;
   }
-  
-  window.addEventListener( "MozGamepadConnected", gamepadConnected, false );
-  window.addEventListener( "gamepadconnected", gamepadConnected, false );
-  // window.addEventListener( "gamepaddisconnected", gamepadDisconnected, false ); // TODO
   
   //Utilities
   this.connectToGameLoop = function( gameLoop )

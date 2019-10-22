@@ -72,8 +72,7 @@ var Notifications = new function()
     }
     
     if ( !this.inited ) {
-      console.log( "Notifications: You didn't called Notifications.init" );
-      return;
+      throw( "Notifications: You didn't called Notifications.init" );
     }
     
     this.notifsHeight = this.notifsHeight < 0 ? 0 : this.notifsHeight;
