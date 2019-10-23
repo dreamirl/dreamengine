@@ -22,6 +22,7 @@ import Scene         from 'DE.Scene';
 import Gui           from 'DE.Gui';
 import Camera        from 'DE.Camera';
 import Vector2       from 'DE.Vector2';
+import Platform       from 'DE.Platform';
 
 // engine custom renderer
 import BaseRenderer          from 'DE.BaseRenderer';
@@ -35,33 +36,34 @@ import GameObject            from 'DE.GameObject';
 import GameObject_update     from 'DE.GameObject.update';
 
 var DE = {
-  config         : config,
-  about          : about,
-  Events         : Events,
-  Time           : Time,
-  MainLoop       : MainLoop,
-  Save           : Save,
-  Inputs         : Inputs,
-  gamepad        : gamepad,
-  Audio          : Audio,
-  Localization   : Localization,
-  Notifications  : Notifications,
-  Achievements   : Achievements,
-  ImageManager   : ImageManager,
-  Render         : Render,
-  Scene          : Scene,
-  Gui            : Gui,
-  Camera         : Camera,
-  Vector2        : Vector2,
-  BaseRenderer   : BaseRenderer,
-  TextureRenderer: TextureRenderer,
-  SpriteRenderer : SpriteRenderer,
-  TilingRenderer : TilingRenderer,
-  TextRenderer   : TextRenderer,
-  RectRenderer   : RectRenderer,
-  GraphicRenderer: GraphicRenderer,
-  GameObject     : GameObject,
-  PIXI           : PIXI
+  config,
+  about,
+  Events,
+  Time,
+  MainLoop,
+  Save,
+  Inputs,
+  gamepad,
+  Audio,
+  Localization,
+  Notifications,
+  Platform,
+  Achievements,
+  ImageManager,
+  Render,
+  Scene,
+  Gui,
+  Camera,
+  Vector2,
+  BaseRenderer,
+  TextureRenderer,
+  SpriteRenderer,
+  TilingRenderer,
+  TextRenderer,
+  RectRenderer,
+  GraphicRenderer,
+  GameObject,
+  PIXI,
 };
 
 DE.VERSION = DE.config.VERSION;
@@ -126,25 +128,27 @@ DE.init = function( params )
   }
   this.customOnLoad = params.onLoad || function(){ console.log( "You have to give a onLoad callback to the DE.init options" ); };
   
-  DE.ImageManager.init( params.images.baseUrl, params.images.pools );
-  
   DE.emit( "change-debug", DE.config.DEBUG, DE.config.DEBUG_LEVEL );
   
-  // load the loader sprite image
-  params.loader = params.loader || {};
-  var loader = [
-    "loader"
-    , params.loader.url || "loader.png"
-    , {
-      totalFrame : params.loader.totalFrame || 16
-      ,interval  : params.loader.interval || 45
-      ,animated  : params.loader.animated !== undefined ? params.loader.animated : true
-      ,scale     : params.loader.scale || 1
-    }
-  ];
-  DE.Events.once( "ImageManager-loader-loaded", function() { DE.MainLoop.updateLoaderImage( loader ); } );
-  
-  DE.ImageManager.load( loader );
+  if (!DE.Platform.preventEngineLoader) {
+    DE.ImageManager.init( params.images.baseUrl, params.images.pools );
+    
+    // load the loader sprite image
+    params.loader = params.loader || {};
+    var loader = [
+      "loader"
+      , params.loader.url || "loader.png"
+      , {
+        totalFrame : params.loader.totalFrame || 16
+        ,interval  : params.loader.interval || 45
+        ,animated  : params.loader.animated !== undefined ? params.loader.animated : true
+        ,scale     : params.loader.scale || 1
+      }
+    ];
+    DE.Events.once( "ImageManager-loader-loaded", function() { DE.MainLoop.updateLoaderImage( loader ); } );
+    DE.ImageManager.load( loader );
+  }
+
   DE.___params = params;
   
   params.onReady();
@@ -155,11 +159,8 @@ DE.init = function( params )
 // this is called when the pool "default" is loaded (the MainLoop will display a loader)
 DE.onLoad = function()
 {
-  setTimeout( function()
-  {
-    DE.customOnLoad();
-    DE.MainLoop.displayLoader = false;
-  }, 500 );
+  DE.customOnLoad();
+  DE.MainLoop.displayLoader = false;
 };
 
 var _defaultPoolName = "default";
@@ -169,15 +170,23 @@ DE.start = function()
   DE.Audio.loadAudios( DE.___params.audios || [] );
   delete DE.___params;
   
-  DE.MainLoop.createLoader();
   DE.MainLoop.launched = true;
   DE.MainLoop.loop();
   
-  DE.MainLoop.displayLoader = true;
-  DE.Events.once( "ImageManager-pool-" + _defaultPoolName + "-loaded", this.onLoad, this );
-  DE.ImageManager.loadPool( _defaultPoolName );
-  
-  DE.emit( "change-debug", DE.config.DEBUG, DE.config.DEBUG_LEVEL );
+  DE.Platform.beforeStartingEngine().then(() => {
+    console.log("---------------------onload")
+    if (!DE.Platform.preventEngineLoader) {
+      DE.MainLoop.createLoader();
+      DE.MainLoop.displayLoader = true;
+      DE.Events.once( "ImageManager-pool-" + _defaultPoolName + "-loaded",
+        function () { setTimeout( () =>DE.onLoad(), 500 ); });
+      DE.ImageManager.loadPool( _defaultPoolName );
+    } else {
+      this.onLoad();
+    }
+    
+    DE.emit( "change-debug", DE.config.DEBUG, DE.config.DEBUG_LEVEL );
+  });
 };
 
 // pause / unpause the game
