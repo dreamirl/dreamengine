@@ -174,7 +174,6 @@ DE.start = function()
   DE.MainLoop.loop();
   
   DE.Platform.beforeStartingEngine().then(() => {
-    console.log("---------------------onload")
     if (!DE.Platform.preventEngineLoader) {
       DE.MainLoop.createLoader();
       DE.MainLoop.displayLoader = true;
