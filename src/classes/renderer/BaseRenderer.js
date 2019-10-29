@@ -49,19 +49,30 @@ const BaseRenderer = new function()
   {
     if ( params ) {
       target.alpha = params.alpha || params.opacity || 1;
-      target.scale.x = params.scaleX || ( params.scale ? ( params.scale.x || params.scale ) : 1 );
-      target.scale.y = params.scaleY || ( params.scale ? ( params.scale.y || params.scale ) : 1 );
-      delete params.scale;
+      params.scale = {
+        x: params.scaleX || ( params.scale ? ( params.scale.x || params.scale ) : 1 ),
+        y: params.scaleY || ( params.scale ? ( params.scale.y || params.scale ) : 1 )
+      };
+      if (params.size) {
+        params.width = params.size;
+        params.height = params.size;
+      }
       delete params.scaleY;
       delete params.scaleX;
       delete params.opacity;
+      delete params.size;
       
       for ( var i in params )
       {
-        if ( _ignore.indexOf( i ) !== -1 ) {
-          continue;
+        if (target[i] && target[i].set) {
+          if (params[i].x !== undefined) {
+            target[i].set(params[i].x, params[i].y)
+          } else {
+            target[i].set(params[ i ]);
+          }
+        } else {
+          target[ i ] = params[ i ];
         }
-        target[ i ] = params[ i ];
       }
     }
     
