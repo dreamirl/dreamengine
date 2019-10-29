@@ -40,10 +40,19 @@ function TextRenderer( text, params )
     }
     delete _params.localizationKey;
   }
-  PIXI.Text.call( this, text, new PIXI.TextStyle( _params.textStyle ) );
+
+  PIXI.Text.call(this, text, new PIXI.TextStyle( _params.textStyle ));
   delete _params.textStyle;
-  
+
   BaseRenderer.instantiate( this, _params );
+
+  if (_params.maxWidth) {
+    let textMetrics = new PIXI.TextMetrics.measureText(text, this.style);
+
+    if (textMetrics.width > _params.maxWidth) {
+      this.setScale(_params.maxWidth / textMetrics.width);
+    }
+  }
 }
 
 TextRenderer.prototype = Object.create( PIXI.Text.prototype );
