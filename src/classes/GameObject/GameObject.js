@@ -479,7 +479,7 @@ GameObject.prototype.lookAt = function( vector2, angleOffset )
  */
 GameObject.prototype.addRenderer = function( rd )
 {
-  if ( rd.anchor && !rd.preventCenter ) {
+  if ( rd.anchor && !rd.preventCenter && rd.anchor.x === 0 && rd.anchor.y === 0 ) {
     rd.anchor.set( 0.5, 0.5 );
   }
   
@@ -599,6 +599,20 @@ GameObject.prototype.delete = function( object )
   var target = this.remove( object );
   
   target.killMePlease();
+  return this;
+};
+
+/**
+ * delete all children objects
+ * @protected
+ * @memberOf GameObject
+ */
+GameObject.prototype.deleteAll = function()
+{
+  while(this.gameObjects.length) {
+    var target = this.remove(0);
+    target.killMePlease();
+  }
   return this;
 };
 
