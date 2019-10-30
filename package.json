@@ -69,6 +69,7 @@
     "DE.TextRenderer": "./src/classes/renderer/TextRenderer",
     "DE.GraphicRenderer": "./src/classes/renderer/GraphicRenderer",
     "DE.RectRenderer": "./src/classes/renderer/RectRenderer",
+    "DE.NineSliceRenderer": "./src/classes/renderer/NineSliceRenderer",
     "DE.GameObject": "./src/classes/GameObject/GameObject",
     "DE.GameObject.automatisms": "./src/classes/GameObject/GameObject.automatisms",
     "DE.GameObject.fade": "./src/classes/GameObject/GameObject.fade",

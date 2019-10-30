@@ -31,6 +31,7 @@ import TilingRenderer        from 'DE.TilingRenderer';
 import TextRenderer          from 'DE.TextRenderer';
 import RectRenderer          from 'DE.RectRenderer';
 import GraphicRenderer       from 'DE.GraphicRenderer';
+import NineSliceRenderer     from 'DE.NineSliceRenderer';
 import GameObject            from 'DE.GameObject';
 import GameObject_update     from 'DE.GameObject.update';
 
@@ -60,6 +61,7 @@ var DE = {
   TextRenderer,
   RectRenderer,
   GraphicRenderer,
+  NineSliceRenderer,
   GameObject,
   PIXI
 };
