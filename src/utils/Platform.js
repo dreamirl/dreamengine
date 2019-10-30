@@ -27,8 +27,11 @@ var Platform = new function() {
    * Call this before everything, but just after upgrading the Platform
    * to the current platform targeted
    */
-  this.init = function() {
-    return Promise.resolve();
+  this.init = function(params, callback) {
+    return new Promise((res) => {
+      setTimeout(() => callback());
+      return res();
+    });
   };
 
   /**

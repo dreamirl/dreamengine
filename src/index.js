@@ -22,7 +22,7 @@ import Scene         from 'DE.Scene';
 import Gui           from 'DE.Gui';
 import Camera        from 'DE.Camera';
 import Vector2       from 'DE.Vector2';
-import Platform       from 'DE.Platform';
+import Platform      from 'DE.Platform';
 
 // engine custom renderer
 import BaseRenderer          from 'DE.BaseRenderer';
@@ -173,20 +173,30 @@ DE.start = function()
   DE.MainLoop.launched = true;
   DE.MainLoop.loop();
   
-  DE.Platform.beforeStartingEngine().then(() => {
-    if (!DE.Platform.preventEngineLoader) {
-      DE.MainLoop.createLoader();
-      DE.MainLoop.displayLoader = true;
-      DE.Events.once( "ImageManager-pool-" + _defaultPoolName + "-loaded",
-        function () { setTimeout( () =>DE.onLoad(), 500 ); });
-      DE.ImageManager.loadPool( _defaultPoolName );
-    } else {
-      this.onLoad();
-    }
-    
-    DE.emit( "change-debug", DE.config.DEBUG, DE.config.DEBUG_LEVEL );
-  });
+  DE.Platform.beforeStartingEngine()
+  .catch(e => console.error(e))
+  .then(() => {
+    // hack to leave the promise context swallowing throws
+    setTimeout(() => {
+      if (!DE.Platform.preventEngineLoader) {
+        DE.MainLoop.createLoader();
+        DE.MainLoop.displayLoader = true;
+        DE.Events.once( "ImageManager-pool-" + _defaultPoolName + "-loaded",
+          function () { setTimeout( () => DE.onLoad(), 500 ); });
+        DE.ImageManager.loadPool( _defaultPoolName );
+      } else {
+        this.onLoad();
+      }
+    })
+  })
+  DE.emit( "change-debug", DE.config.DEBUG, DE.config.DEBUG_LEVEL );
 };
+
+window.addEventListener('unhandledrejection', function(event) {
+  // the event object has two special properties:
+  console.error(event.promise); // [object Promise] - the promise that generated the error
+  console.error(event.reason); // Error: Whoops! - the unhandled error object
+});
 
 // pause / unpause the game
 DE.pause = function()
