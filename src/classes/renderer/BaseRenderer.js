@@ -190,7 +190,7 @@ BaseRenderer.fadeOut = function( duration, force )
 {
   this.sleep = false;
   if ( force ) {
-    this.alpha = 1;
+    this.alpha = this.alpha > 0 ? this.alpha : 1; // make sure to prevent any blink side effect
   }
   this.fade( this.alpha, 0, duration );
 };
@@ -209,7 +209,7 @@ BaseRenderer.fadeIn = function( duration, force )
 {
   this.sleep = false;
   if ( force ) {
-    this.alpha = 0;
+    this.alpha = this.alpha < 1 ? this.alpha : 0; // make sure to prevent any blink side effect
   }
   this.fade( this.alpha, 1, duration );
 };

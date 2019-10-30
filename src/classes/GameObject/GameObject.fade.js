@@ -66,7 +66,7 @@ GameObject.prototype.fadeOut = function( duration, force, callback )
 {
   if ( force ) {
     this.enable = true;
-    this.alpha = 1;
+    this.alpha = this.alpha > 0 ? this.alpha : 1; // make sure to prevent any blink side effect
   }
   
   this.fade( this.alpha, 0, duration, force, callback );
@@ -87,7 +87,7 @@ GameObject.prototype.fadeIn = function( duration, force, callback )
 {
   if ( force ) {
     this.enable = true;
-    this.alpha = 0;
+    this.alpha = this.alpha < 1 ? this.alpha : 0; // make sure to prevent any blink side effect
   }
   
   this.fade( this.alpha, 1, duration, force, callback );
