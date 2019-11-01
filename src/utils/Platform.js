@@ -37,37 +37,16 @@ var Platform = new function() {
   /**
    * beforeStartingEngine
    * @memberOf Platform 
-   * Must be called after the "Platform" loading is complete
-   * And before the DE.init
+   * is automatically called in the DE.start function
+   * trigger Nebula load by default, wont do anything it you don't use Nebula
    */
   this.beforeStartingEngine = function() {
+    Events.trigger( "force-nebula-load", false );
     return Promise.resolve();
   };
 
-  /**
-   * onEngineStart
-   * @memberOf Platform
-   * must be called just before DE.start
-   */
-  this.onEngineStart = function() {
-    // force nebula loading by default
-    Events.trigger( "force-nebula-load", false );
-  }
-
-  // prevent the engine to start with default loader
+  // prevent the engine to start with default loader (not useful by default, only if the targeted platform use a custom loader, as facebook do)
   this.preventEngineLoader = false;
-  /**
-   * startLoading
-   * @memberof Platform
-   * 
-   * this function is useless by default, but it is required for some
-   * platform such as facebook that use a intern loader
-   * so this will be overriden and the first loader will happens
-   * before engine start
-   */
-  this.startLoading = function() {
-    return Promise.resolve();
-  }
 
   /**
    *  !!!         USER STUFF        !!!
@@ -129,17 +108,57 @@ var Platform = new function() {
     // TODO trigger to nebula by default
   }
   this.preloadAds = function() {
-
   }
 
 
   /**
    *               SHOP STUFF
+   * 
+   * todo, Nebula implementation by default
+   * the shop define the standard items that can be purchased on the platform shop, usually, the shop is only about "real money products"
+   * everything that is traded with virtual currency is handled in a custom way, and later Nebula will offer a default implementation for multiverse games.
    */
   this.shop = {};
-  this.getProducts = function() {
-    // Show the products, custom methods for each games ?
-  }
+  this.shop.isActive = false;
+  this.shop.isReady = false;
+
+  // todo
+  this.shop.init = function() {
+    return new Promise((res, rej) => {
+      console.warn('Platform.shop isn\'t implemented for Nebula yet, returning empty values');
+      rej('no-shop-implementation');
+    });
+  };
+  this.shop.getProducts = function() {
+    return new Promise((res, rej) => {
+      console.warn('Platform.shop isn\'t implemented for Nebula yet, returning empty values');
+      res([]);
+    });
+  };
+  this.shop.getPurchases = function() {
+    return new Promise((res, rej) => {
+      console.warn('Platform.shop isn\'t implemented for Nebula yet, returning empty values');
+      res([]);
+    });
+  };
+
+  /**
+   * useful to handle if an item must be purchased or traded against in-game currency
+   * usually the method called between game and server isn't the same
+   * if the item "isPlatformPurchase" it should be bought with the shop.purchase method
+   */
+  this.shop.isPlatformPurchase = function(product) {
+    return product.realCurrency === true; // subject to change
+  };
+
+  /**
+   * todo - actually doesn't exist on nebula so it can't be finished for now
+   * trigger the nebula payment shop tab by default
+   * on others platforms it open the associated payment defined by the plugin
+   */
+  this.shop.purchase = function() {};
+  this.shop.consumePurchase = function() {};
+
 
   /**
    *               OTHER STUFF
