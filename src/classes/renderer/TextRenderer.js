@@ -31,13 +31,8 @@ function TextRenderer( text, params )
   var _params = params || {};
   
   if ( _params.localizationKey ) {
-    var locales = _params.localizationKey.split( "." );
-    this.localizationKey = locales[ 0 ];
-    this.subKey = locales[ 1 ] || undefined;
+    this.localizationKey = _params.localizationKey;
     text = Localization.get( this.localizationKey );
-    if ( this.subKey ) {
-      text = text[ this.subKey ];
-    }
     delete _params.localizationKey;
   }
 
