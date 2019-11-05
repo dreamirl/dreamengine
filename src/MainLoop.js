@@ -157,12 +157,7 @@ function checkGameObjectsTextRenderer( go ) {
   for ( var ir = 0, r; r = go.renderers[ ir ]; ++ir )
   {
     if ( r.localizationKey ) {
-      if ( r.subKey ) {
-        r.text = Localization.get( r.localizationKey )[ r.subKey ];
-      }
-      else {
-        r.text = Localization.get( r.localizationKey );
-      }
+      r.text = Localization.get( r.localizationKey );
     }
   }
 }

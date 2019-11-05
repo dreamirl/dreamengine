@@ -63,8 +63,15 @@ var Localization = new function()
    */
   this.get = function( what )
   {
-    return this.dictionary[ this.currentLang ][ what ] ||
-      ( this.dictionary[ "en" ] && this.dictionary[ "en" ][ what ] ) || null;
+    let keyPath = (what || '').split( "." );
+    var locale = this.dictionary[ this.currentLang ][ keyPath[ 0 ] ] ||
+      ( this.dictionary[ "en" ] && this.dictionary[ "en" ][ keyPath[ 0 ] ] ) || null;
+    keyPath.shift();
+    while (locale && keyPath.length > 0) {
+      locale = locale[keyPath[0]];
+      keyPath.shift();
+    }
+    return locale != null ? locale : "locale_null";
   };
   
   /**
