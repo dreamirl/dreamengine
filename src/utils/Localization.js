@@ -67,11 +67,11 @@ var Localization = new function()
     var locale = this.dictionary[ this.currentLang ][ keyPath[ 0 ] ] ||
       ( this.dictionary[ "en" ] && this.dictionary[ "en" ][ keyPath[ 0 ] ] ) || null;
     keyPath.shift();
-    while (keyPath.length > 0) {
+    while (locale && keyPath.length > 0) {
       locale = locale[keyPath[0]];
       keyPath.shift();
     }
-    return locale;
+    return locale != null ? locale : "locale_null";
   };
   
   /**
