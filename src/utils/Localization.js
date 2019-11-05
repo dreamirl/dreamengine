@@ -63,6 +63,11 @@ var Localization = new function()
    */
   this.get = function( what )
   {
+    // it is possible sometime to instantiate an empty TextRenderer
+    if (!what) {
+      return '';
+    }
+
     let keyPath = (what || '').split( "." );
     var locale = this.dictionary[ this.currentLang ][ keyPath[ 0 ] ] ||
       ( this.dictionary[ "en" ] && this.dictionary[ "en" ][ keyPath[ 0 ] ] ) || null;
@@ -71,7 +76,8 @@ var Localization = new function()
       locale = locale[keyPath[0]];
       keyPath.shift();
     }
-    return locale != null ? locale : "locale_null";
+    // return the full key if it can't be found
+    return locale != null ? locale : what;
   };
   
   /**
