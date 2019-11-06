@@ -21,6 +21,7 @@ import Save from 'DE.Save';
  */
 var Platform = new function() {
 
+  this.name = 'nebula';
   /**
    * init
    * @memberOf Platform
@@ -69,6 +70,7 @@ var Platform = new function() {
       {
         Localization.getLang( nebulaData.lang || Localization.currentLang );
         nebulaData.type = 'nebula';
+        DE.Platform.user._data = nebulaData;
         return res(nebulaData);
       });
     })
@@ -97,6 +99,10 @@ var Platform = new function() {
         return res(gameData);
       });
     });
+  }
+
+  this.getToken = function() {
+    return '';
   }
 
   /**
