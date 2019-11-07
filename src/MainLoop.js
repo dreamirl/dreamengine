@@ -158,6 +158,7 @@ function checkGameObjectsTextRenderer( go ) {
   {
     if ( r.localizationKey ) {
       r.text = Localization.get( r.localizationKey );
+      r.checkMaxWidth();
     }
   }
 }
