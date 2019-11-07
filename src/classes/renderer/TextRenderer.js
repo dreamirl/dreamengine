@@ -26,35 +26,45 @@ import Localization from 'DE.Localization';
  * => intro.title will do Localization.get( "intro" ).title
  */
 
-function TextRenderer( text, params )
+function TextRenderer(text, params)
 {
+  // force string conversion to avoid pure numbers
+  text = text !== null && text !== undefined && text.toString ? text.toString() : text;
   var _params = params || {};
-  
-  if ( _params.localizationKey ) {
+
+  if (_params.localizationKey) {
     this.localizationKey = _params.localizationKey;
-    text = Localization.get( this.localizationKey );
+    text = Localization.get(this.localizationKey);
     delete _params.localizationKey;
+  } else if (Localization.get(text) !== text) {
+    this.localizationKey = text;
+    text = Localization.get(this.localizationKey);
   }
 
-  PIXI.Text.call(this, text, new PIXI.TextStyle( _params.textStyle ));
+  PIXI.Text.call(this, text, new PIXI.TextStyle(_params.textStyle));
   delete _params.textStyle;
 
-  BaseRenderer.instantiate( this, _params );
+  BaseRenderer.instantiate(this, _params);
 
-  if (_params.maxWidth) {
-    let textMetrics = new PIXI.TextMetrics.measureText(text, this.style);
+  this.maxWidth = _params.maxWidth;
+  this.checkMaxWidth();
+}
 
-    if (textMetrics.width > _params.maxWidth) {
-      this.setScale(_params.maxWidth / textMetrics.width);
+TextRenderer.prototype = Object.create(PIXI.Text.prototype);
+TextRenderer.prototype.constructor = TextRenderer;
+
+BaseRenderer.inherits(TextRenderer);
+
+TextRenderer.prototype.DEName = "TextRenderer";
+
+TextRenderer.prototype.checkMaxWidth = function() {
+  if (this.maxWidth) {
+    let textMetrics = new PIXI.TextMetrics.measureText(this.text, this.style);
+
+    if (textMetrics.width > this.maxWidth) {
+      this.setScale(this.maxWidth / textMetrics.width);
     }
   }
 }
-
-TextRenderer.prototype = Object.create( PIXI.Text.prototype );
-TextRenderer.prototype.constructor = TextRenderer;
-
-BaseRenderer.inherits( TextRenderer );
-
-TextRenderer.prototype.DEName = "TextRenderer";
 
 export default TextRenderer;
