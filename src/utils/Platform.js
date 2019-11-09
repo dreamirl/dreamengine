@@ -109,11 +109,18 @@ var Platform = new function() {
    *                ADS STUFF
    */
   this.ads = {};
-  // TODO there is two ads type, interstice truc, and rewarded
-  this.displayIAP = function() {
-    // TODO trigger to nebula by default
+  this.ads.preloadStandardAd = function() {
+    return Promise.resolve();
   }
-  this.preloadAds = function() {
+  this.ads._preloadedRewardedAds = {};
+  this.ads.preloadRewardedAd = function() {
+    return Promise.resolve();
+  }
+  this.ads.preloadRewardedAdByValue = function() {
+    return Promise.resolve();
+  }
+  this.ads.watchRewardedAd = function() {
+    return Promise.resolve();
   }
 
 
