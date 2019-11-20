@@ -56,20 +56,20 @@ var Localization = new function()
   };
   
   /**
-   * return the value for the key what in the current language, defaulted to English if not found
+   * return the value for the key in the current language, defaulted to English if not found
    * @memberOf Localization
    * @protected
-   * @param {String} what - the key you want
+   * @param {String} key - the key you want
    */
-  this.get = function( what )
+  this.get = function(key, lang)
   {
     // it is possible sometime to instantiate an empty TextRenderer
-    if (!what) {
+    if (!key) {
       return '';
     }
 
-    let keyPath = (what || '').split( "." );
-    var locale = this.dictionary[ this.currentLang ][ keyPath[ 0 ] ] ||
+    let keyPath = (key || '').split( "." );
+    var locale = this.dictionary[ lang || this.currentLang ][ keyPath[ 0 ] ] ||
       ( this.dictionary[ "en" ] && this.dictionary[ "en" ][ keyPath[ 0 ] ] ) || null;
     keyPath.shift();
     while (locale && keyPath.length > 0) {
@@ -77,22 +77,49 @@ var Localization = new function()
       keyPath.shift();
     }
     // return the full key if it can't be found
-    return locale != null ? locale : what;
+    return locale != null ? locale : key;
+  };
+
+  /**
+   * return the value for the key in every available languages
+   * @memberOf Localization
+   * @protected
+   * @param {String} key - the key you want
+   */
+  this.getAll = function(key) {
+    var pk = {};
+    for (var i in this.dictionary) {
+      pk[i] = this.get(key, i);
+    }
+
+    // add "full code" if devs are using "shorter codes"
+    // exemple, if you use 'en', you will get 'en', 'en_US', 'en_GB' etc...
+    LANGAUGES_CODES_TABLE.forEach(l => {
+      if (!pk[l]) {
+        var short = l.split('_')[0];
+        if (this.dictionary[short]) {
+          pk[l] = this.get(key, short);
+        }
+      }
+    });
+
+    return pk;
   };
   
   /**
-   * return the value for the key what in the given language, or null
+   * @deprecated just use get with 2nd parameter now
+   * return the value for the key in the given language, or null
    * @memberOf Localization
    * @protected
    * @param {String} lang - target lang
-   * @param {String} what - the key you want
+   * @param {String} key - the key you want
    */
-  this.forceGet = function( lang, what )
+  this.forceGet = function(lang, key)
   {
-    if ( this.avalaibleLang.indexOf( lang ) == -1 ) {
+    if ( this.avalaibleLang.indexOf(lang) == -1 ) {
       return null;
     }
-    return this.dictionary[ lang ][ what ] || null;
+    return this.get(key, lang);
   };
   
   /**
@@ -126,5 +153,19 @@ var Localization = new function()
     }
   };
 };
+
+const LANGAUGES_CODES_TABLE = [
+  'fr', 'fr_FR', 'fr_BE', 'fr_CA', 'fr_CH', 'fr_LU', 'fr_MC',
+  'en', 'en_AU', 'en_BZ', 'en_CA', 'en_CB', 'en_GB', 'en_IE',
+  'en_JM', 'en_NZ', 'en_PH', 'en_TT', 'en_US', 'en_ZA', 'en_ZW',
+  'es', 'es_AR', 'es_BO', 'es_CL', 'es_CO', 'es_CR', 'es_DO', 'es_EC',
+  'es_ES', 'es_GT', 'es_HN', 'es_MX', 'es_NI', 'es_PA', 'es_PE', 'es_PR',
+  'es_PY', 'es_SV', 'es_UY', 'es_VE',
+  'pt', 'pt_BR', 'pt_PT',
+  'de', 'de_AT', 'de_CH', 'de_DE', 'de_LI', 'de_LU', 
+  'it', 'it_CH', 'it_IT',
+  'ja', 'ja_JP',
+  'ru', 'ru_RU',
+];
 
 export default Localization;
