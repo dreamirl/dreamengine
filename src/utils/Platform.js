@@ -74,7 +74,7 @@ var Platform = new function() {
         return res(nebulaData);
       });
     })
-  }
+  };
 
   /**
    * onGameData
@@ -99,11 +99,26 @@ var Platform = new function() {
         return res(gameData);
       });
     });
-  }
+  };
 
   this.getToken = function() {
     return '';
-  }
+  };
+
+  /**
+   *               SOCIAL STUFF
+   */
+  this.social = {};
+  // invite one or more friends to join
+  this.social.inviteFriends = () => {
+    return Promise.reject();
+  };
+
+  // send a social update (as a chat message)
+  this.social.sendUpdate = () => {
+    return Promise.reject();
+  };
+
 
   /**
    *                ADS STUFF
@@ -111,17 +126,17 @@ var Platform = new function() {
   this.ads = {};
   this.ads.preloadStandardAd = function() {
     return Promise.resolve();
-  }
+  };
   this.ads._preloadedRewardedAds = {};
   this.ads.preloadRewardedAd = function() {
     return Promise.resolve();
-  }
+  };
   this.ads.preloadRewardedAdByValue = function() {
     return Promise.resolve();
-  }
+  };
   this.ads.watchRewardedAd = function() {
     return Promise.resolve();
-  }
+  };
 
 
   /**
