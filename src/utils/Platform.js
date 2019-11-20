@@ -137,6 +137,11 @@ var Platform = new function() {
     return Promise.reject();
   };
 
+  // not used by nebula but social networks do use this
+  this.social.joinFriend = (friendId) => {
+    return Promise.resolve();
+  };
+
 
   /**
    *                ADS STUFF
