@@ -31,6 +31,7 @@ var Platform = new function() {
   this.init = function(params, callback) {
     return new Promise((res) => {
       setTimeout(() => callback());
+      this.getEntryData();
       return res();
     });
   };
@@ -48,6 +49,23 @@ var Platform = new function() {
 
   // prevent the engine to start with default loader (not useful by default, only if the targeted platform use a custom loader, as facebook do)
   this.preventEngineLoader = false;
+
+  /**
+   * entry data is filled on "start" when the user launch the game with a payload in the url
+   * useful for refering links or things like that
+   */
+  this.getEntryData = function() {
+    const urlParams = window.location.search.split('?')[1];
+    var launchParams = {};
+    if (urlParams) {
+      urlParams.split('&').forEach((val) => {
+        val = val.split('=');
+        launchParams[val[0]] = val[1];
+      });
+    }
+    this.entryData = launchParams;
+  }
+  this.entryData = {};
 
   /**
    *  !!!         USER STUFF        !!!
