@@ -223,7 +223,7 @@ var ImageManager = new function()
       // PIXI.loader.reset();
       
       PIXI.loader.off( "progress", function( loader, resource ) {
-        self._onProgress( poolName, loader, customEventName );
+        self._onProgress( null, loader, customEventName );
       } );
       self._onComplete( null, dataLoad.name ? dataLoad.name : dataLoad );
     } );
