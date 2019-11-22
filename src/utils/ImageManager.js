@@ -31,6 +31,14 @@ import about     from 'DE.about';
   } );
   */
 
+PIXI.loader.pre((resource, next) => {
+  if (resource.url.split('://').length > 1) {
+    resource.crossOrigin = 'anonymous';
+    resource.loadType = PIXI.loaders.Resource.LOAD_TYPE.XHR;
+  }
+  next();
+});
+
 var _loadingImages = null;
 var _indexLoading = 0;
 var ImageManager = new function()
@@ -207,8 +215,12 @@ var ImageManager = new function()
         ,animated    : data[ 2 ].animated !== undefined ? data[ 2 ].animated : true
         ,pingPongMode: data[ 2 ].pingPongMode !== undefined ? data[ 2 ].pingPongMode : false
       };
-      
-      dataLoad = { name: data[ 0 ], url: data[ 1 ] + "?v" + config.VERSION };
+      var url = data[ 1 ];
+      // external images don't receive the version as they could already have custom params
+      if (url.split('://') === 1) {
+        url += "?v" + config.VERSION;
+      }
+      dataLoad = { name: data[ 0 ], url };
     }
     
     if ( PIXI.loader.loading ) {
@@ -221,7 +233,7 @@ var ImageManager = new function()
     PIXI.loader.add( dataLoad ).load( function()
     {
       // PIXI.loader.reset();
-      
+      // TODO find a way to prevent "success" trigger if the image failed to load
       PIXI.loader.off( "progress", function( loader, resource ) {
         self._onProgress( null, loader, customEventName );
       } );
