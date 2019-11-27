@@ -195,6 +195,15 @@ var ImageManager = new function()
    */
   this.load = function( data )
   {
+    if (DE.PIXI.loader.resources[data[0]]) {
+      DE.PIXI.utils.TextureCache[
+        DE.PIXI.loader.resources[
+          data[0]
+        ].url
+      ].destroy();
+      delete PIXI.loader.resources[data[0]];
+    }
+
     var dataLoad = data;
     
     if ( typeof data === "string" ) {}
