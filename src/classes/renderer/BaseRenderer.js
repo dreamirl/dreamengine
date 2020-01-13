@@ -224,7 +224,7 @@ BaseRenderer.fadeIn = function( duration, force )
  * @example // scale to 2,3 in 1 second
  * myRenderer.scaleTo( { x: 2, y: 3 }, 1000 );
  */
-BaseRenderer.scaleTo = function( scale, duration )
+BaseRenderer.scaleTo = function( scale, duration, callback )
 {
   var dscale = {
     "x"     : !isNaN( scale ) ? scale : scale.x
@@ -244,6 +244,7 @@ BaseRenderer.scaleTo = function( scale, duration )
     ,"destY"    : dscale.y
     ,"scaleX"   : this.scale.x
     ,"scaleY"   : this.scale.y
+    ,"callback" : callback
   };
   this.scaleData.leftX = this.scaleData.valX;
   this.scaleData.leftY = this.scaleData.valY;
@@ -292,13 +293,17 @@ BaseRenderer.applyScale = function()
   }
   
   this.setScale( scaleD.scaleX, scaleD.scaleY );
-  
-  if ( scaleD.duration <= 0 ) {
+
+  if ( scaleD.duration <= 0 ) {     
     this.scaleData.done = true;
     this.setScale( scaleD.destX, scaleD.destY );
     
     if ( this.gameObject ) {
-      this.gameObject.trigger( "scaleEnd", this );
+      this.gameObject.trigger( "scale-end", this );
+    }
+          
+    if ( this.scaleData.callback ) {
+      this.scaleData.callback.call( this );
     }
   }
 };
