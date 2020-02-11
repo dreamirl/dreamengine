@@ -5,10 +5,11 @@ import Events from "DE.Events";
  * @namespace config
  */
 var config = {
-  DEName        : "config"
-  , VERSION     : '2.0'
-  , _DEBUG      : 0
-  , _DEBUG_LEVEL: 0
+  DEName: "config",
+  VERSION: '2.0',
+  _DEBUG: 0,
+  _DEBUG_LEVEL: 0,
+  ALLOW_ONBEFOREUNLOAD: true,
 };
 
 Object.defineProperties( config, {

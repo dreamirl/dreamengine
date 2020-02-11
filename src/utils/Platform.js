@@ -180,6 +180,7 @@ var Platform = new function() {
   this.shop = {};
   this.shop.isActive = false;
   this.shop._products = [];
+  this.shop._purchases = []; // must store the unique purchasable products
   this.shop._productsById = {};
   this.shop.isReady = false;
 

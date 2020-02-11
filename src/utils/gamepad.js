@@ -367,6 +367,10 @@ var gamepads = new function()
   {
     for ( var i in arrayListeners[ index ].listeners )
     {
+      if (!gamepadInterface[ i ]) {
+        return;
+      }
+
       var elemForce = elemForce = gamepadInterface[ i ].value !== undefined ? gamepadInterface[ i ].value : gamepadInterface[ i ];
       var eventBus = arrayListeners[ index ];
       var listener = arrayListeners[ index ].listeners[ i ];
