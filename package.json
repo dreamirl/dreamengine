@@ -51,6 +51,7 @@
     "DE.Events": "./src/utils/Events",
     "DE.Achievements": "./src/utils/Achievements",
     "DE.Localization": "./src/utils/Localization",
+    "DE.Platform": "./src/utils/Platform",
     "DE.Save": "./src/utils/Save",
     "DE.Audio": "./src/utils/Audio",
     "DE.Notifications": "./src/utils/Notifications",

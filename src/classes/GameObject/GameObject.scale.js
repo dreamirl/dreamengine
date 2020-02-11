@@ -10,7 +10,7 @@ import config from 'DE.config';
  */
 GameObject.prototype.setScale = function( x, y )
 {
-  this.scale.set( x, y );
+  this.scale.set( x, y !== undefined ? y : x );
   this._updateScale();
   
   return this;

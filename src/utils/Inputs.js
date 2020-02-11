@@ -176,6 +176,18 @@ var Inputs = new function()
     
     this.usedInputs = newInputs;
     this.toggleListeners();
+
+    if (config.ALLOW_ONBEFOREUNLOAD) {
+      window.onbeforeunload = function( e )
+      {
+        if ( !window.leavePage )
+          return _langs[ Localization.currentLang ][ "leave-page" ];
+      };
+      window.onunload = function( e )
+      {
+        Events.emit( "unload-game" );
+      };
+    }
   }
   
   /**
@@ -467,15 +479,5 @@ var Inputs = new function()
     // return false;
   }
 };
-
-window.onbeforeunload = function( e )
-{
-  if ( !window.leavePage )
-    return _langs[ Localization.currentLang ][ "leave-page" ];
-};
-window.onunload = function( e )
-{
-  Events.emit( "unload-game" );
-}
 
 export default Inputs;

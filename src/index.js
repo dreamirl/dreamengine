@@ -22,6 +22,7 @@ import Scene         from 'DE.Scene';
 import Gui           from 'DE.Gui';
 import Camera        from 'DE.Camera';
 import Vector2       from 'DE.Vector2';
+import Platform      from 'DE.Platform';
 
 // engine custom renderer
 import BaseRenderer          from 'DE.BaseRenderer';
@@ -63,6 +64,7 @@ var DE = {
   GraphicRenderer,
   NineSliceRenderer,
   GameObject,
+  Platform,
   PIXI
 };
 
@@ -128,25 +130,27 @@ DE.init = function( params )
   }
   this.customOnLoad = params.onLoad || function(){ console.log( "You have to give a onLoad callback to the DE.init options" ); };
   
-  DE.ImageManager.init( params.images.baseUrl, params.images.pools );
-  
   DE.emit( "change-debug", DE.config.DEBUG, DE.config.DEBUG_LEVEL );
   
-  // load the loader sprite image
-  params.loader = params.loader || {};
-  var loader = [
-    "loader"
-    , params.loader.url || "loader.png"
-    , {
-      totalFrame : params.loader.totalFrame || 16
-      ,interval  : params.loader.interval || 45
-      ,animated  : params.loader.animated !== undefined ? params.loader.animated : true
-      ,scale     : params.loader.scale || 1
-    }
-  ];
-  DE.Events.once( "ImageManager-loader-loaded", function() { DE.MainLoop.updateLoaderImage( loader ); } );
-  
-  DE.ImageManager.load( loader );
+  if (!DE.Platform.preventEngineLoader) {
+    DE.ImageManager.init( params.images.baseUrl, params.images.pools );
+    
+    // load the loader sprite image
+    params.loader = params.loader || {};
+    var loader = [
+      "loader"
+      , params.loader.url || "loader.png"
+      , {
+        totalFrame : params.loader.totalFrame || 16
+        ,interval  : params.loader.interval || 45
+        ,animated  : params.loader.animated !== undefined ? params.loader.animated : true
+        ,scale     : params.loader.scale || 1
+      }
+    ];
+    DE.Events.once( "ImageManager-loader-loaded", function() { DE.MainLoop.updateLoaderImage( loader ); } );
+    DE.ImageManager.load( loader );
+  }
+
   DE.___params = params;
   
   params.onReady();
@@ -157,11 +161,8 @@ DE.init = function( params )
 // this is called when the pool "default" is loaded (the MainLoop will display a loader)
 DE.onLoad = function()
 {
-  setTimeout( function()
-  {
-    DE.customOnLoad();
-    DE.MainLoop.displayLoader = false;
-  }, 500 );
+  DE.customOnLoad();
+  DE.MainLoop.displayLoader = false;
 };
 
 var _defaultPoolName = "default";
@@ -171,16 +172,33 @@ DE.start = function()
   DE.Audio.loadAudios( DE.___params.audios || [] );
   delete DE.___params;
   
-  DE.MainLoop.createLoader();
   DE.MainLoop.launched = true;
   DE.MainLoop.loop();
   
-  DE.MainLoop.displayLoader = true;
-  DE.Events.once( "ImageManager-pool-" + _defaultPoolName + "-loaded", this.onLoad, this );
-  DE.ImageManager.loadPool( _defaultPoolName );
-  
+  DE.Platform.beforeStartingEngine()
+  .catch(e => console.error(e))
+  .then(() => {
+    // hack to leave the promise context swallowing throws
+    setTimeout(() => {
+      if (!DE.Platform.preventEngineLoader) {
+        DE.MainLoop.createLoader();
+        DE.MainLoop.displayLoader = true;
+        DE.Events.once( "ImageManager-pool-" + _defaultPoolName + "-loaded",
+          function () { setTimeout( () => DE.onLoad(), 500 ); });
+        DE.ImageManager.loadPool( _defaultPoolName );
+      } else {
+        this.onLoad();
+      }
+    })
+  })
   DE.emit( "change-debug", DE.config.DEBUG, DE.config.DEBUG_LEVEL );
 };
+
+window.addEventListener('unhandledrejection', function(event) {
+  // the event object has two special properties:
+  console.error(event.promise); // [object Promise] - the promise that generated the error
+  console.error(event.reason); // Error: Whoops! - the unhandled error object
+});
 
 // pause / unpause the game
 DE.pause = function()
