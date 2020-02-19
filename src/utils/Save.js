@@ -44,7 +44,7 @@ var Save = new function()
     
     this.namespace = about.namespace;
     
-    this.version = about.version;
+    this.version = about.gameVersion;
     if ( ignoreVersion ) {
       this.version = localStorage.get( this.namespace );
     }
@@ -72,7 +72,7 @@ var Save = new function()
     }
     
     // setup the last version of the game, and rewrite datas
-    this.version = about.version;
+    this.version = about.gameVersion;
     localStorage.set( this.namespace, this.version );
     for ( var i in this.saveModel )
     {
