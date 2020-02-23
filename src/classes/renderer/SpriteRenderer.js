@@ -256,7 +256,7 @@ SpriteRenderer.prototype.setHue = function( rotation, multiply )
   
   this.hueFilter.hue( rotation, multiply );
   
-  if ( !this.filters ) {
+  if ( !this.filters || !this.filters.length ) {
     this.filters = [ this.hueFilter ];
   }
   else if ( this.filters.length >= 1 && this.filters.indexOf( this.hueFilter ) == -1 ) {
@@ -286,7 +286,7 @@ SpriteRenderer.prototype.setSaturation = function( amount, multiply )
   
   this.saturationFilter.saturate( amount, multiply );
   
-  if ( !this.filters ) {
+  if ( !this.filters || !this.filters.length ) {
     this.filters = [ this.saturationFilter ];
   }
   else if ( this.filters.length >= 1 && this.filters.indexOf( this.saturationFilter ) == -1 ) {
@@ -316,7 +316,7 @@ SpriteRenderer.prototype.setBrightness = function( b, multiply )
   
   this.brightnessFilter.brightness( b, multiply );
   
-  if ( !this.filters ) {
+  if ( !this.filters || !this.filters.length ) {
     this.filters = [ this.brightnessFilter ];
   }
   else if ( this.filters.length >= 1 && this.filters.indexOf( this.brightnessFilter ) == -1 ) {
@@ -346,7 +346,7 @@ SpriteRenderer.prototype.setContrast = function( amount, multiply )
   
   this.contrastFilter.contrast( amount, multiply );
   
-  if ( !this.filters ) {
+  if ( !this.filters || !this.filters.length ) {
     this.filters = [ this.contrastFilter ];
   }
   else if ( this.filters.length >= 1 && this.filters.indexOf( this.contrastFilter ) == -1 ) {
@@ -376,7 +376,7 @@ SpriteRenderer.prototype.setGreyscale = function( scale, multiply )
   
   this.grayscaleFilter.greyscale( scale, multiply );
   
-  if ( !this.filters ) {
+  if ( !this.filters || !this.filters.length ) {
     this.filters = [ this.grayscaleFilter ];
   }
   else if ( this.filters.length >= 1 && this.filters.indexOf( this.grayscaleFilter ) == -1 ) {
@@ -405,7 +405,7 @@ SpriteRenderer.prototype.setBlackAndWhite = function( multiply )
   
   this.blackAndWhiteFilter.blackAndWhite( multiply );
   
-  if ( !this.filters ) {
+  if ( !this.filters || !this.filters.length ) {
     this.filters = [ this.blackAndWhiteFilter ];
   }
   else if ( this.filters.length >= 1 && this.filters.indexOf( this.blackAndWhiteFilter ) == -1 ) {
