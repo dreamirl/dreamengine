@@ -1,4 +1,4 @@
-import * as PIXI    from 'PIXI';
+import * as PIXI from 'PIXI';
 import BaseRenderer from 'DE.BaseRenderer';
 import Localization from 'DE.Localization';
 
@@ -7,27 +7,27 @@ import Localization from 'DE.Localization';
  */
 
 /**
- * @constructor TextureRenderer
- * @augments PIXI.Sprite
+ * @constructor TextRenderer
+ * @augments PIXI.Text
  * @class draw a sprite<br>
  * this just instantiate a PIXI.Text with a PIXI.TextStyle, but it give to "BaseRenderer" the rest of params, so you can easily set position, scaling, rotation, etc, directly on declaration<br>
  * checkout PIXI.DisplayObject for all attributes
+ * @param {string} text
+ * @param {object} params - localizationKey | textModifier (Function) | textStyle | maxWidth
  * @example var helloWorld = new DE.GameObject( {
  *   x: 500, y: 500,
  *   renderer: new DE.TextRenderer( "Hello World", {
  *     rotation: Math.PI, x: 100, interactive: true,
- *     textStyle: { fontFamily: "cordova", fontSize: 12, fill: "white" }
+ *     textStyle: { fontFamily: "cordova", fontSize: 12, fill: "white" },
+ *     textModifier: (text) => text.toUpperCase()
  *   } )
  * } );
- 
  * if you use "Localizations" you should give "localizationKey" instead of the text value
  * by doing this, the text will be automatically updated when the lang change if the Renderer exist in a scene (active or not)
  * you can use the locales with one . to go deeper (but only one)
  * => intro.title will do Localization.get( "intro" ).title
  */
-
-function TextRenderer(text, params)
-{
+function TextRenderer(text, params) {
   // force string conversion to avoid pure numbers
   text = text !== null && text !== undefined && text.toString ? text.toString() : text;
   var _params = params || {};
@@ -39,6 +39,10 @@ function TextRenderer(text, params)
   } else if (Localization.get(text) !== text) {
     this.localizationKey = text;
     text = Localization.get(this.localizationKey);
+  }
+
+  if (_params.textModifier) {
+    text = _params.textModifier(text)
   }
 
   PIXI.Text.call(this, text, new PIXI.TextStyle(_params.textStyle));
