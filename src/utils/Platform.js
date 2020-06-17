@@ -180,7 +180,7 @@ var Platform = new function() {
   this.shop = {};
   this.shop.isActive = false;
   this.shop._products = [];
-  this.shop._purchases = []; // must store the unique purchasable products
+  this.shop._purchases = []; // store user purchases
   this.shop._productsById = {};
   this.shop.isReady = false;
 
@@ -219,6 +219,21 @@ var Platform = new function() {
    * on others platforms it open the associated payment defined by the plugin
    */
   this.shop.purchase = function() {};
+  this.shop.onStorePurchase = function(purchase, productID) {
+    console.warn('DE.Platform.shop.onStorePurchase is not implemented. If you are using the @GUI.ShopItem plugin, make sure to implement this function on your own');
+    console.log('Store purchase success', purchase, productID);
+  }
+
+  // middleware that should be called once the previous orders/purchases made by the user are fetched, the goal is to check if a purchase has been successful but not consumed yet
+  // because we don't want a user to pay and do not receive what he paid for :)
+  // also when doing "whipes" or "updates" it's easier to mark all order as "not delivered" and this function would do the job for you to refill the accounts with purchases
+  this.shop.consumeExistingPurchases = function() {
+    console.warn('DE.Platform.shop.consumeExistingPurchase is not implemented but has been called, make sure to implement it');
+  }
+  this.shop.onStorePurchaseFail = function(error, productID) {
+    console.warn('DE.Platform.shop.onStorePurchaseFail is not implemented. If you are using the @GUI.ShopItem plugin, make sure to implement this function on your own');
+    console.error('Error on purchase:', error, productID)
+  }
   this.shop.consumePurchase = function() {};
 
 
