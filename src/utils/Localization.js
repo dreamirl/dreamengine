@@ -94,7 +94,7 @@ var Localization = new function()
 
     // add "full code" if devs are using "shorter codes"
     // exemple, if you use 'en', you will get 'en', 'en_US', 'en_GB' etc...
-    LANGAUGES_CODES_TABLE.forEach(l => {
+    LANGUAGES_CODES_TABLE.forEach(l => {
       if (!pk[l]) {
         var short = l.split('_')[0];
         if (this.dictionary[short]) {
@@ -154,7 +154,7 @@ var Localization = new function()
   };
 };
 
-const LANGAUGES_CODES_TABLE = [
+const LANGUAGES_CODES_TABLE = [
   'fr', 'fr_FR', 'fr_BE', 'fr_CA', 'fr_CH', 'fr_LU', 'fr_MC',
   'en', 'en_AU', 'en_BZ', 'en_CA', 'en_CB', 'en_GB', 'en_IE',
   'en_JM', 'en_NZ', 'en_PH', 'en_TT', 'en_US', 'en_ZA', 'en_ZW',
