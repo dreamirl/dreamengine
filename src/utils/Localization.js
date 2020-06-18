@@ -41,19 +41,45 @@ var Localization = new function()
    * @protected
    * @param {Object} dictionary - every locales put in an object
    */
-  this.addDictionary = function( dictionary )
+  this.addDictionary = function( dictionary, merge )
   {
     for ( var i in dictionary )
     {
       if ( !this.dictionary[ i ] ) {
         this.dictionary[ i ] = {};
       }
-      for ( var n in dictionary[ i ] )
+      for (var n in dictionary[ i ])
       {
-        this.dictionary[ i ][ n ] = dictionary[ i ][ n ];
+        if (merge && this.dictionary[ i ][ n ]) {
+          this.dictionary[ i ][ n ] = this.merge(this.dictionary[ i ][ n ], dictionary[i][n]);
+        } else {
+          this.dictionary[ i ][ n ] = dictionary[ i ][ n ];
+        }
       }
     }
   };
+
+  this.merge = function(old, toMerge) {
+    var newValue;
+    var oldType = typeof old;
+    var mergeType = typeof toMerge;
+    if (oldType === 'object' && mergeType === 'object') {
+      newValue = old;
+      for (let i in toMerge) {
+        if (old[i]) {
+          newValue[i] = this.merge(old[i], toMerge[i]);
+        } else {
+          newValue[i] = toMerge[i];
+        }
+      }
+    } else if (oldType === 'array' && mergeType === 'array') {
+      newValue = old.concat(toMerge);
+    } else {
+      newValue = toMerge;
+    }
+
+    return newValue;
+  }
   
   /**
    * return the value for the key in the current language, defaulted to English if not found
