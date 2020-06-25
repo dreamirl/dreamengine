@@ -73,9 +73,12 @@ var gamepads = new function()
       _updateChange = function( cTime )
       {
         // [] fallback if there is not gamepads API
-        var gamepads = ( navigator.getGamepads && navigator.getGamepads() )
-          || ( navigator.webkitGetGamepads && navigator.webkitGetGamepads() ) || [];
-        
+        var gamepads = filterGamepads(
+          navigator.getGamepads ? navigator.getGamepads()
+          : navigator.webkitGetGamepads ? navigator.webkitGetGamepads()
+          : []
+        );
+
         for ( var i = 0; i < gamepads.length; ++i )
         {
           if ( gamepads[ i ] ) {
@@ -92,8 +95,11 @@ var gamepads = new function()
       
       _updateRate = function( cTime )
       {
-        var gamepads = ( navigator.getGamepads && navigator.getGamepads() )
-          || ( navigator.webkitGetGamepads && navigator.webkitGetGamepads() ) || [];
+        var gamepads = filterGamepads(
+          navigator.getGamepads ? navigator.getGamepads()
+          : navigator.webkitGetGamepads ? navigator.webkitGetGamepads()
+          : []
+        );
         
         for ( var i = 0; i < gamepads.length; ++i )
         {
@@ -131,6 +137,28 @@ var gamepads = new function()
     window.addEventListener( "MozGamepadConnected", gamepadConnected, false );
     window.addEventListener( "gamepadconnected", gamepadConnected, false );
     // window.addEventListener( "gamepaddisconnected", gamepadDisconnected, false ); // TODO
+  }
+
+  var filterGamepads = function(gamepads) {
+    var gps = [];
+    for (var i = 0; i < gamepads.length; ++i) {
+      gps.push(gamepads[i]);
+    }
+      
+    gps = gps.filter(g => {
+      if (!g) {
+        return false;
+      }
+
+      var idlower = g.id.toLowerCase();
+      
+      return !(idlower.match('unknown') ||
+        idlower.match('shift') ||
+        idlower.match('gear') ||
+        idlower.match('b669')
+      );
+    });
+    return gps;
   }
   
   var bindWindowController = function( gamepadState )
