@@ -1,4 +1,4 @@
-import * as PIXI    from 'PIXI';
+import * as PIXI from 'PIXI';
 import BaseRenderer from 'DE.BaseRenderer';
 
 /**
@@ -17,22 +17,35 @@ import BaseRenderer from 'DE.BaseRenderer';
  * } );
  */
 
-function TextureRenderer( params )
-{
-  if ( !params.spriteName && !params.spriteUrl && !params.textureName && !params.texture ) {
-    console.error( "A TextureRenderer need a spriteName, a spriteUrl argument or a texture" );
+function TextureRenderer(params) {
+  if (
+    !params.spriteName &&
+    !params.spriteUrl &&
+    !params.textureName &&
+    !params.texture
+  ) {
+    console.error(
+      'A TextureRenderer need a spriteName, a spriteUrl argument or a texture',
+    );
     return;
   }
-  
-  PIXI.Sprite.call( this, params.texture ? params.texture : PIXI.utils.TextureCache[ params.spriteName || params.spriteUrl || params.textureName ] );
-  BaseRenderer.instantiate( this, params );
+
+  PIXI.Sprite.call(
+    this,
+    params.texture
+      ? params.texture
+      : PIXI.utils.TextureCache[
+          params.spriteName || params.spriteUrl || params.textureName
+        ],
+  );
+  BaseRenderer.instantiate(this, params);
 }
 
-TextureRenderer.prototype = Object.create( PIXI.Sprite.prototype );
+TextureRenderer.prototype = Object.create(PIXI.Sprite.prototype);
 TextureRenderer.prototype.constructor = TextureRenderer;
 
-BaseRenderer.inherits( TextureRenderer );
+BaseRenderer.inherits(TextureRenderer);
 
-TextureRenderer.prototype.DEName = "TextureRenderer";
+TextureRenderer.prototype.DEName = 'TextureRenderer';
 
 export default TextureRenderer;

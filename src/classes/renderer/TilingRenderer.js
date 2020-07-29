@@ -1,4 +1,4 @@
-import * as PIXI    from 'PIXI';
+import * as PIXI from 'PIXI';
 import BaseRenderer from 'DE.BaseRenderer';
 
 /**
@@ -17,22 +17,36 @@ import BaseRenderer from 'DE.BaseRenderer';
  * } );
  */
 
-function TilingRenderer( params )
-{
-  if ( !params.backgroundImage && !params.spriteName && !params.spriteUrl && !params.textureName ) {
-    console.error( "A TilingRenderer need a spriteName or a spriteUrl argument" );
+function TilingRenderer(params) {
+  if (
+    !params.backgroundImage &&
+    !params.spriteName &&
+    !params.spriteUrl &&
+    !params.textureName
+  ) {
+    console.error('A TilingRenderer need a spriteName or a spriteUrl argument');
     return;
   }
-  
-  PIXI.extras.TilingSprite.call( this, PIXI.utils.TextureCache[ params.backgroundImage || params.spriteName || params.spriteUrl || params.textureName ], params.width, params.height )
-  BaseRenderer.instantiate( this, params );
+
+  PIXI.extras.TilingSprite.call(
+    this,
+    PIXI.utils.TextureCache[
+      params.backgroundImage ||
+        params.spriteName ||
+        params.spriteUrl ||
+        params.textureName
+    ],
+    params.width,
+    params.height,
+  );
+  BaseRenderer.instantiate(this, params);
 }
 
-TilingRenderer.prototype = Object.create( PIXI.extras.TilingSprite.prototype );
+TilingRenderer.prototype = Object.create(PIXI.extras.TilingSprite.prototype);
 TilingRenderer.prototype.constructor = TilingRenderer;
 
-BaseRenderer.inherits( TilingRenderer );
+BaseRenderer.inherits(TilingRenderer);
 
-TilingRenderer.prototype.DEName = "TilingRenderer";
+TilingRenderer.prototype.DEName = 'TilingRenderer';
 
 export default TilingRenderer;

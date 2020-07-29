@@ -8,11 +8,10 @@ import config from 'DE.config';
  * @public
  * @memberOf GameObject
  */
-GameObject.prototype.setScale = function( x, y )
-{
-  this.scale.set( x, y !== undefined ? y : x );
+GameObject.prototype.setScale = function(x, y) {
+  this.scale.set(x, y !== undefined ? y : x);
   this._updateScale();
-  
+
   return this;
 };
 
@@ -21,21 +20,19 @@ GameObject.prototype.setScale = function( x, y )
  * @private
  * @memberOf GameObject
  */
-GameObject.prototype._updateZScale = function()
-{
+GameObject.prototype._updateZScale = function() {
   // this come from old Camera render (working fine as excepted...)
   // zMaxDepth is 10 by default so if z is 1 scale modifier will be 0.9 (1 - 0.1)
-  var zscale = 1 - ( this.z / config.zMaxDepth );
+  var zscale = 1 - this.z / config.zMaxDepth;
   this._zscale = zscale;
-  
+
   this.scale.x = zscale * this.savedScale.x;
   this.scale.y = zscale * this.savedScale.y;
-  
+
   // update worldScale
   this._updateWorldScale();
-  for ( var i = 0; i < this.gameObjects.length; ++i )
-  {
-    this.gameObjects[ i ]._updateWorldScale();
+  for (var i = 0; i < this.gameObjects.length; ++i) {
+    this.gameObjects[i]._updateWorldScale();
   }
 };
 
@@ -45,17 +42,15 @@ GameObject.prototype._updateZScale = function()
  * @private
  * @memberOf GameObject
  */
-GameObject.prototype._updateScale = function()
-{
-  this.savedScale.copy( this.scale );
+GameObject.prototype._updateScale = function() {
+  this.savedScale.copy(this.scale);
   this.scale.x = this._zscale * this.scale.x;
   this.scale.y = this._zscale * this.scale.y;
-  
+
   // PIXI update worldScale
   this._updateWorldScale();
-  for ( var i = 0; i < this.gameObjects.length; ++i )
-  {
-    this.gameObjects[ i ]._updateWorldScale();
+  for (var i = 0; i < this.gameObjects.length; ++i) {
+    this.gameObjects[i]._updateWorldScale();
   }
 };
 
@@ -68,17 +63,16 @@ GameObject.prototype._updateScale = function()
  * @private
  * @memberOf GameObject
  */
-GameObject.prototype._updateWorldScale = function()
-{
-  this.worldScale.set( this.scale.x, this.scale.y );
-  
-  if ( !this.parent || !this.parent._isGameObject ) {
+GameObject.prototype._updateWorldScale = function() {
+  this.worldScale.set(this.scale.x, this.scale.y);
+
+  if (!this.parent || !this.parent._isGameObject) {
     return;
   }
-  
+
   this.worldScale.x = this.worldScale.x * this.parent.worldScale.x;
   this.worldScale.y = this.worldScale.y * this.parent.worldScale.y;
-  
+
   return this;
 };
 
@@ -92,31 +86,36 @@ GameObject.prototype._updateWorldScale = function()
  * @example // scale to 2,3 in 1 second
  * myGameObject.scaleTo( { x: 2, y: 3 }, 1000 );
  */
-GameObject.prototype.scaleTo = function( scale, duration, callback )
-{
+GameObject.prototype.scaleTo = function(scale, duration, callback) {
   var dscale = {
-    "x"     : !isNaN( scale ) ? scale : scale.x
-    ,"y"    : !isNaN( scale ) ? scale : scale.y
+    x: !isNaN(scale) ? scale : scale.x,
+    y: !isNaN(scale) ? scale : scale.y,
   };
   this._scaleData = {
-    "valX"      : - ( this.savedScale.x - ( dscale.x !== undefined ? dscale.x : this.savedScale.x ) )
-    ,"valY"     : - ( this.savedScale.y - ( dscale.y !== undefined ? dscale.y : this.savedScale.y ) )
-    ,"dirX"     : this.savedScale.x > dscale.x ? 1 : -1
-    ,"dirY"     : this.savedScale.y > dscale.y ? 1 : -1
-    ,"duration" : duration || 500
-    ,"oDuration": duration || 500
-    ,"done"     : false
-    ,"stepValX" : 0
-    ,"stepValY" : 0
-    ,"destX"    : dscale.x
-    ,"destY"    : dscale.y
-    ,"scaleX"   : this.savedScale.x
-    ,"scaleY"   : this.savedScale.y
-    ,"callback" : callback
+    valX: -(
+      this.savedScale.x -
+      (dscale.x !== undefined ? dscale.x : this.savedScale.x)
+    ),
+    valY: -(
+      this.savedScale.y -
+      (dscale.y !== undefined ? dscale.y : this.savedScale.y)
+    ),
+    dirX: this.savedScale.x > dscale.x ? 1 : -1,
+    dirY: this.savedScale.y > dscale.y ? 1 : -1,
+    duration: duration || 500,
+    oDuration: duration || 500,
+    done: false,
+    stepValX: 0,
+    stepValY: 0,
+    destX: dscale.x,
+    destY: dscale.y,
+    scaleX: this.savedScale.x,
+    scaleY: this.savedScale.y,
+    callback: callback,
   };
   this._scaleData.leftX = this._scaleData.valX;
   this._scaleData.leftY = this._scaleData.valY;
-  
+
   return this;
 };
 
@@ -125,55 +124,52 @@ GameObject.prototype.scaleTo = function( scale, duration, callback )
  * @protected
  * @memberOf GameObject
  */
-GameObject.prototype.applyScale = function()
-{
-  if ( this._scaleData.done ) {
+GameObject.prototype.applyScale = function() {
+  if (this._scaleData.done) {
     return;
   }
-  
+
   var scaleD = this._scaleData;
-  
-  if ( scaleD.valX != 0 ) {
-    scaleD.stepValX = Time.frameDelayScaled / scaleD.oDuration * scaleD.valX;
-    scaleD.leftX    -= scaleD.stepValX;
-    scaleD.scaleX   += scaleD.stepValX;
+
+  if (scaleD.valX != 0) {
+    scaleD.stepValX = (Time.frameDelayScaled / scaleD.oDuration) * scaleD.valX;
+    scaleD.leftX -= scaleD.stepValX;
+    scaleD.scaleX += scaleD.stepValX;
   }
-  
-  if ( scaleD.valY != 0 ) {
-    scaleD.stepValY = Time.frameDelayScaled / scaleD.oDuration * scaleD.valY;
-    scaleD.leftY    -= scaleD.stepValY;
-    scaleD.scaleY   += scaleD.stepValY;
+
+  if (scaleD.valY != 0) {
+    scaleD.stepValY = (Time.frameDelayScaled / scaleD.oDuration) * scaleD.valY;
+    scaleD.leftY -= scaleD.stepValY;
+    scaleD.scaleY += scaleD.stepValY;
   }
   scaleD.duration -= Time.frameDelayScaled;
-  
+
   // check scale
-  if ( scaleD.dirX < 0 && scaleD.leftX < 0 ) {
+  if (scaleD.dirX < 0 && scaleD.leftX < 0) {
     scaleD.scaleX += scaleD.leftX;
-  }
-  else if ( scaleD.dirX > 0 && scaleD.leftX > 0 ) {
+  } else if (scaleD.dirX > 0 && scaleD.leftX > 0) {
     scaleD.scaleX -= scaleD.leftX;
   }
-  
-  if ( scaleD.dirY < 0 && scaleD.leftY < 0 ) {
+
+  if (scaleD.dirY < 0 && scaleD.leftY < 0) {
     scaleD.scaleY += scaleD.leftY;
-  }
-  else if ( scaleD.dirY > 0 && scaleD.leftY > 0 ) {
+  } else if (scaleD.dirY > 0 && scaleD.leftY > 0) {
     scaleD.scaleY -= scaleD.leftY;
   }
-  
-  this.scale.set( scaleD.scaleX, scaleD.scaleY );
-  
-  if ( scaleD.duration <= 0 ) {     
+
+  this.scale.set(scaleD.scaleX, scaleD.scaleY);
+
+  if (scaleD.duration <= 0) {
     this._scaleData.done = true;
-    this.scale.set( scaleD.destX, scaleD.destY );
-    
-    this.emit( "scale-end", this );
-          
-    if ( this._scaleData.callback ) {
-      this._scaleData.callback.call( this );
+    this.scale.set(scaleD.destX, scaleD.destY);
+
+    this.emit('scale-end', this);
+
+    if (this._scaleData.callback) {
+      this._scaleData.callback.call(this);
     }
   }
-  
+
   this._updateScale();
 };
 

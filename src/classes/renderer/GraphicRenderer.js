@@ -1,4 +1,4 @@
-import * as PIXI    from 'PIXI';
+import * as PIXI from 'PIXI';
 import BaseRenderer from 'DE.BaseRenderer';
 
 /**
@@ -16,33 +16,29 @@ import BaseRenderer from 'DE.BaseRenderer';
  * } );
  */
 
-function GraphicRenderer( methods, params )
-{
-  PIXI.Graphics.call( this );
-  
-  if ( methods ) {
-    for ( var i = 0; i < methods.length; ++i )
-    {
-      for ( var n in methods[ i ] )
-      {
-        if ( methods[ i ][ n ] instanceof Array ) {
-          this[ n ].apply( this, methods[ i ][ n ] );
-        }
-        else {
-          this[ n ].call( this, methods[ i ][ n ] );
+function GraphicRenderer(methods, params) {
+  PIXI.Graphics.call(this);
+
+  if (methods) {
+    for (var i = 0; i < methods.length; ++i) {
+      for (var n in methods[i]) {
+        if (methods[i][n] instanceof Array) {
+          this[n].apply(this, methods[i][n]);
+        } else {
+          this[n].call(this, methods[i][n]);
         }
       }
     }
   }
-  
-  BaseRenderer.instantiate( this, params );
+
+  BaseRenderer.instantiate(this, params);
 }
 
-GraphicRenderer.prototype = Object.create( PIXI.Graphics.prototype );
+GraphicRenderer.prototype = Object.create(PIXI.Graphics.prototype);
 GraphicRenderer.prototype.constructor = GraphicRenderer;
 
-BaseRenderer.inherits( GraphicRenderer );
+BaseRenderer.inherits(GraphicRenderer);
 
-GraphicRenderer.prototype.DEName = "GraphicRenderer";
+GraphicRenderer.prototype.DEName = 'GraphicRenderer';
 
 export default GraphicRenderer;

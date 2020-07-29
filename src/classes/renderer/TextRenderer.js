@@ -1,4 +1,4 @@
-import * as PIXI    from 'PIXI';
+import * as PIXI from 'PIXI';
 import BaseRenderer from 'DE.BaseRenderer';
 import Localization from 'DE.Localization';
 
@@ -26,10 +26,12 @@ import Localization from 'DE.Localization';
  * => intro.title will do Localization.get( "intro" ).title
  */
 
-function TextRenderer(text, params)
-{
+function TextRenderer(text, params) {
   // force string conversion to avoid pure numbers
-  text = text !== null && text !== undefined && text.toString ? text.toString() : text;
+  text =
+    text !== null && text !== undefined && text.toString
+      ? text.toString()
+      : text;
   var _params = params || {};
 
   if (_params.localizationKey) {
@@ -55,7 +57,7 @@ TextRenderer.prototype.constructor = TextRenderer;
 
 BaseRenderer.inherits(TextRenderer);
 
-TextRenderer.prototype.DEName = "TextRenderer";
+TextRenderer.prototype.DEName = 'TextRenderer';
 
 TextRenderer.prototype.checkMaxWidth = function() {
   if (this.maxWidth) {
@@ -65,6 +67,6 @@ TextRenderer.prototype.checkMaxWidth = function() {
       this.setScale(this.maxWidth / textMetrics.width);
     }
   }
-}
+};
 
 export default TextRenderer;

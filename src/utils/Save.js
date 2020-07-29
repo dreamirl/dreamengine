@@ -19,15 +19,14 @@ import Events from 'DE.Events';
    if you want to ignore backup olds version when saving, add saveIgnoreVersion = true on Engine Initialisation
  * @namespace Save
  */
-var Save = new function()
-{
-  this.DEName = "Save";
-  
+var Save = new (function() {
+  this.DEName = 'Save';
+
   this.saveModel = {};
-  this.namespace = "My-Dreamengine-Game";
-  
+  this.namespace = 'My-Dreamengine-Game';
+
   this.useLocalStorage = true;
-  
+
   /**
    * init the save (called by the engine: DE.init), you can ignoreVersion to get the previous one and update it
     but be sure it's compatible
@@ -36,50 +35,46 @@ var Save = new function()
     * @param {Object} saveModel - the scheme of your game save object
     * @param {Boolean} ignoreVersion - will read old save if true
     */
-  this.init = function( saveModel, ignoreVersion )
-  {
+  this.init = function(saveModel, ignoreVersion) {
     saveModel = saveModel || {};
-    if ( !saveModel.settings )
-      saveModel.settings = {};
-    
+    if (!saveModel.settings) saveModel.settings = {};
+
     this.namespace = about.namespace;
-    
+
     this.version = about.gameVersion;
-    if ( ignoreVersion ) {
-      this.version = localStorage.get( this.namespace );
+    if (ignoreVersion) {
+      this.version = localStorage.get(this.namespace);
     }
-    
+
     this.saveModel = saveModel;
-    
+
     // load save from storage
-    for ( var i in this.saveModel )
-    {
-      this.saveModel[ i ] = localStorage.get( this.namespace + this.version + i ) || this.saveModel[ i ];
+    for (var i in this.saveModel) {
+      this.saveModel[i] =
+        localStorage.get(this.namespace + this.version + i) ||
+        this.saveModel[i];
     }
-    
-    this.loadSave( this.saveModel, true );
+
+    this.loadSave(this.saveModel, true);
   };
-  
-  this.updateSave = function()
-  {
-    if ( !this.useLocalStorage ) {
+
+  this.updateSave = function() {
+    if (!this.useLocalStorage) {
       return;
     }
     // clean the localStorage to prevent zombie storage because upgraded version
-    for ( var i in this.saveModel )
-    {
-      localStorage.remove( this.namespace + this.version + i );
+    for (var i in this.saveModel) {
+      localStorage.remove(this.namespace + this.version + i);
     }
-    
+
     // setup the last version of the game, and rewrite datas
     this.version = about.gameVersion;
-    localStorage.set( this.namespace, this.version );
-    for ( var i in this.saveModel )
-    {
-      localStorage.set( this.namespace + this.version + i, this.saveModel[ i ] );
+    localStorage.set(this.namespace, this.version);
+    for (var i in this.saveModel) {
+      localStorage.set(this.namespace + this.version + i, this.saveModel[i]);
     }
   };
-  
+
   /**
    * load the save from the localStorage, automatically called from Save.init
    * @memberOf Save
@@ -87,39 +82,42 @@ var Save = new function()
    * @param {Object} attrs - your data scheme, to check if there is a difference with previous save
    * @param {Boolean} useLocalStorage - if false, every call to localStorage will be prevented
    */
-  this.loadSave = function( attrs, useLocalStorage )
-  {
+  this.loadSave = function(attrs, useLocalStorage) {
     this.useLocalStorage = useLocalStorage;
-    
-    for ( var i in attrs )
-    {
-      if ( !this.saveModel[ i ]
-        && this.saveModel[ i ] !== false
-        && this.saveModel[ i ] !== 0 ) {
-        Events.trigger( "Save-attr-not-found", i );
-        console.log( "Seems your game version is to old, a new one will be created", i );
+
+    for (var i in attrs) {
+      if (
+        !this.saveModel[i] &&
+        this.saveModel[i] !== false &&
+        this.saveModel[i] !== 0
+      ) {
+        Events.trigger('Save-attr-not-found', i);
+        console.log(
+          'Seems your game version is to old, a new one will be created',
+          i,
+        );
       }
-      this.saveModel[ i ] = attrs[ i ];
+      this.saveModel[i] = attrs[i];
     }
     this.updateSave();
-    Events.trigger( "Save-loaded", this.saveModel );
+    Events.trigger('Save-loaded', this.saveModel);
   };
-  
+
   /**
    * get the value of the key (not reading the localStorage directly)
    * @memberOf Save
    * @protected
    * @param {String} key - the key of the data you want from your scheme "saveModel"
    */
-  this.get = function( key )
-  {
-    if ( !( key in this.saveModel ) ) {
-      this.saveModel[ key ] = localStorage.get( this.namespace + this.version + key )
-        || this.saveModel[ key ];
+  this.get = function(key) {
+    if (!(key in this.saveModel)) {
+      this.saveModel[key] =
+        localStorage.get(this.namespace + this.version + key) ||
+        this.saveModel[key];
     }
-    return this.saveModel[ key ];
+    return this.saveModel[key];
   };
-  
+
   /**
    * save the value with the given key
    * @memberOf Save
@@ -127,74 +125,76 @@ var Save = new function()
    * @param {String} key - the key used to save the data
    * @param {Any} value - the data to save
    */
-  this.save = function( key, value )
-  {
-    var path = key.split( "." );
-    var nkey = path[ 0 ];
-    
-    if ( !( nkey in this.saveModel ) ) {
-      console.log( "%c[WARN] You save a key " + nkey + " that doesn't exist in your saveModel ! It's saved but the engine wont be able to get it later", 0, "color:orange" );
+  this.save = function(key, value) {
+    var path = key.split('.');
+    var nkey = path[0];
+
+    if (!(nkey in this.saveModel)) {
+      console.log(
+        '%c[WARN] You save a key ' +
+          nkey +
+          " that doesn't exist in your saveModel ! It's saved but the engine wont be able to get it later",
+        0,
+        'color:orange',
+      );
     }
-    if ( path.length == 2 ) {
-      if ( value === undefined )
-        value = this.get( nkey )[ 1 ];
-      this.saveModel[ nkey ][ path[ 1 ] ] = value;
-      
-      if ( this.useLocalStorage ) {
-        localStorage.set( this.namespace + this.version + nkey, this.saveModel[ nkey ] );
+    if (path.length == 2) {
+      if (value === undefined) value = this.get(nkey)[1];
+      this.saveModel[nkey][path[1]] = value;
+
+      if (this.useLocalStorage) {
+        localStorage.set(
+          this.namespace + this.version + nkey,
+          this.saveModel[nkey],
+        );
+      }
+    } else if (path.length == 1) {
+      if (value === undefined) {
+        value = this.get(nkey);
+      }
+      this.saveModel[nkey] = value;
+
+      if (this.useLocalStorage) {
+        localStorage.set(this.namespace + this.version + nkey, value);
       }
     }
-    else if ( path.length == 1 ) {
-      if ( value === undefined ) {
-        value = this.get( nkey );
-      }
-      this.saveModel[ nkey ] = value;
-      
-      if ( this.useLocalStorage ) {
-        localStorage.set( this.namespace + this.version + nkey, value );
-      }
-    }
-    Events.trigger( "Save-save", this.saveModel );
+    Events.trigger('Save-save', this.saveModel);
   };
-  
+
   /**
    * automatically called when the page is closed, but you can manually call it whenever you want.
    * This put the current save in the localStorage.
    * @memberOf Save
    * @protected
    */
-  this.saveAll = function()
-  {
+  this.saveAll = function() {
     // if engine is configured to prevent use of localStorage, nothing is saved
-    if ( !this.useLocalStorage ) {
+    if (!this.useLocalStorage) {
       return;
     }
-    for ( var i in this.saveModel )
-    {
-      localStorage.set( this.namespace + this.version + i, this.saveModel[ i ] );
+    for (var i in this.saveModel) {
+      localStorage.set(this.namespace + this.version + i, this.saveModel[i]);
     }
   };
-  Events.on( "unload-game", this.saveAll, this );
-  
+  Events.on('unload-game', this.saveAll, this);
+
   /**
    * Save the achievements progression in the localStorage (it's called by @Achievements directly)
    * @memberOf Save
    * @protected
    * @param {Object} userAchievement - data object of user achievements progression
    */
-  this.saveAchievements = function( userAchievements )
-  {
+  this.saveAchievements = function(userAchievements) {
     // if engine is configured to prevent use of localStorage, nothing is saved
-    if ( !this.useLocalStorage ) {
+    if (!this.useLocalStorage) {
       return;
     }
-    localStorage.set( this.namespace + "achievements", userAchievements );
+    localStorage.set(this.namespace + 'achievements', userAchievements);
   };
-  
-  this.loadAchievements = function()
-  {
-    return localStorage.get( this.namespace + "achievements" ) || {};
+
+  this.loadAchievements = function() {
+    return localStorage.get(this.namespace + 'achievements') || {};
   };
-}
+})();
 
 export default Save;

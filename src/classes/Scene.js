@@ -1,6 +1,6 @@
-import * as PIXI       from 'PIXI';
-import MainLoop        from 'DE.MainLoop';
-import GameObject      from 'DE.GameObject';
+import * as PIXI from 'PIXI';
+import MainLoop from 'DE.MainLoop';
+import GameObject from 'DE.GameObject';
 import sortGameObjects from 'DE.sortGameObjects';
 
 /**
@@ -15,17 +15,17 @@ import sortGameObjects from 'DE.sortGameObjects';
  * a Scene can be added to a Render or a Camera can look at this Scene
  * @example Game.scene = new DE.Scene( "Test" );
  */
-function Scene( name )
-{
-  PIXI.Container.call( this );
-  
+function Scene(name) {
+  PIXI.Container.call(this);
+
   /**
    * @public
    * @memberOf Scene
    * @type {String}
    */
-  this.name = name || "NoName-" + ( Date.now() + Math.random() * Date.now() >> 0 );
-  
+  this.name =
+    name || 'NoName-' + ((Date.now() + Math.random() * Date.now()) >> 0);
+
   /**
    * it's a copy of PIXI.children, used by sortGameObjects middle-ware
    * @readonly
@@ -46,10 +46,10 @@ function Scene( name )
    * @memberOf Scene
    */
   this.gameObjectsByTag = {};
-  
+
   // TODO when required this.objectsByTag = {};
   // TODO when required this.objectsByName = {};
-  
+
   /**
    * if this world is sleeping, update will be ignored
    * @public
@@ -57,11 +57,11 @@ function Scene( name )
    * @type {Boolean}
    */
   this.enable = true;
-  
-  MainLoop.addScene( this );
+
+  MainLoop.addScene(this);
 }
 
-Scene.prototype = Object.create( PIXI.Container.prototype );
+Scene.prototype = Object.create(PIXI.Container.prototype);
 Scene.prototype.constructor = Scene;
 
 /**
@@ -78,19 +78,15 @@ Scene.prototype.constructor = Scene;
  * var myArray2 = [ object4, object5, object6 ]; // declare a second array with object inside as you wish
  * myScene.add( myArray, myArray2 ); // then call add with array and multi arguments
  */
-Scene.prototype.add = function()
-{
-  var args = Array.prototype.slice.call( arguments );
-  for ( var i = 0; i < args.length; ++i )
-  {
-    if ( args[ i ] && args[ i ].length ) {
-      for ( var o = 0, m = args[ i ].length || 1; o < m; ++o )
-      {
-        this.addOne( args[ i ][ o ] );
+Scene.prototype.add = function() {
+  var args = Array.prototype.slice.call(arguments);
+  for (var i = 0; i < args.length; ++i) {
+    if (args[i] && args[i].length) {
+      for (var o = 0, m = args[i].length || 1; o < m; ++o) {
+        this.addOne(args[i][o]);
       }
-    }
-    else {
-      this.addOne( args[ i ] );
+    } else {
+      this.addOne(args[i]);
     }
   }
 };
@@ -102,30 +98,31 @@ Scene.prototype.add = function()
  * @param {GameObject} gameObject gameObject to add
  * @example myScene.addOne( car );
  */
-Scene.prototype.addOne = function( gameObject )
-{
+Scene.prototype.addOne = function(gameObject) {
   // accept only gameObject to avoid errors
-  if ( !( gameObject instanceof GameObject ) ) {
-    console.error( "Tried to add something in a scene that is not a GameObject. Please inherit from GameObject" );
+  if (!(gameObject instanceof GameObject)) {
+    console.error(
+      'Tried to add something in a scene that is not a GameObject. Please inherit from GameObject',
+    );
     return;
   }
-  
+
   // TODO add in byTags, byNames, pools objects
-  
+
   // add in PIXI Container
-  this.addChild( gameObject );
-  this.gameObjectsById[ gameObject.id ] = gameObject;
-  
-  if ( gameObject.tag ) {
-    if ( !this.gameObjectsByTag[ gameObject.tag ] ) {
-      this.gameObjectsByTag[ gameObject.tag ] = new Array();
+  this.addChild(gameObject);
+  this.gameObjectsById[gameObject.id] = gameObject;
+
+  if (gameObject.tag) {
+    if (!this.gameObjectsByTag[gameObject.tag]) {
+      this.gameObjectsByTag[gameObject.tag] = new Array();
     }
-    this.gameObjectsByTag[ gameObject.tag ].push( gameObject );
+    this.gameObjectsByTag[gameObject.tag].push(gameObject);
   }
-  
+
   this._shouldSortChildren = true;
-  
-  this.emit( "update-children" );
+
+  this.emit('update-children');
 };
 
 /**
@@ -133,45 +130,42 @@ Scene.prototype.addOne = function( gameObject )
  * @protected
  * @memberOf Scene
  */
-Scene.prototype.update = function( time )
-{
-  if ( !this.enable ) {
+Scene.prototype.update = function(time) {
+  if (!this.enable) {
     return;
   }
-  
-  for ( var i = 0, t = this.children.length, g; i < t; ++i )
-  {
-    g = this.children[ i ];
-    
-    if ( !g ) {
+
+  for (var i = 0, t = this.children.length, g; i < t; ++i) {
+    g = this.children[i];
+
+    if (!g) {
       continue;
     }
-    
-    if ( g.flag !== null ) {
-      switch( g.flag )
-      {
-        case "delete":
-          this.delete( i );
+
+    if (g.flag !== null) {
+      switch (g.flag) {
+        case 'delete':
+          this.delete(i);
           --t;
           continue;
           break;
       }
     }
-    
+
     // need an octree here for physic ?
     // passing other gameObjects for physic ? (still looking how to do it)
-    g.update( time /*, this.gameObjects*/ );
+    g.update(time /*, this.gameObjects*/);
   }
-  
+
   // TODO ? // It seems that PIXI Ticker is calling his own requestAnimationFrame, not needed here ?
   // but it could be cool to have Ticker associated to a scene lifetime (PIXI.Ticker can be dis-activated and manually called ?)
   // for ( var i = 0, t = this.timers.length; i < t; ++tk )
   // {
   //   this.timers[ i ].update();
   // }
-  
+
   // TODO ?
-  if ( this._shouldSortChildren ) {
+  if (this._shouldSortChildren) {
     this.sortGameObjects();
   }
 };
@@ -186,7 +180,7 @@ Scene.prototype.update = function( time )
 Scene.prototype.sortGameObjects = sortGameObjects;
 
 // name registered in engine declaration
-Scene.prototype.DEName = "Scene";
+Scene.prototype.DEName = 'Scene';
 
 /**
  * Delete and remove an object in the scene.
@@ -195,11 +189,10 @@ Scene.prototype.DEName = "Scene";
  * @memberOf Scene
  * @param {GameObject} object can be the index of the GameObject in the gameObjects array
  */
-Scene.prototype.delete = function( object )
-{
-  var target = this.remove( object );
+Scene.prototype.delete = function(object) {
+  var target = this.remove(object);
   target.killMePlease();
-  
+
   return this;
 };
 
@@ -209,33 +202,34 @@ Scene.prototype.delete = function( object )
  * @memberOf Scene
  * @param {GameObject} object can be the index of the GameObject in the gameObjects array
  */
-Scene.prototype.remove = function( object )
-{
+Scene.prototype.remove = function(object) {
   var target;
-  
-  delete this.gameObjectsById[ object.id ];
-  if ( object.tag ) {
-    this.gameObjectsByTag[ object.tag ].splice( this.gameObjectsByTag[ object.tag ].indexOf( object ), 1 );
+
+  delete this.gameObjectsById[object.id];
+  if (object.tag) {
+    this.gameObjectsByTag[object.tag].splice(
+      this.gameObjectsByTag[object.tag].indexOf(object),
+      1,
+    );
   }
 
   // if it's an index, it's dangerous D: (excepted when it came from update, which is faster than idnexindexOf)
-  if ( isNaN( object ) ) {
-    var index = this.children.indexOf( object );
-    
-    if ( index !== - 1 ) {
+  if (isNaN(object)) {
+    var index = this.children.indexOf(object);
+
+    if (index !== -1) {
       // remove from PIXI Container
-      this.removeChild( object );
+      this.removeChild(object);
     }
     target = object;
-  }
-  else {
-    target = this.children[ object ];
-    
+  } else {
+    target = this.children[object];
+
     // remove from PIXI Container
-    this.removeChild( target );
+    this.removeChild(target);
   }
-  
-  this.emit( "update-children" );
+
+  this.emit('update-children');
   return target;
 };
 

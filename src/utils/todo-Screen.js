@@ -26,111 +26,128 @@
  
  !!Warning!! If you want use custom sizes for images, be sure to use scale (scaleX, scaleY) because I have not finished the case when you set manual size on image so it'll not ratioed on draw
 **/
-define( [ 'DE.CONFIG', 'DE.SaveSystem', 'DE.Event' ],
-function( CONFIG, SaveSystem, Event )
-{
-  var ScreenSize = new function()
-  {
-    this.DEName = "Screen";
-    
+define(['DE.CONFIG', 'DE.SaveSystem', 'DE.Event'], function(
+  CONFIG,
+  SaveSystem,
+  Event,
+) {
+  var ScreenSize = new (function() {
+    this.DEName = 'Screen';
+
     this.screenSizes = {};
     this.conceptionSizeIndex = 0;
     this.ratioToConception = 1;
     // current config sizes index
     this.currentSizeIndex = 0;
     this.activeScreenWidth = 0; // quick access used by MainLoop for loader rendering
-    
+
     // ratio from current real size to used size (in screenSizes, with currentSizeIndex) - TODO usage needed or not ?
     // this.screenRatioToConception = 1;
-    
+
     // current screen size
-    this.screenSize = { "w": 0, "h": 0 };
+    this.screenSize = { w: 0, h: 0 };
     // ratio with DPI - TODO - use this to create responsive GUI
-    this.dpiSizeRatio = { "w": 0, "h": 0 };
+    this.dpiSizeRatio = { w: 0, h: 0 };
     this.dpi = 1;
-    
-    this.init = function( imgDatas )
-    {
-      if ( !imgDatas )
-      {
-        console.log( "%cFATAL ERROR %cyou need to pass the file containing all images datas when call DreamEngine.init", "color:red;background:black", "color: red" );
+
+    this.init = function(imgDatas) {
+      if (!imgDatas) {
+        console.log(
+          '%cFATAL ERROR %cyou need to pass the file containing all images datas when call DreamEngine.init',
+          'color:red;background:black',
+          'color: red',
+        );
       }
       // screen sizes avalaible (in the imagesDatas config file)
-      this.screenSizes = imgDatas.screenSizes || [ { "w": 1920, "h": 1080, "path": "" } ];
-      
+      this.screenSizes = imgDatas.screenSizes || [
+        { w: 1920, h: 1080, path: '' },
+      ];
+
       /* game conception size index
         (if you make the game with HD graphics and sizes, the ratio will be based on this) */
       this.conceptionSizeIndex = imgDatas.conceptionSizeIndex || 0;
     };
-    
-    this.updateScreenSizes = function( index )
-    {
+
+    this.updateScreenSizes = function(index) {
       this.dpi = 1;
       var devicePixelRatio = devicePixelRatio || 1;
-      if ( devicePixelRatio )
-        this.dpi = devicePixelRatio;
-      
-      var savedQuality = SaveSystem.get( "settings" ).quality || undefined;
+      if (devicePixelRatio) this.dpi = devicePixelRatio;
+
+      var savedQuality = SaveSystem.get('settings').quality || undefined;
       var sizes = this.screenSizes;
       this.currentSizeIndex = this.conceptionSizeIndex;
-      this.screenSize.w = ( window.innerWidth || document.documentElement.clientWidth );
-      this.screenSize.h = ( window.innerHeight || document.documentElement.clientHeight );
-      this.dpiSizeRatio.w = ( window.innerWidth || document.documentElement.clientWidth ) / this.dpi >> 0;
-      this.dpiSizeRatio.h = ( window.innerHeight || document.documentElement.clientHeight ) / this.dpi >> 0;
-      
-      if ( sizes[ index ] || ( !isNaN( savedQuality ) && sizes[ savedQuality ] ) )
-      {
-        if ( sizes[ index ] )
-        {
+      this.screenSize.w =
+        window.innerWidth || document.documentElement.clientWidth;
+      this.screenSize.h =
+        window.innerHeight || document.documentElement.clientHeight;
+      this.dpiSizeRatio.w =
+        ((window.innerWidth || document.documentElement.clientWidth) /
+          this.dpi) >>
+        0;
+      this.dpiSizeRatio.h =
+        ((window.innerHeight || document.documentElement.clientHeight) /
+          this.dpi) >>
+        0;
+
+      if (sizes[index] || (!isNaN(savedQuality) && sizes[savedQuality])) {
+        if (sizes[index]) {
           this.currentSizeIndex = index;
-          SaveSystem.get( "settings" ).quality = index;
-          SaveSystem.save( "settings" );
-        }
-        else
-          this.currentSizeIndex = savedQuality || index;
-      }
-      else
-      {
+          SaveSystem.get('settings').quality = index;
+          SaveSystem.save('settings');
+        } else this.currentSizeIndex = savedQuality || index;
+      } else {
         var nearest = 0;
-        for ( var i = 0; i < sizes.length; ++i )
-        {
+        for (var i = 0; i < sizes.length; ++i) {
           this.currentSizeIndex = i;
           // if current sizes is highter possible sizes value, we get it
-          if ( sizes[ i ].w <= this.screenSize.w && sizes[ i ].h <= this.screenSize.h )
-          {
+          if (
+            sizes[i].w <= this.screenSize.w &&
+            sizes[i].h <= this.screenSize.h
+          ) {
             // get the delta on this size and previous
-            if ( i > 0 )
-            {
-              var dw = Math.abs( sizes[ i ].w - this.screenSize.w );
-              var dh = Math.abs( sizes[ i ].h - this.screenSize.h );
-              
-              var pdw = Math.abs( sizes[ i - 1 ].w - this.screenSize.w );
-              var pdh = Math.abs( sizes[ i - 1 ].h - this.screenSize.h );
-              
+            if (i > 0) {
+              var dw = Math.abs(sizes[i].w - this.screenSize.w);
+              var dh = Math.abs(sizes[i].h - this.screenSize.h);
+
+              var pdw = Math.abs(sizes[i - 1].w - this.screenSize.w);
+              var pdh = Math.abs(sizes[i - 1].h - this.screenSize.h);
+
               // get previous if the delta is lower
-              if ( pdw < dw && pdh < dh )
-                this.currentSizeIndex = i - 1;
+              if (pdw < dw && pdh < dh) this.currentSizeIndex = i - 1;
             }
             break;
           }
         }
-        SaveSystem.get( "settings" ).quality = index;
-        SaveSystem.save( "settings", SaveSystem.get( "settings" ) );
+        SaveSystem.get('settings').quality = index;
+        SaveSystem.save('settings', SaveSystem.get('settings'));
       }
-      
-      this.activeScreenWidth = sizes[ this.conceptionSizeIndex ].w;
-      
-      CONFIG.debug.log( "Choosen screen size index is " + this.currentSizeIndex + " - screenSize: "
-                    + JSON.stringify( this.screenSize ) + " - choosedSize: "
-                    + JSON.stringify( sizes[ this.currentSizeIndex ] ) + " - dpi: " + this.dpi, 2 );
-      
-      this.ratioToConception = sizes[ this.currentSizeIndex ].w / sizes[ this.conceptionSizeIndex ].w;
-      CONFIG.debug.log( "Physical ratio is :: " + this.ratioToConception, 2 );
-      
-      Event.trigger( "updateScreenSizes", this.ratioToConception, sizes[ this.currentSizeIndex ] );
+
+      this.activeScreenWidth = sizes[this.conceptionSizeIndex].w;
+
+      CONFIG.debug.log(
+        'Choosen screen size index is ' +
+          this.currentSizeIndex +
+          ' - screenSize: ' +
+          JSON.stringify(this.screenSize) +
+          ' - choosedSize: ' +
+          JSON.stringify(sizes[this.currentSizeIndex]) +
+          ' - dpi: ' +
+          this.dpi,
+        2,
+      );
+
+      this.ratioToConception =
+        sizes[this.currentSizeIndex].w / sizes[this.conceptionSizeIndex].w;
+      CONFIG.debug.log('Physical ratio is :: ' + this.ratioToConception, 2);
+
+      Event.trigger(
+        'updateScreenSizes',
+        this.ratioToConception,
+        sizes[this.currentSizeIndex],
+      );
     };
-  }
-  
-  CONFIG.debug.log( "Screens loaded", 3 );
+  })();
+
+  CONFIG.debug.log('Screens loaded', 3);
   return ScreenSize;
-} );
+});

@@ -1,9 +1,9 @@
-import * as PIXI       from 'PIXI';
-import Vector2         from 'DE.Vector2';
-import config          from 'DE.config';
+import * as PIXI from 'PIXI';
+import Vector2 from 'DE.Vector2';
+import config from 'DE.config';
 import GraphicRenderer from 'DE.GraphicRenderer';
 import sortGameObjects from 'DE.sortGameObjects';
-import Events          from 'DE.Events';
+import Events from 'DE.Events';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -29,18 +29,17 @@ import Events          from 'DE.Events';
  * } );
  */
 
-function GameObject( params )
-{
+function GameObject(params) {
   var _params = params || {};
-  
-  PIXI.Container.call( this );
-  
-  this.position.set( _params.x || 0, _params.y || 0 );
+
+  PIXI.Container.call(this);
+
+  this.position.set(_params.x || 0, _params.y || 0);
   delete _params.x;
   delete _params.y;
-  
-  this.vector2 = new Vector2( this.x, this.y, this );
-  
+
+  this.vector2 = new Vector2(this.x, this.y, this);
+
   /**
    * If false, the object wont be updated anymore (but still renderer).
    * check visible attribute (from PIXI) to prevent rendering without killing update
@@ -49,7 +48,7 @@ function GameObject( params )
    * @type {Boolean}
    */
   this.updatable = true;
-  
+
   /**
    * Set to true when the (PIXI) position.scope._localID change, that mean the position (x/y) has changed or if z change.
    * If true, the camera will recalculate perspective. It can also be used by Collisions algorithms
@@ -57,27 +56,28 @@ function GameObject( params )
    * @memberOf GameObject
    */
   this._hasMoved = true;
-  
+
   /**
    * @public
    * @memberOf GameObject
    * @type {String}
    */
-  this.id = _params.id !== undefined ? _params.id : Math.random() * 999999999 >> 0;
-  
+  this.id =
+    _params.id !== undefined ? _params.id : (Math.random() * 999999999) >> 0;
+
   /**
    * @public
    * @memberOf GameObject
    * @type {String}
    */
-  this.name    = _params.name;
+  this.name = _params.name;
   /**
    * @public
    * @memberOf GameObject
    * @type {String}
    */
-  this.tag     = _params.tag;
-  
+  this.tag = _params.tag;
+
   /**
    * Target to focus (position, Vector2, Points or GameObject, whatever with x/y)
    *
@@ -86,7 +86,7 @@ function GameObject( params )
    * @type {Object}
    */
   this.target = undefined;
-  
+
   /**
    * Flag used in intern logic (for delete) but can be used outside when it's not conflicting with the engine's logic
    *
@@ -94,22 +94,22 @@ function GameObject( params )
    * @memberOf GameObject
    * @type {String}
    */
-  this.flag   = undefined;
-  
+  this.flag = undefined;
+
   /**
    * @readOnly
    * @memberOf GameObject
    * @type {Array-GameObject}
    */
   this.gameObjects = [];
-  
+
   /**
    * @private
    * @memberOf GameObject
    * @type {Object}
    */
   this._automatisms = {};
-  
+
   /**
    * used to make distinction between gameObject and pure PIXI DisplayObject
    * @private
@@ -117,28 +117,28 @@ function GameObject( params )
    * @type {Boolean}
    */
   this._isGameObject = true;
-  
+
   /**
    * when a children change his z or zindex property this attribute change to true and the gameObject sort his children in the next update call
    * @private
    * @memberOf GameObject
    */
   this._shouldSortChildren = false;
-  
+
   /**
    * used to clearly sort gameObjects rendering priority (higher is rendered over others)
    * @private
    * @memberOf GameObject
    */
   this._zindex = 0;
-  
+
   /**
    * used to simulate a perspective when using a Camera, if not using a Camera this is an other way to sort gameObjects (with z-index)
    * @private
    * @memberOf GameObject
    */
   this._z = 0;
-  
+
   /**
    * create a scale to simulate a z axis (to create perspective) when changing z attribute
    * this modifier is applied to this.scale (and savedScale store the old, not modified scale)
@@ -147,7 +147,7 @@ function GameObject( params )
    * @type {Int}
    */
   this._zscale = 1;
-  
+
   /**
    * store real scale (taking all parent in consideration)
    * worldScale is update directly when calling the constructor
@@ -156,8 +156,8 @@ function GameObject( params )
    * @memberOf GameObject
    * @type {PIXI.Point}
    */
-  this.worldScale = new PIXI.Point( 1, 1 );
-  
+  this.worldScale = new PIXI.Point(1, 1);
+
   /**
    * save the scale before z applies (this way you can know the true scale of the object without any modifier)
    * @public
@@ -165,20 +165,24 @@ function GameObject( params )
    * @type {PIXI.Point}
    */
   this.savedScale = new PIXI.Point(
-    _params.scale && _params.scale.x ? _params.scale.x : _params.scale || _params.scaleX || 1
-    , _params.scale && _params.scale.y ? _params.scale.y : _params.scale || _params.scaleY || 1
+    _params.scale && _params.scale.x
+      ? _params.scale.x
+      : _params.scale || _params.scaleX || 1,
+    _params.scale && _params.scale.y
+      ? _params.scale.y
+      : _params.scale || _params.scaleY || 1,
   );
   delete _params.scale;
   // call correctly the scale modifier to update zscale and worldScale
-  this.setScale( this.savedScale.x, this.savedScale.y );
-  
+  this.setScale(this.savedScale.x, this.savedScale.y);
+
   /**
    * can prevent event propagation
-   * @private 
-   * @memberOf GameObject 
+   * @private
+   * @memberOf GameObject
    */
   this._killArgs = {};
-  
+
   /**
    * object used to apply fade transition
    * @protected
@@ -186,12 +190,12 @@ function GameObject( params )
    * @type {Object}
    */
   this._fadeData = {
-    "from"     : 1
-    ,"to"      : 0
-    ,"duration": 1000
-    ,"done"    : true
+    from: 1,
+    to: 0,
+    duration: 1000,
+    done: true,
   };
-  
+
   /**
    * object used to apply scale transition
    * @protected
@@ -199,14 +203,14 @@ function GameObject( params )
    * @type {Object}
    */
   this._scaleData = {
-    "fromx"    : 1
-    ,"tox"     : 0
-    ,"fromy"   : 1
-    ,"toy"     : 0
-    ,"duration": 1000
-    ,"done"    : true
+    fromx: 1,
+    tox: 0,
+    fromy: 1,
+    toy: 0,
+    duration: 1000,
+    done: true,
   };
-  
+
   /**
    * object used to apply shake
    * @protected
@@ -214,11 +218,11 @@ function GameObject( params )
    * @type {Object}
    */
   this._shakeData = {
-    "done": true
-    ,"prevX": 0
-    ,"prevY": 0
+    done: true,
+    prevX: 0,
+    prevY: 0,
   };
-  
+
   /**
    * object used to apply move translation
    * @protected
@@ -226,73 +230,71 @@ function GameObject( params )
    * @type {Object}
    */
   this._moveData = {
-    "done": true
+    done: true,
   };
-  
+
   this.renderers = [];
-  
-  if ( _params.renderer ) {
-    this.addRenderer( _params.renderer );
+
+  if (_params.renderer) {
+    this.addRenderer(_params.renderer);
     delete _params.renderer;
   }
-  
-  if ( _params.renderers ) {
-    for ( var i = 0; i < _params.renderers.length; ++i )
-    {
-      this.addRenderer( _params.renderers[ i ] );
+
+  if (_params.renderers) {
+    for (var i = 0; i < _params.renderers.length; ++i) {
+      this.addRenderer(_params.renderers[i]);
     }
     delete _params.renderers;
   }
-  
-  this.renderer = this.renderers[ 0 ];
-  
-  if ( config.DEBUG ) {
+
+  this.renderer = this.renderers[0];
+
+  if (config.DEBUG) {
     this._createDebugRenderer();
   }
-  
-  if ( _params.gameObjects ) {
-    this.add( _params.gameObjects );
+
+  if (_params.gameObjects) {
+    this.add(_params.gameObjects);
     delete _params.gameObjects;
   }
-  
-  
+
   // easy way to add custom function/attributes to a GameObject in a one-block declaration
-  for ( var i in _params )
-  {
-    if ( i === "automatisms" ) {
+  for (var i in _params) {
+    if (i === 'automatisms') {
       continue;
     }
-    
+
     // if ( this[ i ] ) {
     //   console.log( "WARN GameObject: you are overriding " + i + " method/attribute" );
     // }
-    this[ i ] = _params[ i ];
+    this[i] = _params[i];
   }
-  
+
   // this have to be at the end because we can define function just before
-  if ( _params.automatisms ) {
-    for ( var i = 0; i < _params.automatisms.length; ++i )
-    {
-      this.addAutomatism.apply( this, _params.automatisms[ i ] );
+  if (_params.automatisms) {
+    for (var i = 0; i < _params.automatisms.length; ++i) {
+      this.addAutomatism.apply(this, _params.automatisms[i]);
     }
     delete _params.automatisms;
   }
-  
-  Events.on( "change-debug", function( debug, level )
-  {
-    if ( debug ) {
-      this._createDebugRenderer();
-    }
-    else {
-      this._destroyDebugRenderer();
-    }
-  }, this );
+
+  Events.on(
+    'change-debug',
+    function(debug, level) {
+      if (debug) {
+        this._createDebugRenderer();
+      } else {
+        this._destroyDebugRenderer();
+      }
+    },
+    this,
+  );
 }
 
-GameObject.prototype = Object.create( PIXI.Container.prototype );
+GameObject.prototype = Object.create(PIXI.Container.prototype);
 GameObject.prototype.constructor = GameObject;
 
-Object.defineProperties( GameObject.prototype, {
+Object.defineProperties(GameObject.prototype, {
   /**
    * if false, object will stop being rendered and stop being updated
    * @public
@@ -300,105 +302,103 @@ Object.defineProperties( GameObject.prototype, {
    * @type {Boolean}
    */
   enable: {
-    get: function()
-    {
+    get: function() {
       return this.updatable || this.visible;
-    }
-    , set: function( value )
-    {
+    },
+    set: function(value) {
       // TODO ? this is useful for dynamic pools (feature incoming)
       // if ( this.enable != value )
       //   this.emit( value ? 'active' : 'unactive' );
-      
-      this.updatable  = value;
-      this.visible    = value;
-    }
-  }
-  
+
+      this.updatable = value;
+      this.visible = value;
+    },
+  },
+
   /**
    * override from PIXI because we want to update the _vector2 rotation on set
    * @public
    * @memberOf GameObject
    */
-  , rotation: {
-    get: function()
-    {
+  rotation: {
+    get: function() {
       return this.transform.rotation;
     },
-    set: function set(value) // eslint-disable-line require-jsdoc
-    {
-      this.vector2._updateRotation( value );
+    set: function set(
+      value, // eslint-disable-line require-jsdoc
+    ) {
+      this.vector2._updateRotation(value);
       this.transform.rotation = value;
-    }
-  }
-  
+    },
+  },
+
   /**
    * allow sorting gameObjects in the parent rendering order
    * @public
    * @memberOf GameObject
    */
-  , zindex: {
+  zindex: {
     get: function() {
       return this._zindex;
-    }
-    , set: function( zindex ) {
+    },
+    set: function(zindex) {
       this._zindex = zindex;
-      
-      if ( this.parent ) {
+
+      if (this.parent) {
         this.parent._shouldSortChildren = true;
       }
-    }
-  }
-  
+    },
+  },
+
   /**
    * this is used for creating perspective rendering. It is also used by the sorting algorithm
    * note: the perspective applies only if there is a camera to render the scene content, and sub-children are not eligible to this features (only top-gameobject are)
    * @public
    * @memberOf GameObject
    */
-  , z: {
+  z: {
     get: function() {
       return this._z;
-    }
-    , set: function( z ) {
+    },
+    set: function(z) {
       this._z = z;
       this._hasMoved = true;
       this._updateZScale();
-      
-      if ( this.parent ) {
+
+      if (this.parent) {
         this.parent._shouldSortChildren = true;
       }
-    }
-  }
-} );
+    },
+  },
+});
 
-GameObject.prototype._createDebugRenderer = function()
-{
-  if ( this._debugRenderer ) {
+GameObject.prototype._createDebugRenderer = function() {
+  if (this._debugRenderer) {
     return;
   }
-  
-  this._debugRenderer = new GraphicRenderer(
-    [
-      { beginFill: "0x00FF00" }
-      , { drawRect: [ 0, 0, 20, 2 ] }
-      , { beginFill: "0xFF0000" }
-      , { drawRect: [ 0, 0, 2, 20 ] }
-    ]
-  );
-  this.addChild( this._debugRenderer );
-}
 
-GameObject.prototype._destroyDebugRenderer = function()
-{
-  if ( !this._debugRenderer ) {
+  this._debugRenderer = new GraphicRenderer([
+    { beginFill: '0x00FF00' },
+    { drawRect: [0, 0, 20, 2] },
+    { beginFill: '0xFF0000' },
+    { drawRect: [0, 0, 2, 20] },
+  ]);
+  this.addChild(this._debugRenderer);
+};
+
+GameObject.prototype._destroyDebugRenderer = function() {
+  if (!this._debugRenderer) {
     return;
   }
-  
-  this.removeChild( this._debugRenderer );
-  this._debugRenderer.destroy( { children: true, texture: true, baseTexture: true } );
+
+  this.removeChild(this._debugRenderer);
+  this._debugRenderer.destroy({
+    children: true,
+    texture: true,
+    baseTexture: true,
+  });
   this._debugRenderer = null;
-}
+};
 
 /**
  * move gameObject with a vector 2
@@ -409,9 +409,8 @@ GameObject.prototype._destroyDebugRenderer = function()
  * if absolute, object will move on world axis instead this own axis
  * @example myObject.translate( { "x": 10, "y": 5 }, false );
  */
-GameObject.prototype.translate = function( pos, absolute, ignoreDeltaTime )
-{
-  this.vector2.translate( pos, absolute, ignoreDeltaTime );
+GameObject.prototype.translate = function(pos, absolute, ignoreDeltaTime) {
+  this.vector2.translate(pos, absolute, ignoreDeltaTime);
   return this;
 };
 /**
@@ -422,9 +421,8 @@ GameObject.prototype.translate = function( pos, absolute, ignoreDeltaTime )
  * @param {Boolean} absolute
  * if absolute, object will move on world axis instead this own axis
  */
-GameObject.prototype.translateX = function( distance, absolute, ignoreDelta )
-{
-  this.translate( { x: distance, y: 0 }, absolute, ignoreDelta );
+GameObject.prototype.translateX = function(distance, absolute, ignoreDelta) {
+  this.translate({ x: distance, y: 0 }, absolute, ignoreDelta);
   return this;
 };
 /**
@@ -435,9 +433,8 @@ GameObject.prototype.translateX = function( distance, absolute, ignoreDelta )
  * @param {Boolean} absolute
  * if absolute, object will move on world axis instead this own axis
  */
-GameObject.prototype.translateY = function( distance, absolute, ignoreDelta )
-{
-  this.translate( { x: 0, y: distance }, absolute, ignoreDelta );
+GameObject.prototype.translateY = function(distance, absolute, ignoreDelta) {
+  this.translate({ x: 0, y: distance }, absolute, ignoreDelta);
   return this;
 };
 
@@ -447,9 +444,8 @@ GameObject.prototype.translateY = function( distance, absolute, ignoreDelta )
  * @memberOf GameObject
  * @param {Float} angle
  */
-GameObject.prototype.rotate = function( angle, ignoreDelta )
-{
-  this.vector2.rotate( angle, ignoreDelta );
+GameObject.prototype.rotate = function(angle, ignoreDelta) {
+  this.vector2.rotate(angle, ignoreDelta);
   return this;
 };
 
@@ -461,12 +457,11 @@ GameObject.prototype.rotate = function( angle, ignoreDelta )
  * @param {angleOffset}
  * can be a simple position x-y
  */
-GameObject.prototype.lookAt = function( vector2, angleOffset )
-{
+GameObject.prototype.lookAt = function(vector2, angleOffset) {
   var origin = { x: 0, y: 0 };
-  var otherPos = vector2.toGlobal ? vector2.toGlobal( origin ) : vector2;
-  this.rotation = this.vector2.getAngle( otherPos ) + ( angleOffset || 0 );
-  
+  var otherPos = vector2.toGlobal ? vector2.toGlobal(origin) : vector2;
+  this.rotation = this.vector2.getAngle(otherPos) + (angleOffset || 0);
+
   return this;
 };
 
@@ -477,15 +472,19 @@ GameObject.prototype.lookAt = function( vector2, angleOffset )
  * memberOf GameObject
  * param {PIXI.DisplayObject} rd - the renderer to add
  */
-GameObject.prototype.addRenderer = function( rd )
-{
-  if ( rd.anchor && !rd.preventCenter && rd.anchor.x === 0 && rd.anchor.y === 0 ) {
-    rd.anchor.set( 0.5, 0.5 );
+GameObject.prototype.addRenderer = function(rd) {
+  if (
+    rd.anchor &&
+    !rd.preventCenter &&
+    rd.anchor.x === 0 &&
+    rd.anchor.y === 0
+  ) {
+    rd.anchor.set(0.5, 0.5);
   }
-  
-  this.renderers.push( rd );
-  this.addChild( rd );
-  
+
+  this.renderers.push(rd);
+  this.addChild(rd);
+
   return this;
 };
 
@@ -503,25 +502,21 @@ GameObject.prototype.addRenderer = function( rd )
  * var myArray2 = [ object4, object5, object6 ]; // declare a second array with object inside as you wish
  * myObject.add( myArray, myArray2 ); // then call add with array and multi arguments
  */
-GameObject.prototype.add = function()
-{
-  var args = Array.prototype.slice.call( arguments );
-  for ( var i = 0; i < args.length; ++i )
-  {
-    if ( args[ i ].length !== undefined ) {
-      for ( var o = 0, m = args[ i ].length || 0; o < m; ++o )
-      {
-        this.addOne( args[ i ][ o ] );
+GameObject.prototype.add = function() {
+  var args = Array.prototype.slice.call(arguments);
+  for (var i = 0; i < args.length; ++i) {
+    if (args[i].length !== undefined) {
+      for (var o = 0, m = args[i].length || 0; o < m; ++o) {
+        this.addOne(args[i][o]);
       }
-    }
-    else {
-      this.addOne( args[ i ] );
+    } else {
+      this.addOne(args[i]);
     }
   }
-  
+
   // TODO used to sort z-index
   // this.sortChildren();
-  
+
   return this;
 };
 
@@ -532,28 +527,29 @@ GameObject.prototype.add = function()
  * @param {GameObject} gameObject gameObject to add
  * @example myObject.addOne( car );
  */
-GameObject.prototype.addOne = function( object )
-{
-  if ( !( object instanceof GameObject ) ) {
-    throw new Error( "DREAM_ENGINE.GameObject.add: this not inherit from GameObject, do it well please" );
+GameObject.prototype.addOne = function(object) {
+  if (!(object instanceof GameObject)) {
+    throw new Error(
+      'DREAM_ENGINE.GameObject.add: this not inherit from GameObject, do it well please',
+    );
     return;
   }
-  
-  if ( object.parent ) {
-    object.parent.remove( object );
+
+  if (object.parent) {
+    object.parent.remove(object);
   }
-  
-  this.gameObjects.push( object );
+
+  this.gameObjects.push(object);
   object._updateWorldScale();
-  
-  this.addChild( object );
-  
-  if ( config.DEBUG && !object._debugRenderer ) {
+
+  this.addChild(object);
+
+  if (config.DEBUG && !object._debugRenderer) {
     object._createDebugRenderer();
   }
-  
+
   this._shouldSortChildren = true;
-  
+
   return this;
 };
 
@@ -565,24 +561,22 @@ GameObject.prototype.addOne = function( object )
  * @param {GameObject} object
  * object reference
  */
-GameObject.prototype.remove = function( object )
-{
-  if ( isNaN( object ) ) {
-    var index = this.gameObjects.indexOf( object );
-    
-    if ( index !== - 1 ) {
-      this.gameObjects.splice( index, 1 );
-      this.removeChild( object );
+GameObject.prototype.remove = function(object) {
+  if (isNaN(object)) {
+    var index = this.gameObjects.indexOf(object);
+
+    if (index !== -1) {
+      this.gameObjects.splice(index, 1);
+      this.removeChild(object);
     }
     return object;
-  }
-  else {
-    var target = this.gameObjects[ object ];
-    
-    this.gameObjects.splice( object, 1 );
+  } else {
+    var target = this.gameObjects[object];
+
+    this.gameObjects.splice(object, 1);
     // remove from PIXI Container
-    this.removeChild( target );
-    
+    this.removeChild(target);
+
     return target;
   }
 };
@@ -594,10 +588,9 @@ GameObject.prototype.remove = function( object )
  * @param {GameObject} object
  * object reference or object index in the gameObjects array
  */
-GameObject.prototype.delete = function( object )
-{
-  var target = this.remove( object );
-  
+GameObject.prototype.delete = function(object) {
+  var target = this.remove(object);
+
   target.killMePlease();
   return this;
 };
@@ -607,9 +600,8 @@ GameObject.prototype.delete = function( object )
  * @protected
  * @memberOf GameObject
  */
-GameObject.prototype.deleteAll = function()
-{
-  while(this.gameObjects.length) {
+GameObject.prototype.deleteAll = function() {
+  while (this.gameObjects.length) {
     var target = this.remove(0);
     target.killMePlease();
   }
@@ -631,25 +623,24 @@ GameObject.prototype.deleteAll = function()
  * @example myObject.askToKill();
  * @example myObject.askToKill( { preventEvents: true } );
  */
-GameObject.prototype.askToKill = function( params )
-{
+GameObject.prototype.askToKill = function(params) {
   this.target = null;
   this._killArgs = params || {};
-  
-  if ( !this._killArgs.preventEvents && !this._killArgs.preventKillEvent ) {
-    if ( this.onKill ) {
+
+  if (!this._killArgs.preventEvents && !this._killArgs.preventKillEvent) {
+    if (this.onKill) {
       this.onKill();
     }
-    this.emit( "kill", this );
+    this.emit('kill', this);
   }
-  
+
   this.enable = false;
-  this.flag   = "delete";
-  
-  if ( !this.parent || !this.parent.enable ) {
+  this.flag = 'delete';
+
+  if (!this.parent || !this.parent.enable) {
     this.killMePlease();
   }
-  
+
   return this;
 };
 
@@ -668,47 +659,44 @@ GameObject.prototype.askToKill = function( params )
  * @example myObject.on( "kill", function( currentObject ){ console.log( "I'm dead in 16 milliseconds !" ); } );
  * @example myObject.on( "killed", function( currentObject ){ console.log( "Ok, now I'm dead" ); } );
  */
-GameObject.prototype.onKill   = undefined;
+GameObject.prototype.onKill = undefined;
 GameObject.prototype.onKilled = undefined;
 
 /**
  * this function is called when the update loop remove this GameObject (after an askToKill call)<br>
- * you shouldn't call it directly, if you do it, maybe other GameObjects in the current 
+ * you shouldn't call it directly, if you do it, maybe other GameObjects in the current
  * frame are dealing with this one and should produce errors<br>
- * <b>if you provided to askToKill a preventEvents or a preventKilledEvent this will 
+ * <b>if you provided to askToKill a preventEvents or a preventKilledEvent this will
  * not emit killed event and will not call onKilled method if provided</b>
  * @protected
  * @memberOf GameObject
  */
-GameObject.prototype.killMePlease = function()
-{
-  if ( !this._killArgs.preventEvents && !this._killArgs.preventKilledEvent ) {
-    if ( this.onKilled )
-      this.onKilled();
-    this.emit( "killed", this );
+GameObject.prototype.killMePlease = function() {
+  if (!this._killArgs.preventEvents && !this._killArgs.preventKilledEvent) {
+    if (this.onKilled) this.onKilled();
+    this.emit('killed', this);
   }
-  
+
   this.target = undefined;
   this.enable = false;
-  this.flag   = undefined;
-  
+  this.flag = undefined;
+
   // check if object isn't already destroyed and there is children inside 'cause PIXI don't do it
   // and prevent crash (if user ask multiple destroy)
-  if ( !this.children ) {
+  if (!this.children) {
     this.children = [];
   }
-  
-  for ( var i = 0, obj; i < this.gameObjects.length; ++i )
-  {
-    obj = this.remove( i );
+
+  for (var i = 0, obj; i < this.gameObjects.length; ++i) {
+    obj = this.remove(i);
     obj.killMePlease();
   }
-  
-  this.destroy( {
-    children     : true
-    , baseTexture: this.destroyTextureOnKill
-    , texture    : this.destroyTextureOnKill
-  } );
+
+  this.destroy({
+    children: true,
+    baseTexture: this.destroyTextureOnKill,
+    texture: this.destroyTextureOnKill,
+  });
 };
 
 /**
@@ -717,12 +705,10 @@ GameObject.prototype.killMePlease = function()
  * @memberOf GameObject
  * @public
  */
-GameObject.prototype.getGlobalRotation = function()
-{
-  if ( this.parent.getGlobalRotation ) {
+GameObject.prototype.getGlobalRotation = function() {
+  if (this.parent.getGlobalRotation) {
     return this.rotation + this.parent.getGlobalRotation();
-  }
-  else {
+  } else {
     return this.rotation;
   }
 };
@@ -756,23 +742,25 @@ GameObject.prototype.trigger = GameObject.prototype.emit;
 GameObject.prototype.getPos = GameObject.prototype.getGlobalPosition;
 
 // a tester
-GameObject.prototype.getWorldPos = function()
-{
-  if ( this.parent && this.parent.getWorldPos )
-  {
+GameObject.prototype.getWorldPos = function() {
+  if (this.parent && this.parent.getWorldPos) {
     var pos = this.parent.getWorldPos();
     var harmonics = this.parent.vector2.getHarmonics();
-    
-    return { x: -(-this.position.x * harmonics.cos + this.position.y * harmonics.sin) + pos.x
-      , y: -(-this.position.x * harmonics.sin + this.position.y * -harmonics.cos) + pos.y
-      , z: this.z + pos.z
+
+    return {
+      x:
+        -(-this.position.x * harmonics.cos + this.position.y * harmonics.sin) +
+        pos.x,
+      y:
+        -(-this.position.x * harmonics.sin + this.position.y * -harmonics.cos) +
+        pos.y,
+      z: this.z + pos.z,
     };
   }
-  
+
   return { x: this.x, y: this.y, z: this.z };
 };
 
-
-GameObject.prototype.DEName = "GameObject";
+GameObject.prototype.DEName = 'GameObject';
 
 export default GameObject;

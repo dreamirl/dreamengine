@@ -1,4 +1,4 @@
-import * as PIXI    from 'PIXI';
+import * as PIXI from 'PIXI';
 import BaseRenderer from 'DE.BaseRenderer';
 
 /**
@@ -16,19 +16,30 @@ import BaseRenderer from 'DE.BaseRenderer';
  * } );
  */
 
-export default class NineSliceRenderer extends PIXI.mesh.NineSlicePlane
-{
+export default class NineSliceRenderer extends PIXI.mesh.NineSlicePlane {
   constructor(params, left, top, right, bottom) {
-    if (!params.spriteName && !params.spriteUrl && !params.textureName && !params.texture) {
-      console.error( "A NineSliceRenderer need a spriteName, a spriteUrl argument or a texture" );
+    if (
+      !params.spriteName &&
+      !params.spriteUrl &&
+      !params.textureName &&
+      !params.texture
+    ) {
+      console.error(
+        'A NineSliceRenderer need a spriteName, a spriteUrl argument or a texture',
+      );
       return;
     }
 
-    super(params.texture ? params.texture : PIXI.utils.TextureCache[ params.spriteName || params.spriteUrl || params.textureName ],
+    super(
+      params.texture
+        ? params.texture
+        : PIXI.utils.TextureCache[
+            params.spriteName || params.spriteUrl || params.textureName
+          ],
       left,
       top,
       right,
-      bottom
+      bottom,
     );
 
     BaseRenderer.instantiate(this, params);
@@ -37,4 +48,4 @@ export default class NineSliceRenderer extends PIXI.mesh.NineSlicePlane
 
 BaseRenderer.inherits(NineSliceRenderer);
 
-NineSliceRenderer.prototype.DEName = "NineSliceRenderer";
+NineSliceRenderer.prototype.DEName = 'NineSliceRenderer';
