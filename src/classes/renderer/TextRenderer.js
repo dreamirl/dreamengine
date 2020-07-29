@@ -19,7 +19,7 @@ import Localization from 'DE.Localization';
  *     textStyle: { fontFamily: "cordova", fontSize: 12, fill: "white" }
  *   } )
  * } );
- 
+
  * if you use "Localizations" you should give "localizationKey" instead of the text value
  * by doing this, the text will be automatically updated when the lang change if the Renderer exist in a scene (active or not)
  * you can use the locales with one . to go deeper (but only one)
@@ -50,6 +50,9 @@ function TextRenderer(text, params) {
 
   this.maxWidth = _params.maxWidth;
   this.checkMaxWidth();
+
+  this.maxHeight = _params.maxHeight;
+  this.checkMaxHeight();
 }
 
 TextRenderer.prototype = Object.create(PIXI.Text.prototype);
@@ -59,12 +62,22 @@ BaseRenderer.inherits(TextRenderer);
 
 TextRenderer.prototype.DEName = 'TextRenderer';
 
-TextRenderer.prototype.checkMaxWidth = function() {
+TextRenderer.prototype.checkMaxWidth = function () {
   if (this.maxWidth) {
     let textMetrics = new PIXI.TextMetrics.measureText(this.text, this.style);
 
     if (textMetrics.width > this.maxWidth) {
       this.setScale(this.maxWidth / textMetrics.width);
+    }
+  }
+};
+
+TextRenderer.prototype.checkMaxHeight = function () {
+  if (this.maxHeight) {
+    let textMetrics = new PIXI.TextMetrics.measureText(this.text, this.style);
+
+    if (textMetrics.height > this.maxHeight) {
+      this.setScale(this.maxHeight / textMetrics.height);
     }
   }
 };
