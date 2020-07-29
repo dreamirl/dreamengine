@@ -655,12 +655,10 @@ SpriteRenderer.prototype.changeSprite = function(spriteName, params) {
       null,
     );
   }
-
-  if (params.tint) {
-    this.setTint(params.tint);
-  }
-
-  if (params.filters) {
+  
+  this.setTint( params.tint || 0xFFFFFF );
+  
+  if ( params.filters ) {
     this.filters = params.filters;
   }
 
