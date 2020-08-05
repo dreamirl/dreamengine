@@ -68,6 +68,8 @@ TextRenderer.prototype.checkMaxWidth = function () {
 
     if (textMetrics.width > this.maxWidth) {
       this.setScale(this.maxWidth / textMetrics.width);
+    } else {
+      this.setScale(1);
     }
   }
 };
