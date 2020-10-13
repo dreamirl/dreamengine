@@ -181,6 +181,7 @@ const Achievements = new (function() {
 
     Notifications.create(txt, config.notifications.achievementUnlockDuration);
     Audio.fx.play('achievement-unlocked');
+    Events.trigger('achievement-unlocked', achievement.namespace);
   };
 
   Events.on('games-datas', this.checkEvent, this);
