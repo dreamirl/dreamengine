@@ -183,6 +183,19 @@ Scene.prototype.sortGameObjects = sortGameObjects;
 Scene.prototype.DEName = 'Scene';
 
 /**
+ * Delete and remove all objects in the scene.
+ * @public
+ * @memberOf Scene
+ */
+Scene.prototype.deleteAll = function() {
+  while(this.gameObjects.length > 0) {
+    this.delete(this.gameObjects[0]);
+  }
+
+  return this;
+};
+
+/**
  * Delete and remove an object in the scene.
  * You should prefer askToKill GameObject's method because it's safer (if you know what you do go crazy).
  * @public
