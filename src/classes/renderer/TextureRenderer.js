@@ -43,9 +43,20 @@ function TextureRenderer(params) {
 
 TextureRenderer.prototype = Object.create(PIXI.Sprite.prototype);
 TextureRenderer.prototype.constructor = TextureRenderer;
+TextureRenderer.prototype.DEName = 'TextureRenderer';
 
 BaseRenderer.inherits(TextureRenderer);
 
-TextureRenderer.prototype.DEName = 'TextureRenderer';
+/**
+ * @public
+ * @memberOf TextureRenderer
+ * @type {Int}
+ */
+TextureRenderer.prototype.changeTexture = function(textureName) {
+  if (!textureName) {
+    throw new Error('TextureRenderer :: changeTexture -- need textureName');
+  }
 
+  this.texture = PIXI.utils.TextureCache[textureName];
+};
 export default TextureRenderer;
