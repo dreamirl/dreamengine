@@ -1,14 +1,16 @@
-export default function(DE, PIXI) {
-  PIXI.time = PIXI.ticker.shared;
-  DE.pixtime = PIXI.ticker.shared;
-  PIXI.utils.sayHello = function(type) {
+export default function (DE, PIXI) {
+  PIXI.time = PIXI.Ticker.shared;
+  DE.pixtime = PIXI.Ticker.shared;
+  PIXI.utils.sayHello = function (type) {
     if (type == 'WebGL') {
       type = type + ' ☺';
     }
 
     if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
       var args = [
-        '\n %c %c %c DreamEngine V2 > PIXI V4 ☃ - v' +
+        '\n %c %c %c DreamEngine V2 > PIXI V' +
+          PIXI.VERSION +
+          ' 😫 - v' +
           DE.VERSION +
           ' - ✰ ' +
           type +
@@ -33,7 +35,9 @@ export default function(DE, PIXI) {
       window.console.log.apply(console, args); //jshint ignore:line
     } else if (window.console) {
       window.console.log(
-        'DreamEngine V2 > PIXI V4 ☃ - v' +
+        'DreamEngine V2 > PIXI V' +
+          PIXI.VERSION +
+          ' 😫 - v' +
           DE.VERSION +
           ' - ✰ ' +
           type +

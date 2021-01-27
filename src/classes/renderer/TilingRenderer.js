@@ -28,7 +28,7 @@ function TilingRenderer(params) {
     return;
   }
 
-  PIXI.extras.TilingSprite.call(
+  PIXI.TilingSprite.call(
     this,
     PIXI.utils.TextureCache[
       params.backgroundImage ||
@@ -42,7 +42,7 @@ function TilingRenderer(params) {
   BaseRenderer.instantiate(this, params);
 }
 
-TilingRenderer.prototype = Object.create(PIXI.extras.TilingSprite.prototype);
+TilingRenderer.prototype = Object.create(PIXI.TilingSprite.prototype);
 TilingRenderer.prototype.constructor = TilingRenderer;
 
 BaseRenderer.inherits(TilingRenderer);

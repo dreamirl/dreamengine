@@ -79,7 +79,7 @@ extendPIXI(DE, PIXI);
  * launch the first loader and some utils then call start on loaded
  * call this method when all your stuff is ready
  */
-DE.init = function(params) {
+DE.init = function (params) {
   if (!params) {
     throw 'Cannot init DreamEngine without the options, take a sample for easy start';
   }
@@ -132,7 +132,7 @@ DE.init = function(params) {
   }
   this.customOnLoad =
     params.onLoad ||
-    function() {
+    function () {
       console.log('You have to give a onLoad callback to the DE.init options');
     };
 
@@ -154,7 +154,7 @@ DE.init = function(params) {
         scale: params.loader.scale || 1,
       },
     ];
-    DE.Events.once('ImageManager-loader-loaded', function() {
+    DE.Events.once('ImageManager-loader-loaded', function () {
       DE.MainLoop.updateLoaderImage(loader);
     });
     DE.ImageManager.load(loader);
@@ -168,13 +168,13 @@ DE.init = function(params) {
 };
 
 // this is called when the pool "default" is loaded (the MainLoop will display a loader)
-DE.onLoad = function() {
+DE.onLoad = function () {
   DE.customOnLoad();
   DE.MainLoop.displayLoader = false;
 };
 
 var _defaultPoolName = 'default';
-DE.start = function() {
+DE.start = function () {
   // make all audios instance and launch preload if required
   DE.Audio.loadAudios(DE.___params.audios || []);
   delete DE.___params;
@@ -192,7 +192,7 @@ DE.start = function() {
           DE.MainLoop.displayLoader = true;
           DE.Events.once(
             'ImageManager-pool-' + _defaultPoolName + '-loaded',
-            function() {
+            function () {
               setTimeout(() => DE.onLoad(), 500);
             },
           );
@@ -205,19 +205,19 @@ DE.start = function() {
   DE.emit('change-debug', DE.config.DEBUG, DE.config.DEBUG_LEVEL);
 };
 
-window.addEventListener('unhandledrejection', function(event) {
+window.addEventListener('unhandledrejection', function (event) {
   // the event object has two special properties:
   console.error(event.promise); // [object Promise] - the promise that generated the error
   console.error(event.reason); // Error: Whoops! - the unhandled error object
 });
 
 // pause / unpause the game
-DE.pause = function() {
+DE.pause = function () {
   this.paused = true;
   this.MainLoop.launched = false;
   this.Inputs.listening = false;
 };
-DE.unPause = function() {
+DE.unPause = function () {
   this.paused = false;
   this.Inputs.listening = true;
   this.MainLoop.launched = true;
@@ -227,13 +227,13 @@ DE.unPause = function() {
 };
 
 // quick event access
-DE.on = function() {
+DE.on = function () {
   this.Events.on.apply(this.Events, arguments);
 };
-DE.emit = function() {
+DE.emit = function () {
   this.Events.emit.apply(this.Events, arguments);
 };
-DE.trigger = function() {
+DE.trigger = function () {
   this.Events.emit.apply(this.Events, arguments);
 };
 

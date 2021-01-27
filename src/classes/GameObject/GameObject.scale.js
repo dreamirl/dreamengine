@@ -8,7 +8,7 @@ import config from 'DE.config';
  * @public
  * @memberOf GameObject
  */
-GameObject.prototype.setScale = function(x, y) {
+GameObject.prototype.setScale = function (x, y) {
   this.scale.set(x, y !== undefined ? y : x);
   this._updateScale();
 
@@ -20,7 +20,7 @@ GameObject.prototype.setScale = function(x, y) {
  * @private
  * @memberOf GameObject
  */
-GameObject.prototype._updateZScale = function() {
+GameObject.prototype._updateZScale = function () {
   // this come from old Camera render (working fine as excepted...)
   // zMaxDepth is 10 by default so if z is 1 scale modifier will be 0.9 (1 - 0.1)
   var zscale = 1 - this.z / config.zMaxDepth;
@@ -42,8 +42,8 @@ GameObject.prototype._updateZScale = function() {
  * @private
  * @memberOf GameObject
  */
-GameObject.prototype._updateScale = function() {
-  this.savedScale.copy(this.scale);
+GameObject.prototype._updateScale = function () {
+  this.savedScale.clone(this.scale);
   this.scale.x = this._zscale * this.scale.x;
   this.scale.y = this._zscale * this.scale.y;
 
@@ -63,7 +63,7 @@ GameObject.prototype._updateScale = function() {
  * @private
  * @memberOf GameObject
  */
-GameObject.prototype._updateWorldScale = function() {
+GameObject.prototype._updateWorldScale = function () {
   this.worldScale.set(this.scale.x, this.scale.y);
 
   if (!this.parent || !this.parent._isGameObject) {
@@ -86,7 +86,7 @@ GameObject.prototype._updateWorldScale = function() {
  * @example // scale to 2,3 in 1 second
  * myGameObject.scaleTo( { x: 2, y: 3 }, 1000 );
  */
-GameObject.prototype.scaleTo = function(scale, duration, callback) {
+GameObject.prototype.scaleTo = function (scale, duration, callback) {
   var dscale = {
     x: !isNaN(scale) ? scale : scale.x,
     y: !isNaN(scale) ? scale : scale.y,
@@ -124,7 +124,7 @@ GameObject.prototype.scaleTo = function(scale, duration, callback) {
  * @protected
  * @memberOf GameObject
  */
-GameObject.prototype.applyScale = function() {
+GameObject.prototype.applyScale = function () {
   if (this._scaleData.done) {
     return;
   }

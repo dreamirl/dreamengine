@@ -18,30 +18,31 @@ import about from 'DE.about';
  */
 
 /* TODO redefine if used or not 
-  PIXI.loader.on( 'complete', function()
+  PIXI.Loader.shared.on( 'complete', function()
   {
     States.down( 'isLoadingImages' );
     Event.trigger( "loadFilesEnd" );
   } );
   
-  PIXI.loader.on( 'start', function()
+  PIXI.Loader.shared.on( 'start', function()
   {
     States.up( 'isLoadingImages' );
     Event.trigger( "loadFilesStart" );
   } );
   */
 
-PIXI.loader.pre((resource, next) => {
+const PIXI_LOADER = PIXI.Loader.shared;
+PIXI_LOADER.pre((resource, next) => {
   if (resource.url.split('://').length > 1) {
-    resource.crossOrigin = 'anonymous';
-    resource.loadType = PIXI.loaders.Resource.LOAD_TYPE.XHR;
+    resource.crossOrigin = true;
+    // resource.loadType = PIXI.loaders.Resource.LOAD_TYPE.XHR;
   }
   next();
 });
 
 var _loadingImages = null;
 var _indexLoading = 0;
-var ImageManager = new (function() {
+var ImageManager = new (function () {
   this.DEName = 'ImageManager';
 
   // quality var define what we need and how to use it
@@ -61,9 +62,9 @@ var ImageManager = new (function() {
    * @protected
    * @memberOf ImageManager
    */
-  this.init = function(baseUrl, pools) {
+  this.init = function (baseUrl, pools) {
     this.baseUrl = baseUrl;
-    PIXI.loader.baseUrl = baseUrl;
+    PIXI_LOADER.baseUrl = baseUrl;
 
     this.pools = pools;
 
@@ -108,17 +109,17 @@ var ImageManager = new (function() {
    * @public
    * @memberOf ImageManager
    */
-  this.loadPool = function(poolName, customEventName, resetLoader) {
+  this.loadPool = function (poolName, customEventName, resetLoader) {
     var self = this;
 
     if (this.pools[poolName].length == 0) {
-      setTimeout(function() {
+      setTimeout(function () {
         self._onComplete(poolName, customEventName);
       }, 500);
       return;
     }
 
-    if (PIXI.loader.loading) {
+    if (PIXI_LOADER.loading) {
       // console.log( "WARN ImageManager: PIXI loader is already loading stuff, this call has been queued" );
       this._waitingPools.push({
         name: poolName,
@@ -128,21 +129,16 @@ var ImageManager = new (function() {
     }
 
     if (resetLoader) {
-      PIXI.loader.reset();
+      PIXI_LOADER.reset();
       this._nLoads = 0;
     }
 
-    PIXI.loader
-      .add(this.pools[poolName])
-      .on('progress', function(loader, resource) {
-        self._onProgress(poolName, loader, customEventName);
-      })
-      .load(function() {
-        PIXI.loader.off('progress', function(loader, resource) {
-          self._onProgress(poolName, loader, customEventName);
-        });
-        self._onComplete(poolName, customEventName);
-      });
+    PIXI_LOADER.onProgress.add((loader, resource) => {
+      self._onProgress(poolName, loader, customEventName);
+    });
+    PIXI_LOADER.add(this.pools[poolName]).load(function () {
+      self._onComplete(poolName, customEventName);
+    });
   };
 
   /**
@@ -150,7 +146,7 @@ var ImageManager = new (function() {
    * @private
    * @memberOf ImageManager
    */
-  this._onProgress = function(poolName, loader, customEventName) {
+  this._onProgress = function (poolName, loader, customEventName) {
     Events.trigger(
       'ImageManager-pool-progress',
       poolName,
@@ -173,7 +169,7 @@ var ImageManager = new (function() {
    * @private
    * @memberOf ImageManager
    */
-  this._onComplete = function(poolName, customEventName) {
+  this._onComplete = function (poolName, customEventName) {
     console.log('ImageManager load complete: ', poolName);
     Events.trigger('ImageManager-pool-complete', poolName);
     Events.trigger('ImageManager-pool-' + poolName + '-loaded');
@@ -194,10 +190,10 @@ var ImageManager = new (function() {
    * @public
    * @memberOf ImageManager
    */
-  this.load = function(data) {
-    if (PIXI.loader.resources[data[0]]) {
-      PIXI.utils.TextureCache[PIXI.loader.resources[data[0]].url].destroy();
-      delete PIXI.loader.resources[data[0]];
+  this.load = function (data) {
+    if (PIXI_LOADER.resources[data[0]]) {
+      PIXI.utils.TextureCache[PIXI_LOADER.resources[data[0]].url].destroy();
+      delete PIXI_LOADER.resources[data[0]];
     }
 
     var dataLoad = data;
@@ -228,19 +224,17 @@ var ImageManager = new (function() {
       dataLoad = { name: data[0], url };
     }
 
-    if (PIXI.loader.loading) {
+    if (PIXI_LOADER.loading) {
       // console.log( "WARN ImageManager: PIXI loader is already loading stuff, this call has been queued" );
       this._waitingSolo.push(dataLoad);
       return;
     }
 
     var self = this;
-    PIXI.loader.add(dataLoad).load(function() {
-      // PIXI.loader.reset();
+    PIXI_LOADER.add(dataLoad).load(function () {
+      // PIXI_LOADER.reset();
       // TODO find a way to prevent "success" trigger if the image failed to load
-      PIXI.loader.off('progress', function(loader, resource) {
-        self._onProgress(null, loader, customEventName);
-      });
+      PIXI_LOADER.onProgress.detachAll();
       self._onComplete(null, dataLoad.name ? dataLoad.name : dataLoad);
     });
   };
@@ -250,19 +244,19 @@ var ImageManager = new (function() {
    * @public
    * @memberOf ImageManager
    */
-  this.unloadPool = function(poolName) {
+  this.unloadPool = function (poolName) {
     var pool = this.pools[poolName];
     for (var i = 0, res, t = pool.length; i < t; ++i) {
       res = pool[i];
 
       PIXI.utils.TextureCache[
-        PIXI.loader.resources[res.name || res].url
+        PIXI_LOADER.resources[res.name || res].url
       ].destroy(true);
 
       // needed ?
       // PIXI doesn't remove it from resources after the texture has been destroyed
       // what is the best practice for this ?
-      delete PIXI.loader.resources[pool[i].name || pool[i]];
+      delete PIXI_LOADER.resources[pool[i].name || pool[i]];
     }
   };
 })();

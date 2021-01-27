@@ -40,7 +40,7 @@ function SpriteRenderer(params) {
 
   PIXI.Sprite.call(
     this,
-    PIXI.utils.TextureCache[PIXI.loader.resources[this.spriteName].url],
+    PIXI.utils.TextureCache[PIXI.Loader.shared.resources[this.spriteName].url],
   );
   BaseRenderer.instantiate(this, params);
 
@@ -159,7 +159,7 @@ function SpriteRenderer(params) {
    * This function is called when the animation is over. Overwrite this function
    * @memberOf SpriteRenderer
    */
-  this.onAnimEnd = function() {};
+  this.onAnimEnd = function () {};
   this.changeSprite(this.spriteName, params);
 
   // was used to handle quality change
@@ -180,10 +180,10 @@ SpriteRenderer.prototype.DEName = 'SpriteRenderer';
 BaseRenderer.inherits(SpriteRenderer);
 Object.defineProperties(SpriteRenderer.prototype, {
   currentFrame: {
-    get: function() {
+    get: function () {
       return this._currentFrame;
     },
-    set: function(frame) {
+    set: function (frame) {
       if (frame >= this.endFrame) {
         this._currentFrame = this.endFrame;
       } else if (frame < this.startFrame) {
@@ -193,20 +193,20 @@ Object.defineProperties(SpriteRenderer.prototype, {
       }
 
       this._originalTexture.frame.x = this._currentFrame * this.fw;
-      this._originalTexture._updateUvs();
+      this._originalTexture.updateUvs();
 
       if (this.normalTexture) {
         this.normalTexture.frame.x = this._currentFrame * this.fw;
-        this.normalTexture._updateUvs();
+        this.normalTexture.updateUvs();
       }
     },
   },
 
   currentLine: {
-    get: function() {
+    get: function () {
       return this._currentLine;
     },
-    set: function(line) {
+    set: function (line) {
       if (line >= this.endLine) {
         this._currentLine = this.endLine;
       } else if (line < this.startLine) {
@@ -216,11 +216,11 @@ Object.defineProperties(SpriteRenderer.prototype, {
       }
 
       this._originalTexture.frame.y = this._currentLine * this.fh;
-      this._originalTexture._updateUvs();
+      this._originalTexture.updateUvs();
 
       if (this.normalTexture) {
         this.normalTexture.frame.y = this._currentLine * this.fh;
-        this.normalTexture._updateUvs();
+        this.normalTexture.updateUvs();
       }
     },
   },
@@ -231,7 +231,7 @@ Object.defineProperties(SpriteRenderer.prototype, {
  * @public
  * @memberOf SpriteRenderer
  */
-SpriteRenderer.prototype.setTint = function(value) {
+SpriteRenderer.prototype.setTint = function (value) {
   this.tint = value || 0xffffff;
 
   if (this._originalTexture) {
@@ -250,7 +250,7 @@ SpriteRenderer.prototype.setTint = function(value) {
  * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
  *  just set the current matrix with @param matrix
  */
-SpriteRenderer.prototype.setHue = function(rotation, multiply) {
+SpriteRenderer.prototype.setHue = function (rotation, multiply) {
   if (!this.hueFilter) {
     this.hueFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
@@ -280,7 +280,7 @@ SpriteRenderer.prototype.setHue = function(rotation, multiply) {
  * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
  *  just set the current matrix with @param matrix
  */
-SpriteRenderer.prototype.setSaturation = function(amount, multiply) {
+SpriteRenderer.prototype.setSaturation = function (amount, multiply) {
   if (!this.saturationFilter) {
     this.saturationFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
@@ -310,7 +310,7 @@ SpriteRenderer.prototype.setSaturation = function(amount, multiply) {
  * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
  *  just set the current matrix with @param matrix
  */
-SpriteRenderer.prototype.setBrightness = function(b, multiply) {
+SpriteRenderer.prototype.setBrightness = function (b, multiply) {
   if (!this.brightnessFilter) {
     this.brightnessFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
@@ -340,7 +340,7 @@ SpriteRenderer.prototype.setBrightness = function(b, multiply) {
  * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
  *  just set the current matrix with @param matrix
  */
-SpriteRenderer.prototype.setContrast = function(amount, multiply) {
+SpriteRenderer.prototype.setContrast = function (amount, multiply) {
   if (!this.contrastFilter) {
     this.contrastFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
@@ -370,7 +370,7 @@ SpriteRenderer.prototype.setContrast = function(amount, multiply) {
  * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
  *  just set the current matrix with @param matrix
  */
-SpriteRenderer.prototype.setGreyscale = function(scale, multiply) {
+SpriteRenderer.prototype.setGreyscale = function (scale, multiply) {
   if (!this.grayscaleFilter) {
     this.grayscaleFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
@@ -399,7 +399,7 @@ SpriteRenderer.prototype.setGreyscale = function(scale, multiply) {
  * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
  *  just set the current matrix with @param matrix
  */
-SpriteRenderer.prototype.setBlackAndWhite = function(multiply) {
+SpriteRenderer.prototype.setBlackAndWhite = function (multiply) {
   if (!this.blackAndWhiteFilter) {
     this.blackAndWhiteFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
@@ -425,7 +425,7 @@ SpriteRenderer.prototype.setBlackAndWhite = function(multiply) {
  * @protected
  * @memberOf SpriteRenderer
  */
-SpriteRenderer.prototype.update = function() {
+SpriteRenderer.prototype.update = function () {
   if (!this.animated || this.isPaused || this.isOver) {
     return;
   }
@@ -467,12 +467,12 @@ SpriteRenderer.prototype.update = function() {
 
   this._originalTexture.frame.x = this._currentFrame * this.fw;
   this._originalTexture.frame.y = this._currentLine * this.fh;
-  this._originalTexture._updateUvs();
+  this._originalTexture.updateUvs();
 
   if (this.normalTexture) {
     this.normalTexture.frame.x = this._currentFrame * this.fw;
     this.normalTexture.frame.y = this._currentLine * this.fh;
-    this.normalTexture._updateUvs();
+    this.normalTexture.updateUvs();
   }
 };
 
@@ -481,7 +481,7 @@ SpriteRenderer.prototype.update = function() {
  * @memberOf SpriteRenderer
  * @type {Int}
  */
-SpriteRenderer.prototype.setFrame = function(frame) {
+SpriteRenderer.prototype.setFrame = function (frame) {
   this.currentFrame = frame;
   return this;
 };
@@ -491,7 +491,7 @@ SpriteRenderer.prototype.setFrame = function(frame) {
  * @memberOf SpriteRenderer
  * @type {Int}
  */
-SpriteRenderer.prototype.setLine = function(line) {
+SpriteRenderer.prototype.setLine = function (line) {
   this.currentLine = line;
   return this;
 };
@@ -501,7 +501,7 @@ SpriteRenderer.prototype.setLine = function(line) {
  * @memberOf SpriteRenderer
  * @type {Int}
  */
-SpriteRenderer.prototype.restartAnim = function() {
+SpriteRenderer.prototype.restartAnim = function () {
   this.isOver = false;
   if (!this.reversed) {
     this.currentFrame = this.startFrame;
@@ -517,7 +517,7 @@ SpriteRenderer.prototype.restartAnim = function() {
  * @memberOf SpriteRenderer
  * @type {Int}
  */
-SpriteRenderer.prototype.setPause = function(val) {
+SpriteRenderer.prototype.setPause = function (val) {
   this.isPaused = val;
   if (!val && !this.animated) {
     this.animated = true;
@@ -531,7 +531,7 @@ SpriteRenderer.prototype.setPause = function(val) {
  * @memberOf SpriteRenderer
  * @type {Int}
  */
-SpriteRenderer.prototype.setEndFrame = function(v) {
+SpriteRenderer.prototype.setEndFrame = function (v) {
   if (this.totalFrame <= v) {
     this.endFrame = this.totalFrame - 1;
   } else {
@@ -545,7 +545,7 @@ SpriteRenderer.prototype.setEndFrame = function(v) {
  * @memberOf SpriteRenderer
  * @type {Int} interval in ms
  */
-SpriteRenderer.prototype.setInterval = function(interval) {
+SpriteRenderer.prototype.setInterval = function (interval) {
   this.interval = interval;
   return this;
 };
@@ -555,7 +555,7 @@ SpriteRenderer.prototype.setInterval = function(interval) {
  * @memberOf SpriteRenderer
  * @type {Int}
  */
-SpriteRenderer.prototype.setLoop = function(bool) {
+SpriteRenderer.prototype.setLoop = function (bool) {
   this.loop = bool;
   return this;
 };
@@ -565,7 +565,7 @@ SpriteRenderer.prototype.setLoop = function(bool) {
  * @memberOf SpriteRenderer
  * @type {Int}
  */
-SpriteRenderer.prototype.changeSprite = function(spriteName, params) {
+SpriteRenderer.prototype.changeSprite = function (spriteName, params) {
   params = params || {};
   this.spriteName = spriteName;
 
@@ -615,12 +615,12 @@ SpriteRenderer.prototype.changeSprite = function(spriteName, params) {
 
   this.frames = [];
   this.baseTexture =
-    PIXI.utils.TextureCache[PIXI.loader.resources[this.spriteName].url];
+    PIXI.utils.TextureCache[PIXI.Loader.shared.resources[this.spriteName].url];
 
   if (params.normal) {
     this.normalName = params.normal;
     this.baseNormalTexture =
-      PIXI.utils.TextureCache[PIXI.loader.resources[params.normal].url];
+      PIXI.utils.TextureCache[PIXI.Loader.shared.resources[params.normal].url];
   }
 
   this.fw = (this.baseTexture.width / d.totalFrame) >> 0;
@@ -655,10 +655,10 @@ SpriteRenderer.prototype.changeSprite = function(spriteName, params) {
       null,
     );
   }
-  
-  this.setTint( params.tint || 0xFFFFFF );
-  
-  if ( params.filters ) {
+
+  this.setTint(params.tint || 0xffffff);
+
+  if (params.filters) {
     this.filters = params.filters;
   }
 

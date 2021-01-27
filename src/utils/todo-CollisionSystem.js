@@ -14,22 +14,22 @@
  *  - collision detection with orientedBox (have to finish this one)
  * @namespace CollisionSystem
  */
-define(['PIXI', 'DE.CONFIG'], function(PIXI, CONFIG) {
-  var CollisionSystem = new (function() {
+define(['PIXI', 'DE.CONFIG'], function (PIXI, CONFIG) {
+  var CollisionSystem = new (function () {
     this.DEName = 'CollisionSystem';
 
     this._tempPoint = new PIXI.Point(0, 0);
     this._tempPoint2 = new PIXI.Point(0, 0);
 
     // TRY A NEW WAY WITH PIXI - should work with all primitive -> circle / rectangle / rounded / shape
-    this.pointColliderCollision = function(point, collider) {
+    this.pointColliderCollision = function (point, collider) {
       if (
         !collider.enable ||
         (collider.gameObject && !collider.gameObject.enable)
       )
         return false;
 
-      this._tempPoint2.copy(point);
+      this._tempPoint2.clone(point);
       if (point.getGlobalPosition) point.getGlobalPosition(this._tempPoint2);
 
       collider.gameObject.worldTransform.applyInverse(
@@ -48,7 +48,7 @@ define(['PIXI', 'DE.CONFIG'], function(PIXI, CONFIG) {
      * @param {object} params optional parameters, can prevent3D (will use positions x, y as it come without z conversion)
      * @returns {Boolean} is colliding ?
      */
-    this.pointFixedBoxCollision = function(point, collider, params) {
+    this.pointFixedBoxCollision = function (point, collider, params) {
       if (
         !collider.enable ||
         (collider.gameObject && !collider.gameObject.enable)
@@ -67,7 +67,7 @@ define(['PIXI', 'DE.CONFIG'], function(PIXI, CONFIG) {
     /**
      * detect if a point is inside a box, useful for standalone collision (without context)
      */
-    this.standardPointFixedBoxCollision = function(point, box) {
+    this.standardPointFixedBoxCollision = function (point, box) {
       if (
         point.x < box.x ||
         point.y < box.y ||
@@ -89,7 +89,7 @@ define(['PIXI', 'DE.CONFIG'], function(PIXI, CONFIG) {
      * @param {object} params optional parameters, can prevent3D (will use positions x, y as it come without z conversion)
      * @returns {Boolean} is colliding ?
      */
-    this.fixedBoxCollision = function(boxA, boxB, params) {
+    this.fixedBoxCollision = function (boxA, boxB, params) {
       if (
         !boxA.enable ||
         !boxB.enable ||
@@ -124,7 +124,7 @@ define(['PIXI', 'DE.CONFIG'], function(PIXI, CONFIG) {
      * @returns {Boolean} is colliding ?
      */
     // this.pointCircleCollision = this.pointColliderCollision; // not working mmh ?
-    this.pointCircleCollision = function(p, c, params) {
+    this.pointCircleCollision = function (p, c, params) {
       if (!c.enable || (c.gameObject && !c.gameObject.enable)) return false;
       var cpos = c.getWorldTransform();
 
@@ -172,7 +172,7 @@ define(['PIXI', 'DE.CONFIG'], function(PIXI, CONFIG) {
      * @param {object} params optional parameters, can prevent3D (will use positions x, y as it come without z conversion)
      * @returns {Boolean} is colliding ?
      */
-    this.circleCollision = function(circleA, circleB, params) {
+    this.circleCollision = function (circleA, circleB, params) {
       if (
         !circleA.enable ||
         !circleB.enable ||
@@ -201,7 +201,7 @@ define(['PIXI', 'DE.CONFIG'], function(PIXI, CONFIG) {
      * orientedBoxCollision@Bool( boxA@OrientedBoxCollider, boxB@OrientedBoxCollider )
       TODO
      */
-    this.orientedBoxCollision = function(boxA, boxB, params) {
+    this.orientedBoxCollision = function (boxA, boxB, params) {
       if (
         !boxA.enable ||
         !boxB.enable ||
@@ -281,26 +281,26 @@ define(['PIXI', 'DE.CONFIG'], function(PIXI, CONFIG) {
      * fixedBoxWithOrientedBoxCollision@Bool( fixedBox@FixedBoxCollider, orientedBox@OrientedBoxCollider )
       TODO
      */
-    this.fixedBoxWithOrientedBoxCollision = function(fixedBox, orientedBox) {};
+    this.fixedBoxWithOrientedBoxCollision = function (fixedBox, orientedBox) {};
 
     /****
      * orientedBoxWithCircleCollision@Bool( orientedBox@OrientedBoxCollider, circle@CircleCollider )
       TODO
      */
-    this.orientedBoxWithCircleCollision = function(orientedBox, circle) {};
+    this.orientedBoxWithCircleCollision = function (orientedBox, circle) {};
 
     /****
      * fixedBoxWithCircleCollision@Bool( fixedBox@FixedBoxCollider, Circle@CircleCollider )
       TODO
      */
-    this.fixedBoxWithCircleCollision = function(fixedBox, circle) {};
+    this.fixedBoxWithCircleCollision = function (fixedBox, circle) {};
 
     /****
      * checkCollisionWith@Bool( first@Collider, second@Collider )
       ordered by probability
       very badbad big if D:
      */
-    this.checkCollisionWith = function(first, second, params) {
+    this.checkCollisionWith = function (first, second, params) {
       if (second.type == first.type) {
         switch (first.type) {
           /* FIXED_BOX */
@@ -346,7 +346,7 @@ define(['PIXI', 'DE.CONFIG'], function(PIXI, CONFIG) {
       ) {
         return this.fixedBoxWithOrientedBoxCollision(second, first, params);
       } else if (
-      /* CIRCLE with ORIENTED_BOX */
+        /* CIRCLE with ORIENTED_BOX */
         second.type == CONFIG.COLLISION_TYPE.CIRCLE &&
         first.type == CONFIG.COLLISION_TYPE.ORIENTED_BOX
       ) {
@@ -357,7 +357,7 @@ define(['PIXI', 'DE.CONFIG'], function(PIXI, CONFIG) {
       ) {
         return this.orientedBoxWithCircleCollision(second, first, params);
       } else if (
-      /* CIRCLE with FIXED_BOX */
+        /* CIRCLE with FIXED_BOX */
         second.type == CONFIG.COLLISION_TYPE.CIRCLE &&
         first.type == CONFIG.COLLISION_TYPE.FIXED_BOX
       ) {

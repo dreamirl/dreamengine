@@ -16,7 +16,7 @@ import BaseRenderer from 'DE.BaseRenderer';
  * } );
  */
 
-export default class NineSliceRenderer extends PIXI.mesh.NineSlicePlane {
+export default class NineSliceRenderer extends PIXI.NineSlicePlane {
   constructor(params, left, top, right, bottom) {
     if (
       !params.spriteName &&

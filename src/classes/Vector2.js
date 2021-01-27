@@ -9,17 +9,18 @@ const _PI = Math.PI;
 /**
  * @constructor Scene
  */
-function Vector2(x, y, gameObject) {
-  this._x = x || 0;
-  this._y = y || 0;
-  this._rotation = 0;
-  this._cosAngle = 1;
-  this._sinAngle = 0;
-  this.gameObject = gameObject;
-}
+class Vector2 extends PIXI.Container {
+  constructor(x, y, gameObject) {
+    super();
 
-Vector2.prototype = Object.create(PIXI.Container.prototype);
-Vector2.prototype.constructor = Vector2;
+    this._x = x || 0;
+    this._y = y || 0;
+    this._rotation = 0;
+    this._cosAngle = 1;
+    this._sinAngle = 0;
+    this.gameObject = gameObject;
+  }
+}
 
 Object.defineProperties(Vector2.prototype, {
   /**
@@ -28,10 +29,10 @@ Object.defineProperties(Vector2.prototype, {
    * @type {Float}
    */
   x: {
-    get: function() {
+    get: function () {
       return this.gameObject ? this.gameObject.x : this._x;
     },
-    set: function(value) {
+    set: function (value) {
       this._x = value;
       if (this.gameObject) {
         this.gameObject.x = value;
@@ -39,10 +40,10 @@ Object.defineProperties(Vector2.prototype, {
     },
   },
   y: {
-    get: function() {
+    get: function () {
       return this.gameObject ? this.gameObject.y : this._y;
     },
-    set: function(value) {
+    set: function (value) {
       this._y = value;
       if (this.gameObject) {
         this.gameObject.y = value;
@@ -50,10 +51,10 @@ Object.defineProperties(Vector2.prototype, {
     },
   },
   rotation: {
-    get: function() {
+    get: function () {
       return this.gameObject ? this.gameObject.rotation : this._rotation;
     },
-    set: function(value) {
+    set: function (value) {
       this._updateRotation(value);
       if (this.gameObject) {
         this.gameObject.rotation = value;
@@ -62,7 +63,7 @@ Object.defineProperties(Vector2.prototype, {
   },
 });
 
-Vector2.prototype._updateRotation = function(value) {
+Vector2.prototype._updateRotation = function (value) {
   this._rotation = value;
   if (this._rotation == 0) {
     this._sinAngle = 0;
@@ -81,7 +82,7 @@ Vector2.prototype._updateRotation = function(value) {
  * @param {Boolean} [ignoreDelta] if you want to prevent deltaTime adjustment
  * @returns {Vector2} this current instance
  */
-Vector2.prototype.translate = function(vector2, absolute, ignoreDelta) {
+Vector2.prototype.translate = function (vector2, absolute, ignoreDelta) {
   if ((!vector2.x && vector2.x != 0) || (!vector2.y && vector2.y != 0)) {
     throw new Error(vector2 + ' is not a Vector2');
   }
@@ -115,7 +116,7 @@ Vector2.prototype.translate = function(vector2, absolute, ignoreDelta) {
  * @param {Float} newAngle
  * @returns {Float} this.rotation current rotation
  */
-Vector2.prototype.setRotation = function(newAngle) {
+Vector2.prototype.setRotation = function (newAngle) {
   this.rotation = newAngle % (_PI * 2);
   return this.rotation;
 };
@@ -128,7 +129,7 @@ Vector2.prototype.setRotation = function(newAngle) {
  * @param {Boolean} [ignoreDelta] if you want to prevent deltaTime adjustment
  * @returns {Float} this.rotation current rotation
  */
-Vector2.prototype.rotate = function(angle, ignoreDelta) {
+Vector2.prototype.rotate = function (angle, ignoreDelta) {
   if (ignoreDelta) return this.setRotation(this.rotation + angle);
   return this.setRotation(this.rotation + angle * Time.deltaTime);
 };
@@ -140,7 +141,7 @@ Vector2.prototype.rotate = function(angle, ignoreDelta) {
  * @param {Float} coef
  * @returns {Vector2} this current instance
  */
-Vector2.prototype.multiply = function(coef) {
+Vector2.prototype.multiply = function (coef) {
   this.x *= coef;
   this.y *= coef;
   return this;
@@ -152,7 +153,7 @@ Vector2.prototype.multiply = function(coef) {
  * @memberOf Vector2
  * @returns {Vector2} this current instance
  */
-Vector2.prototype.normalize = function() {
+Vector2.prototype.normalize = function () {
   if (this.x == 0 && this.y == 0) {
     this.x = 0;
     this.y = 0;
@@ -172,7 +173,7 @@ Vector2.prototype.normalize = function() {
  * @param {Vector2} b second vector2
  * @returns {Vector2} this current instance
  */
-Vector2.prototype.getVector = function(a, b) {
+Vector2.prototype.getVector = function (a, b) {
   if (
     (!a.x && a.x != 0) ||
     (!a.y && a.y != 0) ||
@@ -194,7 +195,7 @@ Vector2.prototype.getVector = function(a, b) {
  * @param {Vector2} vector2
  * @returns {Float} radians value
  */
-Vector2.prototype.getVectorAngle = function(vector2) {
+Vector2.prototype.getVectorAngle = function (vector2) {
   return (Math.atan2(vector2.y, vector2.x) + _PI * 0.5) % (_PI * 2);
 };
 
@@ -207,7 +208,7 @@ Vector2.prototype.getVectorAngle = function(vector2) {
  * @param {Vector2} b second vector2
  * @returns {Float} dotProduct result
  */
-Vector2.prototype.dotProduct = function(a, b) {
+Vector2.prototype.dotProduct = function (a, b) {
   if (!a.x || !a.y) {
     throw new Error('Vector2 need two Vector2 to return dotProduct');
   }
@@ -225,7 +226,7 @@ Vector2.prototype.dotProduct = function(a, b) {
  * @param {Vector2} b second vector2
  * @returns {Float} angle result
  */
-Vector2.prototype.getAngle = function(otherA, otherB) {
+Vector2.prototype.getAngle = function (otherA, otherB) {
   if (!otherB) {
     otherB = this;
 
@@ -239,7 +240,7 @@ Vector2.prototype.getAngle = function(otherA, otherB) {
 /**
  * I keep this function because I accidentally coded something fun with, so... :D
  */
-Vector2.prototype.wtfAngle = function(a, b) {
+Vector2.prototype.wtfAngle = function (a, b) {
   var tmp_vectorB = null;
   if (b && b.x) {
     tmp_vectorB = new Vector2(b.x, b.y).normalize();
@@ -260,7 +261,7 @@ Vector2.prototype.wtfAngle = function(a, b) {
 /****
  * getDistance@Int( other@Vector2 )
  */
-Vector2.prototype.getDistance = function(other) {
+Vector2.prototype.getDistance = function (other) {
   var x = this.x - other.x;
   x *= x;
   var y = this.y - other.y;
@@ -276,7 +277,7 @@ Vector2.prototype.getDistance = function(other) {
  * @param {Float} range
  * @returns {Boolean} isInRange result
  */
-Vector2.prototype.isInRangeFrom = function(other, range) {
+Vector2.prototype.isInRangeFrom = function (other, range) {
   range *= range;
   var x = this.x - other.x;
   x *= x;
@@ -297,7 +298,7 @@ Vector2.prototype.isInRangeFrom = function(other, range) {
  * @param {Float} [rotation] used by gameObjects in getPos and other
  * @returns {Harmonics} harmonics (cosinus and sinus)
  */
-Vector2.prototype.getHarmonics = function(rotation) {
+Vector2.prototype.getHarmonics = function (rotation) {
   if (rotation) {
     return {
       cos: Math.cos(rotation + this.rotation),
@@ -314,7 +315,7 @@ Vector2.prototype.getHarmonics = function(rotation) {
  * @param {Vector2|Float} Vector2 or x / y
  * @returns {Vector2} this current instance
  */
-Vector2.prototype.setPosition = function(first, y) {
+Vector2.prototype.setPosition = function (first, y) {
   if (first.x !== undefined || first.y !== undefined) {
     this.x = first.x != undefined ? first.x : this.x;
     this.y = first.y != undefined ? first.y : this.y;
@@ -331,7 +332,7 @@ Vector2.prototype.set = Vector2.prototype.setPosition;
  * @public
  * @memberOf Vector2
  */
-Vector2.prototype.clone = function() {
+Vector2.prototype.clone = function () {
   return new Vector2(this.x, this.y, this._z);
 };
 
@@ -340,7 +341,7 @@ Vector2.prototype.clone = function() {
   Example, if A = 0 and B = PI*2, then difference is 0.
   (or A = 0.1 B = 6, difference is 0.383185307179586)
   */
-Vector2.prototype.getAnglesDifference = function(angleA, angleB) {
+Vector2.prototype.getAnglesDifference = function (angleA, angleB) {
   if (angleB === undefined) {
     angleB = this.rotation;
   }
@@ -359,7 +360,7 @@ Vector2.prototype.getAnglesDifference = function(angleA, angleB) {
  * @public
  * @memberOf Vector2
  */
-Vector2.prototype.turnVector = function(angle) {
+Vector2.prototype.turnVector = function (angle) {
   var cos = this._cosAngle;
   var sin = this._sinAngle;
   if (angle !== undefined) {
@@ -384,7 +385,7 @@ Vector2.prototype.turnVector = function(angle) {
  * @public
  * @memberOf Vector2
  */
-Vector2.prototype.getTurnedVector = function(angle) {
+Vector2.prototype.getTurnedVector = function (angle) {
   var cos = this._cosAngle;
   var sin = this._sinAngle;
   if (angle !== undefined) {

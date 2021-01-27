@@ -46,20 +46,20 @@ function Render(id, params) {
   this.pixiRenderer = new PIXI.autoDetectRenderer({
     width: _params.width,
     height: _params.height,
+    useContextAlpha: _params['useContextAlpha'] || true,
+    autoDensity: _params['autoDensity'] || true,
     antialias: _params['antialias'] || false,
-    transparent: _params['transparent'] || false,
-    resolution: _params['resolution'] || 1,
     preserveDrawingBuffer: _params['preserveDrawingBuffer'] || false,
     backgroundColor: _params['backgroundColor'] || 0x000000,
+    backgroundAlpha: _params['backgroundAlpha'] || 1,
     clearBeforeRender: _params['clearBeforeRender'] || true,
-    roundPixels: _params['roundPixels'] || false,
-    forceFXAA: _params['forceFXAA'] || false,
-    legacy: _params['legacy'] || false,
-    autoResize: true,
+    resolution: _params['resolution'] || 1,
+    forceCanvas: _params['forceCanvas'] || false,
+    powerPreference: _params['powerPreference'],
   });
 
-  if (_params['scaleMode']) PIXI.settings.SCALE_MODE = _params['scaleMode'];
-
+  PIXI.settings.SCALE_MODE = _params['scaleMode'] || PIXI.SCALE_MODES.LINEAR;
+  PIXI.settings.ROUND_PIXELS = _params['roundPixels'] || false;
   // this.pixiRenderer.plugins.interaction.mousedown
 
   /**
@@ -87,7 +87,7 @@ function Render(id, params) {
 
   Events.on(
     'change-debug',
-    function(debug, level) {
+    function (debug, level) {
       if (level > 0) {
         this.mainContainer.addChild(this.debugRender);
       } else {
@@ -117,7 +117,7 @@ function Render(id, params) {
    * @memberOf Render
    * @type {Function}
    */
-  this._resizeMethod = function() {};
+  this._resizeMethod = function () {};
   /**
    * Flag to prevent potential double event binding
    * @private
@@ -144,7 +144,7 @@ Render.prototype.constructor = Render;
  * @public
  * @memberOf Render
  */
-Render.prototype.init = function() {
+Render.prototype.init = function () {
   if (this.__inited) {
     return;
   }
@@ -199,28 +199,28 @@ Render.prototype.init = function() {
   var self = this;
   this.div.addEventListener(
     'fullscreenchange',
-    function(e) {
+    function (e) {
       self.isFullscreen = document.fullscreenElement;
     },
     false,
   );
   this.div.addEventListener(
     'msfullscreenchange',
-    function(e) {
+    function (e) {
       self.isFullscreen = document.msFullscreenElement;
     },
     false,
   );
   this.div.addEventListener(
     'mozfullscreenchange',
-    function(e) {
+    function (e) {
       self.isFullscreen = document.mozFullScreen;
     },
     false,
   );
   this.div.addEventListener(
     'webkitfullscreenchange',
-    function(e) {
+    function (e) {
       self.isFullscreen = document.webkitIsFullScreen;
     },
     false,
@@ -242,7 +242,7 @@ Render.prototype.init = function() {
  * @public
  * @memberOf Render
  */
-Render.prototype.resizeRatio = function(w, h, stretch) {
+Render.prototype.resizeRatio = function (w, h, stretch) {
   var baseW = this._savedSizes.x;
   var baseH = this._savedSizes.y;
   var calcRatio = w / baseW;
@@ -254,19 +254,19 @@ Render.prototype.resizeRatio = function(w, h, stretch) {
   var newW = (calcRatio * baseW) >> 0;
   var newH = (calcRatio * baseH) >> 0;
 
+  // if we want to stretch the canvas to keep the same viewport size
+  if (stretch) {
+    this.pixiRenderer.resize(baseW, baseH);
+  } else {
+    // resize the PIXI Renderer keeping the good aspect ratio
+    this.pixiRenderer.resize(newW, newH);
+  }
+
   if (this.div != window.document.body) {
     this.div.style.width = newW + 'px';
     this.div.style.height = newH + 'px';
-  }
-
-  // resize the PIXI Renderer keeping the good aspect ratio
-  this.pixiRenderer.autoResize = true;
-  this.pixiRenderer.resize(newW, newH);
-
-  // if we want to stretch the canvas to keep the same viewport size
-  if (stretch) {
-    this.pixiRenderer.autoResize = false;
-    this.pixiRenderer.resize(baseW, baseH);
+    this.pixiRenderer.view.style.width = newW + 'px';
+    this.pixiRenderer.view.style.height = newH + 'px';
   }
 
   this.div.style.marginLeft = (w - newW) / 2 + 'px';
@@ -281,18 +281,18 @@ Render.prototype.resizeRatio = function(w, h, stretch) {
  * @public
  * @memberOf Render
  */
-Render.prototype.changeResizeMode = function(mode) {
+Render.prototype.changeResizeMode = function (mode) {
   this._resizeMode = mode;
   switch (mode) {
     case 'stretch-ratio':
     case 'ratio-stretch':
-      this._resizeMethod = function(screenW, screenH) {
+      this._resizeMethod = function (screenW, screenH) {
         this.resizeRatio(screenW, screenH, true);
       };
       break;
     case 'stretch':
       // resize stretch = take immediately all the space available with a stretch
-      this._resizeMethod = function(screenW, screenH) {
+      this._resizeMethod = function (screenW, screenH) {
         this.pixiRenderer.autoResize = true;
         this.pixiRenderer.resize(screenW, screenH);
         this.pixiRenderer.autoResize = false;
@@ -301,19 +301,19 @@ Render.prototype.changeResizeMode = function(mode) {
       break;
     case 'full':
       // resize full = take immediately all the space available in pure pixel
-      this._resizeMethod = function(screenW, screenH) {
+      this._resizeMethod = function (screenW, screenH) {
         this.pixiRenderer.autoResize = true;
         this.pixiRenderer.resize(screenW, screenH);
       };
       break;
     // resize and respect the original ratio, but not stretching
     case 'ratio':
-      this._resizeMethod = function(screenW, screenH) {
+      this._resizeMethod = function (screenW, screenH) {
         this.resizeRatio(screenW, screenH, false);
       };
       break;
     default:
-      this._resizeMethod = function() {};
+      this._resizeMethod = function () {};
       break;
   }
 };
@@ -323,7 +323,8 @@ Render.prototype.changeResizeMode = function(mode) {
  * @private
  * @memberOf Render
  */
-Render.prototype._onResize = function() {
+Render.prototype._onResize = function () {
+  console.log('resize event');
   var screenW = window.innerWidth || document.documentElement.clientWidth;
   var screenH = window.innerHeight || document.documentElement.clientHeight;
 
@@ -360,7 +361,7 @@ Render.prototype._onResize = function() {
  * @private
  * @memberOf Render
  */
-Render.prototype._bindResizeEvent = function() {
+Render.prototype._bindResizeEvent = function () {
   if (!this._resizeMode || this._listeningResize) {
     return;
   }
@@ -368,21 +369,21 @@ Render.prototype._bindResizeEvent = function() {
   this._listeningResize = true;
   var self = this;
   var lastResize = undefined;
-  var callback = function() {
+  var callback = function () {
     self._onResize();
   };
 
   if (window.addEventListener) {
     window.addEventListener(
       'resize',
-      function() {
+      function () {
         lastResize && window.clearTimeout(lastResize);
         lastResize = window.setTimeout(callback, 50);
       },
       false,
     );
   } else if (window.attachEvent) {
-    window.attachEvent('onresize', function() {
+    window.attachEvent('onresize', function () {
       lastResize && window.clearTimeout(lastResize);
       lastResize = window.setTimeout(callback, 50);
     });
@@ -394,7 +395,7 @@ Render.prototype._bindResizeEvent = function() {
  * @private
  * @memberOf Render
  */
-Render.prototype.render = function() {
+Render.prototype.render = function () {
   if (config.DEBUG_LEVEL) {
     if (config.DEBUG_LEVEL == 'FPS_ONLY') {
       this.debugRender.text = 'FPS: ' + Time.FPS;
@@ -437,7 +438,7 @@ Render.prototype.render = function() {
  * @private
  * @memberOf Render
  */
-Render.prototype.directRender = function(container) {
+Render.prototype.directRender = function (container) {
   this.pixiRenderer.render(container);
 };
 
@@ -447,7 +448,7 @@ Render.prototype.directRender = function(container) {
  * @public
  * @memberOf Render
  */
-Render.prototype.add = function(container) {
+Render.prototype.add = function (container) {
   this.mainContainer.addChild(container);
   // TODO need ? this.scenes.push( scene );
 
