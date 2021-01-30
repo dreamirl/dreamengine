@@ -1,5 +1,6 @@
 import * as PIXI from 'PIXI';
 import BaseRenderer from 'DE.BaseRenderer';
+import { parseBitmap } from 'jimp';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -43,16 +44,13 @@ export default class NineSliceRenderer extends PIXI.NineSlicePlane {
     );
 
     BaseRenderer.instantiate(this, params);
+
+    if (!params.x && !params.y && !params.preventCenter) {
+      this.center();
+    }
   }
 }
 
 BaseRenderer.inherits(NineSliceRenderer);
 
 NineSliceRenderer.prototype.DEName = 'NineSliceRenderer';
-
-NineSliceRenderer.prototype.setSize = function(width, height) {
-  this.width = width;
-  this.height = height;
-  this.x = -width / 2;
-  this.y = -height / 2;
-};

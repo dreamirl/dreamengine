@@ -300,4 +300,29 @@ BaseRenderer.applyScale = function() {
 };
 BaseRenderer.DEName = 'BaseRenderer';
 
+// allow a quick way to change the sizes of a renderer and center it automatically
+// IF this renderer does not have an anchor.
+// those methods will work only if the renderer has a modifiable width/height
+BaseRenderer.setSize = function(width, height, preventCenter) {
+  this.width = width;
+  this.height = height;
+
+  if (preventCenter !== undefined) {
+    this.preventCenter = preventCenter;
+  }
+  if (!this.preventCenter && !this.anchor) {
+    this.center();
+  }
+};
+
+// center the renderer
+BaseRenderer.center = function() {
+  if (this.anchor && this.anchor.set) {
+    this.anchor.set(0.5, 0.5);
+  } else {
+    this.x = -(this.width || 0) / 2;
+    this.y = -(this.height || 0) / 2;
+  }
+};
+
 export default BaseRenderer;
