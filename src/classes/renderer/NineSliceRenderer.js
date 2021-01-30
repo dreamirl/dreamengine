@@ -49,3 +49,10 @@ export default class NineSliceRenderer extends PIXI.NineSlicePlane {
 BaseRenderer.inherits(NineSliceRenderer);
 
 NineSliceRenderer.prototype.DEName = 'NineSliceRenderer';
+
+NineSliceRenderer.prototype.setSize = function(width, height) {
+  this.width = width;
+  this.height = height;
+  this.x = -width / 2;
+  this.y = -height / 2;
+};
