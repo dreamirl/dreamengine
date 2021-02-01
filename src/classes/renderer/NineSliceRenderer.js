@@ -1,6 +1,5 @@
 import * as PIXI from 'PIXI';
 import BaseRenderer from 'DE.BaseRenderer';
-import { parseBitmap } from 'jimp';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
