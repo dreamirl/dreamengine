@@ -9,6 +9,8 @@ var _inherits = [
   'fadeOut',
   'scaleTo',
   'applyScale',
+  'setSize',
+  'center',
 ];
 var _attributes = ['fadeData', 'scaleData'];
 const BaseRenderer = new (function() {
