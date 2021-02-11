@@ -58,7 +58,7 @@ function Render(id, params) {
     powerPreference: _params['powerPreference'],
   });
 
-  PIXI.settings.SCALE_MODE = _params['scaleMode'] || PIXI.SCALE_MODES.LINEAR;
+  PIXI.settings.SCALE_MODE = _params['scaleMode'] !== undefined ? _params['scaleMode'] : PIXI.SCALE_MODES.LINEAR;
   PIXI.settings.ROUND_PIXELS = _params['roundPixels'] || false;
   // this.pixiRenderer.plugins.interaction.mousedown
 
