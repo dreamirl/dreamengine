@@ -10,8 +10,6 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
     params = params || {};
     super();
 
-    BaseRenderer.instantiate(this, params);
-
     this._imageNames = [];
     this._textures = [];
     this._currentFrame = 0;
@@ -26,11 +24,11 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
     this._startFrame = 0;
     this._endFrame = 0;
 
-    this.imageNames =
-      imageNames ||
-      PIXI.Loader.shared.resources[params.sheetName].data.animations[
-        params.animationName
-      ];
+    if (imageNames) {
+      this.imageNames = imageNames;
+    } else {
+      this.changeSheet(params.sheetName, params.animationName);
+    }
 
     if (params.endFrame) {
       this.endFrame = params.endFrame;
@@ -39,10 +37,31 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
       this.startFrame = params.startFrame;
     }
     this.pause = !!params.pause;
+    this._currentFrame = parseInt(params.currentFrame || 0);
 
     this._nextAnim = this.interval;
 
     this.setTint(params.tint || 0xffffff);
+
+    delete params.tint;
+    delete params.currentFrame;
+    delete params.endFrame;
+    delete params.startFrame;
+
+    if (params.randomFrame) {
+      this.currentFrame = Math.random() * this.textures.length >> 0;
+    }
+
+    BaseRenderer.instantiate(this, params);
+  }
+
+  changeSheet(sheetName, animationName) {
+    this.sheetName = sheetName;
+    this.animationName = animationName;
+
+    this.imageNames = PIXI.Loader.shared.resources[sheetName].data.animations[
+      animationName
+    ];
   }
 
   get isOver() {
