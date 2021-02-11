@@ -33,6 +33,7 @@ import TextRenderer from 'DE.TextRenderer';
 import RectRenderer from 'DE.RectRenderer';
 import GraphicRenderer from 'DE.GraphicRenderer';
 import NineSliceRenderer from 'DE.NineSliceRenderer';
+import AnimatedTextureRenderer from 'DE.AnimatedTextureRenderer';
 import GameObject from 'DE.GameObject';
 import GameObject_update from 'DE.GameObject.update';
 
@@ -63,6 +64,7 @@ var DE = {
   RectRenderer,
   GraphicRenderer,
   NineSliceRenderer,
+  AnimatedTextureRenderer,
   GameObject,
   Platform,
   PIXI,

@@ -1,4 +1,5 @@
 import Time from 'DE.Time';
+import * as PIXI from 'PIXI';
 
 var _inherits = [
   'setScale',
@@ -11,6 +12,13 @@ var _inherits = [
   'applyScale',
   'setSize',
   'center',
+  'setTint',
+  'setHue',
+  'setSaturation',
+  'setBrightness',
+  'setContrast',
+  'setGreyscale',
+  'setBlackAndWhite',
 ];
 var _attributes = ['fadeData', 'scaleData'];
 const BaseRenderer = new (function() {
@@ -302,9 +310,16 @@ BaseRenderer.applyScale = function() {
 };
 BaseRenderer.DEName = 'BaseRenderer';
 
-// allow a quick way to change the sizes of a renderer and center it automatically
-// IF this renderer does not have an anchor.
-// those methods will work only if the renderer has a modifiable width/height
+/**
+ * allow a quick way to change the sizes of a renderer and center it automatically
+ * IF this renderer does not have an anchor.
+ * those methods will work only if the renderer has a modifiable width/height
+ * @public
+ * @memberOf BaseRenderer
+ * @param {number} width - in pixels
+ * @param {number} height - in pixels
+ * @param {boolean} preventCenter - if true, the texture wont be centered
+ */
 BaseRenderer.setSize = function(width, height, preventCenter) {
   this.width = width;
   this.height = height;
@@ -317,7 +332,11 @@ BaseRenderer.setSize = function(width, height, preventCenter) {
   }
 };
 
-// center the renderer
+/**
+ * center the renderer
+ * @public
+ * @memberOf BaseRenderer
+ */
 BaseRenderer.center = function() {
   if (this.anchor && this.anchor.set) {
     this.anchor.set(0.5, 0.5);
@@ -325,6 +344,200 @@ BaseRenderer.center = function() {
     this.x = -(this.width || 0) / 2;
     this.y = -(this.height || 0) / 2;
   }
+};
+
+/**
+ * change the tint of the Sprite, this is chain-able
+ * @public
+ * @memberOf BaseRenderer
+ */
+BaseRenderer.setTint = function (value) {
+  this.tint = value || 0xffffff;
+
+  if (this._originalTexture) {
+    this._originalTexture.tint = this.tint;
+  }
+
+  return this;
+};
+
+/**
+ * change the hue of the Sprite, this is chain-able
+ * this is an easy setup filter for BaseRenderer and it use PIXI filters, check PIXI filters doc if you need more deeper informations
+ * @public
+ * @memberOf BaseRenderer
+ * @param {number} rotation - in degrees
+ * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+ *  just set the current matrix with @param matrix
+ */
+BaseRenderer.setHue = function (rotation, multiply) {
+  if (!this.hueFilter) {
+    this.hueFilter = new PIXI.filters.ColorMatrixFilter();
+  } else {
+    this.hueFilter.hue(0, 0);
+  }
+
+  this.hueFilter.hue(rotation, multiply);
+
+  if (!this.filters || !this.filters.length) {
+    this.filters = [this.hueFilter];
+  } else if (
+    this.filters.length >= 1 &&
+    this.filters.indexOf(this.hueFilter) == -1
+  ) {
+    this.filters = this.filters.concat([this.hueFilter]);
+  }
+
+  return this;
+};
+
+/**
+ * change the saturation of the Sprite, this is chain-able
+ * this is an easy setup filter for BaseRenderer and it use PIXI filters, check PIXI filters doc if you need more deeper informations
+ * @public
+ * @memberOf BaseRenderer
+ * @param {number} amount - The saturation amount (0-1)
+ * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+ *  just set the current matrix with @param matrix
+ */
+BaseRenderer.setSaturation = function (amount, multiply) {
+  if (!this.saturationFilter) {
+    this.saturationFilter = new PIXI.filters.ColorMatrixFilter();
+  } else {
+    this.saturationFilter.desaturate();
+  }
+
+  this.saturationFilter.saturate(amount, multiply);
+
+  if (!this.filters || !this.filters.length) {
+    this.filters = [this.saturationFilter];
+  } else if (
+    this.filters.length >= 1 &&
+    this.filters.indexOf(this.saturationFilter) == -1
+  ) {
+    this.filters = this.filters.concat([this.saturationFilter]);
+  }
+
+  return this;
+};
+
+/**
+ * change the brightness of the Sprite, this is chain-able
+ * this is an easy setup filter for BaseRenderer and it use PIXI filters, check PIXI filters doc if you need more deeper informations
+ * @public
+ * @memberOf BaseRenderer
+ * @param {number} b - value of the brigthness (0-1, where 0 is black)
+ * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+ *  just set the current matrix with @param matrix
+ */
+BaseRenderer.setBrightness = function (b, multiply) {
+  if (!this.brightnessFilter) {
+    this.brightnessFilter = new PIXI.filters.ColorMatrixFilter();
+  } else {
+    this.brightnessFilter.brightness(0, 0);
+  }
+
+  this.brightnessFilter.brightness(b, multiply);
+
+  if (!this.filters || !this.filters.length) {
+    this.filters = [this.brightnessFilter];
+  } else if (
+    this.filters.length >= 1 &&
+    this.filters.indexOf(this.brightnessFilter) == -1
+  ) {
+    this.filters = this.filters.concat([this.brightnessFilter]);
+  }
+
+  return this;
+};
+
+/**
+ * change the contrast of the Sprite, this is chain-able
+ * this is an easy setup filter for BaseRenderer and it use PIXI filters, check PIXI filters doc if you need more deeper informations
+ * @public
+ * @memberOf BaseRenderer
+ * @param {number} amount - value of the contrast (0-1)
+ * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+ *  just set the current matrix with @param matrix
+ */
+BaseRenderer.setContrast = function (amount, multiply) {
+  if (!this.contrastFilter) {
+    this.contrastFilter = new PIXI.filters.ColorMatrixFilter();
+  } else {
+    this.contrastFilter.contrast(0, 0);
+  }
+
+  this.contrastFilter.contrast(amount, multiply);
+
+  if (!this.filters || !this.filters.length) {
+    this.filters = [this.contrastFilter];
+  } else if (
+    this.filters.length >= 1 &&
+    this.filters.indexOf(this.contrastFilter) == -1
+  ) {
+    this.filters = this.filters.concat([this.contrastFilter]);
+  }
+
+  return this;
+};
+
+/**
+ * apply a grascale on the Sprite, this is chain-able
+ * this is an easy setup filter for BaseRenderer and it use PIXI filters, check PIXI filters doc if you need more deeper informations
+ * @public
+ * @memberOf BaseRenderer
+ * @param {number} scale - value of the grey (0-1, where 0 is black)
+ * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+ *  just set the current matrix with @param matrix
+ */
+BaseRenderer.setGreyscale = function (scale, multiply) {
+  if (!this.grayscaleFilter) {
+    this.grayscaleFilter = new PIXI.filters.ColorMatrixFilter();
+  } else {
+    this.grayscaleFilter.greyscale(0, 0);
+  }
+
+  this.grayscaleFilter.greyscale(scale, multiply);
+
+  if (!this.filters || !this.filters.length) {
+    this.filters = [this.grayscaleFilter];
+  } else if (
+    this.filters.length >= 1 &&
+    this.filters.indexOf(this.grayscaleFilter) == -1
+  ) {
+    this.filters = this.filters.concat([this.grayscaleFilter]);
+  }
+
+  return this;
+};
+
+/**
+ * Set the black and white matrice.
+ * @public
+ * @memberOf BaseRenderer
+ *
+ * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+ *  just set the current matrix with @param matrix
+ */
+BaseRenderer.setBlackAndWhite = function (multiply) {
+  if (!this.blackAndWhiteFilter) {
+    this.blackAndWhiteFilter = new PIXI.filters.ColorMatrixFilter();
+  } else {
+    this.blackAndWhiteFilter.blackAndWhite(0);
+  }
+
+  this.blackAndWhiteFilter.blackAndWhite(multiply);
+
+  if (!this.filters || !this.filters.length) {
+    this.filters = [this.blackAndWhiteFilter];
+  } else if (
+    this.filters.length >= 1 &&
+    this.filters.indexOf(this.blackAndWhiteFilter) == -1
+  ) {
+    this.filters = this.filters.concat([this.blackAndWhiteFilter]);
+  }
+
+  return this;
 };
 
 export default BaseRenderer;
