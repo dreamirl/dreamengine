@@ -10,6 +10,7 @@ var config = {
   _DEBUG: 0,
   _DEBUG_LEVEL: 0,
   ALLOW_ONBEFOREUNLOAD: true,
+  DEFAULT_TEXT_RESOLUTION: 2,
 };
 
 Object.defineProperties(config, {

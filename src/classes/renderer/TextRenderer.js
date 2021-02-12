@@ -1,6 +1,7 @@
 import * as PIXI from 'PIXI';
 import BaseRenderer from 'DE.BaseRenderer';
 import Localization from 'DE.Localization';
+import config from 'DE.config';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -45,6 +46,10 @@ function TextRenderer(text, params) {
 
   PIXI.Text.call(this, text, new PIXI.TextStyle(_params.textStyle));
   delete _params.textStyle;
+
+  if (!_params.resolution) {
+    _params.resolution = config.DEFAULT_TEXT_RESOLUTION;
+  }
 
   BaseRenderer.instantiate(this, _params);
 
