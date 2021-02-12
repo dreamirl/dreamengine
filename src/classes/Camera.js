@@ -463,12 +463,15 @@ Camera.prototype.applyFocus = function() {
   if (!this.target) {
     return;
   }
+
   var pos = this.target.getWorldPos();
   if (this._focusOptions.x) {
-    this.pivot.x = pos.x + this._focusOffsets.x;
+    const deltaX = this.pivot.x - (pos.x + this._focusOffsets.x);
+    this.x = this.pivot.x + deltaX;
   }
   if (this._focusOptions.y) {
-    this.pivot.y = pos.y + this._focusOffsets.y;
+    const deltaY = this.pivot.y - (pos.y + this._focusOffsets.y);
+    this.y = this.pivot.y + deltaY;
   }
   if (this._focusOptions.rotation) {
     this.rotation = -this.target.rotation;
