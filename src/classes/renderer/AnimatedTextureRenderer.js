@@ -64,14 +64,6 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
     ];
   }
 
-  get isOver() {
-    if (this.reversed) {
-      return this._currentFrame < this._startFrame;
-    } else {
-      return this._currentFrame > this._endFrame;
-    }
-  }
-
   get pause() {
     return this._isPaused;
   }
@@ -153,19 +145,19 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
       if (this.loop) {
         if (this.pingPongMode) {
           this.reversed = true;
-          this.currentFrame = this.endFrame - 1;
+          this.currentFrame = this.endFrame;
         } else {
           this.currentFrame = this.startFrame;
         }
       } else {
-        this.currentFrame = this.endFrame;
+        this.isOver = true;
         this.onAnimEnd();
       }
     } else if (tempCurrentFrame < this.startFrame) {
       if (this.loop) {
         if (this.pingPongMode) {
           this.reversed = false;
-          this.currentFrame = this.startFrame + 1;
+          this.currentFrame = this.startFrame;
         } else {
           this.currentFrame = this.endFrame;
         }
@@ -179,11 +171,16 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
   }
 
   gotoAndPause(frame) {
+    this.isOver = false;
     this.currentFrame = frame;
     this.pause = true;
+  }
+  stop() {
+    this.gotoAndPause(this.reversed ? this.endFrame : this.startFrame);
   }
 }
 
 BaseRenderer.inherits(AnimatedTextureRenderer);
+AnimatedTextureRenderer.prototype.DEName = 'AnimatedTextureRenderer';
 
 export default AnimatedTextureRenderer;

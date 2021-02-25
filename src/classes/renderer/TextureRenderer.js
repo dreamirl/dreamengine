@@ -17,35 +17,41 @@ import BaseRenderer from 'DE.BaseRenderer';
  * } );
  */
 
-function TextureRenderer(params) {
-  if (
-    !params.spriteName &&
-    !params.spriteUrl &&
-    !params.textureName &&
-    !params.texture
-  ) {
-    console.error(
-      'A TextureRenderer need a spriteName, a spriteUrl argument or a texture',
+class TextureRenderer extends PIXI.Sprite {
+  constructor(params) {
+    if (
+      !params.spriteName &&
+      !params.spriteUrl &&
+      !params.textureName &&
+      !params.texture
+    ) {
+      console.error(
+        'A TextureRenderer need a spriteName, a spriteUrl argument or a texture',
+      );
+      return;
+    }
+
+    super(
+      params.texture
+        ? params.texture
+        : PIXI.utils.TextureCache[
+            params.spriteName || params.spriteUrl || params.textureName
+          ],
     );
-    return;
+    this._textureName = params.spriteName || params.spriteUrl || params.textureName;
+    BaseRenderer.instantiate(this, params);
   }
 
-  PIXI.Sprite.call(
-    this,
-    params.texture
-      ? params.texture
-      : PIXI.utils.TextureCache[
-          params.spriteName || params.spriteUrl || params.textureName
-        ],
-  );
-  BaseRenderer.instantiate(this, params);
+  get textureName () {
+    return this._textureName;
+  }
+  set textureName(textureName) {
+    this.changeTexture(textureName);
+  }
 }
 
-TextureRenderer.prototype = Object.create(PIXI.Sprite.prototype);
-TextureRenderer.prototype.constructor = TextureRenderer;
-TextureRenderer.prototype.DEName = 'TextureRenderer';
-
 BaseRenderer.inherits(TextureRenderer);
+TextureRenderer.prototype.DEName = 'TextureRenderer';
 
 /**
  * @public
@@ -57,6 +63,7 @@ TextureRenderer.prototype.changeTexture = function(textureName) {
     throw new Error('TextureRenderer :: changeTexture -- need textureName');
   }
 
+  this._textureName = textureName;
   this.texture = PIXI.utils.TextureCache[textureName];
 };
 export default TextureRenderer;
