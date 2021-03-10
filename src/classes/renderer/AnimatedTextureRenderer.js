@@ -178,6 +178,11 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
   stop() {
     this.gotoAndPause(this.reversed ? this.endFrame : this.startFrame);
   }
+  restart() {
+    this.pause = false;
+    this.isOver = false;
+    this.currentFrame = this.reversed ? this.endFrame : this.startFrame;
+  }
 }
 
 BaseRenderer.inherits(AnimatedTextureRenderer);
