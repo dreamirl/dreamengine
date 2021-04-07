@@ -23,6 +23,7 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
     this.pingPongMode = params.pingPongMode || false;
     this._startFrame = 0;
     this._endFrame = 0;
+    this.isOver = false;
 
     if (imageNames) {
       this.imageNames = imageNames;
@@ -187,5 +188,7 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
 
 BaseRenderer.inherits(AnimatedTextureRenderer);
 AnimatedTextureRenderer.prototype.DEName = 'AnimatedTextureRenderer';
+
+AnimatedTextureRenderer.prototype.onAnimEnd = function() {}
 
 export default AnimatedTextureRenderer;
