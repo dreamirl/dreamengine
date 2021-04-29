@@ -342,10 +342,12 @@ Object.defineProperties(GameObject.prototype, {
       return this._zindex;
     },
     set: function(zindex) {
-      this._zindex = zindex;
-
-      if (this.parent) {
-        this.parent._shouldSortChildren = true;
+      if(typeof zindex == "number") {
+        this._zindex = zindex;
+  
+        if (this.parent) {
+          this.parent._shouldSortChildren = true;
+        }
       }
     },
   },
