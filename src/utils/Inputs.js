@@ -33,6 +33,8 @@ var Inputs = new (function() {
   this.isListening = false;
   this.usedInputs = {};
 
+  this.isWindowFocused = true;
+
   // @private renders, stock renders to bind inputs and call them
   var _renders = {};
   this.keyLocked = false;
@@ -299,7 +301,7 @@ var Inputs = new (function() {
    * @memberOf Inputs
    */
   this.trigger = function(eventType, keyName, val) {
-    if (Inputs.keyLocked && eventType.search('mouse') == -1) {
+    if ((Inputs.keyLocked || !this.isWindowFocused) && eventType.search('mouse') == -1) {
       return;
     }
 
@@ -316,7 +318,7 @@ var Inputs = new (function() {
    * @memberOf Inputs
    */
   this.key = function(name) {
-    if (Inputs.keyLocked) return false;
+    if (Inputs.keyLocked || !this.isWindowFocused) return false;
     if (
       this.usedInputs[name] &&
       this.usedInputs[name].isDown &&
@@ -418,7 +420,7 @@ var Inputs = new (function() {
 
     // if keyLocked is true, Inputs stop checking every events
     // PS: you need this to be able to fill a form or whatever because it does a preventDefault which break standard DOM interaction
-    if (Inputs.keyLocked) {
+    if (Inputs.keyLocked || !this.isWindowFocused) {
       // intern Nebula overlay logic, not blocking anything
       if (code == Inputs.dbInputs.KEYBOARD.escape) {
         Events.emit('close-nebula');
@@ -473,7 +475,7 @@ var Inputs = new (function() {
       Inputs.isShiftDown = false;
     }
 
-    if (Inputs.keyLocked) {
+    if (Inputs.keyLocked || !this.isWindowFocused) {
       return false;
     }
 
@@ -520,6 +522,20 @@ var Inputs = new (function() {
     // e.preventDefault();
     // return false;
   };
+
+  window.addEventListener(
+    'focus',
+    () => {
+      this.isWindowFocused = true;
+    },
+  );
+
+  window.addEventListener(
+    'blur',
+    () => {
+      this.isWindowFocused = false;
+    },
+  );
 })();
 
 export default Inputs;
