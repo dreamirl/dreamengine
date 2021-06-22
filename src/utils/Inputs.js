@@ -310,6 +310,8 @@ var Inputs = new (function() {
         Inputs.queue[eventType][keyName][ev](val);
       }
     }
+
+    Events.emit(eventType, keyName);
   };
 
   /**
@@ -448,7 +450,6 @@ var Inputs = new (function() {
           if (!Inputs.usedInputs[input].isDown) {
             // 1 because it's a keyDown event
             Inputs.trigger('keyDown', input, 1);
-            Events.emit('keyDown', input);
           }
 
           Inputs.usedInputs[input].isDown = true;
