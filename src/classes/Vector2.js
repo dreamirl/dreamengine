@@ -372,8 +372,8 @@ Vector2.prototype.turnVector = function (angle) {
   if (cos !== 0 || sin !== 0) {
     var x = this.x;
     var y = this.y;
-    this.x = -x * cos + y * sin;
-    this.y = -x * sin + y * -cos;
+    this.x = x * cos + y * -sin;
+    this.y = x * sin + y * cos;
   }
 
   return this;
