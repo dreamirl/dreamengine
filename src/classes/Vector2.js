@@ -398,8 +398,8 @@ Vector2.prototype.getTurnedVector = function (angle) {
 
   // why calling this function otherwise?
   if (cos !== 0 || sin !== 0) {
-    x = -this.x * cos + this.y * sin;
-    y = -this.x * sin + this.y * -cos;
+    x = this.x * cos + this.y * -sin;
+    y = this.x * sin + this.y * cos;
   }
 
   return { x, y };
