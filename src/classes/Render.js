@@ -324,7 +324,6 @@ Render.prototype.changeResizeMode = function (mode) {
  * @memberOf Render
  */
 Render.prototype._onResize = function () {
-  console.log('resize event');
   var screenW = window.innerWidth || document.documentElement.clientWidth;
   var screenH = window.innerHeight || document.documentElement.clientHeight;
 
