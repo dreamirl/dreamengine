@@ -409,8 +409,8 @@ SpriteRenderer.prototype.changeSprite = function (spriteName, params) {
   this.startLine = params.startLine || 0;
   this.endLine = params.endLine || d.endLine || d.totalLine - 1 || 0;
 
-  this.totalFrame = d.totalFrame || 0;
-  this.totalLine = params.totalLine || d.totalLine || 0;
+  this.totalFrame = d.totalFrame || 1;
+  this.totalLine = params.totalLine || d.totalLine || 1;
 
   this.interval = params.interval || d.interval || 0;
   this.nextAnim = this.interval;
@@ -443,8 +443,8 @@ SpriteRenderer.prototype.changeSprite = function (spriteName, params) {
     this.baseNormalTexture = _getTexture(params.normal);
   }
 
-  this.fw = (this.baseTexture.width / d.totalFrame) >> 0;
-  this.fh = (this.baseTexture.height / d.totalLine) >> 0;
+  this.fw = (this.baseTexture.width / this.totalFrame) >> 0;
+  this.fh = (this.baseTexture.height / this.totalLine) >> 0;
   var size = new PIXI.Rectangle(
     this.currentFrame * this.fw,
     this.currentLine * this.fh,
