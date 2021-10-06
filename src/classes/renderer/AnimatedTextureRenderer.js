@@ -15,7 +15,7 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
     this._currentFrame = 0;
 
     this.lastAnim = Date.now();
-    this.animated = true;
+    this.animated = params.animated !== undefined ? !!params.animated : true;
     this._isPaused = false;
     this.loop = params.loop !== undefined ? !!params.loop : true;
     this.reversed = params.reversed || false;
