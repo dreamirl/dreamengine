@@ -63,6 +63,7 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
     this.imageNames = PIXI.Loader.shared.resources[sheetName].data.animations[
       animationName
     ];
+    this.restart();
   }
 
   get pause() {
