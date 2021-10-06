@@ -75,8 +75,8 @@ const BaseRenderer = new (function() {
 
       for (var i in params) {
         if (target[i] && target[i].set) {
-          if (params[i].x !== undefined) {
-            target[i].set(params[i].x, params[i].y);
+          if (params[i].x !== undefined || params[i].y !== undefined) {
+            target[i].set(params[i].x || 0, params[i].y || 0);
           } else {
             target[i].set(params[i]);
           }
@@ -327,7 +327,7 @@ BaseRenderer.setSize = function(width, height, preventCenter) {
   if (preventCenter !== undefined) {
     this.preventCenter = preventCenter;
   }
-  if (!this.preventCenter && !this.anchor) {
+  if (this.preventCenter !== true && !this.anchor) {
     this.center();
   }
 };
