@@ -32,20 +32,17 @@ function SpriteRenderer(params) {
 
   this.isAtlasTexture = false;
 
-  let texture;
-  if (ImageManager.spritesData[this.spriteName]) {
-    texture = PIXI.utils.TextureCache[PIXI.Loader.shared.resources[this.spriteName].url];
-  } else {
-    texture = PIXI.utils.TextureCache[this.spriteName];
+  let texture = _getTexture(this.spriteName);
+  // only if no texture can be found either using standard url reading or naming in sheets
+  if (!texture) {
+    throw new Error(
+      "SpriteRenderer :: Can't find image " +
+      this.spriteName +
+      ' in ImageManager, is the image a sheet ? Or maybe not loaded ?',
+    );
+  }
 
-    // only if no texture can be found either using standard url reading or naming in sheets
-    if (!texture) {
-      throw new Error(
-        "SpriteRenderer :: Can't find image " +
-        this.spriteName +
-        ' in ImageManager, is the image a sheet ? Or maybe not loaded ?',
-      );
-    }
+  if (!ImageManager.spritesData[this.spriteName]) {
     this.isAtlasTexture = true;
     this.spriteData = params.spriteData;
   }
@@ -183,6 +180,14 @@ function SpriteRenderer(params) {
   //   this.frameSizes.width  = ImageManager.spritesData[ this.spriteName ].widthFrame;
   //   this.frameSizes.height = ImageManager.spritesData[ this.spriteName ].heightFrame;
   // }, this );
+}
+
+function _getTexture(spriteName) {
+  if (ImageManager.spritesData[spriteName]) {
+    return PIXI.utils.TextureCache[PIXI.Loader.shared.resources[spriteName].url];
+  } else {
+    return PIXI.utils.TextureCache[spriteName];
+  }
 }
 
 SpriteRenderer.prototype = Object.create(PIXI.Sprite.prototype);
@@ -431,13 +436,11 @@ SpriteRenderer.prototype.changeSprite = function (spriteName, params) {
   this.isOver = false;
   this.loop = params.loop != undefined ? params.loop : d.loop || this.loop;
 
-  this.baseTexture =
-    PIXI.utils.TextureCache[PIXI.Loader.shared.resources[this.spriteName].url];
+  this.baseTexture = _getTexture(this.spriteName);
 
   if (params.normal) {
     this.normalName = params.normal;
-    this.baseNormalTexture =
-      PIXI.utils.TextureCache[PIXI.Loader.shared.resources[params.normal].url];
+    this.baseNormalTexture = _getTexture(params.normal);
   }
 
   this.fw = (this.baseTexture.width / d.totalFrame) >> 0;
