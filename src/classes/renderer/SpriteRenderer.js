@@ -22,7 +22,7 @@ import BaseRenderer from 'DE.BaseRenderer';
  */
 
 function SpriteRenderer(params) {
-  this.spriteName = params.spriteName || undefined;
+  this.spriteName = params.spriteName || params.spriteUrl || params.textureName;
   delete params.spriteName;
   if (!this.spriteName) {
     throw new Error(
@@ -30,17 +30,29 @@ function SpriteRenderer(params) {
     );
   }
 
-  if (!ImageManager.spritesData[this.spriteName]) {
-    throw new Error(
-      "SpriteRenderer :: Can't find image " +
+  this.isAtlasTexture = false;
+
+  let texture;
+  if (ImageManager.spritesData[this.spriteName]) {
+    texture = PIXI.utils.TextureCache[PIXI.Loader.shared.resources[this.spriteName].url];
+  } else {
+    texture = PIXI.utils.TextureCache[this.spriteName];
+
+    // only if no texture can be found either using standard url reading or naming in sheets
+    if (!texture) {
+      throw new Error(
+        "SpriteRenderer :: Can't find image " +
         this.spriteName +
         ' in ImageManager, is the image a sheet ? Or maybe not loaded ?',
-    );
+      );
+    }
+    this.isAtlasTexture = true;
+    this.spriteData = params.spriteData;
   }
 
   PIXI.Sprite.call(
     this,
-    PIXI.utils.TextureCache[PIXI.Loader.shared.resources[this.spriteName].url],
+    texture,
   );
   BaseRenderer.instantiate(this, params);
 
@@ -381,7 +393,7 @@ SpriteRenderer.prototype.changeSprite = function (spriteName, params) {
     );
   }
 
-  var d = ImageManager.spritesData[this.spriteName];
+  var d = this.spriteData || ImageManager.spritesData[this.spriteName];
 
   this.startFrame = params.startFrame || d.startFrame || 0;
   this.endFrame = params.endFrame || d.endFrame || d.totalFrame - 1 || 0;
