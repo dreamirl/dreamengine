@@ -474,7 +474,7 @@ GameObject.prototype.lookAt = function(vector2, angleOffset) {
  * memberOf GameObject
  * param {PIXI.DisplayObject} rd - the renderer to add
  */
-GameObject.prototype.addRenderer = function(rd) {
+GameObject.prototype.addOneRenderer = function(rd) {
   if (
     rd.anchor &&
     !rd.preventCenter &&
@@ -483,9 +483,24 @@ GameObject.prototype.addRenderer = function(rd) {
   ) {
     rd.anchor.set(0.5, 0.5);
   }
-
+  
   this.renderers.push(rd);
   this.addChild(rd);
+  
+  return this;
+};
+
+GameObject.prototype.addRenderer = function(rd) {
+  var args = Array.prototype.slice.call(arguments);
+  for (var i = 0; i < args.length; ++i) {
+    if (args[i].length !== undefined) {
+      for (var o = 0, m = args[i].length || 0; o < m; ++o) {
+        this.addOneRenderer(args[i][o]);
+      }
+    } else {
+      this.addOneRenderer(args[i]);
+    }
+  }
 
   return this;
 };
