@@ -8,6 +8,7 @@ const Time = new (function() {
   this.fps = 0;
   this.frameDelay = 16;
   this.stopped = false;
+  this.fpsRecord = [];
 
   this.timeSinceLastFrame = 0;
   this.timeSinceLastFrameScaled = 0;
@@ -32,7 +33,9 @@ const Time = new (function() {
       this.frameDelay * 6,
     );
 
-    this.fps = Math.floor(1000 / this.timeSinceLastFrame);
+    this.fpsRecord.unshift(Math.floor(1000 / (this.currentTime - this.lastCalcul)));
+    this.fpsRecord = this.fpsRecord.splice(0, Math.min(this.fpsRecord.length, 60));
+    this.fps = Math.round(this.fpsRecord.reduce((a, b) => a + b) / this.fpsRecord.length);
 
     this.deltaTime = this.scaleDelta;
     this.frameDelayScaled = this.frameDelay * this.scaleDelta;
