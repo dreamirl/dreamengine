@@ -1,6 +1,6 @@
 {
   "name": "@dreamirl/dreamengine",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "A simple and fast 2D engine based on PIXI",
   "main": "src/index.js",
   "dependencies": {

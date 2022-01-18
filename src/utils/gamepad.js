@@ -1,7 +1,7 @@
 ﻿import config from 'DE.config';
 import Events from 'DE.Events';
-import Notifications from 'DE.Notifications';
 import Localization from 'DE.Localization';
+import Notifications from 'DE.Notifications';
 
 /**
 * Author
@@ -459,7 +459,7 @@ var gamepads = new (function() {
     }
 
     if (typeof o[padIndex].listeners[num] == 'undefined') {
-      o[padIndex].listeners[num] = { active: true, force: 0 };
+      o[padIndex].listeners[num] = { active: false, force: 0 };
     }
   };
 
