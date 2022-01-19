@@ -306,9 +306,9 @@ Object.defineProperties(GameObject.prototype, {
       return this.updatable || this.visible;
     },
     set: function(value) {
-      // TODO ? this is useful for dynamic pools (feature incoming)
-      // if ( this.enable != value )
-      //   this.emit( value ? 'active' : 'unactive' );
+      // this is useful when you want to listen for enable changes externally
+      if (this.enable !== value)
+        this.emit(value ? 'enable-true' : 'enable-false');
 
       this.updatable = value;
       this.visible = value;
