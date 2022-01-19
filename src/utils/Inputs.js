@@ -5,12 +5,12 @@ import Localization from 'DE.Localization';
 import Time from 'DE.Time';
 
 /**
-* Author
- @Inateno / http://inateno.com / http://dreamirl.com
-
-* ContributorsList
- @Inateno
-*/
+ * Author
+ * @Inateno / http://inateno.com / http://dreamirl.com
+ *
+ * ContributorsList
+ * @Inateno
+ */
 
 /**
  * An Inputs lib to detect keyboard and gamepad events, easily bindable and multiple bind
@@ -37,7 +37,9 @@ var Inputs = new (function() {
 
   // @private renders, stock renders to bind inputs and call them
   var _renders = {};
-  this.keyLocked = false;
+
+  this._keyLocked = false;
+  this._keyLockNamesExceptions = [];
 
   this.dbInputs = {
     KEYBOARD: {
@@ -301,7 +303,7 @@ var Inputs = new (function() {
    * @memberOf Inputs
    */
   this.trigger = function(eventType, keyName, val) {
-    if ((Inputs.keyLocked || !Inputs.isWindowFocused) && eventType.search('mouse') == -1) {
+    if (((Inputs.keyLocked && !Inputs._keyLockNamesExceptions.includes(keyName)) || !Inputs.isWindowFocused) && eventType.search('mouse') == -1) {
       return;
     }
 
@@ -320,7 +322,7 @@ var Inputs = new (function() {
    * @memberOf Inputs
    */
   this.key = function(name) {
-    if (Inputs.keyLocked || !Inputs.isWindowFocused) return false;
+    if (Inputs._keyLocked || !Inputs.isWindowFocused) return false;
     if (
       this.usedInputs[name] &&
       this.usedInputs[name].isDown &&
@@ -420,9 +422,9 @@ var Inputs = new (function() {
       Events.emit('toggle-nebula');
     }
 
-    // if keyLocked is true, Inputs stop checking every events
+    // if _keyLocked is true, Inputs stop checking every events
     // PS: you need this to be able to fill a form or whatever because it does a preventDefault which break standard DOM interaction
-    if (Inputs.keyLocked || !Inputs.isWindowFocused) {
+    if (Inputs._keyLocked || !Inputs.isWindowFocused) {
       // intern Nebula overlay logic, not blocking anything
       if (code == Inputs.dbInputs.KEYBOARD.escape) {
         Events.emit('close-nebula');
@@ -476,7 +478,7 @@ var Inputs = new (function() {
       Inputs.isShiftDown = false;
     }
 
-    if (Inputs.keyLocked || !Inputs.isWindowFocused) {
+    if (Inputs._keyLocked || !Inputs.isWindowFocused) {
       return false;
     }
 
@@ -523,6 +525,34 @@ var Inputs = new (function() {
     // e.preventDefault();
     // return false;
   };
+
+  /**
+   * Lock keys with exceptions
+   * @public
+   * @memberOf Inputs
+   * @param {string[]} exceptions
+   */
+  this.lockKeys = function (exceptions) {
+    this._keyLocked = true;
+    this._keyLockNamesExceptions = exceptions;
+  };
+
+  /**
+   * Unlock keys
+   * @public
+   * @memberOf Inputs
+   */
+  this.unlockKeys = function () {
+    this._keyLocked = false;
+  };
+
+  Object.defineProperty(this, 'keyLocked', {
+    get: () => this._keyLocked,
+    set: (value) => {
+      this._keyLocked = value;
+      this._keyLockNamesExceptions = [];
+    },
+  });
 
   window.addEventListener(
     'focus',
