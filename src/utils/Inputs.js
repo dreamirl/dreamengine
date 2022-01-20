@@ -6,10 +6,10 @@ import Time from 'DE.Time';
 
 /**
  * Author
- * @Inateno / http://inateno.com / http://dreamirl.com
- *
+ @Inateno / http://inateno.com / http://dreamirl.com
+
  * ContributorsList
- * @Inateno
+ @Inateno
  */
 
 /**
@@ -183,10 +183,10 @@ var Inputs = new (function() {
         if (typeof this.dbInputs[type][name] == 'undefined') {
           console.log(
             "%cWARN: Inputs: An input couldn't be found in the database, did you respect the caseSensitive ?:" +
-              type +
-              '.' +
-              name +
-              '\n Ignoring it and continue...',
+            type +
+            '.' +
+            name +
+            '\n Ignoring it and continue...',
             'color:red',
           );
           continue;
@@ -266,9 +266,9 @@ var Inputs = new (function() {
     if (!this.queue[type][input]) {
       console.log(
         '%cWARN: Inputs: Try to bind on a non existent input ::: ' +
-          type +
-          ' - ' +
-          input,
+        type +
+        ' - ' +
+        input,
         'color:red',
       );
       return;
@@ -303,7 +303,7 @@ var Inputs = new (function() {
    * @memberOf Inputs
    */
   this.trigger = function(eventType, keyName, val) {
-    if (((Inputs.keyLocked && !Inputs._keyLockNamesExceptions.includes(keyName)) || !Inputs.isWindowFocused) && eventType.search('mouse') == -1) {
+    if (((Inputs._keyLocked && !Inputs._keyLockNamesExceptions.includes(keyName)) || !Inputs.isWindowFocused) && eventType.search('mouse') == -1) {
       return;
     }
 
@@ -322,13 +322,13 @@ var Inputs = new (function() {
    * @memberOf Inputs
    */
   this.key = function(name) {
-    if (Inputs._keyLocked || !Inputs.isWindowFocused) return false;
+    if ((Inputs.keyLocked && !Inputs._keyLockNamesExceptions.includes(name)) || !Inputs.isWindowFocused) return false;
     if (
       this.usedInputs[name] &&
       this.usedInputs[name].isDown &&
       (!this.usedInputs[name].interval ||
         Date.now() - this.usedInputs[name].lastCall >=
-          this.usedInputs[name].interval / Time.scaleDelta)
+        this.usedInputs[name].interval / Time.scaleDelta)
     ) {
       if (!Inputs.usedInputs[name].stayOn) {
         Inputs.usedInputs[name].lastCall = Date.now();
@@ -422,9 +422,8 @@ var Inputs = new (function() {
       Events.emit('toggle-nebula');
     }
 
-    // if _keyLocked is true, Inputs stop checking every events
     // PS: you need this to be able to fill a form or whatever because it does a preventDefault which break standard DOM interaction
-    if (Inputs._keyLocked || !Inputs.isWindowFocused) {
+    if (!Inputs.isWindowFocused) {
       // intern Nebula overlay logic, not blocking anything
       if (code == Inputs.dbInputs.KEYBOARD.escape) {
         Events.emit('close-nebula');
@@ -434,12 +433,13 @@ var Inputs = new (function() {
     }
 
     var inputsDown = Inputs.findInputs(code, 'KEYBOARD');
+    let fillInputFields = false;
     if (inputsDown !== false) {
       for (var i = 0, input; (input = inputsDown[i]); ++i) {
         if (
           !Inputs.usedInputs[input].isDown &&
           Date.now() - Inputs.usedInputs[input].lastCall >=
-            Inputs.usedInputs[input].interval
+          Inputs.usedInputs[input].interval
         ) {
           if (
             Inputs.usedInputs[input].isLongPress &&
@@ -450,6 +450,10 @@ var Inputs = new (function() {
 
           /* specific on keydown event handler here */
           if (!Inputs.usedInputs[input].isDown) {
+            if (Inputs._keyLocked && !Inputs._keyLockNamesExceptions.includes(input)) {
+              fillInputFields = true;
+              continue;
+            }
             // 1 because it's a keyDown event
             Inputs.trigger('keyDown', input, 1);
           }
@@ -460,7 +464,15 @@ var Inputs = new (function() {
         // just data, can be useful for stats / achievements / whatever
         ++Inputs.usedInputs[input].numberPress;
       }
+    } else if (Inputs._keyLocked) {
+      return false;
     }
+
+    if (fillInputFields)
+    {
+      return false;
+    }
+
     e.preventDefault();
   };
 
@@ -478,7 +490,7 @@ var Inputs = new (function() {
       Inputs.isShiftDown = false;
     }
 
-    if (Inputs._keyLocked || !Inputs.isWindowFocused) {
+    if (!Inputs.isWindowFocused) {
       return false;
     }
 
@@ -486,7 +498,14 @@ var Inputs = new (function() {
     if (inputsUp !== false) {
       for (var i = 0, input; (input = inputsUp[i]); ++i) {
         if (Inputs.usedInputs[input].isDown) {
-          Inputs.trigger('keyUp', input);
+          if (Inputs._keyLocked) {
+            if (Inputs._keyLockNamesExceptions.includes(input))
+            {
+              Inputs.trigger('keyUp', input);
+            }
+          } else {
+            Inputs.trigger('keyUp', input);
+          }
         }
 
         if (Inputs.usedInputs[input].stayOn) {
