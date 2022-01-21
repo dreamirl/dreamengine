@@ -426,6 +426,7 @@ var Inputs = new (function() {
     if (!Inputs.isWindowFocused) {
       // intern Nebula overlay logic, not blocking anything
       if (code == Inputs.dbInputs.KEYBOARD.escape) {
+        // TODO remove this from Inputs and move it to a plugin
         Events.emit('close-nebula');
       }
 
