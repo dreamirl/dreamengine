@@ -433,7 +433,7 @@ var Inputs = new (function() {
     }
 
     var inputsDown = Inputs.findInputs(code, 'KEYBOARD');
-    let fillInputFields = false;
+    let shouldPreventDefault = true;
     if (inputsDown !== false) {
       for (var i = 0, input; (input = inputsDown[i]); ++i) {
         if (
@@ -441,21 +441,21 @@ var Inputs = new (function() {
           Date.now() - Inputs.usedInputs[input].lastCall >=
           Inputs.usedInputs[input].interval
         ) {
+          /* specific on keydown event handler here */
+          if (!Inputs.usedInputs[input].isDown) {
+            if (Inputs._keyLocked && !Inputs._keyLockNamesExceptions.includes(input)) {
+              shouldPreventDefault = false;
+              continue;
+            }
+            // 1 because it's a keyDown event
+            Inputs.trigger('keyDown', input, 1);
+          }
+
           if (
             Inputs.usedInputs[input].isLongPress &&
             !Inputs.usedInputs[input].stayOn
           ) {
             Inputs.usedInputs[input].lastCall = Date.now();
-          }
-
-          /* specific on keydown event handler here */
-          if (!Inputs.usedInputs[input].isDown) {
-            if (Inputs._keyLocked && !Inputs._keyLockNamesExceptions.includes(input)) {
-              fillInputFields = true;
-              continue;
-            }
-            // 1 because it's a keyDown event
-            Inputs.trigger('keyDown', input, 1);
           }
 
           Inputs.usedInputs[input].isDown = true;
@@ -468,10 +468,7 @@ var Inputs = new (function() {
       return false;
     }
 
-    if (fillInputFields)
-    {
-      return false;
-    }
+    if (!shouldPreventDefault) return false;
 
     e.preventDefault();
   };
