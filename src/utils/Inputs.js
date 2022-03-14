@@ -31,6 +31,7 @@ var Inputs = new (function() {
   this.DEName = 'Inputs';
 
   this.isListening = false;
+  this.isWaitingForAnyKey = false;
   this.usedInputs = {};
 
   this.isWindowFocused = true;
@@ -433,6 +434,17 @@ var Inputs = new (function() {
       return false;
     }
 
+    if (Inputs.isWaitingForAnyKey) {
+      let keyName = Object.keys(Inputs.dbInputs.KEYBOARD)
+        .find(key => Inputs.dbInputs.KEYBOARD[key] === code);
+
+      if (keyName !== undefined) {
+        Inputs.isWaitingForAnyKey = false;
+        Inputs.waitForAnyKeyCallback(keyName);
+        return false;
+      }
+    }
+
     var inputsDown = Inputs.findInputs(code, 'KEYBOARD');
     let shouldPreventDefault = true;
     if (inputsDown !== false) {
@@ -541,6 +553,11 @@ var Inputs = new (function() {
     // needed ?
     // e.preventDefault();
     // return false;
+  };
+
+  this.waitForAnyKey = function(callback) {
+    Inputs.isWaitingForAnyKey = true;
+    Inputs.waitForAnyKeyCallback = callback;
   };
 
   /**
