@@ -14,14 +14,14 @@
     "webpack": "^3.8.1",
     "webpack-dev-server": "^3.11.0",
     "webpack-utf8-bom": "^1.2.0",
-    "husky": "^7.0.2",
+    "husky": "^7.0.0",
     "prettier": "^2.2.0",
     "pretty-quick": "^3.1.1"
   },
   "scripts": {
     "build": "cross-env DEV_BUILD=true FINAL_BUILD=true parallel-webpack --config webpack.config.js --verbose --no-stats",
     "build-dev": "cross-env DEV_BUILD=true parallel-webpack --config webpack.config.js --verbose --no-stats",
-    "format": "prettier --write \"**/*.{js,json,ts,tsx,md}\"",
+    "format": "prettier --config .prettierrc.json --ignore-path .prettierignore --write \"**/*.{js,json,ts,tsx,md}\"",
     "test": "echo \"Error: no test specified this is a TODO\" && exit 1",
     "watch": "echo TODO",
     "prepare": "husky install"
