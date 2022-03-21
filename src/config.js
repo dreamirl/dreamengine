@@ -11,6 +11,7 @@ var config = {
   _DEBUG_LEVEL: 0,
   ALLOW_ONBEFOREUNLOAD: true,
   DEFAULT_TEXT_RESOLUTION: 2,
+  DEFAULT_POOL_NAME: 'default',
 };
 
 Object.defineProperties(config, {

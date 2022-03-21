@@ -49,7 +49,9 @@ const MainLoop = new (function () {
     this.loader.renderer.y += 150;
     Events.on('ImageManager-pool-progress', function (poolName, progression) {
       MainLoop.loader.removeAutomatism('animateLoader');
-      MainLoop.loader.renderer.text = poolName + ': ' + progression + '%';
+      poolName == DE.CONFIG.DEFAULT_POOL_NAME
+        ? (MainLoop.loader.renderer.text = progression + '%')
+        : (MainLoop.loader.renderer.text = poolName + ': ' + progression + '%');
     });
     Events.on('ImageManager-pool-complete', function (poolName) {
       MainLoop.loader.removeAutomatism('animateLoader');
