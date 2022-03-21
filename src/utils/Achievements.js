@@ -8,20 +8,13 @@ import Save from 'DE.Save';
 
 // achievement-unlock added in dictionary
 const langs = {
-  en:
-    "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% unlocked</div>",
-  fr:
-    "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% débloqué</div>",
-  es:
-    "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% desbloqueado</div>",
-  pt:
-    "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% desbloqueado</div>",
-  de:
-    "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% entriegelt</div>",
-  it:
-    "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% sbloccato</div>",
-  ru:
-    "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% разблокирован</div>",
+  en: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% unlocked</div>",
+  fr: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% débloqué</div>",
+  es: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% desbloqueado</div>",
+  pt: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% desbloqueado</div>",
+  de: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% entriegelt</div>",
+  it: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% sbloccato</div>",
+  ru: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% разблокирован</div>",
 };
 
 /**
@@ -32,14 +25,14 @@ const langs = {
  * provide a system to create achievements. Use events in the engine to detect unlockeds
  * @namespace Achievements
  */
-const Achievements = new (function() {
+const Achievements = new (function () {
   this.DEName = 'Achievements';
   this.achievements = [];
   this.userAchievements = {};
 
   this.achievementsUrl = 'img/achievements/';
 
-  this.init = function(list, userAchievements) {
+  this.init = function (list, userAchievements) {
     for (var i in langs) {
       if (!Localization.dictionary[i]) {
         continue;
@@ -64,7 +57,7 @@ const Achievements = new (function() {
    * @param {params} value - your value
    * @example DE.trigger( "games-datas", "objective-name", myValue );
    */
-  this.checkEvent = function(eventName, value) {
+  this.checkEvent = function (eventName, value) {
     for (var i = 0, a, ua; (a = this.achievements[i]); ++i) {
       ua = this.userAchievements[a.namespace];
       for (var t in a.objectives) {
@@ -88,7 +81,7 @@ const Achievements = new (function() {
    * @param {String} namespace - achievement namespace
    * @example if ( DE.Achievements.isUnlock( "commander" ) )
    */
-  this.isUnlock = function(namespace) {
+  this.isUnlock = function (namespace) {
     for (var i = 0, a, ua; (a = this.achievements[i]); ++i) {
       if (a.namespace == namespace) {
         return this.userAchievements[namespace]
@@ -98,7 +91,7 @@ const Achievements = new (function() {
     }
   };
 
-  this.updateValue = function(achievement, targetKey, value) {
+  this.updateValue = function (achievement, targetKey, value) {
     var objective = achievement.objectives[targetKey];
     if (
       !this.userAchievements[achievement.namespace] ||
@@ -122,7 +115,7 @@ const Achievements = new (function() {
     this.checkUnlock(achievement);
   };
 
-  this.checkUnlock = function(achievement) {
+  this.checkUnlock = function (achievement) {
     var ua = this.userAchievements[achievement.namespace].objectives;
     var objectives = achievement.objectives;
     var achComplete = true,
@@ -168,7 +161,7 @@ const Achievements = new (function() {
     }
   };
 
-  this.unlocked = function(achievement) {
+  this.unlocked = function (achievement) {
     this.userAchievements[achievement.namespace].complete = true;
     var name =
       achievement.names[Localization.currentLang] ||

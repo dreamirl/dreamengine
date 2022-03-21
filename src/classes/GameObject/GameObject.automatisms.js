@@ -31,7 +31,7 @@ import Time from 'DE.Time';
  *   , "persistent": false
  * } );
  */
-GameObject.prototype.addAutomatism = function(id, methodName, params) {
+GameObject.prototype.addAutomatism = function (id, methodName, params) {
   params = params || {};
   methodName = methodName || id;
 
@@ -72,7 +72,7 @@ GameObject.prototype.addAutomatism = function(id, methodName, params) {
  * @example
  * myObject.removeAutomatism( "logic" );
  */
-GameObject.prototype.removeAutomatism = function(id) {
+GameObject.prototype.removeAutomatism = function (id) {
   if (!this._automatisms[id]) {
     // console.warn( "%c[RemoveAutomatism] Automatism " + id + " not found", 1, "color:orange" );
     return;
@@ -85,7 +85,7 @@ GameObject.prototype.removeAutomatism = function(id) {
  * @public
  * @memberOf GameObject
  */
-GameObject.prototype.removeAutomatisms = function() {
+GameObject.prototype.removeAutomatisms = function () {
   for (var i in this._automatisms) {
     delete this._automatisms[i];
   }
@@ -100,7 +100,7 @@ GameObject.prototype.removeAutomatisms = function() {
  * @example
  * myObject.inverseAutomatism( "translateY" ); // this will inverse the value applied on the automatized translateY action
  */
-GameObject.prototype.inverseAutomatism = function(autoName) {
+GameObject.prototype.inverseAutomatism = function (autoName) {
   var at = this._automatisms[autoName];
 
   if (at.args) {

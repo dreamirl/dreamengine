@@ -12,13 +12,13 @@ import Localization from 'DE.Localization';
  * The MainLoop namespace handle the call of the next frame, updating scene, rendering and so on
  * MainLoop start when calling DE.start();
  */
-const MainLoop = new (function() {
+const MainLoop = new (function () {
   this.DEName = 'MainLoop';
   this.scenes = [];
   this.renders = [];
   this.additionalModules = {};
 
-  this.createLoader = function() {
+  this.createLoader = function () {
     this.loader = new GameObject({
       renderer: new TextRenderer('Loading...', {
         textStyle: {
@@ -31,7 +31,7 @@ const MainLoop = new (function() {
       }),
     });
     var n_dots = 0;
-    this.loader.animateLoader = function() {
+    this.loader.animateLoader = function () {
       var dots = '.';
       for (var i = 0; i < 3; ++i) {
         dots += n_dots < i ? ' ' : '.';
@@ -47,23 +47,23 @@ const MainLoop = new (function() {
       interval: 500,
     });
     this.loader.renderer.y += 150;
-    Events.on('ImageManager-pool-progress', function(poolName, progression) {
+    Events.on('ImageManager-pool-progress', function (poolName, progression) {
       MainLoop.loader.removeAutomatism('animateLoader');
       MainLoop.loader.renderer.text = poolName + ': ' + progression + '%';
     });
-    Events.on('ImageManager-pool-complete', function(poolName) {
+    Events.on('ImageManager-pool-complete', function (poolName) {
       MainLoop.loader.removeAutomatism('animateLoader');
       MainLoop.loader.renderer.text = '100%';
     });
   };
 
-  this.updateLoaderImage = function(loader) {
+  this.updateLoaderImage = function (loader) {
     this.loader.addRenderer(
       new SpriteRenderer({ spriteName: loader[0], scale: loader[2].scale }),
     );
   };
 
-  this.loop = function() {
+  this.loop = function () {
     if (!MainLoop.launched) {
       console.warn('MainLoop has stopped');
       return;
@@ -117,11 +117,11 @@ const MainLoop = new (function() {
     }
   };
 
-  this.addScene = function(scene) {
+  this.addScene = function (scene) {
     this.scenes.push(scene);
   };
 
-  this.addRender = function(render) {
+  this.addRender = function (render) {
     this.renders.push(render);
     // TODO call the resize of this render ?
   };
@@ -129,7 +129,7 @@ const MainLoop = new (function() {
 
 Events.on(
   'lang-changed',
-  function() {
+  function () {
     for (var i = 0, s; (s = MainLoop.scenes[i]); ++i) {
       for (var ii = 0, g; (g = s.gameObjects[ii]); ++ii) {
         checkGameObjectsTextRenderer(g);

@@ -141,10 +141,10 @@ Object.defineProperties(Camera.prototype, {
    * @type {Boolean}
    */
   enable: {
-    get: function() {
+    get: function () {
       return this.renderable && this.visible;
     },
-    set: function(bool) {
+    set: function (bool) {
       this.visible = bool;
       this.renderable = bool;
     },
@@ -157,10 +157,10 @@ Object.defineProperties(Camera.prototype, {
    * @type {Boolean}
    */
   usePerspective: {
-    get: function() {
+    get: function () {
       return this._usePerspective;
     },
-    set: function(bool) {
+    set: function (bool) {
       if (this._usePerspective) {
         this.clearPerspective(true);
       }
@@ -176,10 +176,10 @@ Object.defineProperties(Camera.prototype, {
    * @memberOf Camera
    */
   scene: {
-    get: function() {
+    get: function () {
       return this._scene;
     },
-    set: function(scene) {
+    set: function (scene) {
       if (this._scene) {
         this.removeChild(this._scene);
       }
@@ -198,58 +198,58 @@ Object.defineProperties(Camera.prototype, {
    * @memberOf Camera
    */
   pointermove: {
-    get: function() {
+    get: function () {
       return this._pointermove;
     },
-    set: function(fn) {
+    set: function (fn) {
       this._customPointerMove = fn;
     },
   },
   pointerdown: {
-    get: function() {
+    get: function () {
       return this._pointerdown;
     },
-    set: function(fn) {
+    set: function (fn) {
       this._customPointerDown = fn;
     },
   },
   pointerup: {
-    get: function() {
+    get: function () {
       return this._pointerup;
     },
-    set: function(fn) {
+    set: function (fn) {
       this._customPointerUp = fn;
     },
   },
   pointerover: {
-    get: function() {
+    get: function () {
       return this._pointerover;
     },
-    set: function(fn) {
+    set: function (fn) {
       this._customPointerOver = fn;
     },
   },
   pointerout: {
-    get: function() {
+    get: function () {
       return this._pointerout;
     },
-    set: function(fn) {
+    set: function (fn) {
       this._customPointerOut = fn;
     },
   },
   pointertap: {
-    get: function() {
+    get: function () {
       return this._pointertap;
     },
-    set: function(fn) {
+    set: function (fn) {
       this._customPointerTap = fn;
     },
   },
   pointerupoutside: {
-    get: function() {
+    get: function () {
       return this._pointerupoutsid;
     },
-    set: function(fn) {
+    set: function (fn) {
       this._customPointerUpOutside = fn;
     },
   },
@@ -264,7 +264,7 @@ Camera.prototype.trigger = Camera.prototype.emit;
  * @private
  * @memberOf Camera
  */
-Camera.prototype._pointerHandler = function(type, event) {
+Camera.prototype._pointerHandler = function (type, event) {
   var pos = {
     x: event.data.global.x + (this.pivot.x - this.x),
     y: event.data.global.y + (this.pivot.y - this.y),
@@ -273,25 +273,25 @@ Camera.prototype._pointerHandler = function(type, event) {
   this['_customPointer' + type](pos, event);
 };
 
-Camera.prototype._pointermove = function(e) {
+Camera.prototype._pointermove = function (e) {
   this._pointerHandler('Move', e);
 };
-Camera.prototype._pointerdown = function(e) {
+Camera.prototype._pointerdown = function (e) {
   this._pointerHandler('Down', e);
 };
-Camera.prototype._pointerup = function(e) {
+Camera.prototype._pointerup = function (e) {
   this._pointerHandler('Up', e);
 };
-Camera.prototype._pointerover = function(e) {
+Camera.prototype._pointerover = function (e) {
   this._pointerHandler('Over', e);
 };
-Camera.prototype._pointerout = function(e) {
+Camera.prototype._pointerout = function (e) {
   this._pointerHandler('Out', e);
 };
-Camera.prototype._pointertap = function(e) {
+Camera.prototype._pointertap = function (e) {
   this._pointerHandler('Tap', e);
 };
-Camera.prototype._pointerupoutside = function(e) {
+Camera.prototype._pointerupoutside = function (e) {
   this._pointerHandler('UpOutside', e);
 };
 
@@ -301,44 +301,44 @@ Camera.prototype._pointerupoutside = function(e) {
  * @private
  * @memberOf Camera
  */
-Camera.prototype._customPointerMove = function() {};
+Camera.prototype._customPointerMove = function () {};
 /**
  * @private
  * @memberOf Camera
  */
-Camera.prototype._customPointerDown = function() {};
+Camera.prototype._customPointerDown = function () {};
 /**
  * @private
  * @memberOf Camera
  */
-Camera.prototype._customPointerUp = function() {};
+Camera.prototype._customPointerUp = function () {};
 /**
  * @private
  * @memberOf Camera
  */
-Camera.prototype._customPointerOver = function() {};
+Camera.prototype._customPointerOver = function () {};
 /**
  * @private
  * @memberOf Camera
  */
-Camera.prototype._customPointerOut = function() {};
+Camera.prototype._customPointerOut = function () {};
 /**
  * @private
  * @memberOf Camera
  */
-Camera.prototype._customPointerTap = function() {};
+Camera.prototype._customPointerTap = function () {};
 /**
  * @private
  * @memberOf Camera
  */
-Camera.prototype._customPointerUpOutside = function() {};
+Camera.prototype._customPointerUpOutside = function () {};
 
 /**
  * this update the lifecycle of the camera, binded on rendering because if a Camera is "off" it doesn't need to be updated
  * @memberOf Camera
  * @protected
  */
-Camera.prototype.renderUpdate = function(qualityRatio) {
+Camera.prototype.renderUpdate = function (qualityRatio) {
   this.applyFocus();
   this.applyFade();
   this.applyShake();
@@ -356,7 +356,7 @@ Camera.prototype.renderUpdate = function(qualityRatio) {
  * @memberOf Camera
  * @protected
  */
-Camera.prototype.afterUpdate = function(qualityRatio) {
+Camera.prototype.afterUpdate = function (qualityRatio) {
   this.clearPerspective();
 };
 
@@ -365,7 +365,7 @@ Camera.prototype.afterUpdate = function(qualityRatio) {
  * @memberOf Camera
  * @protected
  */
-Camera.prototype.calculatePerspective = function() {
+Camera.prototype.calculatePerspective = function () {
   if (!this._usePerspective || !this._scene) {
     return;
   }
@@ -396,7 +396,7 @@ Camera.prototype.calculatePerspective = function() {
  * @memberOf Camera
  * @protected
  */
-Camera.prototype.clearPerspective = function() {
+Camera.prototype.clearPerspective = function () {
   if (!this._usePerspective || !this._scene) {
     return;
   }
@@ -420,7 +420,7 @@ Camera.prototype.clearPerspective = function() {
  * @protected
  * @memberOf Camera
  */
-Camera.prototype.checkLimits = function(qualityRatio) {
+Camera.prototype.checkLimits = function (qualityRatio) {
   var limits = this.limits;
   if (limits.minX != undefined && this.x < limits.minX * qualityRatio) {
     this.x = limits.minX * qualityRatio;
@@ -459,7 +459,7 @@ Camera.prototype.focus = GameObject.prototype.focus;
  * @protected
  * @memberOf Camera
  */
-Camera.prototype.applyFocus = function() {
+Camera.prototype.applyFocus = function () {
   if (!this.target) {
     return;
   }

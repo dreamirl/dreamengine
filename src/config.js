@@ -20,10 +20,10 @@ Object.defineProperties(config, {
    * @public
    */
   DEBUG: {
-    get: function() {
+    get: function () {
       return config._DEBUG;
     },
-    set: function(bool) {
+    set: function (bool) {
       Events.emit('change-debug', bool, config._DEBUG_LEVEL);
       config._DEBUG = bool;
     },
@@ -35,10 +35,10 @@ Object.defineProperties(config, {
    * @public
    */
   DEBUG_LEVEL: {
-    get: function() {
+    get: function () {
       return config._DEBUG_LEVEL;
     },
-    set: function(bool) {
+    set: function (bool) {
       Events.emit('change-debug', config._DEBUG, bool);
       config._DEBUG_LEVEL = bool;
     },

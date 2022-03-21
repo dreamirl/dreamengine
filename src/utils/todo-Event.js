@@ -15,8 +15,8 @@
  on a prototype, you'll have to call addEventComponents inside the constructor
  Nb: GameObjects - Camera have already Events
 **/
-define(['DE.CONFIG'], function(CONFIG) {
-  var Event = new (function() {
+define(['DE.CONFIG'], function (CONFIG) {
+  var Event = new (function () {
     this.DEName = 'Event';
   })();
 
@@ -28,7 +28,7 @@ define(['DE.CONFIG'], function(CONFIG) {
     register a callback on the given eventName, if not persistant, it will be removed
     after call
    */
-  Event.on = function(eventName, callback, context, persistent) {
+  Event.on = function (eventName, callback, context, persistent) {
     if (!Event.callbacks[eventName]) {
       Event.callbacks[eventName] = new Array();
       Event.contexts[eventName] = new Array();
@@ -44,7 +44,7 @@ define(['DE.CONFIG'], function(CONFIG) {
   /****
     trigger eventName
    */
-  Event.trigger = function() {
+  Event.trigger = function () {
     var args = Array.prototype.slice.call(arguments);
     var eventName = args.shift();
 
@@ -66,7 +66,7 @@ define(['DE.CONFIG'], function(CONFIG) {
     }
   };
 
-  Event.stopListen = function(eventName, f) {
+  Event.stopListen = function (eventName, f) {
     if (!f) {
       delete this.callbacks[eventName];
       delete this.contexts[eventName];
@@ -92,7 +92,7 @@ define(['DE.CONFIG'], function(CONFIG) {
     this add events components, if the object isn't an prototyped instance
     you shouldn't use it
    */
-  Event.addEventComponents = function(object) {
+  Event.addEventComponents = function (object) {
     object.callbacks = {};
     object.contexts = {};
   };
@@ -101,7 +101,7 @@ define(['DE.CONFIG'], function(CONFIG) {
     add events methods to your objects, if it's a prototype you have to call
     addEventComponents in the constructor
    */
-  Event.addEventCapabilities = function(object) {
+  Event.addEventCapabilities = function (object) {
     if (!object.prototype) {
       object.callbacks = {};
       object.contexts = {};
@@ -115,7 +115,7 @@ define(['DE.CONFIG'], function(CONFIG) {
     }
   };
 
-  var onFunc = function(eventName, callback, context) {
+  var onFunc = function (eventName, callback, context) {
     if (!this.callbacks[eventName]) {
       this.callbacks[eventName] = [];
       this.contexts[eventName] = [];
@@ -124,7 +124,7 @@ define(['DE.CONFIG'], function(CONFIG) {
     this.contexts[eventName].push(context || this);
   };
 
-  var triggerFunc = function() {
+  var triggerFunc = function () {
     var args = Array.prototype.slice.call(arguments);
     var eventName = args.shift();
     var listeners = this.callbacks[eventName] || [];
@@ -134,7 +134,7 @@ define(['DE.CONFIG'], function(CONFIG) {
     }
   };
 
-  var stopListeningFunc = function(eventName, f) {
+  var stopListeningFunc = function (eventName, f) {
     if (!f) {
       delete this.callbacks[eventName];
       delete this.contexts[eventName];

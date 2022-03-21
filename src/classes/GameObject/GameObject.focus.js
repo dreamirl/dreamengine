@@ -11,7 +11,7 @@ import Time from 'DE.Time';
  * @example // create a fx for your ship, decal a little on left, and lock y
  * fx.focus( player, { lock: { y: true }, offsets: { x: -200, y: 0 } } );
  */
-GameObject.prototype.focus = function(gameObject, params) {
+GameObject.prototype.focus = function (gameObject, params) {
   params = params || {};
   this.target = gameObject;
   this._focusOptions = Object.assign(
@@ -41,7 +41,7 @@ GameObject.prototype.focus = function(gameObject, params) {
  * @protected
  * @memberOf Camera
  */
-GameObject.prototype.applyFocus = function() {
+GameObject.prototype.applyFocus = function () {
   if (!this.target) {
     return;
   }

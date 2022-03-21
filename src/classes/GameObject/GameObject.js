@@ -280,7 +280,7 @@ function GameObject(params) {
 
   Events.on(
     'change-debug',
-    function(debug, level) {
+    function (debug, level) {
       if (debug) {
         this._createDebugRenderer();
       } else {
@@ -302,10 +302,10 @@ Object.defineProperties(GameObject.prototype, {
    * @type {Boolean}
    */
   enable: {
-    get: function() {
+    get: function () {
       return this.updatable || this.visible;
     },
-    set: function(value) {
+    set: function (value) {
       // this is useful when you want to listen for enable changes externally
       if (this.enable !== value)
         this.emit(value ? 'enable-true' : 'enable-false');
@@ -321,7 +321,7 @@ Object.defineProperties(GameObject.prototype, {
    * @memberOf GameObject
    */
   rotation: {
-    get: function() {
+    get: function () {
       return this.transform.rotation;
     },
     set: function set(
@@ -338,13 +338,13 @@ Object.defineProperties(GameObject.prototype, {
    * @memberOf GameObject
    */
   zindex: {
-    get: function() {
+    get: function () {
       return this._zindex;
     },
-    set: function(zindex) {
-      if(typeof zindex == "number") {
+    set: function (zindex) {
+      if (typeof zindex == 'number') {
         this._zindex = zindex;
-  
+
         if (this.parent) {
           this.parent._shouldSortChildren = true;
         }
@@ -359,10 +359,10 @@ Object.defineProperties(GameObject.prototype, {
    * @memberOf GameObject
    */
   z: {
-    get: function() {
+    get: function () {
       return this._z;
     },
-    set: function(z) {
+    set: function (z) {
       this._z = z;
       this._hasMoved = true;
       this._updateZScale();
@@ -374,7 +374,7 @@ Object.defineProperties(GameObject.prototype, {
   },
 });
 
-GameObject.prototype._createDebugRenderer = function() {
+GameObject.prototype._createDebugRenderer = function () {
   if (this._debugRenderer) {
     return;
   }
@@ -388,7 +388,7 @@ GameObject.prototype._createDebugRenderer = function() {
   this.addChild(this._debugRenderer);
 };
 
-GameObject.prototype._destroyDebugRenderer = function() {
+GameObject.prototype._destroyDebugRenderer = function () {
   if (!this._debugRenderer) {
     return;
   }
@@ -411,7 +411,7 @@ GameObject.prototype._destroyDebugRenderer = function() {
  * if absolute, object will move on world axis instead this own axis
  * @example myObject.translate( { "x": 10, "y": 5 }, false );
  */
-GameObject.prototype.translate = function(pos, absolute, ignoreDeltaTime) {
+GameObject.prototype.translate = function (pos, absolute, ignoreDeltaTime) {
   this.vector2.translate(pos, absolute, ignoreDeltaTime);
   return this;
 };
@@ -423,7 +423,7 @@ GameObject.prototype.translate = function(pos, absolute, ignoreDeltaTime) {
  * @param {Boolean} absolute
  * if absolute, object will move on world axis instead this own axis
  */
-GameObject.prototype.translateX = function(distance, absolute, ignoreDelta) {
+GameObject.prototype.translateX = function (distance, absolute, ignoreDelta) {
   this.translate({ x: distance, y: 0 }, absolute, ignoreDelta);
   return this;
 };
@@ -435,7 +435,7 @@ GameObject.prototype.translateX = function(distance, absolute, ignoreDelta) {
  * @param {Boolean} absolute
  * if absolute, object will move on world axis instead this own axis
  */
-GameObject.prototype.translateY = function(distance, absolute, ignoreDelta) {
+GameObject.prototype.translateY = function (distance, absolute, ignoreDelta) {
   this.translate({ x: 0, y: distance }, absolute, ignoreDelta);
   return this;
 };
@@ -446,7 +446,7 @@ GameObject.prototype.translateY = function(distance, absolute, ignoreDelta) {
  * @memberOf GameObject
  * @param {Float} angle
  */
-GameObject.prototype.rotate = function(angle, ignoreDelta) {
+GameObject.prototype.rotate = function (angle, ignoreDelta) {
   this.vector2.rotate(angle, ignoreDelta);
   return this;
 };
@@ -459,7 +459,7 @@ GameObject.prototype.rotate = function(angle, ignoreDelta) {
  * @param {angleOffset}
  * can be a simple position x-y
  */
-GameObject.prototype.lookAt = function(vector2, angleOffset) {
+GameObject.prototype.lookAt = function (vector2, angleOffset) {
   var origin = { x: 0, y: 0 };
   var otherPos = vector2.toGlobal ? vector2.toGlobal(origin) : vector2;
   this.rotation = this.vector2.getAngle(otherPos) + (angleOffset || 0);
@@ -474,7 +474,7 @@ GameObject.prototype.lookAt = function(vector2, angleOffset) {
  * memberOf GameObject
  * param {PIXI.DisplayObject} rd - the renderer to add
  */
-GameObject.prototype.addOneRenderer = function(rd) {
+GameObject.prototype.addOneRenderer = function (rd) {
   if (
     rd.anchor &&
     !rd.preventCenter &&
@@ -483,14 +483,14 @@ GameObject.prototype.addOneRenderer = function(rd) {
   ) {
     rd.anchor.set(0.5, 0.5);
   }
-  
+
   this.renderers.push(rd);
   this.addChild(rd);
-  
+
   return this;
 };
 
-GameObject.prototype.addRenderer = function(rd) {
+GameObject.prototype.addRenderer = function (rd) {
   var args = Array.prototype.slice.call(arguments);
   for (var i = 0; i < args.length; ++i) {
     if (args[i].length !== undefined) {
@@ -519,7 +519,7 @@ GameObject.prototype.addRenderer = function(rd) {
  * var myArray2 = [ object4, object5, object6 ]; // declare a second array with object inside as you wish
  * myObject.add( myArray, myArray2 ); // then call add with array and multi arguments
  */
-GameObject.prototype.add = function() {
+GameObject.prototype.add = function () {
   var args = Array.prototype.slice.call(arguments);
   for (var i = 0; i < args.length; ++i) {
     if (args[i].length !== undefined) {
@@ -544,7 +544,7 @@ GameObject.prototype.add = function() {
  * @param {GameObject} gameObject gameObject to add
  * @example myObject.addOne( car );
  */
-GameObject.prototype.addOne = function(object) {
+GameObject.prototype.addOne = function (object) {
   if (!(object instanceof GameObject)) {
     throw new Error(
       'DREAM_ENGINE.GameObject.add: this not inherit from GameObject, do it well please',
@@ -578,7 +578,7 @@ GameObject.prototype.addOne = function(object) {
  * @param {GameObject} object
  * object reference
  */
-GameObject.prototype.remove = function(object) {
+GameObject.prototype.remove = function (object) {
   if (isNaN(object)) {
     var index = this.gameObjects.indexOf(object);
 
@@ -605,7 +605,7 @@ GameObject.prototype.remove = function(object) {
  * @param {GameObject} object
  * object reference or object index in the gameObjects array
  */
-GameObject.prototype.delete = function(object) {
+GameObject.prototype.delete = function (object) {
   var target = this.remove(object);
 
   target.killMePlease();
@@ -617,7 +617,7 @@ GameObject.prototype.delete = function(object) {
  * @protected
  * @memberOf GameObject
  */
-GameObject.prototype.deleteAll = function() {
+GameObject.prototype.deleteAll = function () {
   while (this.gameObjects.length) {
     var target = this.remove(0);
     target.killMePlease();
@@ -640,7 +640,7 @@ GameObject.prototype.deleteAll = function() {
  * @example myObject.askToKill();
  * @example myObject.askToKill( { preventEvents: true } );
  */
-GameObject.prototype.askToKill = function(params) {
+GameObject.prototype.askToKill = function (params) {
   this.target = null;
   this._killArgs = params || {};
 
@@ -688,7 +688,7 @@ GameObject.prototype.onKilled = undefined;
  * @protected
  * @memberOf GameObject
  */
-GameObject.prototype.killMePlease = function() {
+GameObject.prototype.killMePlease = function () {
   if (!this._killArgs.preventEvents && !this._killArgs.preventKilledEvent) {
     if (this.onKilled) this.onKilled();
     this.emit('killed', this);
@@ -722,7 +722,7 @@ GameObject.prototype.killMePlease = function() {
  * @memberOf GameObject
  * @public
  */
-GameObject.prototype.getGlobalRotation = function() {
+GameObject.prototype.getGlobalRotation = function () {
   if (this.parent.getGlobalRotation) {
     return this.rotation + this.parent.getGlobalRotation();
   } else {
@@ -759,7 +759,7 @@ GameObject.prototype.trigger = GameObject.prototype.emit;
 GameObject.prototype.getPos = GameObject.prototype.getGlobalPosition;
 
 // a tester
-GameObject.prototype.getWorldPos = function() {
+GameObject.prototype.getWorldPos = function () {
   if (this.parent && this.parent.getWorldPos) {
     var pos = this.parent.getWorldPos();
     var harmonics = this.parent.vector2.getHarmonics();

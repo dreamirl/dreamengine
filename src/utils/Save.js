@@ -19,7 +19,7 @@ import Events from 'DE.Events';
    if you want to ignore backup olds version when saving, add saveIgnoreVersion = true on Engine Initialisation
  * @namespace Save
  */
-var Save = new (function() {
+var Save = new (function () {
   this.DEName = 'Save';
 
   this.saveModel = {};
@@ -35,7 +35,7 @@ var Save = new (function() {
     * @param {Object} saveModel - the scheme of your game save object
     * @param {Boolean} ignoreVersion - will read old save if true
     */
-  this.init = function(saveModel, ignoreVersion) {
+  this.init = function (saveModel, ignoreVersion) {
     saveModel = saveModel || {};
     if (!saveModel.settings) saveModel.settings = {};
 
@@ -58,7 +58,7 @@ var Save = new (function() {
     this.loadSave(this.saveModel, true);
   };
 
-  this.updateSave = function() {
+  this.updateSave = function () {
     if (!this.useLocalStorage) {
       return;
     }
@@ -82,7 +82,7 @@ var Save = new (function() {
    * @param {Object} attrs - your data scheme, to check if there is a difference with previous save
    * @param {Boolean} useLocalStorage - if false, every call to localStorage will be prevented
    */
-  this.loadSave = function(attrs, useLocalStorage) {
+  this.loadSave = function (attrs, useLocalStorage) {
     this.useLocalStorage = useLocalStorage;
 
     for (var i in attrs) {
@@ -109,7 +109,7 @@ var Save = new (function() {
    * @protected
    * @param {String} key - the key of the data you want from your scheme "saveModel"
    */
-  this.get = function(key) {
+  this.get = function (key) {
     if (!(key in this.saveModel)) {
       this.saveModel[key] =
         localStorage.get(this.namespace + this.version + key) ||
@@ -125,7 +125,7 @@ var Save = new (function() {
    * @param {String} key - the key used to save the data
    * @param {Any} value - the data to save
    */
-  this.save = function(key, value) {
+  this.save = function (key, value) {
     var path = key.split('.');
     var nkey = path[0];
 
@@ -167,7 +167,7 @@ var Save = new (function() {
    * @memberOf Save
    * @protected
    */
-  this.saveAll = function() {
+  this.saveAll = function () {
     // if engine is configured to prevent use of localStorage, nothing is saved
     if (!this.useLocalStorage) {
       return;
@@ -184,7 +184,7 @@ var Save = new (function() {
    * @protected
    * @param {Object} userAchievement - data object of user achievements progression
    */
-  this.saveAchievements = function(userAchievements) {
+  this.saveAchievements = function (userAchievements) {
     // if engine is configured to prevent use of localStorage, nothing is saved
     if (!this.useLocalStorage) {
       return;
@@ -192,7 +192,7 @@ var Save = new (function() {
     localStorage.set(this.namespace + 'achievements', userAchievements);
   };
 
-  this.loadAchievements = function() {
+  this.loadAchievements = function () {
     return localStorage.get(this.namespace + 'achievements') || {};
   };
 })();

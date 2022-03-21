@@ -10,7 +10,7 @@ import Time from 'DE.Time';
  * @param {Int} [duration=500] fade duration in ms
  * @example myObject.fade( 0.5, 1, 850 );
  */
-GameObject.prototype.fade = function(from, to, duration, force, callback) {
+GameObject.prototype.fade = function (from, to, duration, force, callback) {
   if (force) {
     this.enable = true;
   }
@@ -40,7 +40,7 @@ GameObject.prototype.fade = function(from, to, duration, force, callback) {
  * @param {Int} [duration=500] fade duration in ms
  * @example myObject.fadeTo( 0.5, 850 ); // don't care if alpha is 0.2 or 0.8
  */
-GameObject.prototype.fadeTo = function(to, duration, force, callback) {
+GameObject.prototype.fadeTo = function (to, duration, force, callback) {
   this.fade(this.alpha, to, duration, force, callback);
 
   return this;
@@ -56,7 +56,7 @@ GameObject.prototype.fadeTo = function(to, duration, force, callback) {
  * @example // alpha = 0 in 850ms
  * myObject.fadeOut( 850 );
  */
-GameObject.prototype.fadeOut = function(duration, force, callback) {
+GameObject.prototype.fadeOut = function (duration, force, callback) {
   if (force) {
     this.enable = true;
     this.alpha = this.alpha > 0 ? this.alpha : 1; // make sure to prevent any blink side effect
@@ -76,7 +76,7 @@ GameObject.prototype.fadeOut = function(duration, force, callback) {
  * @example // alpha = 1 in 850ms
  * myObject.fadeIn( 850 );
  */
-GameObject.prototype.fadeIn = function(duration, force, callback) {
+GameObject.prototype.fadeIn = function (duration, force, callback) {
   if (force) {
     this.enable = true;
     this.alpha = this.alpha < 1 ? this.alpha : 0; // make sure to prevent any blink side effect
@@ -91,7 +91,7 @@ GameObject.prototype.fadeIn = function(duration, force, callback) {
  * @protected
  * @memberOf GameObject
  */
-GameObject.prototype.applyFade = function() {
+GameObject.prototype.applyFade = function () {
   if (!this._fadeData.done) {
     this._fadeData.stepVal =
       (Time.frameDelayScaled / this._fadeData.oDuration) *

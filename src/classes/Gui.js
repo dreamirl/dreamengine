@@ -53,10 +53,10 @@ Object.defineProperties(Gui.prototype, {
    * @type {Boolean}
    */
   enable: {
-    get: function() {
+    get: function () {
       return this.renderable && this.visible;
     },
-    set: function(bool) {
+    set: function (bool) {
       this.visible = bool;
       this.renderable = bool;
     },
@@ -68,7 +68,7 @@ Object.defineProperties(Gui.prototype, {
  * @memberOf Gui
  * @protected
  */
-Gui.prototype.renderUpdate = function() {
+Gui.prototype.renderUpdate = function () {
   this.applyFade();
 };
 

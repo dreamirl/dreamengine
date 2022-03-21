@@ -78,7 +78,7 @@ Scene.prototype.constructor = Scene;
  * var myArray2 = [ object4, object5, object6 ]; // declare a second array with object inside as you wish
  * myScene.add( myArray, myArray2 ); // then call add with array and multi arguments
  */
-Scene.prototype.add = function() {
+Scene.prototype.add = function () {
   var args = Array.prototype.slice.call(arguments);
   for (var i = 0; i < args.length; ++i) {
     if (args[i] && args[i].length) {
@@ -98,7 +98,7 @@ Scene.prototype.add = function() {
  * @param {GameObject} gameObject gameObject to add
  * @example myScene.addOne( car );
  */
-Scene.prototype.addOne = function(gameObject) {
+Scene.prototype.addOne = function (gameObject) {
   // accept only gameObject to avoid errors
   if (!(gameObject instanceof GameObject)) {
     console.error(
@@ -130,7 +130,7 @@ Scene.prototype.addOne = function(gameObject) {
  * @protected
  * @memberOf Scene
  */
-Scene.prototype.update = function(time) {
+Scene.prototype.update = function (time) {
   if (!this.enable) {
     return;
   }
@@ -187,8 +187,8 @@ Scene.prototype.DEName = 'Scene';
  * @public
  * @memberOf Scene
  */
-Scene.prototype.deleteAll = function() {
-  while(this.gameObjects.length > 0) {
+Scene.prototype.deleteAll = function () {
+  while (this.gameObjects.length > 0) {
     this.delete(this.gameObjects[0]);
   }
 
@@ -202,7 +202,7 @@ Scene.prototype.deleteAll = function() {
  * @memberOf Scene
  * @param {GameObject} object can be the index of the GameObject in the gameObjects array
  */
-Scene.prototype.delete = function(object) {
+Scene.prototype.delete = function (object) {
   var target = this.remove(object);
   target.killMePlease();
 
@@ -215,7 +215,7 @@ Scene.prototype.delete = function(object) {
  * @memberOf Scene
  * @param {GameObject} object can be the index of the GameObject in the gameObjects array
  */
-Scene.prototype.remove = function(object) {
+Scene.prototype.remove = function (object) {
   var target;
 
   delete this.gameObjectsById[object.id];

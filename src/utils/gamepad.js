@@ -18,8 +18,8 @@ import Notifications from 'DE.Notifications';
  * @namespace Inputs
  */
 // var addEvent = Event.addEventCapabilities;
-var detectBrowser = function(browser) {
-  var detectFirefox = function() {
+var detectBrowser = function (browser) {
+  var detectFirefox = function () {
     if (/Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent)) {
       var ffversion = new Number(RegExp.$1); // capture x.x portion and store as a number
       return ffversion;
@@ -27,7 +27,7 @@ var detectBrowser = function(browser) {
     return false;
   };
 
-  var detectChrome = function() {
+  var detectChrome = function () {
     var nav = navigator.userAgent.toLowerCase();
     // doesn't want mobile browser
     return (
@@ -48,7 +48,7 @@ var detectBrowser = function(browser) {
 };
 
 var gamepadAvalaible = {};
-var gamepads = new (function() {
+var gamepads = new (function () {
   this.DEName = 'gamepad';
 
   var _btnsListeners = {};
@@ -57,10 +57,10 @@ var gamepads = new (function() {
   this.gamepadsInfos = {};
   var lastTimeStamps = {};
 
-  var _updateChange = function() {};
-  var _updateRate = function() {};
+  var _updateChange = function () {};
+  var _updateRate = function () {};
 
-  this.init = function() {
+  this.init = function () {
     // Update chrome
     if (detectBrowser('chrome') || navigator.getGamepads) {
       if (config.notifications.gamepadEnable) {
@@ -70,7 +70,7 @@ var gamepads = new (function() {
         );
       }
 
-      _updateChange = function(cTime) {
+      _updateChange = function (cTime) {
         // [] fallback if there is not gamepads API
         var gamepads = filterGamepads(
           navigator.getGamepads
@@ -95,7 +95,7 @@ var gamepads = new (function() {
         }
       };
 
-      _updateRate = function(cTime) {
+      _updateRate = function (cTime) {
         var gamepads = filterGamepads(
           navigator.getGamepads
             ? navigator.getGamepads()
@@ -140,7 +140,7 @@ var gamepads = new (function() {
     // window.addEventListener( "gamepaddisconnected", gamepadDisconnected, false ); // TODO
   };
 
-  var filterGamepads = function(gamepads) {
+  var filterGamepads = function (gamepads) {
     var gps = [];
     for (var i = 0; i < gamepads.length; ++i) {
       gps.push(gamepads[i]);
@@ -163,7 +163,7 @@ var gamepads = new (function() {
     return gps;
   };
 
-  var bindWindowController = function(gamepadState) {
+  var bindWindowController = function (gamepadState) {
     //create array with the good index from https://dvcs.w3.org/hg/gamepad/raw-file/default/gamepad.html
     var axes = ['leftThumbX', 'leftThumbY', 'rightThumbX', 'rightThumbY'];
     var buttons = [
@@ -222,7 +222,7 @@ var gamepads = new (function() {
 
   this.windowsControllers = [];
   // to work with Window native API
-  this.adaptToWindowsLib = function(windowsGamepadLib, nbrPads_) {
+  this.adaptToWindowsLib = function (windowsGamepadLib, nbrPads_) {
     var nbrPads = nbrPads_ || 4;
     if (!windowsGamepadLib) {
       console.error('gamepad::adaptToWindowsLib - windowsGamepadLib is null');
@@ -233,7 +233,7 @@ var gamepads = new (function() {
       this.windowsControllers[i] = new windowsGamepadLib.Controller(i);
     }
 
-    _updateChange = function(cTime) {
+    _updateChange = function (cTime) {
       var gamepads = this.windowsControllers;
       for (var i = 0; i < gamepads.length; ++i) {
         var gamepad = gamepads[i];
@@ -256,7 +256,7 @@ var gamepads = new (function() {
       }
     };
 
-    _updateRate = function(cTime) {
+    _updateRate = function (cTime) {
       var gamepads = this.windowsControllers;
       for (var i = 0; i < gamepads.length; ++i) {
         var gamepad = gamepads[i];
@@ -290,11 +290,11 @@ var gamepads = new (function() {
   }
 
   //Utilities
-  this.connectToGameLoop = function(gameLoop) {
+  this.connectToGameLoop = function (gameLoop) {
     gameLoop.addNonStop('gamepad', this);
   };
 
-  this.handleGamepad = function(gamepad, cTime) {
+  this.handleGamepad = function (gamepad, cTime) {
     var index = gamepad.index;
     this.gamepadsInfos[index] = gamepad;
     if (_btnsListeners[index]) {
@@ -318,7 +318,7 @@ var gamepads = new (function() {
     }
   };
 
-  this.disconnectGamepad = function(index) {
+  this.disconnectGamepad = function (index) {
     lastTimeStamps[index] = null;
     _gamepads[index] = null;
     this.gamepadsInfos[index] = null;
@@ -343,7 +343,7 @@ var gamepads = new (function() {
     }
   };
 
-  this.getGamepadsLength = function() {
+  this.getGamepadsLength = function () {
     var n = 0;
     for (var i in gamepadAvalaible) {
       if (gamepadAvalaible[i]) {
@@ -354,7 +354,7 @@ var gamepads = new (function() {
   };
 
   var _sensibility = 0.5;
-  var overSensibility = function(force) {
+  var overSensibility = function (force) {
     if (
       (force < -_sensibility && force < 0) ||
       (force > _sensibility && force > 0)
@@ -364,7 +364,7 @@ var gamepads = new (function() {
     return false;
   };
 
-  var handleDownChange = function(i, eventBus, listener, elemForce) {
+  var handleDownChange = function (i, eventBus, listener, elemForce) {
     if (overSensibility(elemForce) && !listener.active) {
       eventBus.emit('down' + i, elemForce, i);
       listener.active = true;
@@ -374,7 +374,7 @@ var gamepads = new (function() {
   var _firstRate = 500;
   var _rate = 150;
 
-  var handleDownRate = function(i, eventBus, listener, elemForce, cTime) {
+  var handleDownRate = function (i, eventBus, listener, elemForce, cTime) {
     if (overSensibility(elemForce)) {
       if (!listener.active) {
         eventBus.emit('down' + i, elemForce, i);
@@ -398,7 +398,7 @@ var gamepads = new (function() {
     return false;
   };
 
-  var normalHandleListeners = function(
+  var normalHandleListeners = function (
     index,
     gamepadInterface,
     arrayListeners,
@@ -441,7 +441,7 @@ var gamepads = new (function() {
 
   this.handleListeners = normalHandleListeners;
 
-  this.handleGamepadAxes = function(gamepad) {
+  this.handleGamepadAxes = function (gamepad) {
     for (var i in _axesListeners[gamepad.index].listeners) {
       if (gamepad.axes[i] > 0 && !_axesListeners[gamepad.index].listeners[i]) {
         _btnsListeners[gamepad.index].trigger('down' + i);
@@ -451,7 +451,7 @@ var gamepads = new (function() {
     }
   };
 
-  var _checkListeners = function(o, padIndex, num) {
+  var _checkListeners = function (o, padIndex, num) {
     if (!o[padIndex]) {
       o[padIndex] = new Events.Emitter();
       o[padIndex].listeners = {};
@@ -463,19 +463,19 @@ var gamepads = new (function() {
     }
   };
 
-  var addListener = function(o, padIndex, num, action, callBack, noRate) {
+  var addListener = function (o, padIndex, num, action, callBack, noRate) {
     _checkListeners(o, padIndex, num);
     o[padIndex].on(action + num, callBack);
     o[padIndex].listeners[num].noRate = noRate;
   };
 
-  var delListener = function(o, padIndex, num, action) {
+  var delListener = function (o, padIndex, num, action) {
     if (o[padIndex]) {
       o[padIndex].del(action + num);
     }
   };
 
-  var delAllOfnum = function(o, padIndex, num) {
+  var delAllOfnum = function (o, padIndex, num) {
     if (!o[padIndex]) {
       return;
     }
@@ -486,7 +486,7 @@ var gamepads = new (function() {
     delete o[padIndex].listeners[num];
   };
 
-  var delAllListenersOfIndex = function(o, padIndex) {
+  var delAllListenersOfIndex = function (o, padIndex) {
     if (!o[padIndex]) {
       return;
     }
@@ -496,7 +496,7 @@ var gamepads = new (function() {
     }
   };
 
-  var delAllListeners = function(o) {
+  var delAllListeners = function (o) {
     if (!o) {
       return;
     }
@@ -507,91 +507,91 @@ var gamepads = new (function() {
   };
 
   //On Btns
-  this.onBtnDown = function(padIndex, num, callBack, noRate) {
+  this.onBtnDown = function (padIndex, num, callBack, noRate) {
     addListener(_btnsListeners, padIndex, num, 'down', callBack, noRate);
   };
 
-  this.onBtnMove = function(padIndex, num, callBack, noRate) {
+  this.onBtnMove = function (padIndex, num, callBack, noRate) {
     addListener(_btnsListeners, padIndex, num, 'move', callBack, noRate);
   };
 
-  this.onBtnUp = function(padIndex, num, callBack, noRate) {
+  this.onBtnUp = function (padIndex, num, callBack, noRate) {
     addListener(_btnsListeners, padIndex, num, 'up', callBack, noRate);
   };
 
   //del Btns
-  this.delBtnDown = function(padIndex, num) {
+  this.delBtnDown = function (padIndex, num) {
     delListener(_btnsListeners, padIndex, num, 'down');
   };
 
-  this.delBtnMove = function(padIndex, num) {
+  this.delBtnMove = function (padIndex, num) {
     delListener(_btnsListeners, padIndex, num, 'move');
   };
 
-  this.delBtnUp = function(padIndex, num) {
+  this.delBtnUp = function (padIndex, num) {
     delListener(_btnsListeners, padIndex, num, 'up');
   };
 
-  this.delBtn = function(padIndex, num) {
+  this.delBtn = function (padIndex, num) {
     delAllOfnum(_btnsListeners, padIndex, num);
   };
 
-  this.delBtnsPad = function(padIndex) {
+  this.delBtnsPad = function (padIndex) {
     delAllListenersOfIndex(_btnsListeners, padIndex);
   };
 
-  this.delBtnsListeners = function() {
+  this.delBtnsListeners = function () {
     delAllListeners(_btnsListeners);
   };
 
   //On Axes
-  this.onAxeStart = function(padIndex, num, callBack, noRate) {
+  this.onAxeStart = function (padIndex, num, callBack, noRate) {
     addListener(_axesListeners, padIndex, num, 'down', callBack, noRate);
   };
 
-  this.onAxeMove = function(padIndex, num, callBack, noRate) {
+  this.onAxeMove = function (padIndex, num, callBack, noRate) {
     addListener(_axesListeners, padIndex, num, 'move', callBack, noRate);
   };
 
-  this.onAxeStop = function(padIndex, num, callBack, noRate) {
+  this.onAxeStop = function (padIndex, num, callBack, noRate) {
     addListener(_axesListeners, padIndex, num, 'up', callBack, noRate);
   };
 
   //del Btns
-  this.delAxeStart = function(padIndex, num) {
+  this.delAxeStart = function (padIndex, num) {
     delListener(_axesListeners, padIndex, num, 'down');
   };
 
-  this.delAxeMove = function(padIndex, num) {
+  this.delAxeMove = function (padIndex, num) {
     delListener(_axesListeners, padIndex, num, 'move');
   };
 
-  this.delAxeStop = function(padIndex, num) {
+  this.delAxeStop = function (padIndex, num) {
     delListener(_axesListeners, padIndex, num, 'up');
   };
 
-  this.delAxe = function(padIndex, num) {
+  this.delAxe = function (padIndex, num) {
     delAllOfnum(_axesListeners, padIndex, num);
   };
 
-  this.delAxesPad = function(padIndex) {
+  this.delAxesPad = function (padIndex) {
     delAllListenersOfIndex(_axesListeners, padIndex);
   };
 
-  this.delAxesListeners = function() {
+  this.delAxesListeners = function () {
     delAllListeners(_axesListeners);
   };
 
-  this.delListeners = function() {
+  this.delListeners = function () {
     delAllListeners(_axesListeners);
     delAllListeners(_btnsListeners);
   };
 
-  this.plugBtnToInput = function(Inputs, inputName, padIndex, num) {
+  this.plugBtnToInput = function (Inputs, inputName, padIndex, num) {
     this.onBtnDown(
       padIndex,
       num,
-      function(force) {
+      function (force) {
         Inputs.usedInputs[inputName].isDown = true;
         Inputs.trigger('keyDown', inputName, force);
       },
@@ -601,7 +601,7 @@ var gamepads = new (function() {
     this.onBtnUp(
       padIndex,
       num,
-      function(force) {
+      function (force) {
         Inputs.usedInputs[inputName].isDown = false;
         Inputs.trigger('keyUp', inputName, force);
       },
@@ -611,18 +611,18 @@ var gamepads = new (function() {
     this.onBtnMove(
       padIndex,
       num,
-      function(force) {
+      function (force) {
         Inputs.trigger('btnMoved', inputName, force);
       },
       false,
     );
   };
 
-  this.plugAxeToInput = function(Inputs, inputName, padIndex, num) {
+  this.plugAxeToInput = function (Inputs, inputName, padIndex, num) {
     this.onAxeStart(
       padIndex,
       num,
-      function(force) {
+      function (force) {
         Inputs.trigger('axeStart', inputName, force);
       },
       false,
@@ -631,7 +631,7 @@ var gamepads = new (function() {
     this.onAxeStop(
       padIndex,
       num,
-      function(force) {
+      function (force) {
         Inputs.trigger('axeStop', inputName, force);
       },
       false,
@@ -640,7 +640,7 @@ var gamepads = new (function() {
     this.onAxeMove(
       padIndex,
       num,
-      function(force) {
+      function (force) {
         Inputs.trigger('axeMoved', inputName, force);
       },
       false,
@@ -648,18 +648,19 @@ var gamepads = new (function() {
   };
 
   //Updates changes
-  this.updateByRate = function() //Update every rate, which allow you to use on...Down to move something
-  {
-    this.update = _updateRate;
-    this.handleDown = handleDownRate;
-  };
+  this.updateByRate =
+    function () //Update every rate, which allow you to use on...Down to move something
+    {
+      this.update = _updateRate;
+      this.handleDown = handleDownRate;
+    };
 
-  this.updateByChange = function() //Update at every change
+  this.updateByChange = function () //Update at every change
   {
     this.update = _updateChange;
     this.handleDown = handleDownChange;
   };
-  this.update = function() {};
+  this.update = function () {};
 })();
 
 export default gamepads;

@@ -21,7 +21,7 @@ var _inherits = [
   'setBlackAndWhite',
 ];
 var _attributes = ['fadeData', 'scaleData'];
-const BaseRenderer = new (function() {
+const BaseRenderer = new (function () {
   /**
    * object used to apply fade on final BaseRenderer rendering
    * @protected
@@ -50,14 +50,14 @@ const BaseRenderer = new (function() {
     done: true,
   };
 
-  this.inherits = function(target) {
+  this.inherits = function (target) {
     for (var i = 0; i < _inherits.length; ++i) {
       target.prototype[_inherits[i]] = this[_inherits[i]];
     }
   };
 
   var _ignore = ['scale', 'scaleX', 'scaleY', 'opacity'];
-  this.instantiate = function(target, params) {
+  this.instantiate = function (target, params) {
     if (params) {
       target.alpha = params.alpha || params.opacity || 1;
       params.scale = {
@@ -92,7 +92,7 @@ const BaseRenderer = new (function() {
   };
 })();
 
-BaseRenderer.setScale = function(x, y) {
+BaseRenderer.setScale = function (x, y) {
   if (y === undefined) {
     if (x.x) {
       this.scale.set(x.x, x.y);
@@ -109,7 +109,7 @@ BaseRenderer.setScale = function(x, y) {
  * @protected
  * @memberOf BaseRenderer
  */
-BaseRenderer.applyFade = function() {
+BaseRenderer.applyFade = function () {
   if (this.fadeData.done) {
     return;
   }
@@ -155,7 +155,7 @@ BaseRenderer.applyFade = function() {
  * @param {Int} [duration=500] fade duration in ms
  * @example myObject.renderers[ 0 ].fade( 0.5, 1, 850 );
  */
-BaseRenderer.fade = function(from, to, duration) {
+BaseRenderer.fade = function (from, to, duration) {
   this.sleep = false;
   var data = {
     from: from || 1,
@@ -178,7 +178,7 @@ BaseRenderer.fade = function(from, to, duration) {
  * @param {Int} [duration=500] fade duration in ms
  * @example myObject.renderers[ 0 ].fadeTo( 0.5, 850 ); // don't care if alpha is 0.2 or 0.8
  */
-BaseRenderer.fadeTo = function(to, duration) {
+BaseRenderer.fadeTo = function (to, duration) {
   this.sleep = false;
   this.fade(this.alpha, to, duration);
 };
@@ -193,7 +193,7 @@ BaseRenderer.fadeTo = function(to, duration) {
  * @example // alpha = 0 in 850ms
  * myObject.renderers[ 0 ].fadeOut( 850 );
  */
-BaseRenderer.fadeOut = function(duration, force) {
+BaseRenderer.fadeOut = function (duration, force) {
   this.sleep = false;
   if (force) {
     this.alpha = this.alpha > 0 ? this.alpha : 1; // make sure to prevent any blink side effect
@@ -211,7 +211,7 @@ BaseRenderer.fadeOut = function(duration, force) {
  * @example // alpha = 1 in 850ms
  * myObject.renderers[ 0 ].fadeIn( 850 );
  */
-BaseRenderer.fadeIn = function(duration, force) {
+BaseRenderer.fadeIn = function (duration, force) {
   this.sleep = false;
   if (force) {
     this.alpha = this.alpha < 1 ? this.alpha : 0; // make sure to prevent any blink side effect
@@ -229,7 +229,7 @@ BaseRenderer.fadeIn = function(duration, force) {
  * @example // scale to 2,3 in 1 second
  * myRenderer.scaleTo( { x: 2, y: 3 }, 1000 );
  */
-BaseRenderer.scaleTo = function(scale, duration, callback) {
+BaseRenderer.scaleTo = function (scale, duration, callback) {
   var dscale = {
     x: !isNaN(scale) ? scale : scale.x,
     y: !isNaN(scale) ? scale : scale.y,
@@ -259,7 +259,7 @@ BaseRenderer.scaleTo = function(scale, duration, callback) {
  * @protected
  * @memberOf BaseRenderer
  */
-BaseRenderer.applyScale = function() {
+BaseRenderer.applyScale = function () {
   if (this.scaleData.done) {
     return;
   }
@@ -320,7 +320,7 @@ BaseRenderer.DEName = 'BaseRenderer';
  * @param {number} height - in pixels
  * @param {boolean} preventCenter - if true, the texture wont be centered
  */
-BaseRenderer.setSize = function(width, height, preventCenter) {
+BaseRenderer.setSize = function (width, height, preventCenter) {
   this.width = width;
   this.height = height;
 
@@ -337,7 +337,7 @@ BaseRenderer.setSize = function(width, height, preventCenter) {
  * @public
  * @memberOf BaseRenderer
  */
-BaseRenderer.center = function() {
+BaseRenderer.center = function () {
   if (this.anchor && this.anchor.set) {
     this.anchor.set(0.5, 0.5);
   } else {

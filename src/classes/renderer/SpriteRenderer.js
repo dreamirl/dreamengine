@@ -37,8 +37,8 @@ function SpriteRenderer(params) {
   if (!texture) {
     throw new Error(
       "SpriteRenderer :: Can't find image " +
-      this.spriteName +
-      ' in ImageManager, is the image a sheet ? Or maybe not loaded ?',
+        this.spriteName +
+        ' in ImageManager, is the image a sheet ? Or maybe not loaded ?',
     );
   }
 
@@ -47,10 +47,7 @@ function SpriteRenderer(params) {
     this.spriteData = params.spriteData;
   }
 
-  PIXI.Sprite.call(
-    this,
-    texture,
-  );
+  PIXI.Sprite.call(this, texture);
   BaseRenderer.instantiate(this, params);
 
   //Nb: every value here is set to 0/null/undefined, at the end of the declaration changeSprite is called and everything is correctly set here
@@ -184,7 +181,9 @@ function SpriteRenderer(params) {
 
 function _getTexture(spriteName) {
   if (ImageManager.spritesData[spriteName]) {
-    return PIXI.utils.TextureCache[PIXI.Loader.shared.resources[spriteName].url];
+    return PIXI.utils.TextureCache[
+      PIXI.Loader.shared.resources[spriteName].url
+    ];
   } else {
     return PIXI.utils.TextureCache[spriteName];
   }

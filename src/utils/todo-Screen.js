@@ -26,12 +26,12 @@
  
  !!Warning!! If you want use custom sizes for images, be sure to use scale (scaleX, scaleY) because I have not finished the case when you set manual size on image so it'll not ratioed on draw
 **/
-define(['DE.CONFIG', 'DE.SaveSystem', 'DE.Event'], function(
+define(['DE.CONFIG', 'DE.SaveSystem', 'DE.Event'], function (
   CONFIG,
   SaveSystem,
   Event,
 ) {
-  var ScreenSize = new (function() {
+  var ScreenSize = new (function () {
     this.DEName = 'Screen';
 
     this.screenSizes = {};
@@ -50,7 +50,7 @@ define(['DE.CONFIG', 'DE.SaveSystem', 'DE.Event'], function(
     this.dpiSizeRatio = { w: 0, h: 0 };
     this.dpi = 1;
 
-    this.init = function(imgDatas) {
+    this.init = function (imgDatas) {
       if (!imgDatas) {
         console.log(
           '%cFATAL ERROR %cyou need to pass the file containing all images datas when call DreamEngine.init',
@@ -68,7 +68,7 @@ define(['DE.CONFIG', 'DE.SaveSystem', 'DE.Event'], function(
       this.conceptionSizeIndex = imgDatas.conceptionSizeIndex || 0;
     };
 
-    this.updateScreenSizes = function(index) {
+    this.updateScreenSizes = function (index) {
       this.dpi = 1;
       var devicePixelRatio = devicePixelRatio || 1;
       if (devicePixelRatio) this.dpi = devicePixelRatio;

@@ -15,12 +15,12 @@ import about from 'DE.about';
  * @namespace Audio
  * An audio tool over howler, provide some simple middleware + direct access to howler sounds
  */
-const Audio = new (function() {
+const Audio = new (function () {
   this.DEName = 'Audio';
   this.howler = howler;
   this.volume = 0.75;
 
-  this.loadAudios = function(audioList) {
+  this.loadAudios = function (audioList) {
     for (
       var m = 0, audioData, audio, urls, params;
       (audioData = audioList[m]);
@@ -62,21 +62,21 @@ const Audio = new (function() {
     this.setVolume(this.volume);
   };
 
-  this.isMuted = function() {
+  this.isMuted = function () {
     return howler.Howler._muted;
   };
 
-  this.mute = function() {
+  this.mute = function () {
     howler.Howler.mute(true);
     return this;
   };
 
-  this.unmute = function() {
+  this.unmute = function () {
     howler.Howler.mute(false);
     return this;
   };
 
-  this.toggle = function() {
+  this.toggle = function () {
     howler.Howler.mute(!howler.Howler._muted);
     return this;
   };
@@ -89,7 +89,7 @@ const Audio = new (function() {
    * @param {Number} fxValue - from 0 (0%) to 1 (100%), if nothing musicValue*0.75 is used
    * @param {String} sign - used to increment or decrement current volume with the value passed (+ or - in a string)
    */
-  this.setVolume = function(musicValue, fxValue, sign) {
+  this.setVolume = function (musicValue, fxValue, sign) {
     if (sign == '+') {
       this.music.setVolume(this.music.volume + musicValue);
       this.fx.setVolume(this.fx.volume + (fxValue || musicValue * 0.75));
@@ -107,7 +107,7 @@ const Audio = new (function() {
    * @namespace Audio.fx
    * @memberOf Audio
    */
-  this.music = new (function() {
+  this.music = new (function () {
     this._musics = {};
     this.volume = 0.75;
 
@@ -116,7 +116,7 @@ const Audio = new (function() {
      * @memberOf Audio.music
      * @public
      */
-    this.getAll = function() {
+    this.getAll = function () {
       return this._musics;
     };
 
@@ -127,7 +127,7 @@ const Audio = new (function() {
      * @public
      * @param {string} name - name of the music
      */
-    this.get = function(name) {
+    this.get = function (name) {
       return this._musics[name];
     };
 
@@ -137,7 +137,7 @@ const Audio = new (function() {
      * @public
      * @param {Howl} music - instance of Howl (must have a .name)
      */
-    this.add = function(mus) {
+    this.add = function (mus) {
       this._musics[mus.name] = mus;
       return this;
     };
@@ -149,7 +149,7 @@ const Audio = new (function() {
      * @param {String} name - name of the music to play
      * @param {String} sprite - name of the sprite to play (optional)
      */
-    this.play = function(name, sprite) {
+    this.play = function (name, sprite) {
       if (!this._musics[name]) {
         console.error('Audio.music: not declared: ' + name + ' - ' + sprite);
         return;
@@ -170,7 +170,7 @@ const Audio = new (function() {
      * @public
      * @param {String} name - name of the music to pause
      */
-    this.pause = function(name) {
+    this.pause = function (name) {
       if (!this._musics[name]) {
         console.error('Audios.music: not declared: ' + name);
         return;
@@ -186,7 +186,7 @@ const Audio = new (function() {
      * @public
      * @param {String} name - name of the music to stop
      */
-    this.stop = function(name) {
+    this.stop = function (name) {
       if (!this._musics[name]) {
         console.error('Audios.music: not declared: ' + name);
         return;
@@ -205,7 +205,7 @@ const Audio = new (function() {
      * @param {String or Array of String} preserve - name of music to preserve (can be an array)
      * @example: Audio.music.stopAllAndPlay( "game", null, "ambiance" )
      */
-    this.stopAllAndPlay = function(name, sprite, preserve) {
+    this.stopAllAndPlay = function (name, sprite, preserve) {
       this.stopAll(preserve);
       if (name != preserve) {
         this.play(name, sprite);
@@ -221,7 +221,7 @@ const Audio = new (function() {
      * @param {String or Array of String} preserve - name of music to preserve (can be an array)
      * @example: Audio.music.stopAll( [ "bossFight", "lavaExplosions" ] )
      */
-    this.stopAll = function(preserve) {
+    this.stopAll = function (preserve) {
       if (!preserve) {
         preserve = [];
       }
@@ -238,7 +238,7 @@ const Audio = new (function() {
       return this;
     };
 
-    this.pauseAll = function(preserve) {
+    this.pauseAll = function (preserve) {
       if (!preserve) {
         preserve = [];
       }
@@ -255,7 +255,7 @@ const Audio = new (function() {
       return this;
     };
 
-    this.pauseAllAndPlay = function(name, sprite, preserve) {
+    this.pauseAllAndPlay = function (name, sprite, preserve) {
       this.pauseAll(preserve);
       if (name != preserve) {
         this.play(name, sprite);
@@ -269,7 +269,7 @@ const Audio = new (function() {
      * @public
      * @param {Boolean} state - mute or unmute
      */
-    this.mute = function(state) {
+    this.mute = function (state) {
       for (var m in this._musics) {
         this._musics[m].mute(state);
       }
@@ -283,7 +283,7 @@ const Audio = new (function() {
      * @param {Number} value - from 0 (0%) to 1 (100%)
      * @param {Boolean} useAsCoef - if true, this will use the value as a coef for each musics (example: bullet.volume is 0.7, you call setVolume with 0.5 then bullet.volume is 0.35)
      */
-    this.setVolume = function(val, usePercent) {
+    this.setVolume = function (val, usePercent) {
       if (usePercent) {
         this.volume = this.volume * val;
       } else {
@@ -305,7 +305,7 @@ const Audio = new (function() {
    * @namespace Audio.fx
    * @memberOf Audio
    */
-  this.fx = new (function() {
+  this.fx = new (function () {
     this._fxs = {};
     this.volume = 0.4;
 
@@ -316,7 +316,7 @@ const Audio = new (function() {
      * @public
      * @param {string} name - name of the fx
      */
-    this.get = function(name) {
+    this.get = function (name) {
       return this._fxs[name];
     };
 
@@ -326,7 +326,7 @@ const Audio = new (function() {
      * @public
      * @param {Howl} fx - instance of Howl (must have a .name)
      */
-    this.add = function(fx) {
+    this.add = function (fx) {
       this._fxs[fx.name] = fx;
       return this;
     };
@@ -338,7 +338,7 @@ const Audio = new (function() {
      * @param {String} name - name of the fx to play
      * @param {String} sprite - name of the sprite to play (optional)
      */
-    this.play = function(name, sprite) {
+    this.play = function (name, sprite) {
       if (!this._fxs[name]) {
         return;
       }
@@ -359,7 +359,7 @@ const Audio = new (function() {
      * @param {Array of String} name - array of name to choose randomly (can be a string, and the sprite is an array)
      * @param {Array of String} sprite - sprite to choose randomly if the name is a string
      */
-    this.playRandom = function(name, sprite) {
+    this.playRandom = function (name, sprite) {
       var rand;
 
       if (name.push) {
@@ -377,7 +377,7 @@ const Audio = new (function() {
      * @public
      * @param {String} name - fx to stop
      */
-    this.stop = function(name) {
+    this.stop = function (name) {
       this._fxs[name].stop();
     };
 
@@ -390,7 +390,7 @@ const Audio = new (function() {
      * @param {String or Array of String} preserve - name of music to preserve (can be an array)
      * @example: Audio.music.stopAllAndPlay( "game", null, "ambiance" )
      */
-    this.stopAllAndPlay = function(name, sprite, preserve) {
+    this.stopAllAndPlay = function (name, sprite, preserve) {
       this.stopAll(preserve);
       if (name != preserve) {
         this.play(name, sprite);
@@ -406,7 +406,7 @@ const Audio = new (function() {
      * @param {String or Array of String} preserve - name of music to preserve (can be an array)
      * @example: Audio.music.stopAll( [ "bossFight", "lavaExplosions" ] )
      */
-    this.stopAll = function(preserve) {
+    this.stopAll = function (preserve) {
       if (!preserve) {
         preserve = [];
       }
@@ -429,7 +429,7 @@ const Audio = new (function() {
      * @public
      * @param {Boolean} state - mute or unmute
      */
-    this.mute = function(state) {
+    this.mute = function (state) {
       for (var m in this._fxs) {
         this._fxs[m].mute(state);
       }
@@ -443,7 +443,7 @@ const Audio = new (function() {
      * @param {Number} value - from 0 (0%) to 1 (100%)
      * @param {Boolean} useAsCoef - if true, this will use the value as a coef for each fx (example: bullet.volume is 0.7, you call setVolume with 0.5 then bullet.volume is 0.35)
      */
-    this.setVolume = function(val, usePercent) {
+    this.setVolume = function (val, usePercent) {
       if (usePercent) {
         this.volume = ((this.volume * val * 100) >> 0) / 100;
       } else {

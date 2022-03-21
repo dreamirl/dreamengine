@@ -6,8 +6,8 @@
  * Middleware used to sort children gameObjects (used in Scene and GameObject declarations)
  * @function
  */
-export default function() {
-  this.gameObjects.sort(function(a, b) {
+export default function () {
+  this.gameObjects.sort(function (a, b) {
     if (b.z == a.z) {
       if (b.zindex == a.zindex) {
         if (b.y == a.y) {
@@ -28,7 +28,7 @@ export default function() {
   // we need this
   // so, remove this and let the dev choose the filtering OR remove the previous one and add a z conditional here ?
   if (this.children) {
-    this.children.sort(function(a, b) {
+    this.children.sort(function (a, b) {
       if (b.z == a.z) {
         if (b.zindex == a.zindex) {
           if (b.y == a.y) {

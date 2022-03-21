@@ -6,7 +6,7 @@ about.gameName = 'My-Dreamengine-Game';
 about.gameVersion = '0.1.0';
 about.gameAuthor = 'Dreamirl';
 
-about.set = function(values) {
+about.set = function (values) {
   values = values || {};
   about.gameName = values.gameName || about.gameName;
   about.gameVersion = values.gameVersion || about.gameVersion;

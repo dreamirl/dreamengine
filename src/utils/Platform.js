@@ -19,7 +19,7 @@ import Save from 'DE.Save';
  * this can be a problem for some Promise function
  * But should be most likely fine
  */
-var Platform = new (function() {
+var Platform = new (function () {
   this.name = 'nebula';
   this.touchPlatform = false;
   /**
@@ -28,7 +28,7 @@ var Platform = new (function() {
    * Call this before everything, but just after upgrading the Platform
    * to the current platform targeted
    */
-  this.init = function(params, callback) {
+  this.init = function (params, callback) {
     var ua = navigator.userAgent || navigator.vendor || window.opera;
     if (
       /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(
@@ -54,7 +54,7 @@ var Platform = new (function() {
    * is automatically called in the DE.start function
    * trigger Nebula load by default, wont do anything it you don't use Nebula
    */
-  this.beforeStartingEngine = function() {
+  this.beforeStartingEngine = function () {
     Events.trigger('force-nebula-load', false);
     return Promise.resolve();
   };
@@ -66,7 +66,7 @@ var Platform = new (function() {
    * entry data is filled on "start" when the user launch the game with a payload in the url
    * useful for refering links or things like that
    */
-  this.getEntryData = function() {
+  this.getEntryData = function () {
     const urlParams = window.location.search.split('?')[1];
     var launchParams = {};
     if (urlParams) {
@@ -94,9 +94,9 @@ var Platform = new (function() {
    * and the token needs to be required for each risky action
    */
   this.user = {};
-  this.user.onLogged = function() {
+  this.user.onLogged = function () {
     return new Promise((res, rej) => {
-      Events.on('nebula-logged-success', function(nebulaData) {
+      Events.on('nebula-logged-success', function (nebulaData) {
         Localization.getLang(nebulaData.lang || Localization.currentLang);
         nebulaData.type = 'nebula';
         DE.Platform.user._data = nebulaData;
@@ -115,9 +115,9 @@ var Platform = new (function() {
    * By default (with Nebula), it handles Save update and Audio settings
    * (any others settings implementation can be done through res)
    */
-  this.user.onGameData = function() {
+  this.user.onGameData = function () {
     return new Promise((res, rej) => {
-      Events.on('nebula-game-connected-success', function(gameData) {
+      Events.on('nebula-game-connected-success', function (gameData) {
         var settings = Save.get('settings');
         Audio.music.mute(settings.musicMuted);
         Audio.fx.mute(settings.fxMuted);
@@ -129,7 +129,7 @@ var Platform = new (function() {
     });
   };
 
-  this.getToken = function() {
+  this.getToken = function () {
     return '';
   };
 
@@ -156,17 +156,17 @@ var Platform = new (function() {
    *                ADS STUFF
    */
   this.ads = {};
-  this.ads.preloadStandardAd = function() {
+  this.ads.preloadStandardAd = function () {
     return Promise.resolve();
   };
   this.ads._preloadedRewardedAds = {};
-  this.ads.preloadRewardedAd = function() {
+  this.ads.preloadRewardedAd = function () {
     return Promise.resolve();
   };
-  this.ads.preloadRewardedAdByValue = function() {
+  this.ads.preloadRewardedAdByValue = function () {
     return Promise.resolve();
   };
-  this.ads.watchRewardedAd = function() {
+  this.ads.watchRewardedAd = function () {
     return Promise.resolve();
   };
 
@@ -185,7 +185,7 @@ var Platform = new (function() {
   this.shop.isReady = false;
 
   // todo
-  this.shop.init = function() {
+  this.shop.init = function () {
     return new Promise((res, rej) => {
       console.warn(
         "Platform.shop isn't implemented for Nebula yet, returning empty values",
@@ -193,7 +193,7 @@ var Platform = new (function() {
       rej('no-shop-implementation');
     });
   };
-  this.shop.getProducts = function() {
+  this.shop.getProducts = function () {
     return new Promise((res, rej) => {
       console.warn(
         "Platform.shop isn't implemented for Nebula yet, returning empty values",
@@ -201,7 +201,7 @@ var Platform = new (function() {
       res([]);
     });
   };
-  this.shop.getPurchases = function() {
+  this.shop.getPurchases = function () {
     return new Promise((res, rej) => {
       console.warn(
         "Platform.shop isn't implemented for Nebula yet, returning empty values",
@@ -215,7 +215,7 @@ var Platform = new (function() {
    * usually the method called between game and server isn't the same
    * if the item "isPlatformPurchase" it should be bought with the shop.purchase method
    */
-  this.shop.isPlatformPurchase = function(product) {
+  this.shop.isPlatformPurchase = function (product) {
     return product.realCurrency === true; // subject to change
   };
 
@@ -224,8 +224,8 @@ var Platform = new (function() {
    * trigger the nebula payment shop tab by default
    * on others platforms it open the associated payment defined by the plugin
    */
-  this.shop.purchase = function() {};
-  this.shop.onStorePurchase = function(purchase, productID) {
+  this.shop.purchase = function () {};
+  this.shop.onStorePurchase = function (purchase, productID) {
     console.warn(
       'DE.Platform.shop.onStorePurchase is not implemented. If you are using the @GUI.ShopItem plugin, make sure to implement this function on your own',
     );
@@ -235,18 +235,18 @@ var Platform = new (function() {
   // middleware that should be called once the previous orders/purchases made by the user are fetched, the goal is to check if a purchase has been successful but not consumed yet
   // because we don't want a user to pay and do not receive what he paid for :)
   // also when doing "whipes" or "updates" it's easier to mark all order as "not delivered" and this function would do the job for you to refill the accounts with purchases
-  this.shop.consumeExistingPurchases = function() {
+  this.shop.consumeExistingPurchases = function () {
     console.warn(
       'DE.Platform.shop.consumeExistingPurchase is not implemented but has been called, make sure to implement it',
     );
   };
-  this.shop.onStorePurchaseFail = function(error, productID) {
+  this.shop.onStorePurchaseFail = function (error, productID) {
     console.warn(
       'DE.Platform.shop.onStorePurchaseFail is not implemented. If you are using the @GUI.ShopItem plugin, make sure to implement this function on your own',
     );
     console.error('Error on purchase:', error, productID);
   };
-  this.shop.consumePurchase = function() {};
+  this.shop.consumePurchase = function () {};
 
   /**
    *               OTHER STUFF
@@ -261,7 +261,7 @@ var Platform = new (function() {
    *
    * If this change, just fill out this function
    */
-  this.canCreateShortcut = function() {
+  this.canCreateShortcut = function () {
     return false;
   };
 
@@ -271,7 +271,7 @@ var Platform = new (function() {
    * for now it reject all the time by default (not included in web/client)
    * but if this change, make sure to prompt then do
    */
-  this.createShortcut = function() {
+  this.createShortcut = function () {
     return Promise.reject();
   };
 
@@ -280,7 +280,7 @@ var Platform = new (function() {
    * @memberOf Platform
    * send an event to gtag if it exist
    */
-  this.pushAnalytic = function(eventName, data) {
+  this.pushAnalytic = function (eventName, data) {
     if (gtag) {
       gtag('event', eventName, data);
     }

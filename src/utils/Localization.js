@@ -12,7 +12,7 @@ import Events from 'DE.Events';
  * @namespace Localization
  */
 
-var Localization = new (function() {
+var Localization = new (function () {
   this.DEName = 'Localization';
   this.currentLang = 'en';
 
@@ -25,7 +25,7 @@ var Localization = new (function() {
    * @protected
    * @param {Object} dictionary - every locales put in an object
    */
-  this.init = function(dictionary) {
+  this.init = function (dictionary) {
     for (var i in dictionary) {
       this.dictionary[i] = dictionary[i];
       this.avalaibleLang.push(i);
@@ -38,7 +38,7 @@ var Localization = new (function() {
    * @protected
    * @param {Object} dictionary - every locales put in an object
    */
-  this.addDictionary = function(dictionary, merge) {
+  this.addDictionary = function (dictionary, merge) {
     for (var i in dictionary) {
       if (!this.dictionary[i]) {
         this.dictionary[i] = {};
@@ -56,7 +56,7 @@ var Localization = new (function() {
     }
   };
 
-  this.merge = function(old, toMerge) {
+  this.merge = function (old, toMerge) {
     var newValue;
     var oldType = typeof old;
     var mergeType = typeof toMerge;
@@ -84,7 +84,7 @@ var Localization = new (function() {
    * @protected
    * @param {String} key - the key you want
    */
-  this.get = function(key, lang) {
+  this.get = function (key, lang) {
     // it is possible sometime to instantiate an empty TextRenderer
     if (!key) {
       return '';
@@ -110,7 +110,7 @@ var Localization = new (function() {
    * @protected
    * @param {String} key - the key you want
    */
-  this.getAll = function(key) {
+  this.getAll = function (key) {
     var pk = {};
     for (var i in this.dictionary) {
       pk[i] = this.get(key, i);
@@ -138,7 +138,7 @@ var Localization = new (function() {
    * @param {String} lang - target lang
    * @param {String} key - the key you want
    */
-  this.forceGet = function(lang, key) {
+  this.forceGet = function (lang, key) {
     if (this.avalaibleLang.indexOf(lang) == -1) {
       return null;
     }
@@ -151,7 +151,7 @@ var Localization = new (function() {
    * @protected
    * @param {String} lang - New lang to set as active
    */
-  this.getLang = function(lang) {
+  this.getLang = function (lang) {
     var old = this.currentLang;
     this.currentLang = this.avalaibleLang[0];
     if (!lang) {

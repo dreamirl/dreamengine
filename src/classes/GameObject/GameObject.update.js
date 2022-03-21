@@ -8,7 +8,7 @@ import GameObject_shake from 'DE.GameObject.shake';
 
 import Time from 'DE.Time';
 
-GameObject.prototype.update = function(time) {
+GameObject.prototype.update = function (time) {
   if (!this.updatable) {
     return;
   }

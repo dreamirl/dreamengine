@@ -27,7 +27,7 @@ var _langs = {
       'En quittant la page vous allez perdre toute progression non sauvegardé.',
   },
 };
-var Inputs = new (function() {
+var Inputs = new (function () {
   this.DEName = 'Inputs';
 
   this.isListening = false;
@@ -52,16 +52,16 @@ var Inputs = new (function() {
       caps: 20,
       tab: 9,
       ctrl: 17,
-      '0': 48,
-      '1': 49,
-      '2': 50,
-      '3': 51,
-      '4': 52,
-      '5': 53,
-      '6': 54,
-      '7': 55,
-      '8': 56,
-      '9': 57,
+      0: 48,
+      1: 49,
+      2: 50,
+      3: 51,
+      4: 52,
+      5: 53,
+      6: 54,
+      7: 55,
+      8: 56,
+      9: 57,
       '°': 219,
       '=': 187,
       '²': 222,
@@ -154,7 +154,7 @@ var Inputs = new (function() {
    * @private
    * @memberOf Inputs
    */
-  this.init = function(customInputs) {
+  this.init = function (customInputs) {
     var newInputs = {};
 
     for (var i in customInputs) {
@@ -183,10 +183,10 @@ var Inputs = new (function() {
         if (typeof this.dbInputs[type][name] == 'undefined') {
           console.log(
             "%cWARN: Inputs: An input couldn't be found in the database, did you respect the caseSensitive ?:" +
-            type +
-            '.' +
-            name +
-            '\n Ignoring it and continue...',
+              type +
+              '.' +
+              name +
+              '\n Ignoring it and continue...',
             'color:red',
           );
           continue;
@@ -235,11 +235,11 @@ var Inputs = new (function() {
     this.toggleListeners();
 
     if (config.ALLOW_ONBEFOREUNLOAD) {
-      window.onbeforeunload = function(e) {
+      window.onbeforeunload = function (e) {
         if (!window.leavePage)
           return _langs[Localization.currentLang]['leave-page'];
       };
-      window.onunload = function(e) {
+      window.onunload = function (e) {
         Events.emit('unload-game');
       };
     }
@@ -250,7 +250,7 @@ var Inputs = new (function() {
    * @public
    * @memberOf Inputs
    */
-  this.get = function(name) {
+  this.get = function (name) {
     if (this.usedInputs[name]) {
       return this.usedInputs[name];
     }
@@ -262,13 +262,13 @@ var Inputs = new (function() {
    * @public
    * @memberOf Inputs
    */
-  this.on = function(type, input, callback) {
+  this.on = function (type, input, callback) {
     if (!this.queue[type][input]) {
       console.log(
         '%cWARN: Inputs: Try to bind on a non existent input ::: ' +
-        type +
-        ' - ' +
-        input,
+          type +
+          ' - ' +
+          input,
         'color:red',
       );
       return;
@@ -283,7 +283,7 @@ var Inputs = new (function() {
    * @public
    * @memberOf Inputs
    */
-  this.stopListening = function(type, input, index) {
+  this.stopListening = function (type, input, index) {
     if (index !== undefined) {
       this.queue[type][input][index] = null;
       return;
@@ -302,8 +302,13 @@ var Inputs = new (function() {
    * @public
    * @memberOf Inputs
    */
-  this.trigger = function(eventType, keyName, val) {
-    if (((Inputs._keyLocked && !Inputs._keyLockNamesExceptions.includes(keyName)) || !Inputs.isWindowFocused) && eventType.search('mouse') == -1) {
+  this.trigger = function (eventType, keyName, val) {
+    if (
+      ((Inputs._keyLocked &&
+        !Inputs._keyLockNamesExceptions.includes(keyName)) ||
+        !Inputs.isWindowFocused) &&
+      eventType.search('mouse') == -1
+    ) {
       return;
     }
 
@@ -321,14 +326,18 @@ var Inputs = new (function() {
    * @public
    * @memberOf Inputs
    */
-  this.key = function(name) {
-    if ((Inputs.keyLocked && !Inputs._keyLockNamesExceptions.includes(name)) || !Inputs.isWindowFocused) return false;
+  this.key = function (name) {
+    if (
+      (Inputs.keyLocked && !Inputs._keyLockNamesExceptions.includes(name)) ||
+      !Inputs.isWindowFocused
+    )
+      return false;
     if (
       this.usedInputs[name] &&
       this.usedInputs[name].isDown &&
       (!this.usedInputs[name].interval ||
         Date.now() - this.usedInputs[name].lastCall >=
-        this.usedInputs[name].interval / Time.scaleDelta)
+          this.usedInputs[name].interval / Time.scaleDelta)
     ) {
       if (!Inputs.usedInputs[name].stayOn) {
         Inputs.usedInputs[name].lastCall = Date.now();
@@ -345,7 +354,7 @@ var Inputs = new (function() {
    * @public
    * @memberOf Inputs
    */
-  this.toggleListeners = function(canvas, bind) {
+  this.toggleListeners = function (canvas, bind) {
     var target = canvas || window;
     if (this.isListening && !bind) {
       if (target.removeEventListener) {
@@ -377,7 +386,7 @@ var Inputs = new (function() {
    * @param {String} code - key name: up, shift, space, A, etc...
    * @param {String} type - KEYBOARD / GAMEPADBUTTONS / GAMEPADAXES
    */
-  this.findInputs = function(code, type) {
+  this.findInputs = function (code, type) {
     var inputs = [];
     // parse all gamesInputs
     for (var i in Inputs.usedInputs) {
@@ -400,7 +409,7 @@ var Inputs = new (function() {
    * @memberOf Inputs
    * @param {DOMEvent} event
    */
-  this.keyDown = function(event) {
+  this.keyDown = function (event) {
     var e = event || window.event;
     var code = e.which || e.keyCode;
 
@@ -440,11 +449,14 @@ var Inputs = new (function() {
         if (
           !Inputs.usedInputs[input].isDown &&
           Date.now() - Inputs.usedInputs[input].lastCall >=
-          Inputs.usedInputs[input].interval
+            Inputs.usedInputs[input].interval
         ) {
           /* specific on keydown event handler here */
           if (!Inputs.usedInputs[input].isDown) {
-            if (Inputs._keyLocked && !Inputs._keyLockNamesExceptions.includes(input)) {
+            if (
+              Inputs._keyLocked &&
+              !Inputs._keyLockNamesExceptions.includes(input)
+            ) {
               shouldPreventDefault = false;
               continue;
             }
@@ -480,7 +492,7 @@ var Inputs = new (function() {
    * @memberOf Inputs
    * @param {DOMEvent} event
    */
-  this.keyUp = function(event) {
+  this.keyUp = function (event) {
     var e = event || window.event;
     var code = e.which || e.keyCode;
 
@@ -497,8 +509,7 @@ var Inputs = new (function() {
       for (var i = 0, input; (input = inputsUp[i]); ++i) {
         if (Inputs.usedInputs[input].isDown) {
           if (Inputs._keyLocked) {
-            if (Inputs._keyLockNamesExceptions.includes(input))
-            {
+            if (Inputs._keyLockNamesExceptions.includes(input)) {
               Inputs.trigger('keyUp', input);
             }
           } else {
@@ -522,7 +533,7 @@ var Inputs = new (function() {
    * @memberOf Inputs
    * @param {DOMEvent} event
    */
-  this.keyPress = function(event) {
+  this.keyPress = function (event) {
     var e = event || window.event;
     var key = e.which || e.keyCode;
     var code = e.keyCode;
@@ -571,19 +582,13 @@ var Inputs = new (function() {
     },
   });
 
-  window.addEventListener(
-    'focus',
-    () => {
-      Inputs.isWindowFocused = true;
-    },
-  );
+  window.addEventListener('focus', () => {
+    Inputs.isWindowFocused = true;
+  });
 
-  window.addEventListener(
-    'blur',
-    () => {
-      Inputs.isWindowFocused = false;
-    },
-  );
+  window.addEventListener('blur', () => {
+    Inputs.isWindowFocused = false;
+  });
 })();
 
 export default Inputs;

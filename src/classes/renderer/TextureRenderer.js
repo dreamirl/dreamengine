@@ -38,11 +38,12 @@ class TextureRenderer extends PIXI.Sprite {
             params.spriteName || params.spriteUrl || params.textureName
           ],
     );
-    this._textureName = params.spriteName || params.spriteUrl || params.textureName;
+    this._textureName =
+      params.spriteName || params.spriteUrl || params.textureName;
     BaseRenderer.instantiate(this, params);
   }
 
-  get textureName () {
+  get textureName() {
     return this._textureName;
   }
   set textureName(textureName) {
@@ -58,7 +59,7 @@ TextureRenderer.prototype.DEName = 'TextureRenderer';
  * @memberOf TextureRenderer
  * @type {Int}
  */
-TextureRenderer.prototype.changeTexture = function(textureName) {
+TextureRenderer.prototype.changeTexture = function (textureName) {
   if (!textureName) {
     throw new Error('TextureRenderer :: changeTexture -- need textureName');
   }

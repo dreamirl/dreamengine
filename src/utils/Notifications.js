@@ -9,7 +9,7 @@ import config from 'DE.config';
  * (and set padding on the parent to simulate a margin)</b>
  * @namespace Notifications
  */
-var Notifications = new (function() {
+var Notifications = new (function () {
   this.DEName = 'Notifications';
   this.notifs = {}; // contain all notifications created
   this.notifsHeight = 0;
@@ -29,7 +29,7 @@ var Notifications = new (function() {
    * @protected
    * @param {object} params - Optional parameters, you can change all default value (check out the main constructor)
    */
-  this.init = function(params) {
+  this.init = function (params) {
     params = params || {};
 
     this.selector = params.selector || this.selector;
@@ -71,7 +71,7 @@ var Notifications = new (function() {
    * @param {int} expirationTime - Optional parameters in milliseconds
    * @example DE.Notifications.create( "hello world", 1500 );
    */
-  this.create = function(
+  this.create = function (
     text,
     expirationTime, // use this one
   ) {
@@ -98,7 +98,7 @@ var Notifications = new (function() {
     this.notifs[id] = notif;
     this.notifs[id]
       .getElementsByClassName('notifClose')[0]
-      .addEventListener('click', function() {
+      .addEventListener('click', function () {
         _self.remove(id);
       });
 
@@ -116,9 +116,9 @@ var Notifications = new (function() {
    * @param {string} id - Is the notification to bind
    * @param {int} time - is the time notification will stay on screen
    */
-  this.bindRemove = function(id, time) {
+  this.bindRemove = function (id, time) {
     time = time || this.defaultExpirationTime;
-    setTimeout(function() {
+    setTimeout(function () {
       _self.triggerRemove(id);
     }, time);
   };
@@ -129,14 +129,14 @@ var Notifications = new (function() {
    * @protected
    * @param {string} id - Is the notification to animate
    */
-  this.triggerRemove = function(id) {
+  this.triggerRemove = function (id) {
     if (!this.notifs[id]) {
       return;
     }
 
     this.notifs[id].className = this.notifs[id].className + ' disapear';
 
-    setTimeout(function() {
+    setTimeout(function () {
       _self.remove(id);
     }, this.closeAnimationDuration);
   };
@@ -147,7 +147,7 @@ var Notifications = new (function() {
    * @protected
    * @param {string} id - Is the notification to remove
    */
-  this.remove = function(id) {
+  this.remove = function (id) {
     var height = this.notifs[id].offsetHeight;
     this.notifsHeight -= height;
     this.container.style.height = this.notifsHeight + 'px';

@@ -79,17 +79,17 @@ TextRenderer.prototype.checkMaxWidth = function () {
   }
 };
 
-TextRenderer.prototype.getWidth = function() {
+TextRenderer.prototype.getWidth = function () {
   const textMetrics = new PIXI.TextMetrics.measureText(this.text, this.style);
   return textMetrics.width;
 };
 
-TextRenderer.prototype.getHeight = function() {
+TextRenderer.prototype.getHeight = function () {
   const textMetrics = new PIXI.TextMetrics.measureText(this.text, this.style);
   return textMetrics.height;
 };
 
-TextRenderer.prototype.getSize = function() {
+TextRenderer.prototype.getSize = function () {
   const textMetrics = new PIXI.TextMetrics.measureText(this.text, this.style);
   return textMetrics;
 };
