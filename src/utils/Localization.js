@@ -146,7 +146,8 @@ var Localization = new (function () {
   };
 
   /**
-   * Get the current lang active (or set the current lang if you pass an argument)
+   * WARNING THIS IS NOT A GETTER !!!
+   * SET new currentLang; if no argument, set browser or english as default.
    * @memberOf Localization
    * @protected
    * @param {String} lang - New lang to set as active
@@ -176,6 +177,10 @@ var Localization = new (function () {
       Events.trigger('lang-changed', this.currentLang);
     }
   };
+
+  this.setLang = function (lang) {
+    this.getLang(lang);
+  }
 })();
 
 const LANGUAGES_CODES_TABLE = [
