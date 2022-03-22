@@ -5,13 +5,13 @@ import Notifications from 'DE.Notifications';
 import Inputs from 'DE.Inputs';
 
 /**
-* Author
+ * Author
  @Shocoben / https://github.com/schobbent
 
-* ContributorsList
+ * ContributorsList
  @Shocoben
  @Inateno
-*/
+ */
 
 /**
  * bring Gamepad API with Chrome and Windows8
@@ -71,7 +71,7 @@ var gamepads = new (function() {
       if (config.notifications.gamepadEnable) {
         Notifications.create(
           Localization.get('gamepadAvalaible') ||
-            config.notifications.gamepadAvalaible,
+          config.notifications.gamepadAvalaible,
         );
       }
 
@@ -81,8 +81,8 @@ var gamepads = new (function() {
           navigator.getGamepads
             ? navigator.getGamepads()
             : navigator.webkitGetGamepads
-            ? navigator.webkitGetGamepads()
-            : [],
+              ? navigator.webkitGetGamepads()
+              : [],
         );
 
         for (var i = 0; i < gamepads.length; ++i) {
@@ -105,8 +105,8 @@ var gamepads = new (function() {
           navigator.getGamepads
             ? navigator.getGamepads()
             : navigator.webkitGetGamepads
-            ? navigator.webkitGetGamepads()
-            : [],
+              ? navigator.webkitGetGamepads()
+              : [],
         );
 
         for (var i = 0; i < gamepads.length; ++i) {
@@ -285,7 +285,7 @@ var gamepads = new (function() {
   function gamepadConnected(e) {
     Notifications.create(
       Localization.get('onGamepadConnect') ||
-        'Gamepad ' + (e.gamepad.index + 1) + ' connected',
+      'Gamepad ' + (e.gamepad.index + 1) + ' connected',
     );
     _gamepads[e.gamepad.index] = e.gamepad;
     if (!_gamepads.length) {
@@ -315,7 +315,7 @@ var gamepads = new (function() {
         this.isGamepadConnected = true;
         Notifications.create(
           Localization.get('onGamepadConnect') ||
-            'Gamepad ' + (index + 1) + ' connected',
+          'Gamepad ' + (index + 1) + ' connected',
         );
       }
       Events.emit('connectGamepad', index);
@@ -339,7 +339,7 @@ var gamepads = new (function() {
         }
         Notifications.create(
           Localization.get('onGamepadDisconnect') ||
-            'Gamepad ' + (index + 1) + ' disconnected',
+          'Gamepad ' + (index + 1) + ' disconnected',
         );
       }
       Events.emit('disconnectGamepad', index);
@@ -448,8 +448,8 @@ var gamepads = new (function() {
               gamepadType: 'axes',
               keyName,
               compositeKeyName: `G${index}.A.${keyName}`,
-              compositeKeyNameWithoutGamepadIndex: `A.${keyName}`,
-              sign: elemForce > 0 ? 1 : -1,
+              compositeKeyNameWithoutGamepadIndex: `G.A.${keyName}`,
+              sign: elemForce > 0 ? '+' : '-',
             });
             this.isWaitingForAnyKey = false;
           }
@@ -480,7 +480,7 @@ var gamepads = new (function() {
               gamepadType: 'buttons',
               keyName,
               compositeKeyName: `G${index}.B.${keyName}`,
-              compositeKeyNameWithoutGamepadIndex: `B.${keyName}`,
+              compositeKeyNameWithoutGamepadIndex: `G.B.${keyName}`,
             });
             this.isWaitingForAnyKey = false;
           }
