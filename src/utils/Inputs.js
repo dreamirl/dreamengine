@@ -31,6 +31,11 @@ var Inputs = new (function () {
   this.DEName = 'Inputs';
 
   this.isListening = false;
+
+  this.isWaitingForAnyKey = false;
+  this.waitForAnyKeyType = "keyboard";
+  this.waitForAnyKeyCallback = function () {};
+
   this.usedInputs = {};
 
   this.isWindowFocused = true;
@@ -442,6 +447,10 @@ var Inputs = new (function () {
       return false;
     }
 
+    if (Inputs.isWaitingForAnyKey) {
+      return false;
+    }
+
     var inputsDown = Inputs.findInputs(code, 'KEYBOARD');
     let shouldPreventDefault = true;
     if (inputsDown !== false) {
@@ -504,6 +513,40 @@ var Inputs = new (function () {
       return false;
     }
 
+    if (Inputs.isWaitingForAnyKey) {
+      let keyName = Object.keys(Inputs.dbInputs.KEYBOARD)
+        .find(key => Inputs.dbInputs.KEYBOARD[key] === code);
+
+      if (Inputs.waitForAnyKeyType !== 'keyboard' && Inputs.waitForAnyKeyType !== 'all')
+      {
+        if (keyName === 'escape') {
+          Inputs.isWaitingForAnyKey = false;
+          gamepad.isWaitingForAnyKey = false;
+
+          Inputs.waitForAnyKeyCallback({
+            success: false,
+            type: 'gamepad',
+          });
+        }
+
+        return false;
+      }
+
+      if (keyName !== undefined) {
+        Inputs.isWaitingForAnyKey = false;
+        gamepad.isWaitingForAnyKey = false;
+
+        Inputs.waitForAnyKeyCallback({
+          success: true,
+          type: 'keyboard',
+          keyName,
+          compositeKeyName: `K.${keyName}`,
+        });
+
+        return false;
+      }
+    }
+
     var inputsUp = Inputs.findInputs(code, 'KEYBOARD');
     if (inputsUp !== false) {
       for (var i = 0, input; (input = inputsUp[i]); ++i) {
@@ -552,6 +595,31 @@ var Inputs = new (function () {
     // needed ?
     // e.preventDefault();
     // return false;
+  };
+
+  /**
+   * Register a callback to be called when a key of specified type is pressed
+   * @public
+   * @memberOf Inputs
+   * @param {function} callback
+   * @param {string} type - gamepad or keyboard
+   */
+  this.waitForAnyKey = function(callback, type = 'all') {
+    if (type !== 'keyboard' && type !== 'gamepad' && type !== 'all') {
+      return;
+    }
+    if (typeof callback !== 'function') {
+      return;
+    }
+
+    gamepad.waitForAnyKey((keyInfo) => {
+      Inputs.isWaitingForAnyKey = false;
+      Inputs.waitForAnyKeyCallback(keyInfo);
+    }, type);
+
+    Inputs.isWaitingForAnyKey = true;
+    Inputs.waitForAnyKeyType = type;
+    Inputs.waitForAnyKeyCallback = callback;
   };
 
   /**

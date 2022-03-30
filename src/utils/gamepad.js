@@ -1,16 +1,17 @@
 ﻿import config from 'DE.config';
 import Events from 'DE.Events';
+import Inputs from 'DE.Inputs';
 import Localization from 'DE.Localization';
 import Notifications from 'DE.Notifications';
 
 /**
-* Author
+ * Author
  @Shocoben / https://github.com/schobbent
 
-* ContributorsList
+ * ContributorsList
  @Shocoben
  @Inateno
-*/
+ */
 
 /**
  * bring Gamepad API with Chrome and Windows8
@@ -57,8 +58,12 @@ var gamepads = new (function () {
   this.gamepadsInfos = {};
   var lastTimeStamps = {};
 
-  var _updateChange = function () {};
-  var _updateRate = function () {};
+  this.isWaitingForAnyKey = false;
+  this.waitForAnyKeyType = "keyboard";
+  this.waitForAnyKeyCallback = function () {};
+
+  var _updateChange = function() {};
+  var _updateRate = function() {};
 
   this.init = function () {
     // Update chrome
@@ -66,7 +71,7 @@ var gamepads = new (function () {
       if (config.notifications.gamepadEnable) {
         Notifications.create(
           Localization.get('gamepadAvalaible') ||
-            config.notifications.gamepadAvalaible,
+          config.notifications.gamepadAvalaible,
         );
       }
 
@@ -76,8 +81,8 @@ var gamepads = new (function () {
           navigator.getGamepads
             ? navigator.getGamepads()
             : navigator.webkitGetGamepads
-            ? navigator.webkitGetGamepads()
-            : [],
+              ? navigator.webkitGetGamepads()
+              : [],
         );
 
         for (var i = 0; i < gamepads.length; ++i) {
@@ -100,8 +105,8 @@ var gamepads = new (function () {
           navigator.getGamepads
             ? navigator.getGamepads()
             : navigator.webkitGetGamepads
-            ? navigator.webkitGetGamepads()
-            : [],
+              ? navigator.webkitGetGamepads()
+              : [],
         );
 
         for (var i = 0; i < gamepads.length; ++i) {
@@ -280,7 +285,7 @@ var gamepads = new (function () {
   function gamepadConnected(e) {
     Notifications.create(
       Localization.get('onGamepadConnect') ||
-        'Gamepad ' + (e.gamepad.index + 1) + ' connected',
+      'Gamepad ' + (e.gamepad.index + 1) + ' connected',
     );
     _gamepads[e.gamepad.index] = e.gamepad;
     if (!_gamepads.length) {
@@ -298,11 +303,11 @@ var gamepads = new (function () {
     var index = gamepad.index;
     this.gamepadsInfos[index] = gamepad;
     if (_btnsListeners[index]) {
-      this.handleListeners(index, gamepad.buttons, _btnsListeners, cTime);
+      this.handleListeners(index, gamepad.buttons, _btnsListeners, cTime, 'buttons');
     }
 
     if (_axesListeners[index]) {
-      this.handleListeners(index, gamepad.axes, _axesListeners, cTime);
+      this.handleListeners(index, gamepad.axes, _axesListeners, cTime, 'axes');
     }
     if (!gamepadAvalaible[index]) {
       console.log('Gamepad connected ' + index, 2);
@@ -310,7 +315,7 @@ var gamepads = new (function () {
         this.isGamepadConnected = true;
         Notifications.create(
           Localization.get('onGamepadConnect') ||
-            'Gamepad ' + (index + 1) + ' connected',
+          'Gamepad ' + (index + 1) + ' connected',
         );
       }
       Events.emit('connectGamepad', index);
@@ -334,7 +339,7 @@ var gamepads = new (function () {
         }
         Notifications.create(
           Localization.get('onGamepadDisconnect') ||
-            'Gamepad ' + (index + 1) + ' disconnected',
+          'Gamepad ' + (index + 1) + ' disconnected',
         );
       }
       Events.emit('disconnectGamepad', index);
@@ -403,6 +408,7 @@ var gamepads = new (function () {
     gamepadInterface,
     arrayListeners,
     cTime,
+    type,
   ) {
     for (var i in arrayListeners[index].listeners) {
       if (!gamepadInterface[i]) {
@@ -416,14 +422,40 @@ var gamepads = new (function () {
       var eventBus = arrayListeners[index];
       var listener = arrayListeners[index].listeners[i];
 
-      if (
-        (elemForce < 0.3 && elemForce > 0) ||
-        (elemForce > -0.3 && elemForce < 0)
-      ) {
+      if (Math.abs(elemForce) < 0.3) {
         elemForce = 0;
       }
+
       if (elemForce != listener.force) {
-        eventBus.emit('move' + i, elemForce, i);
+        if (this.isWaitingForAnyKey && type !== undefined) {
+          if (this.waitForAnyKeyType === 'keyboard')
+          {
+            continue;
+          }
+
+          if (type === 'axes') {
+            if (Math.abs(elemForce) < 0.8)
+            {
+              continue;
+            }
+
+            let keyName = Object.keys(Inputs.dbInputs.GAMEPADAXES)
+              .find(key => Inputs.dbInputs.GAMEPADAXES[key] == i);
+
+            this.waitForAnyKeyCallback({
+              success: true,
+              type: 'gamepad',
+              gamepadType: 'axes',
+              keyName,
+              compositeKeyName: `G${index}.A.${keyName}`,
+              compositeKeyNameWithoutGamepadIndex: `G.A.${keyName}`,
+              sign: elemForce > 0 ? '+' : '-',
+            });
+            this.isWaitingForAnyKey = false;
+          }
+        } else {
+          eventBus.emit('move' + i, elemForce, i);
+        }
       }
       listener.force = elemForce;
 
@@ -432,7 +464,30 @@ var gamepads = new (function () {
       }
 
       if (!overSensibility(elemForce) && listener.active) {
-        eventBus.emit('up' + i, elemForce, i);
+        if (this.isWaitingForAnyKey && type !== undefined) {
+          if (this.waitForAnyKeyType === 'keyboard')
+          {
+            continue;
+          }
+
+          if (type === 'buttons') {
+            let keyName = Object.keys(Inputs.dbInputs.GAMEPADBUTTONS)
+              .find(key => Inputs.dbInputs.GAMEPADBUTTONS[key] == i);
+
+            this.waitForAnyKeyCallback({
+              success: true,
+              type: 'gamepad',
+              gamepadType: 'buttons',
+              keyName,
+              compositeKeyName: `G${index}.B.${keyName}`,
+              compositeKeyNameWithoutGamepadIndex: `G.B.${keyName}`,
+            });
+            this.isWaitingForAnyKey = false;
+          }
+        } else {
+          eventBus.emit('up' + i, elemForce, i);
+        }
+
         listener.active = false;
         listener.count = 0;
       }
@@ -645,6 +700,20 @@ var gamepads = new (function () {
       },
       false,
     );
+  };
+
+  this.waitForAnyKey = function(callback, type) {
+    if (type !== 'keyboard' && type !== 'gamepad' && type !== 'all') {
+      return;
+    }
+    if (typeof callback !== 'function') {
+      return;
+    }
+
+    this.isWaitingForAnyKey = true;
+
+    this.waitForAnyKeyType = type;
+    this.waitForAnyKeyCallback = callback;
   };
 
   //Updates changes
