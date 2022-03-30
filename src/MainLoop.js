@@ -6,6 +6,7 @@ import Events from 'DE.Events';
 import TextRenderer from 'DE.TextRenderer';
 import SpriteRenderer from 'DE.SpriteRenderer';
 import Localization from 'DE.Localization';
+import config from 'DE.config';
 
 /**
  * @namespace MainLoop
@@ -49,7 +50,7 @@ const MainLoop = new (function () {
     this.loader.renderer.y += 150;
     Events.on('ImageManager-pool-progress', function (poolName, progression) {
       MainLoop.loader.removeAutomatism('animateLoader');
-      poolName == DE.CONFIG.DEFAULT_POOL_NAME
+      poolName == config.DEFAULT_POOL_NAME
         ? (MainLoop.loader.renderer.text = progression + '%')
         : (MainLoop.loader.renderer.text = poolName + ': ' + progression + '%');
     });
