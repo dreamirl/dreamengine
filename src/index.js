@@ -175,7 +175,7 @@ DE.onLoad = function () {
   DE.MainLoop.displayLoader = false;
 };
 
-var _defaultPoolName = 'default';
+var _defaultPoolName = DE.CONFIG.DEFAULT_POOL_NAME;
 DE.start = function () {
   // make all audios instance and launch preload if required
   DE.Audio.loadAudios(DE.___params.audios || []);

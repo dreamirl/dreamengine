@@ -49,7 +49,7 @@ RectRenderer.prototype.constructor = RectRenderer;
 
 BaseRenderer.inherits(RectRenderer);
 
-RectRenderer.prototype.updateRender = function(params) {
+RectRenderer.prototype.updateRender = function (params) {
   this.clear();
 
   if (params && (params.lineStyle || this._initial.lineStyle)) {

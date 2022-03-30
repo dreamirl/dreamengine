@@ -14,7 +14,7 @@ import Time from 'DE.Time';
  * @example // move to bonus position
  * player.moveTo( bonus, 1000, function(){ console.log( this ) } );
  */
-GameObject.prototype.moveTo = function(
+GameObject.prototype.moveTo = function (
   pos,
   duration,
   callback,
@@ -68,7 +68,7 @@ GameObject.prototype.moveTo = function(
  * @protected
  * @memberOf GameObject
  */
-GameObject.prototype.applyMove = function() {
+GameObject.prototype.applyMove = function () {
   if (this._moveData.done) return;
 
   var move = this._moveData;

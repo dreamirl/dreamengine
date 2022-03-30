@@ -50,7 +50,7 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
     delete params.startFrame;
 
     if (params.randomFrame) {
-      this.currentFrame = Math.random() * this.textures.length >> 0;
+      this.currentFrame = (Math.random() * this.textures.length) >> 0;
     }
 
     BaseRenderer.instantiate(this, params);
@@ -60,9 +60,8 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
     this.sheetName = sheetName;
     this.animationName = animationName;
 
-    this.imageNames = PIXI.Loader.shared.resources[sheetName].data.animations[
-      animationName
-    ];
+    this.imageNames =
+      PIXI.Loader.shared.resources[sheetName].data.animations[animationName];
     this.restart();
   }
 
@@ -124,9 +123,7 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
   set imageNames(names) {
     this._imageNames = names;
     const textures = [];
-    names.forEach((imgName) =>
-      textures.push(PIXI.utils.TextureCache[imgName]),
-    );
+    names.forEach((imgName) => textures.push(PIXI.utils.TextureCache[imgName]));
     this.textures = textures;
   }
 
@@ -190,6 +187,6 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
 BaseRenderer.inherits(AnimatedTextureRenderer);
 AnimatedTextureRenderer.prototype.DEName = 'AnimatedTextureRenderer';
 
-AnimatedTextureRenderer.prototype.onAnimEnd = function() {}
+AnimatedTextureRenderer.prototype.onAnimEnd = function () {};
 
 export default AnimatedTextureRenderer;

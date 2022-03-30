@@ -1,4 +1,4 @@
-const Time = new (function() {
+const Time = new (function () {
   this.DEName = 'Time';
   this.deltaTime = 1;
   this.missedFrame = 0;
@@ -21,7 +21,7 @@ const Time = new (function() {
     update frames
     TODO - add a paused state (to pause the engine, when changed tab by example)
     */
-  this.update = function() {
+  this.update = function () {
     if (this.stopped) {
       return false;
     }
@@ -33,9 +33,16 @@ const Time = new (function() {
       this.frameDelay * 6,
     );
 
-    this.fpsRecord.unshift(Math.floor(1000 / (this.currentTime - this.lastCalcul)));
-    this.fpsRecord = this.fpsRecord.splice(0, Math.min(this.fpsRecord.length, 60));
-    this.fps = Math.round(this.fpsRecord.reduce((a, b) => a + b) / this.fpsRecord.length);
+    this.fpsRecord.unshift(
+      Math.floor(1000 / (this.currentTime - this.lastCalcul)),
+    );
+    this.fpsRecord = this.fpsRecord.splice(
+      0,
+      Math.min(this.fpsRecord.length, 60),
+    );
+    this.fps = Math.round(
+      this.fpsRecord.reduce((a, b) => a + b) / this.fpsRecord.length,
+    );
 
     this.deltaTime = this.scaleDelta;
     this.frameDelayScaled = this.frameDelay * this.scaleDelta;
@@ -48,7 +55,7 @@ const Time = new (function() {
    * getDelta@Float
     previously it was private
     */
-  this.getDelta = function() {
+  this.getDelta = function () {
     return this.deltaTime;
   };
 })();

@@ -12,7 +12,7 @@ import Time from 'DE.Time';
  * @example // shake with 10-10 force during 1sec
  * player.shake( 10, 10, 1000 );
  */
-GameObject.prototype.shake = function(xRange, yRange, duration, callback) {
+GameObject.prototype.shake = function (xRange, yRange, duration, callback) {
   this._shakeData = {
     // "startedAt" : Date.now()
     duration: duration || 500,
@@ -32,7 +32,7 @@ GameObject.prototype.shake = function(xRange, yRange, duration, callback) {
  * @protected
  * @memberOf GameObject
  */
-GameObject.prototype.applyShake = function() {
+GameObject.prototype.applyShake = function () {
   if (this._shakeData.done) {
     return;
   }
