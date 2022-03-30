@@ -119,6 +119,16 @@ var Save = new (function () {
   };
 
   /**
+   * checks the existance of a key
+   * returns true if the key exists, false if it doesn't
+   * @param {String} key - the key of the data you want from your scheme "saveModel"
+   */
+  this.exists = function (key) {
+    const value = this.get(key);
+    return !(value === 'undefined' || value === undefined);
+  };
+
+  /**
    * save the value with the given key
    * @memberOf Save
    * @protected
