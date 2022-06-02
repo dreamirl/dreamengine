@@ -21,7 +21,7 @@
   "scripts": {
     "build": "cross-env DEV_BUILD=true FINAL_BUILD=true parallel-webpack --config webpack.config.js --verbose --no-stats",
     "build-dev": "cross-env DEV_BUILD=true parallel-webpack --config webpack.config.js --verbose --no-stats",
-    "format": "prettier --config .prettierrc.json --ignore-path .prettierignore --write \"**/*.{js,json,ts,tsx,md}\"",
+    "format": "prettier --config .prettierrc.json --ignore-path .prettierignore --write \"**/*.{js,json,ts,tsx,md,html}\"",
     "test": "echo \"Error: no test specified this is a TODO\" && exit 1",
     "watch": "echo TODO",
     "prepare": "husky install"
