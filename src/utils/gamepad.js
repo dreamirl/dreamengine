@@ -59,11 +59,11 @@ var gamepads = new (function () {
   var lastTimeStamps = {};
 
   this.isWaitingForAnyKey = false;
-  this.waitForAnyKeyType = "keyboard";
+  this.waitForAnyKeyType = 'keyboard';
   this.waitForAnyKeyCallback = function () {};
 
-  var _updateChange = function() {};
-  var _updateRate = function() {};
+  var _updateChange = function () {};
+  var _updateRate = function () {};
 
   this.init = function () {
     // Update chrome
@@ -71,7 +71,7 @@ var gamepads = new (function () {
       if (config.notifications.gamepadEnable) {
         Notifications.create(
           Localization.get('gamepadAvalaible') ||
-          config.notifications.gamepadAvalaible,
+            config.notifications.gamepadAvalaible,
         );
       }
 
@@ -81,8 +81,8 @@ var gamepads = new (function () {
           navigator.getGamepads
             ? navigator.getGamepads()
             : navigator.webkitGetGamepads
-              ? navigator.webkitGetGamepads()
-              : [],
+            ? navigator.webkitGetGamepads()
+            : [],
         );
 
         for (var i = 0; i < gamepads.length; ++i) {
@@ -105,8 +105,8 @@ var gamepads = new (function () {
           navigator.getGamepads
             ? navigator.getGamepads()
             : navigator.webkitGetGamepads
-              ? navigator.webkitGetGamepads()
-              : [],
+            ? navigator.webkitGetGamepads()
+            : [],
         );
 
         for (var i = 0; i < gamepads.length; ++i) {
@@ -285,7 +285,7 @@ var gamepads = new (function () {
   function gamepadConnected(e) {
     Notifications.create(
       Localization.get('onGamepadConnect') ||
-      'Gamepad ' + (e.gamepad.index + 1) + ' connected',
+        'Gamepad ' + (e.gamepad.index + 1) + ' connected',
     );
     _gamepads[e.gamepad.index] = e.gamepad;
     if (!_gamepads.length) {
@@ -303,7 +303,13 @@ var gamepads = new (function () {
     var index = gamepad.index;
     this.gamepadsInfos[index] = gamepad;
     if (_btnsListeners[index]) {
-      this.handleListeners(index, gamepad.buttons, _btnsListeners, cTime, 'buttons');
+      this.handleListeners(
+        index,
+        gamepad.buttons,
+        _btnsListeners,
+        cTime,
+        'buttons',
+      );
     }
 
     if (_axesListeners[index]) {
@@ -315,7 +321,7 @@ var gamepads = new (function () {
         this.isGamepadConnected = true;
         Notifications.create(
           Localization.get('onGamepadConnect') ||
-          'Gamepad ' + (index + 1) + ' connected',
+            'Gamepad ' + (index + 1) + ' connected',
         );
       }
       Events.emit('connectGamepad', index);
@@ -339,7 +345,7 @@ var gamepads = new (function () {
         }
         Notifications.create(
           Localization.get('onGamepadDisconnect') ||
-          'Gamepad ' + (index + 1) + ' disconnected',
+            'Gamepad ' + (index + 1) + ' disconnected',
         );
       }
       Events.emit('disconnectGamepad', index);
@@ -428,19 +434,18 @@ var gamepads = new (function () {
 
       if (elemForce != listener.force) {
         if (this.isWaitingForAnyKey && type !== undefined) {
-          if (this.waitForAnyKeyType === 'keyboard')
-          {
+          if (this.waitForAnyKeyType === 'keyboard') {
             continue;
           }
 
           if (type === 'axes') {
-            if (Math.abs(elemForce) < 0.8)
-            {
+            if (Math.abs(elemForce) < 0.8) {
               continue;
             }
 
-            let keyName = Object.keys(Inputs.dbInputs.GAMEPADAXES)
-              .find(key => Inputs.dbInputs.GAMEPADAXES[key] == i);
+            let keyName = Object.keys(Inputs.dbInputs.GAMEPADAXES).find(
+              (key) => Inputs.dbInputs.GAMEPADAXES[key] == i,
+            );
 
             this.waitForAnyKeyCallback({
               success: true,
@@ -465,14 +470,14 @@ var gamepads = new (function () {
 
       if (!overSensibility(elemForce) && listener.active) {
         if (this.isWaitingForAnyKey && type !== undefined) {
-          if (this.waitForAnyKeyType === 'keyboard')
-          {
+          if (this.waitForAnyKeyType === 'keyboard') {
             continue;
           }
 
           if (type === 'buttons') {
-            let keyName = Object.keys(Inputs.dbInputs.GAMEPADBUTTONS)
-              .find(key => Inputs.dbInputs.GAMEPADBUTTONS[key] == i);
+            let keyName = Object.keys(Inputs.dbInputs.GAMEPADBUTTONS).find(
+              (key) => Inputs.dbInputs.GAMEPADBUTTONS[key] == i,
+            );
 
             this.waitForAnyKeyCallback({
               success: true,
@@ -702,7 +707,7 @@ var gamepads = new (function () {
     );
   };
 
-  this.waitForAnyKey = function(callback, type) {
+  this.waitForAnyKey = function (callback, type) {
     if (type !== 'keyboard' && type !== 'gamepad' && type !== 'all') {
       return;
     }

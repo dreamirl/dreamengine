@@ -180,7 +180,7 @@ var Localization = new (function () {
 
   this.setLang = function (lang) {
     this.getLang(lang);
-  }
+  };
 })();
 
 const LANGUAGES_CODES_TABLE = [

@@ -33,7 +33,7 @@ var Inputs = new (function () {
   this.isListening = false;
 
   this.isWaitingForAnyKey = false;
-  this.waitForAnyKeyType = "keyboard";
+  this.waitForAnyKeyType = 'keyboard';
   this.waitForAnyKeyCallback = function () {};
 
   this.usedInputs = {};
@@ -514,11 +514,14 @@ var Inputs = new (function () {
     }
 
     if (Inputs.isWaitingForAnyKey) {
-      let keyName = Object.keys(Inputs.dbInputs.KEYBOARD)
-        .find(key => Inputs.dbInputs.KEYBOARD[key] === code);
+      let keyName = Object.keys(Inputs.dbInputs.KEYBOARD).find(
+        (key) => Inputs.dbInputs.KEYBOARD[key] === code,
+      );
 
-      if (Inputs.waitForAnyKeyType !== 'keyboard' && Inputs.waitForAnyKeyType !== 'all')
-      {
+      if (
+        Inputs.waitForAnyKeyType !== 'keyboard' &&
+        Inputs.waitForAnyKeyType !== 'all'
+      ) {
         if (keyName === 'escape') {
           Inputs.isWaitingForAnyKey = false;
           gamepad.isWaitingForAnyKey = false;
@@ -604,7 +607,7 @@ var Inputs = new (function () {
    * @param {function} callback
    * @param {string} type - gamepad or keyboard
    */
-  this.waitForAnyKey = function(callback, type = 'all') {
+  this.waitForAnyKey = function (callback, type = 'all') {
     if (type !== 'keyboard' && type !== 'gamepad' && type !== 'all') {
       return;
     }
