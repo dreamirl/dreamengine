@@ -239,4 +239,4 @@ DE.trigger = function () {
   this.Events.emit.apply(this.Events, arguments);
 };
 
-module.exports = DE;
+export default DE;
