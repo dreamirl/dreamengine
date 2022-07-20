@@ -30,12 +30,12 @@ import TextureRenderer from 'DE.TextureRenderer';
 import SpriteRenderer from 'DE.SpriteRenderer';
 import TilingRenderer from 'DE.TilingRenderer';
 import TextRenderer from 'DE.TextRenderer';
+import BitmapTextRenderer from 'DE.BitmapTextRenderer';
 import RectRenderer from 'DE.RectRenderer';
 import GraphicRenderer from 'DE.GraphicRenderer';
 import NineSliceRenderer from 'DE.NineSliceRenderer';
 import AnimatedTextureRenderer from 'DE.AnimatedTextureRenderer';
 import GameObject from 'DE.GameObject';
-import GameObject_update from 'DE.GameObject.update';
 
 var DE = {
   config,
@@ -61,6 +61,7 @@ var DE = {
   SpriteRenderer,
   TilingRenderer,
   TextRenderer,
+  BitmapTextRenderer,
   RectRenderer,
   GraphicRenderer,
   NineSliceRenderer,

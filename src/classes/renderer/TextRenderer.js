@@ -8,9 +8,9 @@ import config from 'DE.config';
  */
 
 /**
- * @constructor TextureRenderer
- * @augments PIXI.Sprite
- * @class draw a sprite<br>
+ * @constructor TextRenderer
+ * @augments PIXI.Text
+ * @class draw text<br>
  * this just instantiate a PIXI.Text with a PIXI.TextStyle, but it give to "BaseRenderer" the rest of params, so you can easily set position, scaling, rotation, etc, directly on declaration<br>
  * checkout PIXI.DisplayObject for all attributes
  * @example var helloWorld = new DE.GameObject( {
