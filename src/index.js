@@ -30,6 +30,7 @@ import TextureRenderer from 'DE.TextureRenderer';
 import SpriteRenderer from 'DE.SpriteRenderer';
 import TilingRenderer from 'DE.TilingRenderer';
 import TextRenderer from 'DE.TextRenderer';
+import BitmapTextRenderer from 'DE.BitmapTextRenderer';
 import RectRenderer from 'DE.RectRenderer';
 import GraphicRenderer from 'DE.GraphicRenderer';
 import NineSliceRenderer from 'DE.NineSliceRenderer';
@@ -61,6 +62,7 @@ var DE = {
   SpriteRenderer,
   TilingRenderer,
   TextRenderer,
+  BitmapTextRenderer,
   RectRenderer,
   GraphicRenderer,
   NineSliceRenderer,
