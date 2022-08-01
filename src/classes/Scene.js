@@ -1,7 +1,7 @@
-import * as PIXI from 'PIXI';
-import MainLoop from 'DE.MainLoop';
-import GameObject from 'DE.GameObject';
-import sortGameObjects from 'DE.sortGameObjects';
+import * as PIXI from 'pixi.js';
+import MainLoop from './../MainLoop';
+import sortGameObjects from './../utils/sortGameObjects';
+import GameObject from './GameObject/GameObject';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com

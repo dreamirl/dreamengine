@@ -1,7 +1,7 @@
-import * as PIXI from 'PIXI';
-import BaseRenderer from 'DE.BaseRenderer';
-import Localization from 'DE.Localization';
-import config from 'DE.config';
+import * as PIXI from 'pixi.js';
+import config from './../../config';
+import Localization from './../../utils/Localization';
+import BaseRenderer from './BaseRenderer';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com

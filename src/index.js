@@ -1,42 +1,43 @@
 import '../css/default.css';
 
-import * as PIXI from 'PIXI';
-import extendPIXI from 'DE.extendPIXI';
-import config from 'DE.config';
-import about from 'DE.about';
-import Events from 'DE.Events';
-import Time from 'DE.Time';
-import MainLoop from 'DE.MainLoop';
+import * as PIXI from 'pixi.js';
+import about from './about';
+import config from './config';
+import MainLoop from './MainLoop';
+import Events from './utils/Events';
+import extendPIXI from './utils/extendPIXI';
+import Time from './utils/Time';
 
 // utils
-import Save from 'DE.Save';
-import Inputs from 'DE.Inputs';
-import gamepad from 'DE.gamepad';
-import Audio from 'DE.Audio';
-import Localization from 'DE.Localization';
-import Notifications from 'DE.Notifications';
-import Achievements from 'DE.Achievements';
-import ImageManager from 'DE.ImageManager';
-import Render from 'DE.Render';
-import Scene from 'DE.Scene';
-import Gui from 'DE.Gui';
-import Camera from 'DE.Camera';
-import Vector2 from 'DE.Vector2';
-import Platform from 'DE.Platform';
+import Camera from './classes/Camera';
+import Gui from './classes/Gui';
+import Render from './classes/Render';
+import Scene from './classes/Scene';
+import Vector2 from './classes/Vector2';
+import Achievements from './utils/Achievements';
+import { default as Audio, default as Localization } from './utils/Audio';
+import gamepad from './utils/gamepad';
+import ImageManager from './utils/ImageManager';
+import Inputs from './utils/Inputs';
+import Notifications from './utils/Notifications';
+import Platform from './utils/Platform';
+import Save from './utils/Save';
 
 // engine custom renderer
-import BaseRenderer from 'DE.BaseRenderer';
-import TextureRenderer from 'DE.TextureRenderer';
-import SpriteRenderer from 'DE.SpriteRenderer';
-import TilingRenderer from 'DE.TilingRenderer';
-import TextRenderer from 'DE.TextRenderer';
-import BitmapTextRenderer from 'DE.BitmapTextRenderer';
-import RectRenderer from 'DE.RectRenderer';
-import GraphicRenderer from 'DE.GraphicRenderer';
-import NineSliceRenderer from 'DE.NineSliceRenderer';
-import AnimatedTextureRenderer from 'DE.AnimatedTextureRenderer';
-import GameObject from 'DE.GameObject';
-import GameObject_update from 'DE.GameObject.update';
+import GameObject from './classes/GameObject';
+import GameObject_update from './classes/GameObject/GameObject.update';
+import AnimatedTextureRenderer from './classes/renderer/AnimatedTextureRenderer';
+import BaseRenderer from './classes/renderer/BaseRenderer';
+import BitmapTextRenderer from './classes/renderer/BitmapTextRenderer';
+import GraphicRenderer from './classes/renderer/GraphicRenderer';
+import NineSliceRenderer from './classes/renderer/NineSliceRenderer';
+import RectRenderer from './classes/renderer/RectRenderer';
+import SpriteRenderer from './classes/renderer/SpriteRenderer';
+import TextRenderer from './classes/renderer/TextRenderer';
+import TextureRenderer from './classes/renderer/TextureRenderer';
+import TilingRenderer from './classes/renderer/TilingRenderer';
+
+let e = GameObject_update;
 
 var DE = {
   config,

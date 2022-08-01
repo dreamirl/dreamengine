@@ -1,8 +1,8 @@
-﻿import config from 'DE.config';
-import Events from 'DE.Events';
-import gamepad from 'DE.gamepad';
-import Localization from 'DE.Localization';
-import Time from 'DE.Time';
+﻿import config from './../config';
+import Events from './Events';
+import gamepad from './gamepad';
+import Localization from './Localization';
+import Time from './Time';
 
 /**
  * Author

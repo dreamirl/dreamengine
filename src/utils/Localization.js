@@ -1,5 +1,4 @@
-﻿import config from 'DE.config';
-import Events from 'DE.Events';
+﻿import Events from './Events';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com

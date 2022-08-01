@@ -1,6 +1,6 @@
-import GameObject from 'DE.GameObject';
-import Time from 'DE.Time';
-import config from 'DE.config';
+import config from './../../config';
+import Time from './../../utils/Time';
+import GameObject from './GameObject';
 
 /**
  * Because we use a complex scaling system (with z modifier), we have to use this middle-ware to trigger updateScale

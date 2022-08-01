@@ -1,7 +1,7 @@
-﻿import * as PIXI from 'PIXI';
-import config from 'DE.config';
-import Events from 'DE.Events';
-import about from 'DE.about';
+﻿import * as PIXI from 'pixi.js';
+import about from './../about';
+import config from './../config';
+import Events from './Events';
 
 /**
 * Author

@@ -1,7 +1,6 @@
 import localStorage from 'local-storage';
-import config from 'DE.config';
-import about from 'DE.about';
-import Events from 'DE.Events';
+import about from './../about';
+import Events from './Events';
 
 /**
 * Author

@@ -1,8 +1,8 @@
-﻿import config from 'DE.config';
-import Events from 'DE.Events';
-import Inputs from 'DE.Inputs';
-import Localization from 'DE.Localization';
-import Notifications from 'DE.Notifications';
+﻿import config from './config';
+import Events from './Events';
+import Inputs from './Inputs';
+import Localization from './Localization';
+import Notifications from './Notifications';
 
 /**
  * Author

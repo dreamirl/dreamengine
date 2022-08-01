@@ -1,4 +1,4 @@
-import config from 'DE.config';
+import config from './../config';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com

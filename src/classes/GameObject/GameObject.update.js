@@ -1,12 +1,21 @@
-import GameObject from 'DE.GameObject';
-import GameObject_automatism from 'DE.GameObject.automatisms';
-import GameObject_fade from 'DE.GameObject.fade';
-import GameObject_focus from 'DE.GameObject.focus';
-import GameObject_moveTo from 'DE.GameObject.moveTo';
-import GameObject_scale from 'DE.GameObject.scale';
-import GameObject_shake from 'DE.GameObject.shake';
+import GameObject from './GameObject';
+import GameObject_automatism from './GameObject.automatisms';
+import GameObject_fade from './GameObject.fade';
+import GameObject_focus from './GameObject.focus';
+import GameObject_moveTo from './GameObject.moveTo';
+import GameObject_scale from './GameObject.scale';
+import GameObject_shake from './GameObject.shake';
 
-import Time from 'DE.Time';
+import Time from './../../utils/Time';
+
+const e = {
+  GameObject_automatism,
+  GameObject_fade,
+  GameObject_focus,
+  GameObject_moveTo,
+  GameObject_scale,
+  GameObject_shake,
+};
 
 GameObject.prototype.update = function (time) {
   if (!this.updatable) {

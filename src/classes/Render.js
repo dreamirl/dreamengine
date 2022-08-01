@@ -1,8 +1,8 @@
-import * as PIXI from 'PIXI';
-import config from 'DE.config';
-import Time from 'DE.Time';
-import MainLoop from 'DE.MainLoop';
-import Events from 'DE.Events';
+import * as PIXI from 'pixi.js';
+import config from '../config';
+import MainLoop from './../MainLoop';
+import Events from './../utils/Events';
+import Time from './../utils/Time';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com

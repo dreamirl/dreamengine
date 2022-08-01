@@ -1,5 +1,5 @@
-import GameObject from 'DE.GameObject';
-import Time from 'DE.Time';
+import Time from './../../utils/Time';
+import GameObject from './GameObject';
 
 /**
  * create a fluid move translation

@@ -1,5 +1,4 @@
-import GameObject from 'DE.GameObject';
-import Time from 'DE.Time';
+import GameObject from './GameObject';
 
 /**
  * give a target to this gameObject, then it will focus it until you changed or removed it

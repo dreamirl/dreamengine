@@ -1,7 +1,5 @@
-﻿import config from 'DE.config';
-import howler from 'howler';
-import Events from 'DE.Events';
-import about from 'DE.about';
+﻿import howler from 'howler';
+import about from './about';
 
 /**
 * Author

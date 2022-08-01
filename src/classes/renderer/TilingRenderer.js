@@ -1,5 +1,5 @@
-import * as PIXI from 'PIXI';
-import BaseRenderer from 'DE.BaseRenderer';
+import * as PIXI from 'pixi.js';
+import BaseRenderer from './BaseRenderer';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com

@@ -1,10 +1,9 @@
-import config from 'DE.config';
-import about from 'DE.about';
-import Events from 'DE.Events';
-import Audio from 'DE.Audio';
-import Notifications from 'DE.Notifications';
-import Localization from 'DE.Localization';
-import Save from 'DE.Save';
+import config from './../config';
+import Audio from './Audio';
+import Events from './Events';
+import Localization from './Localization';
+import Notifications from './Notifications';
+import Save from './Save';
 
 // achievement-unlock added in dictionary
 const langs = {

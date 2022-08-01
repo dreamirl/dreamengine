@@ -1,12 +1,11 @@
-import Time from 'DE.Time';
-import gamepad from 'DE.gamepad';
-import GameObject from 'DE.GameObject';
-import * as PIXI from 'PIXI';
-import Events from 'DE.Events';
-import TextRenderer from 'DE.TextRenderer';
-import SpriteRenderer from 'DE.SpriteRenderer';
-import Localization from 'DE.Localization';
-import config from 'DE.config';
+import GameObject from './classes/GameObject/GameObject';
+import SpriteRenderer from './classes/renderer/SpriteRenderer';
+import TextRenderer from './classes/renderer/TextRenderer';
+import config from './config';
+import Events from './utils/Events';
+import gamepad from './utils/gamepad';
+import Localization from './utils/Localization';
+import Time from './utils/Time';
 
 /**
  * @namespace MainLoop

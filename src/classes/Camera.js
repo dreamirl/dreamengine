@@ -1,12 +1,9 @@
-import * as PIXI from 'PIXI';
-import config from 'DE.config';
-import ImageManager from 'DE.ImageManager';
-import Time from 'DE.Time';
-import RectRenderer from 'DE.RectRenderer';
-import TilingRenderer from 'DE.TilingRenderer';
+import * as PIXI from 'pixi.js';
+import RectRenderer from './renderer/RectRenderer';
+import TilingRenderer from './renderer/TilingRenderer';
 
 // update is the one requiring all the features, so prototype is complete
-import GameObject from 'DE.GameObject.update';
+import GameObject from './GameObject/GameObject.update';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com

@@ -1,6 +1,5 @@
-import * as PIXI from 'PIXI';
-import Scene from 'DE.Scene';
-import GameObject from 'DE.GameObject.update';
+import GameObject from './GameObject/GameObject.update';
+import Scene from './Scene';
 
 /**
  * @author Grimka / http://dreamirl.com

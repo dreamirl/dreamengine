@@ -1,4 +1,4 @@
-import Events from 'DE.Events';
+import Events from './utils/Events';
 
 /**
  * config contain various stuff for the engine

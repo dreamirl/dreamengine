@@ -1,9 +1,6 @@
-import * as PIXI from 'PIXI';
-import ImageManager from 'DE.ImageManager';
-import config from 'DE.config';
-import Time from 'DE.Time';
-import Events from 'DE.Events';
-import BaseRenderer from 'DE.BaseRenderer';
+import * as PIXI from 'pixi.js';
+import Time from './../../utils/Time';
+import BaseRenderer from './BaseRenderer';
 
 class AnimatedTextureRenderer extends PIXI.Sprite {
   constructor(imageNames, params) {

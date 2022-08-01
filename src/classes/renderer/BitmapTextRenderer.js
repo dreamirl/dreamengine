@@ -1,7 +1,7 @@
-import * as PIXI from 'PIXI';
-import BaseRenderer from 'DE.BaseRenderer';
-import Localization from 'DE.Localization';
-import config from 'DE.config';
+import * as PIXI from 'pixi.js';
+import config from './../../config';
+import Localization from './../../utils/Localization';
+import BaseRenderer from './BaseRenderer';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -54,7 +54,9 @@ function BitmapTextRenderer(text, params) {
 
   if (!PIXI.BitmapFont.available.hasOwnProperty(this.fontName)) {
     throw new Error(
-      'BitmapTextRender :: No fontName with the name "' + this.fontName + '" found',
+      'BitmapTextRender :: No fontName with the name "' +
+        this.fontName +
+        '" found',
     );
   }
 

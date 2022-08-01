@@ -3,10 +3,10 @@
  @Inateno / http://inateno.com / http://dreamirl.com 
  */
 
-import Events from 'DE.Events';
-import Localization from 'DE.Localization';
-import Audio from 'DE.Audio';
-import Save from 'DE.Save';
+import Audio from './Audio';
+import Events from './Events';
+import Localization from './Localization';
+import Save from './Save';
 
 /**
  * @namespace Platform
