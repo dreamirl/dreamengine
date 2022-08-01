@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
-import config from './../../config';
-import Localization from './../../utils/Localization';
+import config from '../../config';
+import Localization from '../../utils/Localization';
 import BaseRenderer from './BaseRenderer';
 
 /**

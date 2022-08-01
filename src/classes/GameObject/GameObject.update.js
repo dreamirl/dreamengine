@@ -6,7 +6,7 @@ import GameObject_moveTo from './GameObject.moveTo';
 import GameObject_scale from './GameObject.scale';
 import GameObject_shake from './GameObject.shake';
 
-import Time from './../../utils/Time';
+import Time from '../../utils/Time';
 
 const e = {
   GameObject_automatism,

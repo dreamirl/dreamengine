@@ -1,4 +1,4 @@
-﻿import config from './../config';
+﻿import config from '../config';
 import Events from './Events';
 import gamepad from './gamepad';
 import Localization from './Localization';

@@ -1,5 +1,5 @@
-import config from './../../config';
-import Time from './../../utils/Time';
+import config from '../../config';
+import Time from '../../utils/Time';
 import GameObject from './GameObject';
 
 /**

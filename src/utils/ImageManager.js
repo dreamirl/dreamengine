@@ -1,6 +1,6 @@
 ﻿import * as PIXI from 'pixi.js';
-import about from './../about';
-import config from './../config';
+import about from '../about';
+import config from '../config';
 import Events from './Events';
 
 /**

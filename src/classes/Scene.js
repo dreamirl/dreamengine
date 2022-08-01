@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
-import MainLoop from './../MainLoop';
-import sortGameObjects from './../utils/sortGameObjects';
+import MainLoop from '../MainLoop';
+import sortGameObjects from '../utils/sortGameObjects';
 import GameObject from './GameObject/GameObject';
 
 /**

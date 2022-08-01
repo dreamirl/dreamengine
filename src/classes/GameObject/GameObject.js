@@ -1,10 +1,10 @@
 import * as PIXI from 'pixi.js';
-import Events from './../../utils/Events';
-import sortGameObjects from './../../utils/sortGameObjects';
-import GraphicRenderer from './../renderer/GraphicRenderer';
+import Events from '../../utils/Events';
+import sortGameObjects from '../../utils/sortGameObjects';
+import GraphicRenderer from '../renderer/GraphicRenderer';
 
-import Vector2 from './../../classes/Vector2';
-import config from './../../config';
+import Vector2 from '../../classes/Vector2';
+import config from '../../config';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com

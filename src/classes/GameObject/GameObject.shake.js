@@ -1,4 +1,4 @@
-import Time from './../../utils/Time';
+import Time from '../../utils/Time';
 import GameObject from './GameObject';
 
 /**

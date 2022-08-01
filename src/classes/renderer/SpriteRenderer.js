@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
-import ImageManager from './../../utils/ImageManager';
-import Time from './../../utils/Time';
+import ImageManager from '../../utils/ImageManager';
+import Time from '../../utils/Time';
 import BaseRenderer from './BaseRenderer';
 
 /**

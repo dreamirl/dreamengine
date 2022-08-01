@@ -1,5 +1,5 @@
 import localStorage from 'local-storage';
-import about from './../about';
+import about from '../about';
 import Events from './Events';
 
 /**

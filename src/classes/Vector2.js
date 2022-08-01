@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import Time from './../utils/Time';
+import Time from '../utils/Time';
 
 const _PI = Math.PI;
 /**

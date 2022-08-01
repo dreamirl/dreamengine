@@ -1,5 +1,5 @@
 ﻿import howler from 'howler';
-import about from './about';
+import about from '../about';
 
 /**
 * Author

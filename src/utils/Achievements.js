@@ -1,4 +1,4 @@
-import config from './../config';
+import config from '../config';
 import Audio from './Audio';
 import Events from './Events';
 import Localization from './Localization';
