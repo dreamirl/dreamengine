@@ -1,4 +1,4 @@
-﻿import config from './config';
+﻿import config from '../config';
 import Events from './Events';
 import Inputs from './Inputs';
 import Localization from './Localization';
