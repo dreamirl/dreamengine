@@ -61,9 +61,11 @@ class Gui extends Scene {
    * @memberOf Gui
    * @protected
    */
-  renderUpdate() {
+  renderUpdate(qualityRatio: number) {
     this.applyFade();
   }
+
+  afterUpdate(qualityRatio: number) {}
 
   /**
    * check the documentation on GameObject for all fade features

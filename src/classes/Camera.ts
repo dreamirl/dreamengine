@@ -333,7 +333,7 @@ class Camera extends PIXI.Container {
    * @memberOf Camera
    * @protected
    */
-  renderUpdate(qualityRatio) {
+  renderUpdate(qualityRatio: number) {
     this.applyFocus();
     this.applyFade();
     this.applyShake();
@@ -351,7 +351,7 @@ class Camera extends PIXI.Container {
    * @memberOf Camera
    * @protected
    */
-  afterUpdate(qualityRatio) {
+  afterUpdate(qualityRatio: number) {
     this.clearPerspective();
   }
 
