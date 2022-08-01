@@ -27,116 +27,118 @@ import config from 'DE.config';
  * => intro.title will do Localization.get( "intro" ).title
  */
 
-function BitmapTextRenderer(text, params) {
-  // force string conversion to avoid pure numbers
-  text =
-    text !== null && text !== undefined && text.toString
-      ? text.toString()
-      : text;
-  var _params = params || {};
+export default class BitmapTextRenderer extends PIXI.BitmapText {
+  constructor(text, params) {
+    let _params = params || {};
 
-  if (_params.localizationKey) {
-    this.localizationKey = _params.localizationKey;
-    text = Localization.get(this.localizationKey);
-    delete _params.localizationKey;
-  } else if (Localization.get(text) !== text) {
-    this.localizationKey = text;
-    text = Localization.get(this.localizationKey);
+    // force string conversion to avoid pure numbers
+    text =
+      text !== null && text !== undefined && text.toString
+        ? text.toString()
+        : text;
+
+    let localizationKey = "";
+    if (_params.localizationKey) {
+      localizationKey = _params.localizationKey;
+      text = Localization.get(localizationKey);
+      delete _params.localizationKey;
+    } else if (Localization.get(text) !== text) {
+      localizationKey = text;
+      text = Localization.get(localizationKey);
+    }
+
+    const fontName = _params.fontName;
+    delete _params.fontName;
+
+    if (!fontName) {
+      throw new Error(
+        'BitmapTextRender :: No fontName defined -- declaration canceled',
+      );
+    }
+
+    if (!PIXI.BitmapFont.available[fontName]) {
+      throw new Error(
+        'BitmapTextRender :: No fontName with the name "' + fontName + '" found',
+      );
+    }
+
+    let fontSize = _params.fontSize;
+    delete _params.fontSize;
+
+    if (!fontSize) {
+      fontSize = PIXI.BitmapFont.available[fontName].size;
+    }
+
+    super(text, {
+      fontName,
+      fontSize,
+      ..._params,
+    });
+
+    if (!_params.resolution) {
+      _params.resolution = config.DEFAULT_TEXT_RESOLUTION;
+    }
+
+    BaseRenderer.instantiate(this, _params);
+
+    this.maxWidth = _params.maxWidth;
+    this.checkMaxWidth();
+
+    this.maxHeight = _params.maxHeight;
+    this.checkMaxHeight();
   }
 
-  this.fontName = params.fontName;
-  delete params.fontName;
-  if (!this.fontName) {
-    throw new Error(
-      'BitmapTextRender :: No fontName defined -- declaration canceled',
-    );
+  checkMaxWidth() {
+    if (this.maxWidth) {
+      const textLocalBounds = this.getLocalBounds();
+      const scaleOneTextMetrics = {
+        width: textLocalBounds.width / this.scale.x,
+        height: textLocalBounds.height / this.scale.y,
+      };
+
+      if (scaleOneTextMetrics.width > this.maxWidth) {
+        this.setScale(this.maxWidth / scaleOneTextMetrics.width);
+      } else {
+        this.setScale(1);
+      }
+    }
   }
 
-  if (!PIXI.BitmapFont.available.hasOwnProperty(this.fontName)) {
-    throw new Error(
-      'BitmapTextRender :: No fontName with the name "' + this.fontName + '" found',
-    );
+  checkMaxHeight() {
+    if (this.maxHeight) {
+      const textLocalBounds = this.getLocalBounds();
+      const scaleOneTextMetrics = {
+        width: textLocalBounds.width / this.scale.x,
+        height: textLocalBounds.height / this.scale.y,
+      };
+
+      if (scaleOneTextMetrics.height > this.maxHeight) {
+        this.setScale(this.maxHeight / scaleOneTextMetrics.height);
+      } else {
+        this.setScale(1);
+      }
+    }
   }
 
-  this.fontSize = params.fontSize;
-  delete params.fontSize;
-  if (!this.fontSize) {
-    this.fontSize = PIXI.BitmapFont.available[this.fontName].size;
+  getWidth() {
+    const textLocalBounds = this.getLocalBounds();
+    return textLocalBounds.width;
   }
 
-  PIXI.BitmapText.call(this, text, {
-    fontName: this.fontName,
-    fontSize: this.fontSize,
-    ..._params,
-  });
-
-  if (!_params.resolution) {
-    _params.resolution = config.DEFAULT_TEXT_RESOLUTION;
+  getHeight() {
+    const textLocalBounds = this.getLocalBounds();
+    return textLocalBounds.height;
   }
 
-  BaseRenderer.instantiate(this, _params);
-
-  this.maxWidth = _params.maxWidth;
-  this.checkMaxWidth();
-
-  this.maxHeight = _params.maxHeight;
-  this.checkMaxHeight();
+  getSize() {
+    const textLocalBounds = this.getLocalBounds();
+    return {
+      width: textLocalBounds.width,
+      height: textLocalBounds.height,
+    };
+  }
 }
-
-BitmapTextRenderer.prototype = Object.create(PIXI.BitmapText.prototype);
-BitmapTextRenderer.prototype.constructor = BitmapTextRenderer;
-BitmapTextRenderer.prototype.DEName = 'BitmapTextRenderer';
 
 BaseRenderer.inherits(BitmapTextRenderer);
 
-BitmapTextRenderer.prototype.checkMaxWidth = function () {
-  if (this.maxWidth) {
-    const textLocalBounds = this.getLocalBounds();
-    const scaleOneTextMetrics = {
-      width: textLocalBounds.width / this.scale.x,
-      height: textLocalBounds.height / this.scale.y,
-    };
-
-    if (scaleOneTextMetrics.width > this.maxWidth) {
-      this.setScale(this.maxWidth / scaleOneTextMetrics.width);
-    } else {
-      this.setScale(1);
-    }
-  }
-};
-
-BitmapTextRenderer.prototype.checkMaxHeight = function () {
-  if (this.maxHeight) {
-    const textLocalBounds = this.getLocalBounds();
-    const scaleOneTextMetrics = {
-      width: textLocalBounds.width / this.scale.x,
-      height: textLocalBounds.height / this.scale.y,
-    };
-
-    if (scaleOneTextMetrics.height > this.maxHeight) {
-      this.setScale(this.maxHeight / scaleOneTextMetrics.height);
-    } else {
-      this.setScale(1);
-    }
-  }
-};
-
-BitmapTextRenderer.prototype.getWidth = function () {
-  const textLocalBounds = this.getLocalBounds();
-  return textLocalBounds.width;
-};
-
-BitmapTextRenderer.prototype.getHeight = function () {
-  const textLocalBounds = this.getLocalBounds();
-  return textLocalBounds.height;
-};
-
-BitmapTextRenderer.prototype.getSize = function () {
-  const textLocalBounds = this.getLocalBounds();
-  return {
-    width: textLocalBounds.width,
-    height: textLocalBounds.height,
-  };
-};
-
-export default BitmapTextRenderer;
+BitmapTextRenderer.prototype.DEName = 'BitmapTextRenderer';
