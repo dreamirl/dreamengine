@@ -24,7 +24,7 @@ import Platform from './utils/Platform';
 import Save from './utils/Save';
 
 // engine custom renderer
-import GameObject from './classes/GameObject';
+import GameObject from './classes/GameObject/GameObject';
 import GameObject_update from './classes/GameObject/GameObject.update';
 import AnimatedTextureRenderer from './classes/renderer/AnimatedTextureRenderer';
 import BaseRenderer from './classes/renderer/BaseRenderer';
