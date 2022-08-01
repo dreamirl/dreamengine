@@ -1,4 +1,4 @@
-import GameObject from './classes/GameObject/GameObject';
+import GameObject from './classes/GameObject';
 import SpriteRenderer from './classes/renderer/SpriteRenderer';
 import TextRenderer from './classes/renderer/TextRenderer';
 import config from './config';

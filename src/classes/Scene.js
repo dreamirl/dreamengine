@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import MainLoop from '../MainLoop';
 import sortGameObjects from '../utils/sortGameObjects';
-import GameObject from './GameObject/GameObject';
+import GameObject from './GameObject';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -177,7 +177,9 @@ Scene.prototype.update = function (time) {
  * @protected
  * @memberOf Scene
  */
-Scene.prototype.sortGameObjects = sortGameObjects;
+Scene.prototype.sortGameObjects = function () {
+  sortGameObjects(this);
+};
 
 // name registered in engine declaration
 Scene.prototype.DEName = 'Scene';

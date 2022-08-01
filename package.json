@@ -6,12 +6,13 @@
   "devDependencies": {
     "cross-env": "^5.2.0",
     "prettier": "^2.2.0",
-    "pretty-quick": "^3.1.1"
+    "pretty-quick": "^3.1.1",
+    "pixi.js": "^6.5.1"
   },
   "peerDependencies": {
-    "pixi.js": "^6.5.1",
     "howler": "^2.1.1",
-    "local-storage": "^2.0.0"
+    "local-storage": "^2.0.0",
+    "pixi.js": "^6.5.1"
   },
   "scripts": {
     "format": "prettier --config .prettierrc.json --ignore-path .prettierignore --write \"**/*.{js,json,ts,tsx,md,html}\"",
@@ -35,5 +36,8 @@
   "bugs": {
     "url": "https://github.com/Dreamirl/Dreamengine/issues"
   },
-  "homepage": "https://github.com/Dreamirl/Dreamengine#readme"
+  "homepage": "https://github.com/Dreamirl/Dreamengine#readme",
+  "dependencies": {
+    "querystring": "^0.2.1"
+  }
 }

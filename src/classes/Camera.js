@@ -3,7 +3,7 @@ import RectRenderer from './renderer/RectRenderer';
 import TilingRenderer from './renderer/TilingRenderer';
 
 // update is the one requiring all the features, so prototype is complete
-import GameObject from './GameObject/GameObject.update';
+import GameObject from './GameObject';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com

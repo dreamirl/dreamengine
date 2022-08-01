@@ -1,4 +1,4 @@
-import GameObject from './GameObject/GameObject.update';
+import GameObject from './GameObject';
 import Scene from './Scene';
 
 /**

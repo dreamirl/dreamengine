@@ -25,8 +25,7 @@ import Platform from './utils/Platform';
 import Save from './utils/Save';
 
 // engine custom renderer
-import GameObject from './classes/GameObject/GameObject';
-import GameObject_update from './classes/GameObject/GameObject.update';
+import GameObject from './classes/GameObject';
 import AnimatedTextureRenderer from './classes/renderer/AnimatedTextureRenderer';
 import BaseRenderer from './classes/renderer/BaseRenderer';
 import BitmapTextRenderer from './classes/renderer/BitmapTextRenderer';
@@ -37,8 +36,6 @@ import SpriteRenderer from './classes/renderer/SpriteRenderer';
 import TextRenderer from './classes/renderer/TextRenderer';
 import TextureRenderer from './classes/renderer/TextureRenderer';
 import TilingRenderer from './classes/renderer/TilingRenderer';
-
-let e = GameObject_update;
 
 var DE = {
   config,

@@ -6,8 +6,8 @@
  * Middleware used to sort children gameObjects (used in Scene and GameObject declarations)
  * @function
  */
-export default function () {
-  this.gameObjects.sort(function (a, b) {
+function sortGameObjects(container) {
+  container.gameObjects.sort(function (a, b) {
     if (b.z == a.z) {
       if (b.zindex == a.zindex) {
         if (b.y == a.y) {
@@ -25,10 +25,10 @@ export default function () {
 
   // TODO when parsing children after gameObjects it's like twice the job
   // but IF we want to parse children which are PIXI stuff that is added directly as child
-  // we need this
-  // so, remove this and let the dev choose the filtering OR remove the previous one and add a z conditional here ?
-  if (this.children) {
-    this.children.sort(function (a, b) {
+  // we need container
+  // so, remove container and let the dev choose the filtering OR remove the previous one and add a z conditional here ?
+  if (container.children) {
+    container.children.sort(function (a, b) {
       if (b.z == a.z) {
         if (b.zindex == a.zindex) {
           if (b.y == a.y) {
@@ -45,7 +45,9 @@ export default function () {
     });
   }
 
-  this._shouldSortChildren = false;
+  container._shouldSortChildren = false;
 
-  this.emit('gameObjects-sorted');
+  container.emit('gameObjects-sorted');
 }
+
+export default sortGameObjects;
