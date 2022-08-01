@@ -59,7 +59,7 @@ class GameObject extends Container {
   _debugRenderer;
   _lastLocalID;
   _focusOptions;
-  _focusOffsets;
+  _focusOffsets = { x: 0, y: 0 };
 
   constructor(params) {
     var _params = params || {};
