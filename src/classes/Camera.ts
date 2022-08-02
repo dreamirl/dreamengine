@@ -333,79 +333,15 @@ class Camera extends PIXI.Container {
    * @memberOf Camera
    * @protected
    */
-  renderUpdate(qualityRatio: number) {
+  update(qualityRatio: number) {
     this.applyFocus();
     this.applyFade();
     this.applyShake();
     this.checkLimits(qualityRatio);
-    this.calculatePerspective();
 
     if (this.background) {
       this.background.x = -this.x;
       this.background.y = -this.y;
-    }
-  }
-
-  /**
-   * this update happen after the Render rendering to restore gameObjects positions (used for calculate things)
-   * @memberOf Camera
-   * @protected
-   */
-  afterUpdate(qualityRatio: number) {
-    this.clearPerspective();
-  }
-
-  /**
-   * calculate perspective for each gameObjects
-   * @memberOf Camera
-   * @protected
-   */
-  calculatePerspective() {
-    if (!this._usePerspective || !this._scene) {
-      return;
-    }
-
-    var centerX = this.x; //this.x + this.renderSizes.x * 0.5 >> 0;
-    var centerY = this.y; //this.y + this.renderSizes.y * 0.5 >> 0;
-    var children = this._scene.children;
-    for (var i = 0, child, rpx, rpy; i < children.length; ++i) {
-      child = children[i];
-      child.savedPosition = { x: child.x, y: child.y };
-
-      // TODO create a perspective cache to limit updates ?
-      // if ( this._usePerspectiveCache && !child._hasMoved && !this._hasMoved ) {
-      //   continue;
-      // }
-
-      if (child._zscale != 1) {
-        rpx = (child.x + (child.x - centerX) * -(1 - child._zscale)) >> 0;
-        rpy = (child.y + (child.y - centerY) * -(1 - child._zscale)) >> 0;
-
-        child.position.set(rpx, rpy);
-      }
-    }
-  }
-
-  /**
-   * remove the perspective
-   * @memberOf Camera
-   * @protected
-   */
-  clearPerspective() {
-    if (!this._usePerspective || !this._scene) {
-      return;
-    }
-
-    var children = this._scene.children;
-    for (var i = 0, child; i < children.length; ++i) {
-      child = children[i];
-
-      // TODO create a perspective cache to limit updates ?
-      // if ( child._staticPosition || ( this._usePerspectiveCache && !child._hasMoved && !this._hasMoved ) ) {
-      //   continue;
-      // }
-
-      child.position.set(child.savedPosition.x, child.savedPosition.y);
     }
   }
 

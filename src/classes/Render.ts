@@ -1,20 +1,28 @@
 import EventEmitter from 'eventemitter3';
 import * as PIXI from 'pixi.js';
-import { Container } from 'pixi.js';
+import { DisplayObject } from 'pixi.js';
 import config from '../config';
 import MainLoop from '../MainLoop';
 import Events from '../utils/Events';
 import Time from '../utils/Time';
 import Camera from './Camera';
+import GameObject from './GameObject';
 import Gui from './Gui';
+import Scene from './Scene';
 
-class RenderableContainer extends PIXI.Container {
+type UpdatableClasses = Camera | Gui | GameObject | Scene;
+class UpdatableContainer extends PIXI.Container {
   constructor() {
     super();
   }
 
-  children: (Camera | Gui)[] = [];
+  updatables: UpdatableClasses[] = [];
+  add(...updatables: UpdatableClasses[]) {
+    this.updatables.push(...updatables);
+    this.addChild(...updatables);
+  }
 }
+
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
  */
@@ -114,9 +122,9 @@ class Render extends EventEmitter {
    * For convenience we use a PIXI.Container to add each scenes to, this way we just need to render this container
    * @public
    * @memberOf Render
-   * @type {RenderableContainer}
+   * @type {PIXI.Container}
    */
-  public mainContainer = new RenderableContainer();
+  public mainContainer = new UpdatableContainer();
 
   // TODO NEED camera distinction ? this.cameras = [];
   // TODO NEED ?? this.scenes = []; // waiting to be decided on camera or not, I push scenes here and render it
@@ -404,14 +412,12 @@ class Render extends EventEmitter {
       }
     }
 
-    for (var i = 0, c = this.mainContainer.children.length; i < c; ++i) {
-      this.mainContainer.children[i].renderUpdate(this._qualityRatio);
-    }
-
     this.pixiRenderer.render(this.mainContainer);
+  }
 
-    for (var i = 0, c = this.mainContainer.children.length; i < c; ++i) {
-      this.mainContainer.children[i].afterUpdate(this._qualityRatio);
+  update() {
+    for (var i = 0, c = this.mainContainer.updatables.length; i < c; ++i) {
+      this.mainContainer.updatables[i].update(this._qualityRatio);
     }
   }
 
@@ -422,7 +428,7 @@ class Render extends EventEmitter {
    * @private
    * @memberOf Render
    */
-  directRender(container: Container) {
+  directRender(container: DisplayObject) {
     this.pixiRenderer.render(container);
   }
 
@@ -432,8 +438,8 @@ class Render extends EventEmitter {
    * @public
    * @memberOf Render
    */
-  add(container: Camera | Gui) {
-    this.mainContainer.addChild(container);
+  add(container: UpdatableClasses) {
+    this.mainContainer.add(container);
     // TODO need ? this.scenes.push( scene );
 
     return this;

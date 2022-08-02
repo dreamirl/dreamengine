@@ -79,7 +79,7 @@ const MainLoop = new (function () {
     }
 
     if (MainLoop.displayLoader) {
-      for (var i = 0, j; (j = MainLoop.renders[i]); i++) {
+      for (let i = 0, j; (j = MainLoop.renders[i]); i++) {
         MainLoop.loader.x = j.pixiRenderer.width * 0.5;
         MainLoop.loader.y = j.pixiRenderer.height * 0.5;
         MainLoop.loader.update(Time.currentTime);
@@ -90,22 +90,21 @@ const MainLoop = new (function () {
     }
 
     // TODO render only if framerate is ok then ?
-    // TODO render and update renderer
-    for (var i = 0, r; (r = MainLoop.renders[i]); ++i) {
+    for (let i = 0, r; (r = MainLoop.renders[i]); ++i) {
       r.render();
-      // r.update(); // was used for touch things, needed ? (call waiting input here)
     }
 
     gamepad.update(Time.currentTime);
 
     while (Time.timeSinceLastFrame >= Time.frameDelay) {
-      /* TODO
-        => update MainLoop.customLoop (keep it ?)
-        */
-      for (var r in MainLoop.additionalModules)
+      for (let r in MainLoop.additionalModules)
         MainLoop.additionalModules[r].update(Time.frameDelayScaled);
 
-      for (var i = 0, s; (s = MainLoop.scenes[i]); ++i) {
+      for (let i = 0, r; (r = MainLoop.renders[i]); ++i) {
+        r.update(Time.frameDelayScaled);
+      }
+
+      for (let i = 0, s; (s = MainLoop.scenes[i]); ++i) {
         if (s.enable) {
           s.update(Time.frameDelayScaled);
         }
