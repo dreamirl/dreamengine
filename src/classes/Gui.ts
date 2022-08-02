@@ -17,6 +17,7 @@ import Scene from './Scene';
 class Gui extends AdvancedContainer {
   constructor(name: string) {
     super();
+    this.addChild(this.scene);
   }
 
   public scene: Scene = new Scene('gui', false);
@@ -45,7 +46,7 @@ class Gui extends AdvancedContainer {
     this.scene.add(...gameObjects);
   }
 
-  update(time) {
+  override update(time: number) {
     if (!this.enable) {
       return;
     }
