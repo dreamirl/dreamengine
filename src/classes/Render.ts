@@ -6,11 +6,9 @@ import MainLoop from '../MainLoop';
 import Events from '../utils/Events';
 import Time from '../utils/Time';
 import Camera from './Camera';
-import GameObject from './GameObject';
 import Gui from './Gui';
-import Scene from './Scene';
 
-type UpdatableClasses = Camera | Gui | GameObject | Scene;
+type UpdatableClasses = Camera | Gui;
 class UpdatableContainer extends PIXI.Container {
   constructor() {
     super();
@@ -415,9 +413,9 @@ class Render extends EventEmitter {
     this.pixiRenderer.render(this.mainContainer);
   }
 
-  update() {
+  update(time) {
     for (var i = 0, c = this.mainContainer.updatables.length; i < c; ++i) {
-      this.mainContainer.updatables[i].update(this._qualityRatio);
+      this.mainContainer.updatables[i].update(time);
     }
   }
 

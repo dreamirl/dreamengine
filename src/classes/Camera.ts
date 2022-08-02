@@ -3,7 +3,8 @@ import RectRenderer from './renderer/RectRenderer';
 import TilingRenderer from './renderer/TilingRenderer';
 
 // update is the one requiring all the features, so prototype is complete
-import GameObject from './GameObject';
+import AdvancedContainer from './AdvancedContainer';
+import FocusComponent from './components/FocusComponent';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -35,7 +36,7 @@ import GameObject from './GameObject';
  * @property {String} [tag="none"] assign tags if it's can be useful for you
  * @property {Scene} [scene=null] you can give a scene on creation, or later
  **/
-class Camera extends PIXI.Container {
+class Camera extends AdvancedContainer {
   private _hasMoved = false;
 
   public target;
@@ -305,11 +306,11 @@ class Camera extends PIXI.Container {
    * @memberOf Camera
    * @protected
    */
-  update(qualityRatio: number) {
-    this.applyFocus();
-    this.applyFade();
-    this.applyShake();
-    this.checkLimits(qualityRatio);
+  update(time: number) {
+    super.update(time);
+
+    // TODO: It works as it is but it was used with the quality ratio (not reimplemented atm)
+    this.checkLimits(1);
 
     if (this.background) {
       this.background.x = -this.x;
@@ -323,7 +324,7 @@ class Camera extends PIXI.Container {
    * @protected
    * @memberOf Camera
    */
-  checkLimits(qualityRatio: number) {
+  checkLimits(qualityRatio: number = 1) {
     var limits = this.limits;
     if (limits.minX != undefined && this.x < limits.minX * qualityRatio) {
       this.x = limits.minX * qualityRatio;
@@ -344,17 +345,7 @@ class Camera extends PIXI.Container {
     }
   }
 
-  /**
-   * give a target to this camera, then camera will focus it until you changed or removed it
-   * you can lock independent axes, or set offsets
-   * @public
-   * @memberOf Camera
-   * @param {GameObject} gameObject is the target to focus on
-   * @param {Object} [params] optional parameters, set offsets or lock
-   * @example // focus the player, decal a little on right, and lock y
-   * myCamera.focus( player, { lock: { y: true }, offsets: { x: 200, y: 0 } } );
-   */
-  focus = GameObject.prototype.focus;
+  focus = FocusComponent.prototype.focus;
 
   /**
    * apply focus on target if there is one
@@ -380,25 +371,6 @@ class Camera extends PIXI.Container {
       this.rotation = -this.target.rotation;
     }
   }
-
-  /**
-   * check the documentation on GameObject for all fade features
-   * @protected
-   * @memberOf GameObject
-   */
-  fade = GameObject.prototype.fade;
-  fadeTo = GameObject.prototype.fadeTo;
-  fadeOut = GameObject.prototype.fadeOut;
-  fadeIn = GameObject.prototype.fadeIn;
-  applyFade = GameObject.prototype.applyFade;
-
-  /**
-   * check the documentation on GameObject for all shake features
-   * @protected
-   * @memberOf GameObject
-   */
-  shake = GameObject.prototype.shake;
-  applyShake = GameObject.prototype.applyShake;
 
   // name registered in engine declaration
   static DEName = 'Camera';

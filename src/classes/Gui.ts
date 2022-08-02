@@ -1,4 +1,4 @@
-import GameObject from './GameObject';
+import AdvancedContainer from './AdvancedContainer';
 import Scene from './Scene';
 
 /**
@@ -13,31 +13,15 @@ import Scene from './Scene';
  * a Gui can be added to a Render and should be on top of everything
  * @example Game.gui = new DE.Gui( "Test" );
  */
-class Gui extends Scene {
+class Gui extends AdvancedContainer {
   constructor(name: string) {
-    super(name);
+    super();
   }
 
-  /**
-   * object used to apply fade transition
-   * @protected
-   * @memberOf GameObject
-   * @type {Object}
-   */
-  private _fadeData = {
-    from: 1,
-    to: 0,
-    duration: 1000,
-    done: true,
-  };
-
-  /**
-   * zindex used to place the gui over everything
-   * @public
-   * @memberof GameObject
-   * @type {Number}
-   */
-  public zindex = 1000;
+  public scene: Scene; // TODO la GUI doit avoir une scène séparée car on
+  // en fait un container, les container n'ont pas à gérer des objets
+  // attention cela dit car la scène s'auto ajoute a la MainLoop
+  // a voir si c'est la GUi qui update sa scène ou pas...
 
   // support trigger  -nop
   // Gui.prototype.trigger = Gui.prototype.emit;
@@ -55,26 +39,6 @@ class Gui extends Scene {
     this.visible = bool;
     this.renderable = bool;
   }
-
-  /**
-   * this update the lifecycle of the Gui, binded on rendering because if a Gui is "off" it doesn't need to be updated
-   * @memberOf Gui
-   * @protected
-   */
-  update(qualityRatio: number) {
-    this.applyFade();
-  }
-
-  /**
-   * check the documentation on GameObject for all fade features
-   * @protected
-   * @memberOf GameObject
-   */
-  fade = GameObject.prototype.fade;
-  fadeTo = GameObject.prototype.fadeTo;
-  fadeOut = GameObject.prototype.fadeOut;
-  fadeIn = GameObject.prototype.fadeIn;
-  applyFade = GameObject.prototype.applyFade;
 }
 
 export default Gui;

@@ -3,6 +3,7 @@ import config from '../config';
 import Events from '../utils/Events';
 import sortGameObjects from '../utils/sortGameObjects';
 import Time from '../utils/Time';
+import AdvancedContainer from './AdvancedContainer';
 import GraphicRenderer from './renderer/GraphicRenderer';
 import Vector2 from './Vector2';
 
@@ -30,165 +31,143 @@ import Vector2 from './Vector2';
  * } );
  */
 
-class GameObject extends Container {
+class GameObject extends AdvancedContainer {
   public static DEName = 'GameObject';
   parent: GameObject; // TODO: ZARNA : ajouter Scene quand Scene sera en classe
-  updatable;
-  vector2;
-  _zindex;
-  _shouldSortChildren;
-  _hasMoved;
-  id;
-  tag;
-  target;
-  flag;
-  gameObjects;
-  _automatisms;
-  _isGameObject;
-  _z;
-  _zscale;
-  worldScale;
+  vector2: Vector2;
   savedScale;
-  _killArgs;
-  _fadeData;
-  _scaleData;
-  _shakeData;
-  _moveData;
-  renderers;
-  renderer;
+  renderers: Container[] = [];
+  renderer: Container;
   _debugRenderer;
   _lastLocalID;
-  _focusOptions;
-  _focusOffsets = { x: 0, y: 0 };
+
+  /**
+   * If false, the object wont be updated anymore (but still renderer).
+   * check visible attribute (from PIXI) to prevent rendering without killing update
+   * @public
+   * @memberOf GameObject
+   * @type {Boolean}
+   */
+  updatable = true;
+
+  /**
+   * Set to true when the (PIXI) position.scope._localID change, that mean the position (x/y) has changed or if z change.
+   * If true, the camera will recalculate perspective. It can also be used by Collisions algorithms
+   * @private
+   * @memberOf GameObject
+   */
+  _hasMoved = true;
+
+  /**
+   * @public
+   * @memberOf GameObject
+   * @type {String}
+   */
+  readonly id = (Math.random() * 999999999) >> 0;
+
+  /**
+   * @public
+   * @memberOf GameObject
+   * @type {String}
+   */
+  readonly name = '';
+
+  /**
+   * @public
+   * @memberOf GameObject
+   * @type {String}
+   */
+  tag = '';
+
+  /**
+   * Flag used in intern logic (for delete) but can be used outside when it's not conflicting with the engine's logic
+   *
+   * @public
+   * @memberOf GameObject
+   * @type {String}
+   */
+  flag: string = '';
+
+  /**
+   * @readOnly
+   * @memberOf GameObject
+   * @type {Array-GameObject}
+   */
+  gameObjects: GameObject[] = [];
+
+  /**
+   * @private
+   * @memberOf GameObject
+   * @type {Object}
+   */
+  _automatisms = {};
+
+  /**
+   * used to make distinction between gameObject and pure PIXI DisplayObject
+   * @private
+   * @memberOf GameObject
+   * @type {Boolean}
+   */
+  _isGameObject = true;
+
+  /**
+   * when a children change his z or zindex property this attribute change to true and the gameObject sort his children in the next update call
+   * @private
+   * @memberOf GameObject
+   */
+  _shouldSortChildren = false;
+
+  /**
+   * used to clearly sort gameObjects rendering priority (higher is rendered over others)
+   * @private
+   * @memberOf GameObject
+   */
+  _zindex = 0;
+
+  /**
+   * create a scale to simulate a z axis (to create perspective) when changing z attribute
+   * this modifier is applied to scale (and savedScale store the old, not modified scale)
+   * @private
+   * @memberOf GameObject
+   * @type {Int}
+   */
+  _zscale = 1;
+
+  /**
+   * store real scale (taking all parent in consideration)
+   * worldScale is update directly when calling the constructor
+   * this way you can know the real rendering scale (to the screen) with all modifiers
+   * @public
+   * @memberOf GameObject
+   * @type {PIXI.Point}
+   */
+  worldScale = new Point(1, 1);
+
+  /**
+   * can prevent event propagation
+   * @private
+   * @memberOf GameObject
+   */
+  _killArgs = {
+    preventEvents: false,
+    preventKillEvent: false,
+    preventKilledEvent: false,
+  };
 
   constructor(params) {
     var _params = params || {};
 
     super();
 
+    this.id = _params.id !== undefined ? _params.id : this.id;
+    this.name = _params.name;
+    this.tag = _params.tag;
+
     this.position.set(_params.x || 0, _params.y || 0);
     delete _params.x;
     delete _params.y;
 
     this.vector2 = new Vector2(this.x, this.y, this);
-
-    /**
-     * If false, the object wont be updated anymore (but still renderer).
-     * check visible attribute (from PIXI) to prevent rendering without killing update
-     * @public
-     * @memberOf GameObject
-     * @type {Boolean}
-     */
-    this.updatable = true;
-
-    /**
-     * Set to true when the (PIXI) position.scope._localID change, that mean the position (x/y) has changed or if z change.
-     * If true, the camera will recalculate perspective. It can also be used by Collisions algorithms
-     * @private
-     * @memberOf GameObject
-     */
-    this._hasMoved = true;
-
-    /**
-     * @public
-     * @memberOf GameObject
-     * @type {String}
-     */
-    this.id =
-      _params.id !== undefined ? _params.id : (Math.random() * 999999999) >> 0;
-
-    /**
-     * @public
-     * @memberOf GameObject
-     * @type {String}
-     */
-    this.name = _params.name;
-    /**
-     * @public
-     * @memberOf GameObject
-     * @type {String}
-     */
-    this.tag = _params.tag;
-
-    /**
-     * Target to focus (position, Vector2, Points or GameObject, whatever with x/y)
-     *
-     * @public
-     * @memberOf GameObject
-     * @type {Object}
-     */
-    this.target = undefined;
-
-    /**
-     * Flag used in intern logic (for delete) but can be used outside when it's not conflicting with the engine's logic
-     *
-     * @public
-     * @memberOf GameObject
-     * @type {String}
-     */
-    this.flag = undefined;
-
-    /**
-     * @readOnly
-     * @memberOf GameObject
-     * @type {Array-GameObject}
-     */
-    this.gameObjects = [];
-
-    /**
-     * @private
-     * @memberOf GameObject
-     * @type {Object}
-     */
-    this._automatisms = {};
-
-    /**
-     * used to make distinction between gameObject and pure PIXI DisplayObject
-     * @private
-     * @memberOf GameObject
-     * @type {Boolean}
-     */
-    this._isGameObject = true;
-
-    /**
-     * when a children change his z or zindex property this attribute change to true and the gameObject sort his children in the next update call
-     * @private
-     * @memberOf GameObject
-     */
-    this._shouldSortChildren = false;
-
-    /**
-     * used to clearly sort gameObjects rendering priority (higher is rendered over others)
-     * @private
-     * @memberOf GameObject
-     */
-    this._zindex = 0;
-
-    /**
-     * used to simulate a perspective when using a Camera, if not using a Camera this is an other way to sort gameObjects (with z-index)
-     * @private
-     * @memberOf GameObject
-     */
-    this._z = 0;
-
-    /**
-     * create a scale to simulate a z axis (to create perspective) when changing z attribute
-     * this modifier is applied to this.scale (and savedScale store the old, not modified scale)
-     * @private
-     * @memberOf GameObject
-     * @type {Int}
-     */
-    this._zscale = 1;
-
-    /**
-     * store real scale (taking all parent in consideration)
-     * worldScale is update directly when calling the constructor
-     * this way you can know the real rendering scale (to the screen) with all modifiers
-     * @public
-     * @memberOf GameObject
-     * @type {PIXI.Point}
-     */
-    this.worldScale = new Point(1, 1);
 
     /**
      * save the scale before z applies (this way you can know the true scale of the object without any modifier)
@@ -207,65 +186,6 @@ class GameObject extends Container {
     delete _params.scale;
     // call correctly the scale modifier to update zscale and worldScale
     this.setScale(this.savedScale.x, this.savedScale.y);
-
-    /**
-     * can prevent event propagation
-     * @private
-     * @memberOf GameObject
-     */
-    this._killArgs = {};
-
-    /**
-     * object used to apply fade transition
-     * @protected
-     * @memberOf GameObject
-     * @type {Object}
-     */
-    this._fadeData = {
-      from: 1,
-      to: 0,
-      duration: 1000,
-      done: true,
-    };
-
-    /**
-     * object used to apply scale transition
-     * @protected
-     * @memberOf GameObject
-     * @type {Object}
-     */
-    this._scaleData = {
-      fromx: 1,
-      tox: 0,
-      fromy: 1,
-      toy: 0,
-      duration: 1000,
-      done: true,
-    };
-
-    /**
-     * object used to apply shake
-     * @protected
-     * @memberOf GameObject
-     * @type {Object}
-     */
-    this._shakeData = {
-      done: true,
-      prevX: 0,
-      prevY: 0,
-    };
-
-    /**
-     * object used to apply move translation
-     * @protected
-     * @memberOf GameObject
-     * @type {Object}
-     */
-    this._moveData = {
-      done: true,
-    };
-
-    this.renderers = [];
 
     if (_params.renderer) {
       this.addRenderer(_params.renderer);
@@ -351,20 +271,6 @@ class GameObject extends Container {
       if (this.parent) {
         this.parent._shouldSortChildren = true;
       }
-    }
-  }
-
-  get z() {
-    return this._z;
-  }
-
-  set z(z) {
-    this._z = z;
-    this._hasMoved = true;
-    this._updateZScale();
-
-    if (this.parent) {
-      this.parent._shouldSortChildren = true;
     }
   }
 
@@ -634,7 +540,6 @@ class GameObject extends Container {
    * @example myObject.askToKill( { preventEvents: true } );
    */
   askToKill(params) {
-    this.target = null;
     this._killArgs = params || {};
 
     if (!this._killArgs.preventEvents && !this._killArgs.preventKillEvent) {
@@ -687,9 +592,8 @@ class GameObject extends Container {
       this.emit('killed', this);
     }
 
-    this.target = undefined;
     this.enable = false;
-    this.flag = undefined;
+    this.flag = '';
 
     //TODO: ZARNA | A review Antoine : certain que c'est toujours utile/le cas ?
     // check if object isn't already destroyed and there is children inside 'cause PIXI don't do it
@@ -775,11 +679,10 @@ class GameObject extends Container {
             -this.position.x * harmonics.sin +
             this.position.y * -harmonics.cos
           ) + pos.y,
-        z: this.z + pos.z,
       };
     }
 
-    return { x: this.x, y: this.y, z: this.z };
+    return { x: this.x, y: this.y };
   }
 
   /**
@@ -895,322 +798,6 @@ class GameObject extends Container {
   }
 
   /**
-   * create a fade from alpha to alpha, with given duration time
-   * @public
-   * @memberOf GameObject
-   * @param {Float} from start value
-   * @param {Float} [to=0] end value
-   * @param {Int} [duration=500] fade duration in ms
-   * @example myObject.fade( 0.5, 1, 850 );
-   */
-  fade(from, to, duration, force, callback) {
-    if (force) {
-      this.enable = true;
-    }
-
-    let dir = (from != undefined ? from : 1) > to ? -1 : 1;
-
-    var data = {
-      from: from != undefined ? from : 1,
-      to: to != undefined ? to : 0,
-      duration: duration || 500,
-      oDuration: duration || 500,
-      fadeScale: Math.abs(from - to),
-      done: false,
-      callback: callback,
-      dir: dir,
-    };
-
-    this._fadeData = data;
-
-    return this;
-  }
-
-  /**
-   * create a fade from current alpha to given value with given duration time
-   * @public
-   * @memberOf GameObject
-   * @param {Float} [to=0] end value
-   * @param {Int} [duration=500] fade duration in ms
-   * @example myObject.fadeTo( 0.5, 850 ); // don't care if alpha is 0.2 or 0.8
-   */
-  fadeTo(to, duration, force, callback) {
-    this.fade(this.alpha, to, duration, force, callback);
-
-    return this;
-  }
-
-  /**
-   * fade to alpha 0 with given duration time
-   * fade start to the current alpha or 1 if force is true
-   * @public
-   * @memberOf GameObject
-   * @param {Int} [duration=500] fade duration in ms
-   * @param {Boolean} [force=false] if true will set alpha at 1 before fade
-   * @example // alpha = 0 in 850ms
-   * myObject.fadeOut( 850 );
-   */
-  fadeOut(duration, force, callback) {
-    if (force) {
-      this.enable = true;
-      this.alpha = this.alpha > 0 ? this.alpha : 1; // make sure to prevent any blink side effect
-    }
-
-    this.fade(this.alpha, 0, duration, force, callback);
-    return this;
-  }
-
-  /**
-   * fade to alpha 1 with given duration time
-   * fade start to the current alpha, or 0 if force is true
-   * @public
-   * @memberOf GameObject
-   * @param {Int} [duration=500] fade duration in ms
-   * @param {Boolean} [force=false] if true will set alpha at 0
-   * @example // alpha = 1 in 850ms
-   * myObject.fadeIn( 850 );
-   */
-  fadeIn(duration, force, callback) {
-    if (force) {
-      this.enable = true;
-      this.alpha = this.alpha < 1 ? this.alpha : 0; // make sure to prevent any blink side effect
-    }
-
-    this.fade(this.alpha, 1, duration, force, callback);
-    return this;
-  }
-
-  /**
-   * apply the current fade
-   * @protected
-   * @memberOf GameObject
-   */
-  applyFade() {
-    if (!this._fadeData.done) {
-      this._fadeData.stepVal =
-        (Time.frameDelayScaled / this._fadeData.oDuration) *
-        this._fadeData.dir *
-        this._fadeData.fadeScale;
-      this.alpha += this._fadeData.stepVal;
-      this._fadeData.duration -= Time.frameDelayScaled;
-
-      if (
-        (this._fadeData.dir < 0 && this.alpha <= this._fadeData.to) ||
-        (this._fadeData.dir > 0 && this.alpha >= this._fadeData.to) ||
-        this.alpha < 0 ||
-        this.alpha > 1
-      ) {
-        this.alpha = this._fadeData.to;
-      }
-
-      if (this._fadeData.duration <= 0) {
-        this._fadeData.done = true;
-
-        this.emit('fadeEnd', this);
-
-        if (this._fadeData.callback) {
-          this._fadeData.callback.call(this);
-        }
-      }
-    }
-  }
-
-  /**
-   * give a target to this gameObject, then it will focus it until you changed or removed it
-   * you can lock independent axes, and set offsets
-   * @public
-   * @memberOf GameObject
-   * @param {GameObject} gameObject is the target to focus on
-   * @param {Object} [params] optional parameters, set offsets or lock
-   * @example // create a fx for your ship, decal a little on left, and lock y
-   * fx.focus( player, { lock: { y: true }, offsets: { x: -200, y: 0 } } );
-   */
-  focus(gameObject, params) {
-    params = params || {};
-    this.target = gameObject;
-    this._focusOptions = Object.assign(
-      {
-        x: true,
-        y: true,
-        rotation: false,
-      },
-      params.options,
-    );
-
-    // focus default x/y
-    this._focusOptions.x = this._focusOptions.x !== false ? true : false;
-    this._focusOptions.y = this._focusOptions.y !== false ? true : false;
-
-    this._focusOffsets = Object.assign(
-      { x: 0, y: 0 },
-      params.offsets || params.offset,
-    );
-
-    return this;
-  }
-
-  /**
-   * apply focus on target if there is one
-   * You shouldn't call or change this method
-   * @protected
-   * @memberOf Camera
-   */
-  applyFocus() {
-    if (!this.target) {
-      return;
-    }
-
-    let pos = this.target;
-    if (this.target.getWorldPos) {
-      pos = this.target.getWorldPos();
-    }
-
-    let parentPos;
-    if (this.parent.getWorldPos) {
-      parentPos = this.parent.getWorldPos();
-    } else {
-      parentPos = this.parent;
-    }
-
-    if (this._focusOptions.x) {
-      this.x = pos.x + (this._focusOffsets.x || 0) - parentPos.x;
-    }
-    if (this._focusOptions.y) {
-      this.y = pos.y + (this._focusOffsets.y || 0) - parentPos.y;
-    }
-    if (this._focusOptions.rotation) {
-      this.rotation = this.target.rotation;
-    }
-  }
-
-  /**
-   * create a fluid move translation
-   * you can only have one at a time
-   * @public
-   * @memberOf GameObject
-   * @param {Object / GameObject / PIXI.DisplayObject} pos give x, y, and z destination
-   * @param {Int} [duration=500] time duration
-   * @param {Function} callback will be called in the current object context
-   * @example // move to 100,100 in 1 second
-   * player.moveTo( { x: 100, y: 100 }, 1000 );
-   * @example // move to bonus position
-   * player.moveTo( bonus, 1000, function(){ console.log( this ) } );
-   */
-  moveTo(
-    pos,
-    duration,
-    callback,
-    curveName,
-    forceLocalPos, // TODO add curveName (not coded)
-  ) {
-    if (pos.getWorldPos) {
-      pos = pos.getWorldPos();
-    }
-
-    var myPos = this;
-    var parentPos;
-
-    if (!forceLocalPos) {
-      myPos = this.getWorldPos();
-
-      if (this.parent && this.parent.getWorldPos) {
-        parentPos = this.parent.getWorldPos();
-      }
-    }
-
-    this._moveData = {
-      distX: -(myPos.x - (pos.x !== undefined ? pos.x : myPos.x)),
-      distY: -(myPos.y - (pos.y !== undefined ? pos.y : myPos.y)),
-      distZ: -(myPos.z - (pos.z !== undefined ? pos.z : myPos.z)),
-      dirX: myPos.x > pos.x ? 1 : -1,
-      dirY: myPos.y > pos.y ? 1 : -1,
-      dirZ: myPos.z > pos.z ? 1 : -1,
-      duration: duration || 500,
-      oDuration: duration || 500,
-      curveName: curveName || 'linear',
-      done: false,
-      stepValX: 0,
-      stepValY: 0,
-      stepValZ: 0,
-      destX: parentPos ? pos.x - parentPos.x : pos.x,
-      destY: parentPos ? pos.y - parentPos.y : pos.y,
-      destZ: pos.z,
-      callback: callback,
-    };
-    this._moveData.leftX = this._moveData.distX;
-    this._moveData.leftY = this._moveData.distY;
-    this._moveData.leftZ = this._moveData.distZ;
-
-    return this;
-  }
-
-  /**
-   * apply the move transition each update
-   * You shouldn't call or change this method
-   * @protected
-   * @memberOf GameObject
-   */
-  applyMove() {
-    if (this._moveData.done) return;
-
-    var move = this._moveData;
-
-    if (move.distX != 0) {
-      move.stepValX = (Time.frameDelayScaled / move.oDuration) * move.distX;
-      move.leftX -= move.stepValX;
-      this.x += move.stepValX;
-    }
-
-    if (move.distY != 0) {
-      move.stepValY = (Time.frameDelayScaled / move.oDuration) * move.distY;
-      move.leftY -= move.stepValY * move.dirY; // * dirY because y is inverted
-      this.y += move.stepValY;
-    }
-
-    if (move.distZ != 0) {
-      move.stepValZ = (Time.frameDelayScaled / move.oDuration) * move.distZ;
-      move.leftZ -= move.stepValZ * move.dirZ; // * dirZ because z is inverted
-      this.z += move.stepValZ;
-    }
-
-    move.duration -= Time.frameDelayScaled;
-
-    // check pos
-    if (move.dirX < 0 && move.leftX < 0) {
-      this.x += move.leftX;
-    } else if (move.dirX > 0 && move.leftX > 0) {
-      this.x -= move.leftX;
-    }
-
-    if (move.dirY < 0 && move.leftY < 0) {
-      this.y += move.leftY;
-    } else if (move.dirY > 0 && move.leftY > 0) {
-      this.y -= move.leftY;
-    }
-
-    if (move.dirZ < 0 && move.leftZ < 0) {
-      this.z += move.leftZ;
-    } else if (move.dirZ > 0 && move.leftZ > 0) {
-      this.z -= move.leftZ;
-    }
-
-    if (move.duration <= 0) {
-      this._moveData.done = true;
-      this.position.set(
-        move.destX !== undefined ? move.destX : this.x,
-        move.destY !== undefined ? move.destY : this.y,
-      );
-      this.z = move.destZ !== undefined ? move.destZ : this.z;
-
-      this.emit('moveEnd');
-
-      if (move.callback) {
-        move.callback.call(this, move.callback);
-      }
-    }
-  }
-
-  /**
    * Because we use a complex scaling system (with z modifier), we have to use this middle-ware to trigger updateScale
    * if you call directly .scale.set it will work but not if there is a z modifier
    * @public
@@ -1218,48 +805,8 @@ class GameObject extends Container {
    */
   setScale(x, y) {
     this.scale.set(x, y !== undefined ? y : x);
-    this._updateScale();
 
     return this;
-  }
-
-  /**
-   * when z change we restore saved scale, then change it again to final values and update worldScale
-   * @private
-   * @memberOf GameObject
-   */
-  _updateZScale() {
-    // this come from old Camera render (working fine as excepted...)
-    // zMaxDepth is 10 by default so if z is 1 scale modifier will be 0.9 (1 - 0.1)
-    var zscale = 1 - this.z / config.zMaxDepth;
-    this._zscale = zscale;
-
-    this.scale.x = zscale * this.savedScale.x;
-    this.scale.y = zscale * this.savedScale.y;
-
-    // update worldScale
-    this._updateWorldScale();
-    for (var i = 0; i < this.gameObjects.length; ++i) {
-      this.gameObjects[i]._updateWorldScale();
-    }
-  }
-
-  /**
-   * when we change the scale manually, we need to re-apply z deformation
-   * directly save the old scale before zscale applies (this way we can recalculate things from the beginning)
-   * @private
-   * @memberOf GameObject
-   */
-  _updateScale() {
-    this.savedScale.clone(this.scale);
-    this.scale.x = this._zscale * this.scale.x;
-    this.scale.y = this._zscale * this.scale.y;
-
-    // PIXI update worldScale
-    this._updateWorldScale();
-    for (var i = 0; i < this.gameObjects.length; ++i) {
-      this.gameObjects[i]._updateWorldScale();
-    }
   }
 
   /**
@@ -1282,169 +829,6 @@ class GameObject extends Container {
     this.worldScale.y = this.worldScale.y * this.parent.worldScale.y;
 
     return this;
-  }
-
-  /**
-   * create a fluid scale
-   * you can only have one at a time
-   * @public
-   * @memberOf GameObject
-   * @param {Object} scale give final x, and final y
-   * @param {Int} [duration=500] time duration
-   * @example // scale to 2,3 in 1 second
-   * myGameObject.scaleTo( { x: 2, y: 3 }, 1000 );
-   */
-  scaleTo(scale, duration, callback) {
-    var dscale = {
-      x: !isNaN(scale) ? scale : scale.x,
-      y: !isNaN(scale) ? scale : scale.y,
-    };
-    this._scaleData = {
-      valX: -(
-        this.savedScale.x -
-        (dscale.x !== undefined ? dscale.x : this.savedScale.x)
-      ),
-      valY: -(
-        this.savedScale.y -
-        (dscale.y !== undefined ? dscale.y : this.savedScale.y)
-      ),
-      dirX: this.savedScale.x > dscale.x ? 1 : -1,
-      dirY: this.savedScale.y > dscale.y ? 1 : -1,
-      duration: duration || 500,
-      oDuration: duration || 500,
-      done: false,
-      stepValX: 0,
-      stepValY: 0,
-      destX: dscale.x,
-      destY: dscale.y,
-      scaleX: this.savedScale.x,
-      scaleY: this.savedScale.y,
-      callback: callback,
-    };
-    this._scaleData.leftX = this._scaleData.valX;
-    this._scaleData.leftY = this._scaleData.valY;
-
-    return this;
-  }
-
-  /**
-   * apply the current scale
-   * @protected
-   * @memberOf GameObject
-   */
-  applyScale() {
-    if (this._scaleData.done) {
-      return;
-    }
-
-    var scaleD = this._scaleData;
-
-    if (scaleD.valX != 0) {
-      scaleD.stepValX =
-        (Time.frameDelayScaled / scaleD.oDuration) * scaleD.valX;
-      scaleD.leftX -= scaleD.stepValX;
-      scaleD.scaleX += scaleD.stepValX;
-    }
-
-    if (scaleD.valY != 0) {
-      scaleD.stepValY =
-        (Time.frameDelayScaled / scaleD.oDuration) * scaleD.valY;
-      scaleD.leftY -= scaleD.stepValY;
-      scaleD.scaleY += scaleD.stepValY;
-    }
-    scaleD.duration -= Time.frameDelayScaled;
-
-    // check scale
-    if (scaleD.dirX < 0 && scaleD.leftX < 0) {
-      scaleD.scaleX += scaleD.leftX;
-    } else if (scaleD.dirX > 0 && scaleD.leftX > 0) {
-      scaleD.scaleX -= scaleD.leftX;
-    }
-
-    if (scaleD.dirY < 0 && scaleD.leftY < 0) {
-      scaleD.scaleY += scaleD.leftY;
-    } else if (scaleD.dirY > 0 && scaleD.leftY > 0) {
-      scaleD.scaleY -= scaleD.leftY;
-    }
-
-    this.scale.set(scaleD.scaleX, scaleD.scaleY);
-
-    if (scaleD.duration <= 0) {
-      this._scaleData.done = true;
-      this.scale.set(scaleD.destX, scaleD.destY);
-
-      this.emit('scale-end', this);
-
-      if (this._scaleData.callback) {
-        this._scaleData.callback.call(this);
-      }
-    }
-
-    this._updateScale();
-  }
-
-  /**
-   * create a shake with given range
-   * you can only have one at a time
-   * @public
-   * @memberOf GameObject
-   * @param {Int} xRange max X gameObject will move to shake
-   * @param {Int} yRange max Y gameObject will move to shake
-   * @param {Int} [duration=500] time duration
-   * @example // shake with 10-10 force during 1sec
-   * player.shake( 10, 10, 1000 );
-   */
-  shake(xRange, yRange, duration, callback) {
-    this._shakeData = {
-      // "startedAt" : Date.now()
-      duration: duration || 500,
-      xRange: xRange,
-      yRange: yRange,
-      prevX: this._shakeData ? this._shakeData.prevX : 0,
-      prevY: this._shakeData ? this._shakeData.prevY : 0,
-      callback: callback,
-    };
-
-    return this;
-  }
-
-  /**
-   * apply the shake each update
-   * You shouldn't call or change this method
-   * @protected
-   * @memberOf GameObject
-   */
-  applyShake() {
-    if (this._shakeData.done) {
-      return;
-    }
-
-    var shake = this._shakeData;
-    // restore previous shake
-    this.x -= shake.prevX;
-    this.y -= shake.prevY;
-    shake.duration -= Time.frameDelayScaled;
-    // old way - Date.now() - this._shakeData.startedAt > this._shakeData.duration )
-    if (shake.duration <= 0) {
-      shake.done = true;
-      shake.prevX = 0;
-      shake.prevY = 0;
-
-      this.emit('shakeEnd');
-
-      if (shake.callback) {
-        shake.callback.call(this);
-      }
-      return;
-    }
-
-    shake.prevX =
-      (-(Math.random() * shake.xRange) + Math.random() * shake.xRange) >> 0;
-    shake.prevY =
-      (-(Math.random() * shake.yRange) + Math.random() * shake.yRange) >> 0;
-
-    this.x += shake.prevX;
-    this.y += shake.prevY;
   }
 
   update(time) {
@@ -1501,13 +885,9 @@ class GameObject extends Container {
       }
     }
 
-    // TODO
-    this.applyFocus();
-    this.applyShake();
-    this.applyMove();
-    this.applyFade();
-    this.applyScale();
+    super.update(time); // Update des components
 
+    // TODO should be optional and something we can shut down
     if (this._shouldSortChildren) {
       this.sortGameObjects();
     }
