@@ -36,8 +36,6 @@ import GameObject from './GameObject';
  * @property {Scene} [scene=null] you can give a scene on creation, or later
  **/
 class Camera extends PIXI.Container {
-  private _usePerspective = true;
-  private _usePerspectiveCache = true;
   private _hasMoved = false;
 
   public target;
@@ -129,16 +127,7 @@ class Camera extends PIXI.Container {
       maxY: _params.maxY != undefined ? _params.maxY : undefined,
     };
 
-    /**
-     * if true, gameObjects positions will be calculated before rendering to simulate a perspective depending on their z value
-     * @private
-     * @memberOf Camera
-     */
-    this._usePerspective =
-      _params.usePerspective !== undefined ? _params.usePerspective : true;
-
     this._hasMoved = false;
-    this._usePerspectiveCache = true;
 
     if (_params.scene) {
       this.scene = _params.scene;
@@ -158,23 +147,6 @@ class Camera extends PIXI.Container {
   public set enable(bool: boolean) {
     this.visible = bool;
     this.renderable = bool;
-  }
-
-  /**
-   * public getter/setter for _usePerspective, if true perspective is calculated before rendering
-   * @public
-   * @memberOf GameObject
-   * @type {Boolean}
-   */
-  public get usePerspective() {
-    return this._usePerspective;
-  }
-  public set usePerspective(bool: boolean) {
-    if (this._usePerspective) {
-      this.clearPerspective();
-    }
-
-    this._usePerspective = bool;
   }
 
   /**
