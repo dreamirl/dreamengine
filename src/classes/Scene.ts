@@ -24,10 +24,13 @@ class Scene<T extends GameObject = GameObject> extends Container {
    */
   public gameObjects: T[] = [];
 
-  constructor(name: string) {
+  constructor(name: string, addToTheMainLoop = true) {
     super();
     this.name = name;
-    MainLoop.addScene(this);
+
+    if (addToTheMainLoop) {
+      MainLoop.addScene(this);
+    }
   }
 
   /**

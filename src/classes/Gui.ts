@@ -1,4 +1,5 @@
 import AdvancedContainer from './AdvancedContainer';
+import GameObject from './GameObject';
 import Scene from './Scene';
 
 /**
@@ -18,7 +19,8 @@ class Gui extends AdvancedContainer {
     super();
   }
 
-  public scene: Scene; // TODO la GUI doit avoir une scène séparée car on
+  public scene: Scene = new Scene('gui', false);
+  // TODO la GUI doit avoir une scène séparée car on
   // en fait un container, les container n'ont pas à gérer des objets
   // attention cela dit car la scène s'auto ajoute a la MainLoop
   // a voir si c'est la GUi qui update sa scène ou pas...
@@ -38,6 +40,18 @@ class Gui extends AdvancedContainer {
   public set enable(bool) {
     this.visible = bool;
     this.renderable = bool;
+  }
+  add(...gameObjects: GameObject[]) {
+    this.scene.add(...gameObjects);
+  }
+
+  update(time) {
+    if (!this.enable) {
+      return;
+    }
+
+    super.update(time);
+    this.scene.update(time);
   }
 }
 
