@@ -719,14 +719,6 @@ class GameObject extends AdvancedContainer {
     params = params || {};
     methodName = methodName || id;
 
-    // if using the old way - TODO - remove it on version 0.2.0
-    if (methodName.type) {
-      console.error(
-        'Call arguments Deprecated: You use the old way to call addAutomatism, check the doc please',
-      );
-      params = methodName;
-      methodName = params.type;
-    }
     if (!this[methodName]) {
       console.warn(
         "%cCouldn't found the method " +
