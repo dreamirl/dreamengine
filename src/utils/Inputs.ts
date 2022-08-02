@@ -27,26 +27,24 @@ var _langs = {
       'En quittant la page vous allez perdre toute progression non sauvegardé.',
   },
 };
-var Inputs = new (function () {
-  this.DEName = 'Inputs';
 
-  this.isListening = false;
+class Inputs {
+  DEName = 'Inputs';
 
-  this.isWaitingForAnyKey = false;
-  this.waitForAnyKeyType = 'keyboard';
-  this.waitForAnyKeyCallback = function () {};
+  isListening = false;
 
-  this.usedInputs = {};
+  isWaitingForAnyKey = false;
+  waitForAnyKeyType = 'keyboard';
+  waitForAnyKeyCallback = function (t: any) {};
 
-  this.isWindowFocused = true;
+  usedInputs = {};
 
-  // @private renders, stock renders to bind inputs and call them
-  var _renders = {};
+  isWindowFocused = true;
 
-  this._keyLocked = false;
-  this._keyLockNamesExceptions = [];
+  _keyLocked = false;
+  _keyLockNamesExceptions: string[] = [];
 
-  this.dbInputs = {
+  public dbInputs = {
     KEYBOARD: {
       up: 38,
       down: 40,
@@ -141,10 +139,11 @@ var Inputs = new (function () {
       RVertical: 3,
     },
   };
-  this.debugKeys = [123];
-  this.ignoreKeys = [116, 122, 123];
+  public debugKeys = [123];
+  public ignoreKeys = [116, 122, 123];
+  public isShiftDown = false;
 
-  this.queue = {
+  queue = {
     keyDown: {},
     keyUp: {},
     btnMoved: {},
@@ -153,13 +152,23 @@ var Inputs = new (function () {
     axeStop: {},
   };
 
+  constructor() {
+    window.addEventListener('focus', () => {
+      this.isWindowFocused = true;
+    });
+
+    window.addEventListener('blur', () => {
+      this.isWindowFocused = false;
+    });
+  }
+
   /**
    * initialize Inputs listeners with your custom Inputs list
    * called by the main engine file
    * @private
    * @memberOf Inputs
    */
-  this.init = function (customInputs) {
+  init(customInputs) {
     var newInputs = {};
 
     for (var i in customInputs) {
@@ -248,26 +257,26 @@ var Inputs = new (function () {
         Events.emit('unload-game');
       };
     }
-  };
+  }
 
   /**
    * return the input data
    * @public
    * @memberOf Inputs
    */
-  this.get = function (name) {
+  get(name) {
     if (this.usedInputs[name]) {
       return this.usedInputs[name];
     }
     return false;
-  };
+  }
 
   /**
    * bind a callback on an event
    * @public
    * @memberOf Inputs
    */
-  this.on = function (type, input, callback) {
+  on(type, input, callback) {
     if (!this.queue[type][input]) {
       console.log(
         '%cWARN: Inputs: Try to bind on a non existent input ::: ' +
@@ -281,14 +290,14 @@ var Inputs = new (function () {
 
     this.queue[type][input].push(callback);
     return this.queue[type][input].length;
-  };
+  }
 
   /**
    * stop listening an event
    * @public
    * @memberOf Inputs
    */
-  this.stopListening = function (type, input, index) {
+  stopListening(type, input, index) {
     if (index !== undefined) {
       this.queue[type][input][index] = null;
       return;
@@ -300,41 +309,40 @@ var Inputs = new (function () {
     this.queue[type][input] = [];
 
     return this;
-  };
+  }
 
   /**
    * Trigger manually an event
    * @public
    * @memberOf Inputs
    */
-  this.trigger = function (eventType, keyName, val) {
+  emit(eventType: string, keyName: string, val?: any) {
     if (
-      ((Inputs._keyLocked &&
-        !Inputs._keyLockNamesExceptions.includes(keyName)) ||
-        !Inputs.isWindowFocused) &&
+      ((this._keyLocked && !this._keyLockNamesExceptions.includes(keyName)) ||
+        !this.isWindowFocused) &&
       eventType.search('mouse') == -1
     ) {
       return;
     }
 
-    for (var ev = 0; ev < Inputs.queue[eventType][keyName].length; ++ev) {
-      if (Inputs.queue[eventType][keyName][ev]) {
-        Inputs.queue[eventType][keyName][ev](val);
+    for (var ev = 0; ev < this.queue[eventType][keyName].length; ++ev) {
+      if (this.queue[eventType][keyName][ev]) {
+        this.queue[eventType][keyName][ev](val);
       }
     }
 
     Events.emit(eventType, keyName);
-  };
+  }
 
   /**
    * Return the key state
    * @public
    * @memberOf Inputs
    */
-  this.key = function (name) {
+  key(name) {
     if (
-      (Inputs.keyLocked && !Inputs._keyLockNamesExceptions.includes(name)) ||
-      !Inputs.isWindowFocused
+      (this.keyLocked && !this._keyLockNamesExceptions.includes(name)) ||
+      !this.isWindowFocused
     )
       return false;
     if (
@@ -344,45 +352,33 @@ var Inputs = new (function () {
         Date.now() - this.usedInputs[name].lastCall >=
           this.usedInputs[name].interval / Time.scaleDelta)
     ) {
-      if (!Inputs.usedInputs[name].stayOn) {
-        Inputs.usedInputs[name].lastCall = Date.now();
+      if (!this.usedInputs[name].stayOn) {
+        this.usedInputs[name].lastCall = Date.now();
       }
-      ++Inputs.usedInputs[name].numberCall;
+      ++this.usedInputs[name].numberCall;
       return true;
     }
 
     return false;
-  };
+  }
 
   /**
    * Toggle keyboard listeners
    * @public
    * @memberOf Inputs
    */
-  this.toggleListeners = function (canvas, bind) {
+  toggleListeners(canvas?: HTMLCanvasElement, bind?: boolean) {
     var target = canvas || window;
     if (this.isListening && !bind) {
-      if (target.removeEventListener) {
-        target.removeEventListener('keydown', Inputs.keyDown, false);
-        target.removeEventListener('keyup', Inputs.keyUp, false);
-        target.removeEventListener('keypress', Inputs.keyPress, false);
-      } else if (target.detachEvent) {
-        target.detachEvent('onkeydown', Inputs.keyDown);
-        target.detachEvent('onkeyup', Inputs.keyUp);
-        target.detachEvent('onkeypress', Inputs.keyPress);
-      }
+      target.removeEventListener('keydown', (e) => this.keyDown(e), false);
+      target.removeEventListener('keyup', (e) => this.keyUp(e), false);
+      target.removeEventListener('keypress', (e) => this.keyPress(e), false);
     } else {
-      if (target.addEventListener) {
-        target.addEventListener('keydown', Inputs.keyDown, false);
-        target.addEventListener('keyup', Inputs.keyUp, false);
-        target.addEventListener('keypress', Inputs.keyPress, false);
-      } else if (target.attachEvent) {
-        target.attachEvent('onkeydown', Inputs.keyDown);
-        target.attachEvent('onkeyup', Inputs.keyUp);
-        target.attachEvent('onkeypress', Inputs.keyPress);
-      }
+      target.addEventListener('keydown', (e) => this.keyDown(e), false);
+      target.addEventListener('keyup', (e) => this.keyUp(e), false);
+      target.addEventListener('keypress', (e) => this.keyPress(e), false);
     }
-  };
+  }
 
   /**
    * Search all inputName using the given code/type and return all values in an array
@@ -391,14 +387,14 @@ var Inputs = new (function () {
    * @param {String} code - key name: up, shift, space, A, etc...
    * @param {String} type - KEYBOARD / GAMEPADBUTTONS / GAMEPADAXES
    */
-  this.findInputs = function (code, type) {
-    var inputs = [];
+  findInputs(code, type) {
+    let inputs: string[] = [];
     // parse all gamesInputs
-    for (var i in Inputs.usedInputs) {
+    for (let i in this.usedInputs) {
       // parse each inputs
-      for (var t in Inputs.usedInputs[i].inputs) {
-        var input = Inputs.usedInputs[i].inputs[t].code,
-          tp = Inputs.usedInputs[i].inputs[t].type;
+      for (let t in this.usedInputs[i].inputs) {
+        let input = this.usedInputs[i].inputs[t].code,
+          tp = this.usedInputs[i].inputs[t].type;
 
         if (input == code && tp == type) {
           inputs.push(i);
@@ -406,7 +402,7 @@ var Inputs = new (function () {
       }
     }
     return inputs.length > 0 ? inputs : false;
-  };
+  }
 
   /**
    * When a keyDown event occurs, it parse it and trigger every match with our custom inputs
@@ -414,13 +410,13 @@ var Inputs = new (function () {
    * @memberOf Inputs
    * @param {DOMEvent} event
    */
-  this.keyDown = function (event) {
-    var e = event || window.event;
-    var code = e.which || e.keyCode;
+  keyDown(event) {
+    let e = event || window.event;
+    let code = e.which || e.keyCode;
 
     // we can ignore a list a specified keys (if you are using these for your top-application for example, like F1, F2)
-    if (Inputs.ignoreKeys.indexOf(code) != -1) {
-      if (Inputs.debugKeys.indexOf(code) != -1) {
+    if (this.ignoreKeys.indexOf(code) != -1) {
+      if (this.debugKeys.indexOf(code) != -1) {
         if (config.DEBUG) {
           return;
         }
@@ -430,16 +426,16 @@ var Inputs = new (function () {
     }
 
     // intern Nebula overlay logic, not blocking anything
-    if (code == Inputs.dbInputs.KEYBOARD.shift) {
-      Inputs.isShiftDown = true;
-    } else if (Inputs.isShiftDown && code == Inputs.dbInputs.KEYBOARD.tab) {
+    if (code == this.dbInputs.KEYBOARD.shift) {
+      this.isShiftDown = true;
+    } else if (this.isShiftDown && code == this.dbInputs.KEYBOARD.tab) {
       Events.emit('toggle-nebula');
     }
 
     // PS: you need this to be able to fill a form or whatever because it does a preventDefault which break standard DOM interaction
-    if (!Inputs.isWindowFocused) {
+    if (!this.isWindowFocused) {
       // intern Nebula overlay logic, not blocking anything
-      if (code == Inputs.dbInputs.KEYBOARD.escape) {
+      if (code == this.dbInputs.KEYBOARD.escape) {
         // TODO remove this from Inputs and move it to a plugin
         Events.emit('close-nebula');
       }
@@ -447,53 +443,53 @@ var Inputs = new (function () {
       return false;
     }
 
-    if (Inputs.isWaitingForAnyKey) {
+    if (this.isWaitingForAnyKey) {
       return false;
     }
 
-    var inputsDown = Inputs.findInputs(code, 'KEYBOARD');
+    var inputsDown = this.findInputs(code, 'KEYBOARD');
     let shouldPreventDefault = true;
     if (inputsDown !== false) {
       for (var i = 0, input; (input = inputsDown[i]); ++i) {
         if (
-          !Inputs.usedInputs[input].isDown &&
-          Date.now() - Inputs.usedInputs[input].lastCall >=
-            Inputs.usedInputs[input].interval
+          !this.usedInputs[input].isDown &&
+          Date.now() - this.usedInputs[input].lastCall >=
+            this.usedInputs[input].interval
         ) {
           /* specific on keydown event handler here */
-          if (!Inputs.usedInputs[input].isDown) {
+          if (!this.usedInputs[input].isDown) {
             if (
-              Inputs._keyLocked &&
-              !Inputs._keyLockNamesExceptions.includes(input)
+              this._keyLocked &&
+              !this._keyLockNamesExceptions.includes(input)
             ) {
               shouldPreventDefault = false;
               continue;
             }
             // 1 because it's a keyDown event
-            Inputs.emit('keyDown', input, 1);
+            this.emit('keyDown', input, 1);
           }
 
           if (
-            Inputs.usedInputs[input].isLongPress &&
-            !Inputs.usedInputs[input].stayOn
+            this.usedInputs[input].isLongPress &&
+            !this.usedInputs[input].stayOn
           ) {
-            Inputs.usedInputs[input].lastCall = Date.now();
+            this.usedInputs[input].lastCall = Date.now();
           }
 
-          Inputs.usedInputs[input].isDown = true;
+          this.usedInputs[input].isDown = true;
         }
 
         // just data, can be useful for stats / achievements / whatever
-        ++Inputs.usedInputs[input].numberPress;
+        ++this.usedInputs[input].numberPress;
       }
-    } else if (Inputs._keyLocked) {
+    } else if (this._keyLocked) {
       return false;
     }
 
     if (!shouldPreventDefault) return false;
 
     e.preventDefault();
-  };
+  }
 
   /**
    * When a keyUp event occurs, it parse it and trigger every match with our custom inputs
@@ -501,32 +497,32 @@ var Inputs = new (function () {
    * @memberOf Inputs
    * @param {DOMEvent} event
    */
-  this.keyUp = function (event) {
+  keyUp(event) {
     var e = event || window.event;
     var code = e.which || e.keyCode;
 
-    if (code == Inputs.dbInputs.KEYBOARD.shift) {
-      Inputs.isShiftDown = false;
+    if (code == this.dbInputs.KEYBOARD.shift) {
+      this.isShiftDown = false;
     }
 
-    if (!Inputs.isWindowFocused) {
+    if (!this.isWindowFocused) {
       return false;
     }
 
-    if (Inputs.isWaitingForAnyKey) {
-      let keyName = Object.keys(Inputs.dbInputs.KEYBOARD).find(
-        (key) => Inputs.dbInputs.KEYBOARD[key] === code,
+    if (this.isWaitingForAnyKey) {
+      let keyName = Object.keys(this.dbInputs.KEYBOARD).find(
+        (key) => this.dbInputs.KEYBOARD[key] === code,
       );
 
       if (
-        Inputs.waitForAnyKeyType !== 'keyboard' &&
-        Inputs.waitForAnyKeyType !== 'all'
+        this.waitForAnyKeyType !== 'keyboard' &&
+        this.waitForAnyKeyType !== 'all'
       ) {
         if (keyName === 'escape') {
-          Inputs.isWaitingForAnyKey = false;
+          this.isWaitingForAnyKey = false;
           gamepad.isWaitingForAnyKey = false;
 
-          Inputs.waitForAnyKeyCallback({
+          this.waitForAnyKeyCallback({
             success: false,
             type: 'gamepad',
           });
@@ -536,10 +532,10 @@ var Inputs = new (function () {
       }
 
       if (keyName !== undefined) {
-        Inputs.isWaitingForAnyKey = false;
+        this.isWaitingForAnyKey = false;
         gamepad.isWaitingForAnyKey = false;
 
-        Inputs.waitForAnyKeyCallback({
+        this.waitForAnyKeyCallback({
           success: true,
           type: 'keyboard',
           keyName,
@@ -550,27 +546,27 @@ var Inputs = new (function () {
       }
     }
 
-    var inputsUp = Inputs.findInputs(code, 'KEYBOARD');
+    var inputsUp = this.findInputs(code, 'KEYBOARD');
     if (inputsUp !== false) {
       for (var i = 0, input; (input = inputsUp[i]); ++i) {
-        if (Inputs.usedInputs[input].isDown) {
-          if (Inputs._keyLocked) {
-            if (Inputs._keyLockNamesExceptions.includes(input)) {
-              Inputs.emit('keyUp', input);
+        if (this.usedInputs[input].isDown) {
+          if (this._keyLocked) {
+            if (this._keyLockNamesExceptions.includes(input)) {
+              this.emit('keyUp', input);
             }
           } else {
-            Inputs.emit('keyUp', input);
+            this.emit('keyUp', input);
           }
         }
 
-        if (Inputs.usedInputs[input].stayOn) {
-          Inputs.usedInputs[input].lastCall = Date.now();
+        if (this.usedInputs[input].stayOn) {
+          this.usedInputs[input].lastCall = Date.now();
         }
 
-        Inputs.usedInputs[input].isDown = false;
+        this.usedInputs[input].isDown = false;
       }
     }
-  };
+  }
 
   /**
    * When a keyPress event occurs, it parse it and trigger every match with our custom inputs
@@ -579,12 +575,11 @@ var Inputs = new (function () {
    * @memberOf Inputs
    * @param {DOMEvent} event
    */
-  this.keyPress = function (event) {
-    var e = event || window.event;
-    var key = e.which || e.keyCode;
-    var code = e.keyCode;
+  keyPress(event) {
+    let e = event || window.event;
+    let code = e.keyCode;
 
-    var inputsPress = Inputs.findInputs(code, 'KEYBOARD');
+    var inputsPress = this.findInputs(code, 'KEYBOARD');
     if (inputsPress !== false) {
       // for ( var i = 0, input; input = inputsPress[ i ]; ++i )
       // {
@@ -598,7 +593,7 @@ var Inputs = new (function () {
     // needed ?
     // e.preventDefault();
     // return false;
-  };
+  }
 
   /**
    * Register a callback to be called when a key of specified type is pressed
@@ -607,7 +602,7 @@ var Inputs = new (function () {
    * @param {function} callback
    * @param {string} type - gamepad or keyboard
    */
-  this.waitForAnyKey = function (callback, type = 'all') {
+  waitForAnyKey(callback, type = 'all') {
     if (type !== 'keyboard' && type !== 'gamepad' && type !== 'all') {
       return;
     }
@@ -616,14 +611,14 @@ var Inputs = new (function () {
     }
 
     gamepad.waitForAnyKey((keyInfo) => {
-      Inputs.isWaitingForAnyKey = false;
-      Inputs.waitForAnyKeyCallback(keyInfo);
+      this.isWaitingForAnyKey = false;
+      this.waitForAnyKeyCallback(keyInfo);
     }, type);
 
-    Inputs.isWaitingForAnyKey = true;
-    Inputs.waitForAnyKeyType = type;
-    Inputs.waitForAnyKeyCallback = callback;
-  };
+    this.isWaitingForAnyKey = true;
+    this.waitForAnyKeyType = type;
+    this.waitForAnyKeyCallback = callback;
+  }
 
   /**
    * Lock keys with exceptions
@@ -631,35 +626,27 @@ var Inputs = new (function () {
    * @memberOf Inputs
    * @param {string[]} exceptions
    */
-  this.lockKeys = function (exceptions) {
+  lockKeys(exceptions) {
     this._keyLocked = true;
     this._keyLockNamesExceptions = exceptions;
-  };
+  }
 
   /**
    * Unlock keys
    * @public
    * @memberOf Inputs
    */
-  this.unlockKeys = function () {
+  unlockKeys() {
     this._keyLocked = false;
-  };
+  }
 
-  Object.defineProperty(this, 'keyLocked', {
-    get: () => this._keyLocked,
-    set: (value) => {
-      this._keyLocked = value;
-      this._keyLockNamesExceptions = [];
-    },
-  });
+  public get keyLocked() {
+    return this._keyLocked;
+  }
+  public set keyLocked(value) {
+    this._keyLocked = value;
+    this._keyLockNamesExceptions = [];
+  }
+}
 
-  window.addEventListener('focus', () => {
-    Inputs.isWindowFocused = true;
-  });
-
-  window.addEventListener('blur', () => {
-    Inputs.isWindowFocused = false;
-  });
-})();
-
-export default Inputs;
+export default new Inputs();
