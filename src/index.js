@@ -105,10 +105,10 @@ DE.init = function (params) {
   DE.Achievements.init(params.achievements || []);
 
   DE.Time.onTimeStop = () => {
-    DE.trigger('window-lost-focus');
+    DE.emit('window-lost-focus');
   };
   DE.Time.onTimeResume = () => {
-    DE.trigger('window-focus');
+    DE.emit('window-focus');
   };
 
   if (

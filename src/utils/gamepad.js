@@ -504,7 +504,7 @@ var gamepads = new (function () {
   this.handleGamepadAxes = function (gamepad) {
     for (var i in _axesListeners[gamepad.index].listeners) {
       if (gamepad.axes[i] > 0 && !_axesListeners[gamepad.index].listeners[i]) {
-        _btnsListeners[gamepad.index].trigger('down' + i);
+        _btnsListeners[gamepad.index].emit('down' + i);
         _btnsListeners[gamepad.index].listeners[i] = true;
         continue;
       }
@@ -653,7 +653,7 @@ var gamepads = new (function () {
       num,
       function (force) {
         Inputs.usedInputs[inputName].isDown = true;
-        Inputs.trigger('keyDown', inputName, force);
+        Inputs.emit('keyDown', inputName, force);
       },
       false,
     );
@@ -663,7 +663,7 @@ var gamepads = new (function () {
       num,
       function (force) {
         Inputs.usedInputs[inputName].isDown = false;
-        Inputs.trigger('keyUp', inputName, force);
+        Inputs.emit('keyUp', inputName, force);
       },
       false,
     );
@@ -672,7 +672,7 @@ var gamepads = new (function () {
       padIndex,
       num,
       function (force) {
-        Inputs.trigger('btnMoved', inputName, force);
+        Inputs.emit('btnMoved', inputName, force);
       },
       false,
     );
@@ -683,7 +683,7 @@ var gamepads = new (function () {
       padIndex,
       num,
       function (force) {
-        Inputs.trigger('axeStart', inputName, force);
+        Inputs.emit('axeStart', inputName, force);
       },
       false,
     );
@@ -692,7 +692,7 @@ var gamepads = new (function () {
       padIndex,
       num,
       function (force) {
-        Inputs.trigger('axeStop', inputName, force);
+        Inputs.emit('axeStop', inputName, force);
       },
       false,
     );
@@ -701,7 +701,7 @@ var gamepads = new (function () {
       padIndex,
       num,
       function (force) {
-        Inputs.trigger('axeMoved', inputName, force);
+        Inputs.emit('axeMoved', inputName, force);
       },
       false,
     );

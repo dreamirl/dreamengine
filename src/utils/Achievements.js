@@ -54,7 +54,7 @@ const Achievements = new (function () {
    * @protected
    * @param {String} eventName - event correspond to an objective
    * @param {params} value - your value
-   * @example DE.trigger( "games-datas", "objective-name", myValue );
+   * @example DE.emit( "games-datas", "objective-name", myValue );
    */
   this.checkEvent = function (eventName, value) {
     for (var i = 0, a, ua; (a = this.achievements[i]); ++i) {
@@ -173,7 +173,7 @@ const Achievements = new (function () {
 
     Notifications.create(txt, config.notifications.achievementUnlockDuration);
     Audio.fx.play('achievement-unlocked');
-    Events.trigger('achievement-unlocked', achievement.namespace);
+    Events.emit('achievement-unlocked', achievement.namespace);
   };
 
   Events.on('games-datas', this.checkEvent, this);

@@ -140,7 +140,7 @@ define(['DE.CONFIG', 'DE.SaveSystem', 'DE.Event'], function (
         sizes[this.currentSizeIndex].w / sizes[this.conceptionSizeIndex].w;
       CONFIG.debug.log('Physical ratio is :: ' + this.ratioToConception, 2);
 
-      Event.trigger(
+      Event.emit(
         'updateScreenSizes',
         this.ratioToConception,
         sizes[this.currentSizeIndex],

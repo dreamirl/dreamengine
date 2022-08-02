@@ -90,7 +90,7 @@ var Save = new (function () {
         this.saveModel[i] !== false &&
         this.saveModel[i] !== 0
       ) {
-        Events.trigger('Save-attr-not-found', i);
+        Events.emit('Save-attr-not-found', i);
         console.log(
           'Seems your game version is to old, a new one will be created',
           i,
@@ -99,7 +99,7 @@ var Save = new (function () {
       this.saveModel[i] = attrs[i];
     }
     this.updateSave();
-    Events.trigger('Save-loaded', this.saveModel);
+    Events.emit('Save-loaded', this.saveModel);
   };
 
   /**
@@ -167,7 +167,7 @@ var Save = new (function () {
         localStorage.set(this.namespace + this.version + nkey, value);
       }
     }
-    Events.trigger('Save-save', this.saveModel);
+    Events.emit('Save-save', this.saveModel);
   };
 
   /**

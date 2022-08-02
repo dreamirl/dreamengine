@@ -1006,7 +1006,7 @@ class GameObject extends Container {
       if (this._fadeData.duration <= 0) {
         this._fadeData.done = true;
 
-        this.trigger('fadeEnd', this);
+        this.emit('fadeEnd', this);
 
         if (this._fadeData.callback) {
           this._fadeData.callback.call(this);
@@ -1202,7 +1202,7 @@ class GameObject extends Container {
       );
       this.z = move.destZ !== undefined ? move.destZ : this.z;
 
-      this.trigger('moveEnd');
+      this.emit('moveEnd');
 
       if (move.callback) {
         move.callback.call(this, move.callback);
@@ -1430,7 +1430,7 @@ class GameObject extends Container {
       shake.prevX = 0;
       shake.prevY = 0;
 
-      this.trigger('shakeEnd');
+      this.emit('shakeEnd');
 
       if (shake.callback) {
         shake.callback.call(this);

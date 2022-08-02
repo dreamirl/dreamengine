@@ -470,7 +470,7 @@ var Inputs = new (function () {
               continue;
             }
             // 1 because it's a keyDown event
-            Inputs.trigger('keyDown', input, 1);
+            Inputs.emit('keyDown', input, 1);
           }
 
           if (
@@ -556,10 +556,10 @@ var Inputs = new (function () {
         if (Inputs.usedInputs[input].isDown) {
           if (Inputs._keyLocked) {
             if (Inputs._keyLockNamesExceptions.includes(input)) {
-              Inputs.trigger('keyUp', input);
+              Inputs.emit('keyUp', input);
             }
           } else {
-            Inputs.trigger('keyUp', input);
+            Inputs.emit('keyUp', input);
           }
         }
 

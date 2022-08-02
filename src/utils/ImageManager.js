@@ -21,13 +21,13 @@ import Events from './Events';
   PIXI.Loader.shared.on( 'complete', function()
   {
     States.down( 'isLoadingImages' );
-    Event.trigger( "loadFilesEnd" );
+    Event.emit( "loadFilesEnd" );
   } );
   
   PIXI.Loader.shared.on( 'start', function()
   {
     States.up( 'isLoadingImages' );
-    Event.trigger( "loadFilesStart" );
+    Event.emit( "loadFilesStart" );
   } );
   */
 
@@ -147,17 +147,17 @@ var ImageManager = new (function () {
    * @memberOf ImageManager
    */
   this._onProgress = function (poolName, loader, customEventName) {
-    Events.trigger(
+    Events.emit(
       'ImageManager-pool-progress',
       poolName,
       loader.progress.toString().slice(0, 5),
     );
-    Events.trigger(
+    Events.emit(
       'ImageManager-pool-' + poolName + '-progress',
       poolName,
       loader.progress.toString().slice(0, 5),
     );
-    Events.trigger(
+    Events.emit(
       'ImageManager-' + customEventName + '-progress',
       poolName,
       loader.progress.toString().slice(0, 5),
@@ -171,9 +171,9 @@ var ImageManager = new (function () {
    */
   this._onComplete = function (poolName, customEventName) {
     console.log('ImageManager load complete: ', poolName);
-    Events.trigger('ImageManager-pool-complete', poolName);
-    Events.trigger('ImageManager-pool-' + poolName + '-loaded');
-    Events.trigger('ImageManager-' + customEventName + '-loaded');
+    Events.emit('ImageManager-pool-complete', poolName);
+    Events.emit('ImageManager-pool-' + poolName + '-loaded');
+    Events.emit('ImageManager-' + customEventName + '-loaded');
 
     // dequeue waiting pools here
     if (this._waitingPools.length) {

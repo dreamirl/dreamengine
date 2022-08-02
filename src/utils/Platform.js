@@ -55,7 +55,7 @@ var Platform = new (function () {
    * trigger Nebula load by default, wont do anything it you don't use Nebula
    */
   this.beforeStartingEngine = function () {
-    Events.trigger('force-nebula-load', false);
+    Events.emit('force-nebula-load', false);
     return Promise.resolve();
   };
 

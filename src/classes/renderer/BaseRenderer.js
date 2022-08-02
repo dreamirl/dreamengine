@@ -141,7 +141,7 @@ BaseRenderer.applyFade = function () {
     }
 
     if (this.gameObject) {
-      this.gameObject.trigger('fadeEnd', this);
+      this.gameObject.emit('fadeEnd', this);
     }
   }
 };
@@ -300,7 +300,7 @@ BaseRenderer.applyScale = function () {
     this.setScale(scaleD.destX, scaleD.destY);
 
     if (this.gameObject) {
-      this.gameObject.trigger('scale-end', this);
+      this.gameObject.emit('scale-end', this);
     }
 
     if (this.scaleData.callback) {

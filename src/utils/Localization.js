@@ -173,7 +173,7 @@ var Localization = new (function () {
       this.dictionary[this.currentLang] = {};
     }
     if (old !== this.currentLang) {
-      Events.trigger('lang-changed', this.currentLang);
+      Events.emit('lang-changed', this.currentLang);
     }
   };
 

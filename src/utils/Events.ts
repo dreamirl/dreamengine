@@ -22,8 +22,8 @@ class Events<
 > {
   private readonly emitter = new EventEmitter();
 
-  public static DEName = 'Events';
-  public static Emitter = EventEmitter;
+  public readonly DEName = 'Events';
+  public readonly Emitter = EventEmitter;
 
   public on<T extends string & keyof TEventsTypes>(
     event: T,
