@@ -63,17 +63,13 @@ class Render extends EventEmitter {
     this.debugRender.y = 10;
     this.debugRender.x = 10;
 
-    Events.on(
-      'change-debug',
-      function (debug, level) {
-        if (level > 0) {
-          this.mainContainer.addChild(this.debugRender);
-        } else {
-          this.mainContainer.removeChild(this.debugRender);
-        }
-      },
-      this,
-    );
+    Events.on('change-debug', (debug, level) => {
+      if (level > 0) {
+        this.mainContainer.addChild(this.debugRender);
+      } else {
+        this.mainContainer.removeChild(this.debugRender);
+      }
+    });
 
     this._resizeMode = params.resizeMode || null;
 

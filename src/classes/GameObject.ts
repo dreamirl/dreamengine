@@ -306,17 +306,13 @@ class GameObject extends Container {
       delete _params.automatisms;
     }
 
-    Events.on(
-      'change-debug',
-      function (debug, level) {
-        if (debug) {
-          this._createDebugRenderer();
-        } else {
-          this._destroyDebugRenderer();
-        }
-      },
-      this,
-    );
+    Events.on('change-debug', (debug, level) => {
+      if (debug) {
+        this._createDebugRenderer();
+      } else {
+        this._destroyDebugRenderer();
+      }
+    });
   }
 
   /**
