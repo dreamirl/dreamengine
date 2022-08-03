@@ -2,24 +2,23 @@
  * @author Inateno / http://inateno.com / http://dreamirl.com
  */
 
+import GameObject from '../classes/GameObject';
+import Scene from '../classes/Scene';
+
 /**
  * Middleware used to sort children gameObjects (used in Scene and GameObject declarations)
  * @function
  */
-function sortGameObjects(container) {
+function sortGameObjects(container: GameObject | Scene) {
   container.gameObjects.sort(function (a, b) {
-    if (b.z == a.z) {
-      if (b.zindex == a.zindex) {
-        if (b.y == a.y) {
-          return a.x - b.x;
-        } else {
-          return a.y - b.y;
-        }
+    if (b.zIndex == a.zIndex) {
+      if (b.y == a.y) {
+        return a.x - b.x;
       } else {
-        return a.zindex - b.zindex;
+        return a.y - b.y;
       }
     } else {
-      return b.z - a.z;
+      return a.zIndex - b.zIndex;
     }
   });
 
@@ -29,18 +28,14 @@ function sortGameObjects(container) {
   // so, remove container and let the dev choose the filtering OR remove the previous one and add a z conditional here ?
   if (container.children) {
     container.children.sort(function (a, b) {
-      if (b.z == a.z) {
-        if (b.zindex == a.zindex) {
-          if (b.y == a.y) {
-            return a.x - b.x;
-          } else {
-            return a.y - b.y;
-          }
+      if (b.zIndex == a.zIndex) {
+        if (b.y == a.y) {
+          return a.x - b.x;
         } else {
-          return a.zindex - b.zindex;
+          return a.y - b.y;
         }
       } else {
-        return b.z - a.z;
+        return a.zIndex - b.zIndex;
       }
     });
   }

@@ -1,6 +1,9 @@
+import Component from './classes/Component';
 import GameObject from './classes/GameObject';
+import Render from './classes/Render';
 import SpriteRenderer from './classes/renderer/SpriteRenderer';
 import TextRenderer from './classes/renderer/TextRenderer';
+import Scene from './classes/Scene';
 import config from './config';
 import Events from './utils/Events';
 import gamepad from './utils/gamepad';
@@ -12,25 +15,33 @@ import Time from './utils/Time';
  * The MainLoop namespace handle the call of the next frame, updating scene, rendering and so on
  * MainLoop start when calling DE.start();
  */
-const MainLoop = new (function () {
-  this.DEName = 'MainLoop';
-  this.scenes = [];
-  this.renders = [];
-  this.additionalModules = {};
+class MainLoop {
+  public static readonly DEName = 'MainLoop';
+  scenes: Scene[] = [];
+  renders: Render[] = [];
+  additionalModules: { [k: string]: Component } = {};
+  launched = false;
+  displayLoader = false;
 
-  this.createLoader = function () {
-    this.loader = new GameObject({
-      renderer: new TextRenderer('Loading...', {
-        textStyle: {
-          fill: 'white',
-          fontSize: 35,
-          fontFamily: 'Snippet, Monaco, monospace',
-          strokeThickness: 1,
-          align: 'center',
-        },
-      }),
+  private loader: GameObject;
+
+  constructor() {
+    this.loader = new GameObject({});
+  }
+
+  createLoader() {
+    const t = new TextRenderer('Loading...', {
+      textStyle: {
+        fill: 'white',
+        fontSize: 35,
+        fontFamily: 'Snippet, Monaco, monospace',
+        strokeThickness: 1,
+        align: 'center',
+      },
     });
-    var n_dots = 0;
+    this.loader.addRenderer(t);
+
+    let n_dots = 0;
     this.loader.animateLoader = function () {
       var dots = '.';
       for (var i = 0; i < 3; ++i) {
@@ -47,97 +58,95 @@ const MainLoop = new (function () {
       interval: 500,
     });
     this.loader.renderer.y += 150;
-    Events.on('ImageManager-pool-progress', function (poolName, progression) {
-      MainLoop.loader.removeAutomatism('animateLoader');
+    Events.on('ImageManager-pool-progress', (poolName, progression) => {
+      this.loader.removeAutomatism('animateLoader');
       poolName == config.DEFAULT_POOL_NAME
-        ? (MainLoop.loader.renderer.text = progression + '%')
-        : (MainLoop.loader.renderer.text = poolName + ': ' + progression + '%');
+        ? (this.loader.renderer.text = progression + '%')
+        : (this.loader.renderer.text = poolName + ': ' + progression + '%');
     });
-    Events.on('ImageManager-pool-complete', function (poolName) {
-      MainLoop.loader.removeAutomatism('animateLoader');
-      MainLoop.loader.renderer.text = '100%';
+    Events.on('ImageManager-pool-complete', (poolName) => {
+      this.loader.removeAutomatism('animateLoader');
+      this.loader.renderer.text = '100%';
     });
-  };
+  }
 
-  this.updateLoaderImage = function (loader) {
+  updateLoaderImage(loader: any) {
+    // TOTO créer un type "imageParams"
     this.loader.addRenderer(
       new SpriteRenderer({ spriteName: loader[0], scale: loader[2].scale }),
     );
-  };
+  }
 
-  this.loop = function () {
-    if (!MainLoop.launched) {
+  loop() {
+    if (!this.launched) {
       console.warn('MainLoop has stopped');
       return;
     }
 
-    requestAnimationFrame(MainLoop.loop);
+    requestAnimationFrame(this.loop);
 
     // regulate fps OR if the Time machine is stopped
     if (!Time.update()) {
       return;
     }
 
-    if (MainLoop.displayLoader) {
-      for (let i = 0, j; (j = MainLoop.renders[i]); i++) {
-        MainLoop.loader.x = j.pixiRenderer.width * 0.5;
-        MainLoop.loader.y = j.pixiRenderer.height * 0.5;
-        MainLoop.loader.update(Time.currentTime);
-        j.directRender(MainLoop.loader);
+    if (this.displayLoader) {
+      for (let i = 0, j; (j = this.renders[i]); i++) {
+        this.loader.x = j.pixiRenderer.width * 0.5;
+        this.loader.y = j.pixiRenderer.height * 0.5;
+        this.loader.update(Time.currentTime);
+        j.directRender(this.loader);
       }
 
       return;
     }
 
     // TODO render only if framerate is ok then ?
-    for (let i = 0, r; (r = MainLoop.renders[i]); ++i) {
+    for (let i = 0, r; (r = this.renders[i]); ++i) {
       r.render();
     }
 
     gamepad.update(Time.currentTime);
 
     while (Time.timeSinceLastFrame >= Time.frameDelay) {
-      for (let r in MainLoop.additionalModules)
-        MainLoop.additionalModules[r].update(Time.frameDelayScaled);
+      for (let r in this.additionalModules)
+        this.additionalModules[r]._update(Time.frameDelayScaled);
 
-      for (let i = 0, r; (r = MainLoop.renders[i]); ++i) {
+      for (let i = 0, r; (r = this.renders[i]); ++i) {
         r.update(Time.frameDelayScaled);
       }
 
-      for (let i = 0, s; (s = MainLoop.scenes[i]); ++i) {
+      for (let i = 0, s; (s = this.scenes[i]); ++i) {
         if (s.enable) {
           s.update(Time.frameDelayScaled);
         }
       }
 
-      /*
-        => update Renders GUIs ?
-      */
-
       Time.timeSinceLastFrame -= Time.frameDelay;
     }
-  };
+  }
 
-  this.addScene = function (scene) {
+  addScene(scene: Scene) {
     this.scenes.push(scene);
-  };
+  }
 
-  this.addRender = function (render) {
+  addRender(render: Render) {
     this.renders.push(render);
-    // TODO call the resize of this render ?
-  };
-})();
+  }
+}
+
+const mainLoop = new MainLoop();
 
 Events.on(
   'lang-changed',
   function () {
-    for (var i = 0, s; (s = MainLoop.scenes[i]); ++i) {
+    for (var i = 0, s; (s = mainLoop.scenes[i]); ++i) {
       for (var ii = 0, g; (g = s.gameObjects[ii]); ++ii) {
         checkGameObjectsTextRenderer(g);
       }
     }
   },
-  MainLoop,
+  mainLoop,
 );
 
 function checkGameObjectsTextRenderer(go) {
@@ -155,4 +164,4 @@ function checkGameObjectsTextRenderer(go) {
   }
 }
 
-export default MainLoop;
+export default mainLoop;

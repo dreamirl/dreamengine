@@ -155,7 +155,9 @@ class GameObject extends AdvancedContainer {
 
   extra: Record<string, any> = {};
 
-  constructor(params: { [K in keyof GameObject]: GameObject[K] | undefined }) {
+  constructor(
+    params: Partial<{ [K in keyof GameObject]: GameObject[K] | undefined }>,
+  ) {
     super();
 
     this.id = params.id !== undefined ? params.id : this.id;

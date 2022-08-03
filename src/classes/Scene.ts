@@ -24,15 +24,6 @@ class Scene<T extends GameObject = GameObject> extends Container {
    */
   public gameObjects: T[] = [];
 
-  constructor(name: string, addToTheMainLoop = true) {
-    super();
-    this.name = name;
-
-    if (addToTheMainLoop) {
-      MainLoop.addScene(this);
-    }
-  }
-
   /**
    * @public
    * @memberOf Scene
@@ -45,7 +36,7 @@ class Scene<T extends GameObject = GameObject> extends Container {
    * @readonly
    * @memberOf Scene
    */
-  public gameObjectsById = {};
+  public gameObjectsById: { [k: string]: GameObject } = {};
 
   /**
    * contain all gameObjects sorted by tags
@@ -53,10 +44,19 @@ class Scene<T extends GameObject = GameObject> extends Container {
    * @readonly
    * @memberOf Scene
    */
-  public gameObjectsByTag = {};
+  public gameObjectsByTag: { [k: string]: GameObject[] } = {};
 
   // TODO when required this.objectsByTag = {};
   // TODO when required this.objectsByName = {};
+
+  constructor(name: string, addToTheMainLoop = true) {
+    super();
+    this.name = name;
+
+    if (addToTheMainLoop) {
+      MainLoop.addScene(this);
+    }
+  }
 
   /**
    * if this world is sleeping, update will be ignored
