@@ -1,22 +1,25 @@
+import AdvancedContainer from '../AdvancedContainer';
 import Component from '../Component';
 import GameObject from '../GameObject';
 
 export default class FocusComponent extends Component {
   target: GameObject;
-  private _focusOptions;
-  private _focusOffsets;
-  protected _name = 'FocusComponent';
+  private _focusOptions: any;
+  private _focusOffsets: any;
+  protected override _name = 'FocusComponent';
 
-  constructor(parent) {
+  constructor(parent: AdvancedContainer, target?: GameObject) {
     super(parent);
+
+    this.target = target!;
   }
 
-  update(time) {
+  override update(time: number) {
     if (!this.target) {
       return;
     }
 
-    let pos = this.target;
+    let pos = this.target as Point2D;
     if (this.target.getWorldPos) {
       pos = this.target.getWorldPos();
     }

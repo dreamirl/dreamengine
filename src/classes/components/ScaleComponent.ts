@@ -1,3 +1,4 @@
+import AdvancedContainer from '../AdvancedContainer';
 import Component from '../Component';
 
 export default class ScaleComponent extends Component {
@@ -26,13 +27,12 @@ export default class ScaleComponent extends Component {
     leftY: 0,
   };
 
-  private _savedScale;
   private _selfDestruct = false;
-  protected _name = 'ScaleComponent';
+  protected override _name = 'ScaleComponent';
 
   constructor(
-    parent,
-    scale?: number,
+    parent: AdvancedContainer,
+    scale?: Point2D,
     duration?: number,
     callback?: () => void,
     selfDestruct = true,
@@ -55,31 +55,26 @@ export default class ScaleComponent extends Component {
    * @example // scale to 2,3 in 1 second
    * myGameObject.scaleTo( { x: 2, y: 3 }, 1000 );
    */
-  scaleTo(scale, duration, callback) {
-    var dscale = {
-      x: !isNaN(scale) ? scale : scale.x,
-      y: !isNaN(scale) ? scale : scale.y,
-    };
+  scaleTo(targetScale: Point2D, duration: number = 500, callback = () => {}) {
+    const pScale = this.parent.scale;
     this._scaleData = {
       valX: -(
-        this._savedScale.x -
-        (dscale.x !== undefined ? dscale.x : this._savedScale.x)
+        pScale.x - (targetScale.x !== undefined ? targetScale.x : pScale.x)
       ),
       valY: -(
-        this._savedScale.y -
-        (dscale.y !== undefined ? dscale.y : this._savedScale.y)
+        pScale.y - (targetScale.y !== undefined ? targetScale.y : pScale.y)
       ),
-      dirX: this._savedScale.x > dscale.x ? 1 : -1,
-      dirY: this._savedScale.y > dscale.y ? 1 : -1,
+      dirX: pScale.x > targetScale.x ? 1 : -1,
+      dirY: pScale.y > targetScale.y ? 1 : -1,
       duration: duration || 500,
       oDuration: duration || 500,
       done: false,
       stepValX: 0,
       stepValY: 0,
-      destX: dscale.x,
-      destY: dscale.y,
-      scaleX: this._savedScale.x,
-      scaleY: this._savedScale.y,
+      destX: targetScale.x,
+      destY: targetScale.y,
+      scaleX: pScale.x,
+      scaleY: pScale.y,
       callback,
       leftX: 0,
       leftY: 0,
@@ -95,7 +90,7 @@ export default class ScaleComponent extends Component {
    * @protected
    * @memberOf GameObject
    */
-  update(time) {
+  override update(time: number) {
     if (this._scaleData.done) {
       return;
     }

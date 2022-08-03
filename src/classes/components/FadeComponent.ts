@@ -1,12 +1,13 @@
+import AdvancedContainer from '../AdvancedContainer';
 import Component from '../Component';
 
 export default class FadeComponent extends Component {
-  private _fadeData;
+  private _fadeData: any;
   private selfDestruct;
-  protected _name = 'FadeComponent';
+  protected override _name = 'FadeComponent';
 
   constructor(
-    parent,
+    parent: AdvancedContainer,
     duration: number = 0,
     to: number = 0,
     from: number = parent.alpha,
@@ -22,7 +23,13 @@ export default class FadeComponent extends Component {
     }
   }
 
-  fade(from, to, duration, force, callback) {
+  fade(
+    from: number,
+    to: number,
+    duration: number,
+    force: boolean,
+    callback?: () => void,
+  ) {
     if (force) {
       this.enable = true;
     }
@@ -43,11 +50,11 @@ export default class FadeComponent extends Component {
     this._fadeData = data;
   }
 
-  fadeTo(to, duration, force, callback) {
+  fadeTo(to: number, duration: number, force: boolean, callback?: () => void) {
     this.fade(this.parent.alpha, to, duration, force, callback);
   }
 
-  fadeOut(duration, force, callback) {
+  fadeOut(duration: number, force: boolean, callback?: () => void) {
     if (force) {
       this.enable = true;
       this.parent.alpha = this.parent.alpha > 0 ? this.parent.alpha : 1; // make sure to prevent any blink side effect
@@ -56,7 +63,7 @@ export default class FadeComponent extends Component {
     this.fade(this.parent.alpha, 0, duration, force, callback);
   }
 
-  fadeIn(duration, force, callback) {
+  fadeIn(duration: number, force: boolean, callback?: () => void) {
     if (force) {
       this.enable = true;
       this.parent.alpha = this.parent.alpha < 1 ? this.parent.alpha : 0; // make sure to prevent any blink side effect
@@ -65,7 +72,7 @@ export default class FadeComponent extends Component {
     this.fade(this.parent.alpha, 1, duration, force, callback);
   }
 
-  update(time) {
+  override update(time: number) {
     if (!this._fadeData.done) {
       this._fadeData.stepVal =
         (time / this._fadeData.oDuration) *

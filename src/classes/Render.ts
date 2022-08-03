@@ -294,16 +294,16 @@ class Render extends EventEmitter {
       case 'stretch':
         // resize stretch = take immediately all the space available with a stretch
         this._resizeMethod = function (screenW, screenH) {
-          this.pixiRenderer.autoDensity = true;
+          // this.pixiRenderer.autoDensity = true; // TODO fix this or remove it ?
           this.pixiRenderer.resize(screenW, screenH);
-          this.pixiRenderer.autoDensity = false;
+          // this.pixiRenderer.autoDensity = false; // TODO fix this or remove it ?
           this.pixiRenderer.resize(this._savedSizes.x, this._savedSizes.y);
         };
         break;
       case 'full':
         // resize full = take immediately all the space available in pure pixel
         this._resizeMethod = function (screenW, screenH) {
-          this.pixiRenderer.autoDensity = true;
+          // this.pixiRenderer.autoDensity = true; // TODO fix this or remove it ?
           this.pixiRenderer.resize(screenW, screenH);
         };
         break;
@@ -363,15 +363,14 @@ class Render extends EventEmitter {
     }
 
     this._listeningResize = true;
-    
+
     let lastResize: number;
     if (window.addEventListener) {
       window.addEventListener(
         'resize',
         () => {
           console.log('resize event appears');
-          if (lastResize)
-            window.clearTimeout(lastResize);
+          if (lastResize) window.clearTimeout(lastResize);
           lastResize = window.setTimeout(() => this._onResize(), 50);
         },
         false,

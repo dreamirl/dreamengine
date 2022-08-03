@@ -5,8 +5,8 @@ import ShakeComponent from './components/ShakeComponent';
 
 export default class AdvancedContainer extends Container {
   private components: Component[] = [];
-  private shakeComp: ShakeComponent;
-  private fadeComp: FadeComponent;
+  private shakeComp?: ShakeComponent = undefined;
+  private fadeComp?: FadeComponent = undefined;
 
   update(time: number) {
     this.components.forEach((c) => {

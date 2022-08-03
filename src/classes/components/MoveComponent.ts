@@ -26,11 +26,12 @@ export default class MoveComponent extends Component {
     leftY: 0,
   };
   private _selfDestruct = false;
-  protected _name = 'MoveComponent';
+  protected override _name = 'MoveComponent';
 
   constructor(
-    parent,
-    pos?: GameObject,
+    public override readonly parent: GameObject,
+    origin: Point2D,
+    pos: Point2D,
     duration?: number,
     callback?: () => void,
     selfDestruct = true,
@@ -39,8 +40,32 @@ export default class MoveComponent extends Component {
 
     if (pos) {
       this._selfDestruct = selfDestruct;
-      this.moveTo(pos, duration, callback);
+      this.moveTo(origin, pos, duration, callback);
     }
+  }
+
+  moveToObject(
+    gameObject: GameObject,
+    duration: number = 500,
+    callback?: () => void,
+    curveName?: string,
+    forceLocalPos?: boolean, // TODO add curveName (not coded)
+  ) {
+    let dest = gameObject.getWorldPos();
+
+    let myPos = this.parent as Point2D;
+    // TODO check it stills works as it changed a lot
+    if (!forceLocalPos) {
+      myPos = this.parent.getWorldPos();
+
+      if (this.parent.parent && this.parent.parent.getWorldPos) {
+        let parentPos = this.parent.parent.getWorldPos();
+        dest.x = dest.x - parentPos.x;
+        dest.y = dest.y - parentPos.y;
+      }
+    }
+
+    this.moveTo(myPos, dest, duration, callback, curveName);
   }
 
   /**
@@ -48,7 +73,7 @@ export default class MoveComponent extends Component {
    * you can only have one at a time
    * @public
    * @memberOf GameObject
-   * @param {Object / GameObject / PIXI.DisplayObject} pos give x, y, and z destination
+   * @param {Object / GameObject / PIXI.DisplayObject} pos give x, y destination
    * @param {Int} [duration=500] time duration
    * @param {Function} callback will be called in the current object context
    * @example // move to 100,100 in 1 second
@@ -57,42 +82,26 @@ export default class MoveComponent extends Component {
    * player.moveTo( bonus, 1000, function(){ console.log( this ) } );
    */
   moveTo(
-    pos: GameObject,
+    origin: Point2D,
+    dest: Point2D,
     duration: number = 500,
-    callback?,
-    curveName?,
-    forceLocalPos?, // TODO add curveName (not coded)
+    callback = () => {},
+    curveName?: string,
   ) {
-    if (pos.getWorldPos) {
-      pos = pos.getWorldPos();
-    }
-
-    var myPos = this.parent;
-    var parentPos;
-
-    // TODO: to fix
-    // if (!forceLocalPos) {
-    //   myPos = this.parent.getWorldPos();
-
-    //   if (this.parent && this.parent.getWorldPos) {
-    //     parentPos = this.parent.getWorldPos();
-    //   }
-    // }
-
     this._moveData = {
-      distX: -(myPos.x - (pos.x !== undefined ? pos.x : myPos.x)),
-      distY: -(myPos.y - (pos.y !== undefined ? pos.y : myPos.y)),
-      dirX: myPos.x > pos.x ? 1 : -1,
-      dirY: myPos.y > pos.y ? 1 : -1,
+      distX: -(origin.x - dest.x),
+      distY: -(origin.y - dest.y),
+      dirX: origin.x > dest.x ? 1 : -1,
+      dirY: origin.y > dest.y ? 1 : -1,
       duration: duration || 500,
       oDuration: duration || 500,
       curveName: curveName || 'linear',
       done: false,
       stepValX: 0,
       stepValY: 0,
-      destX: parentPos ? pos.x - parentPos.x : pos.x,
-      destY: parentPos ? pos.y - parentPos.y : pos.y,
-      callback: callback,
+      destX: dest.x,
+      destY: dest.y,
+      callback,
       leftX: 0,
       leftY: 0,
     };
@@ -108,7 +117,7 @@ export default class MoveComponent extends Component {
    * @protected
    * @memberOf GameObject
    */
-  update(time) {
+  override update(time: number) {
     if (this._moveData.done) return;
 
     var move = this._moveData;
@@ -142,15 +151,10 @@ export default class MoveComponent extends Component {
 
     if (move.duration <= 0) {
       this._moveData.done = true;
-      this.parent.position.set(
-        move.destX !== undefined ? move.destX : this.parent.x,
-        move.destY !== undefined ? move.destY : this.parent.y,
-      );
+      this.parent.position.set(move.destX, move.destY);
       this.parent.emit('moveEnd');
 
-      if (move.callback) {
-        move.callback.call(this, move.callback);
-      }
+      move.callback();
       if (this._selfDestruct) {
         this.destroy();
       }

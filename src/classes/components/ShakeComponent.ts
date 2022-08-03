@@ -1,3 +1,4 @@
+import AdvancedContainer from '../AdvancedContainer';
 import Component from '../Component';
 
 export default class ShakeComponent extends Component {
@@ -17,10 +18,10 @@ export default class ShakeComponent extends Component {
     callback: () => {},
   };
   private _selfDestruct = false;
-  protected _name = 'ShakeComponent';
+  protected override _name = 'ShakeComponent';
 
   constructor(
-    parent,
+    parent: AdvancedContainer,
     xRange: number = 0,
     yRange: number = 0,
     duration?: number,
@@ -71,7 +72,7 @@ export default class ShakeComponent extends Component {
    * @protected
    * @memberOf GameObject
    */
-  update(time) {
+  override update(time: number) {
     if (this._shakeData.done) {
       return;
     }
