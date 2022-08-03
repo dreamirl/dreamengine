@@ -32,58 +32,6 @@ class UpdatableContainer extends PIXI.Container {
  * @example Game.render = new DE.Render( "Test", { size, options } );
  */
 class Render extends EventEmitter {
-  constructor(
-    id: string = 'render-' +
-      Date.now() +
-      '-' +
-      ((Math.random() * Date.now()) >> 0),
-    params: any = {},
-  ) {
-    super();
-
-    if (params.width !== undefined) this._savedSizes.x = params.width;
-    if (params.height !== undefined) this._savedSizes.y = params.height;
-
-    this.pixiRenderer = PIXI.autoDetectRenderer({
-      width: params.width,
-      height: params.height,
-      useContextAlpha: params['useContextAlpha'] || true,
-      autoDensity: params['autoDensity'] || true,
-      antialias: params['antialias'] || false,
-      preserveDrawingBuffer: params['preserveDrawingBuffer'] || false,
-      backgroundColor: params['backgroundColor'] || 0x000000,
-      backgroundAlpha: params['backgroundAlpha'] || 1,
-      clearBeforeRender: params['clearBeforeRender'] || true,
-      resolution: params['resolution'] || 1,
-      forceCanvas: params['forceCanvas'] || false,
-      powerPreference: params['powerPreference'],
-    });
-
-    PIXI.settings.SCALE_MODE =
-      params['scaleMode'] !== undefined
-        ? params['scaleMode']
-        : PIXI.SCALE_MODES.LINEAR;
-    PIXI.settings.ROUND_PIXELS = params['roundPixels'] || false;
-    // this.pixiRenderer.plugins.interaction.mousedown
-
-    this.debugRender.y = 10;
-    this.debugRender.x = 10;
-
-    Events.on('change-debug', (debug, level) => {
-      if (level > 0) {
-        this.mainContainer.addChild(this.debugRender);
-      } else {
-        this.mainContainer.removeChild(this.debugRender);
-      }
-    });
-
-    this._resizeMode = params.resizeMode || null;
-
-    if (id) {
-      this.id = id;
-    }
-  }
-
   /**
    * save the previous real size (not the canvas size but the visible size without any resize)
    * this is used to calculate correctly the resize
@@ -137,8 +85,8 @@ class Render extends EventEmitter {
     }),
   );
 
-  public id = 'id';
-  public divId = this.id || undefined;
+  public id = '';
+  public divId = this.id;
   public div: HTMLElement = window.document.body;
 
   public enable = true; // set to false to prevent render and update
@@ -179,6 +127,60 @@ class Render extends EventEmitter {
 
   public view: HTMLCanvasElement;
 
+  constructor(
+    id: string = 'render-' +
+      Date.now() +
+      '-' +
+      ((Math.random() * Date.now()) >> 0),
+    params: any = {},
+  ) {
+    super();
+
+    if (params.width !== undefined) this._savedSizes.x = params.width;
+    if (params.height !== undefined) this._savedSizes.y = params.height;
+
+    this.pixiRenderer = PIXI.autoDetectRenderer({
+      width: params.width,
+      height: params.height,
+      useContextAlpha: params['useContextAlpha'] || true,
+      autoDensity: params['autoDensity'] || true,
+      antialias: params['antialias'] || false,
+      preserveDrawingBuffer: params['preserveDrawingBuffer'] || false,
+      backgroundColor: params['backgroundColor'] || 0x000000,
+      backgroundAlpha: params['backgroundAlpha'] || 1,
+      clearBeforeRender: params['clearBeforeRender'] || true,
+      resolution: params['resolution'] || 1,
+      forceCanvas: params['forceCanvas'] || false,
+      powerPreference: params['powerPreference'],
+    });
+    this.view = this.pixiRenderer.view;
+
+    PIXI.settings.SCALE_MODE =
+      params['scaleMode'] !== undefined
+        ? params['scaleMode']
+        : PIXI.SCALE_MODES.LINEAR;
+    PIXI.settings.ROUND_PIXELS = params['roundPixels'] || false;
+    // this.pixiRenderer.plugins.interaction.mousedown
+
+    this.debugRender.y = 10;
+    this.debugRender.x = 10;
+
+    Events.on('change-debug', (debug, level) => {
+      if (level > 0) {
+        this.mainContainer.addChild(this.debugRender);
+      } else {
+        this.mainContainer.removeChild(this.debugRender);
+      }
+    });
+
+    this._resizeMode = params.resizeMode || null;
+
+    if (id) {
+      this.id = id;
+      this.divId = id;
+    }
+  }
+
   /**
    * create the parent div, add it to the dom, add this render to the MainLoop
    * bind Inputs, then call updateSizes
@@ -192,23 +194,13 @@ class Render extends EventEmitter {
 
     this.__inited = true;
 
-    if (!this.divId) {
-      this.div = window.document.body;
-      console.warn(
-        '%cWARN: you not specified a DOM Object to append the render to, it will be pushed in the body *hiiik*',
-        1,
-        'color:orange',
-      );
-    } else {
-      this.div = document.getElementById(this.divId) || window.document.body;
-      if (!this.div) {
-        throw new Error("Can't found the div by the given id");
-        return false;
-      }
+    this.div = document.getElementById(this.divId) || window.document.body;
+    if (!this.div) {
+      throw new Error("Can't found the div by the given id");
+      return false;
     }
 
     this.div.appendChild(this.pixiRenderer.view);
-    this.view = this.pixiRenderer.view;
 
     MainLoop.addRender(this);
 
@@ -371,17 +363,16 @@ class Render extends EventEmitter {
     }
 
     this._listeningResize = true;
-    let lastResize;
-    var callback = () => {
-      this._onResize();
-    };
-
+    
+    let lastResize: number;
     if (window.addEventListener) {
       window.addEventListener(
         'resize',
-        function () {
-          lastResize && window.clearTimeout(lastResize);
-          lastResize = window.setTimeout(callback, 50);
+        () => {
+          console.log('resize event appears');
+          if (lastResize)
+            window.clearTimeout(lastResize);
+          lastResize = window.setTimeout(() => this._onResize(), 50);
         },
         false,
       );

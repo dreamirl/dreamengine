@@ -37,7 +37,7 @@ import TextRenderer from './classes/renderer/TextRenderer';
 import TextureRenderer from './classes/renderer/TextureRenderer';
 import TilingRenderer from './classes/renderer/TilingRenderer';
 
-var DE = {
+const DE = {
   config,
   about,
   Events,
