@@ -38,7 +38,7 @@ class Scene<T extends GameObject = GameObject> extends Container {
    * @memberOf Scene
    * @type {String}
    */
-  public name = 'scene';
+  public override name = 'scene';
 
   /**
    * contain all gameObjects but in a map by id
@@ -112,6 +112,7 @@ class Scene<T extends GameObject = GameObject> extends Container {
     // add in PIXI Container
     this.addChild(gameObject);
     this.gameObjectsById[gameObject.id] = gameObject;
+    this.gameObjects.push(gameObject);
 
     if (gameObject.tag) {
       if (!this.gameObjectsByTag[gameObject.tag]) {
@@ -130,13 +131,13 @@ class Scene<T extends GameObject = GameObject> extends Container {
    * @protected
    * @memberOf Scene
    */
-  update(time) {
+  update(time: number) {
     if (!this.enable) {
       return;
     }
 
-    for (var i = 0, t = this.children.length, g; i < t; ++i) {
-      g = this.children[i];
+    for (var i = 0, t = this.gameObjects.length, g; i < t; ++i) {
+      g = this.gameObjects[i];
 
       if (!g) {
         continue;
@@ -145,7 +146,7 @@ class Scene<T extends GameObject = GameObject> extends Container {
       if (g.flag !== null) {
         switch (g.flag) {
           case 'delete':
-            this.delete(i);
+            this.delete(g);
             --t;
             continue;
             break;
@@ -204,7 +205,7 @@ class Scene<T extends GameObject = GameObject> extends Container {
    * @memberOf Scene
    * @param {GameObject} object can be the index of the GameObject in the gameObjects array
    */
-  delete(object) {
+  delete(object: T) {
     var target = this.remove(object);
     target.killMePlease();
 
@@ -217,9 +218,7 @@ class Scene<T extends GameObject = GameObject> extends Container {
    * @memberOf Scene
    * @param {GameObject} object can be the index of the GameObject in the gameObjects array
    */
-  remove(object) {
-    var target;
-
+  remove(object: T) {
     delete this.gameObjectsById[object.id];
     if (object.tag) {
       this.gameObjectsByTag[object.tag].splice(
@@ -229,23 +228,11 @@ class Scene<T extends GameObject = GameObject> extends Container {
     }
 
     // if it's an index, it's dangerous D: (excepted when it came from update, which is faster than idnexindexOf)
-    if (isNaN(object)) {
-      var index = this.children.indexOf(object);
-
-      if (index !== -1) {
-        // remove from PIXI Container
-        this.removeChild(object);
-      }
-      target = object;
-    } else {
-      target = this.children[object];
-
-      // remove from PIXI Container
-      this.removeChild(target);
-    }
+    this.removeChild(object);
+    this.gameObjects.splice(this.gameObjects.indexOf(object), 1);
 
     this.emit('update-children');
-    return target;
+    return object;
   }
 }
 

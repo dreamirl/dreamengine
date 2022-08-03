@@ -43,7 +43,7 @@ class Events<
     event: T,
     ...args: TEventsTypes[T][]
   ) {
-    this.emitter.emit(event, args);
+    this.emitter.emit(event, ...args);
   }
 
   public removeListener<T extends string & keyof TEventsTypes>(

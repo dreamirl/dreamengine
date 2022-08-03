@@ -98,7 +98,7 @@ class Render extends EventEmitter {
    * @memberOf Render
    * @type {String}
    */
-  private _resizeMode = null;
+  private _resizeMode: ResizeMode = '';
 
   /**
    * The resize method called on event resize
@@ -197,7 +197,7 @@ class Render extends EventEmitter {
     this.div = document.getElementById(this.divId) || window.document.body;
     if (!this.div) {
       throw new Error("Can't found the div by the given id");
-      return false;
+      return;
     }
 
     this.div.appendChild(this.pixiRenderer.view);
@@ -243,7 +243,7 @@ class Render extends EventEmitter {
    * @public
    * @memberOf Render
    */
-  resizeRatio(w, h, stretch) {
+  resizeRatio(w: number, h: number, stretch: boolean = false) {
     var baseW = this._savedSizes.x;
     var baseH = this._savedSizes.y;
     var calcRatio = w / baseW;
@@ -282,7 +282,7 @@ class Render extends EventEmitter {
    * @public
    * @memberOf Render
    */
-  changeResizeMode(mode) {
+  changeResizeMode(mode: ResizeMode) {
     this._resizeMode = mode;
     switch (mode) {
       case 'stretch-ratio':
@@ -294,16 +294,16 @@ class Render extends EventEmitter {
       case 'stretch':
         // resize stretch = take immediately all the space available with a stretch
         this._resizeMethod = function (screenW, screenH) {
-          this.pixiRenderer.autoResize = true;
+          this.pixiRenderer.autoDensity = true;
           this.pixiRenderer.resize(screenW, screenH);
-          this.pixiRenderer.autoResize = false;
+          this.pixiRenderer.autoDensity = false;
           this.pixiRenderer.resize(this._savedSizes.x, this._savedSizes.y);
         };
         break;
       case 'full':
         // resize full = take immediately all the space available in pure pixel
         this._resizeMethod = function (screenW, screenH) {
-          this.pixiRenderer.autoResize = true;
+          this.pixiRenderer.autoDensity = true;
           this.pixiRenderer.resize(screenW, screenH);
         };
         break;
@@ -404,7 +404,7 @@ class Render extends EventEmitter {
     this.pixiRenderer.render(this.mainContainer);
   }
 
-  update(time) {
+  update(time: number) {
     for (var i = 0, c = this.mainContainer.updatables.length; i < c; ++i) {
       this.mainContainer.updatables[i].update(time);
     }
