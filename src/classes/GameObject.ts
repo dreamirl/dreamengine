@@ -99,7 +99,7 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    * @type {Object}
    */
-  _automatisms = {} as { [key: string]: any };
+  _automatisms: Record<string, Automatism> = {};
 
   /**
    * used to make distinction between gameObject and pure PIXI DisplayObject
@@ -220,8 +220,8 @@ class GameObject extends AdvancedContainer {
 
     // this have to be at the end because we can define function just before
     if (automatisms) {
-      for (var i = 0; i < automatisms.length; ++i) {
-        this.addAutomatism.apply(this, automatisms[i]);
+      for (let id in automatisms) {
+        this.addAutomatism(id, id, automatisms[id]);
       }
     }
 
@@ -392,7 +392,7 @@ class GameObject extends AdvancedContainer {
       rd.anchor.set(0.5, 0.5);
     }
 
-    if(this.renderer == undefined){
+    if (this.renderer == undefined) {
       this.renderer = rd;
     }
 
@@ -706,11 +706,11 @@ class GameObject extends AdvancedContainer {
    *   , "persistent": false
    * } );
    */
-  addAutomatism(id: string, methodName: string, params: any) {
+  addAutomatism(id: string, methodName: string, params: Partial<Automatism>) {
     params = params || {};
     methodName = methodName || id;
 
-    if (!this[methodName]) {
+    if (!this[methodName as keyof typeof this]) {
       console.warn(
         "%cCouldn't found the method " +
           methodName +
@@ -720,15 +720,18 @@ class GameObject extends AdvancedContainer {
       );
       return;
     }
-    params.interval = params.interval || Time.frameDelay;
-    params.timeSinceLastCall = 0;
 
-    params.methodName = methodName;
-    params.value1 = params.value1 || undefined;
-    params.value2 = params.value2 || undefined;
-    params.args = params.args || undefined;
-    params.persistent = params.persistent != false ? true : false;
-    this._automatisms[id] = params;
+    const automatism: Automatism = {
+      interval: params.interval || Time.frameDelay,
+      timeSinceLastCall: 0,
+      methodName: methodName,
+      value1: params.value1 || undefined,
+      value2: params.value2 || undefined,
+      args: params.args || undefined,
+      persistent: params.persistent != false ? true : false,
+    };
+
+    this._automatisms[id] = automatism;
   }
 
   /**
@@ -808,16 +811,20 @@ class GameObject extends AdvancedContainer {
     }
 
     // execute registered automatisms
-    for (var a in this._automatisms) {
-      var auto = this._automatisms[a];
+    for (let a in this._automatisms) {
+      const auto = this._automatisms[a];
       auto.timeSinceLastCall += Time.frameDelayScaled;
       if (auto.timeSinceLastCall > auto.interval) {
         auto.timeSinceLastCall -= auto.interval;
         // i think calling apply each update is slower than calling v1/v2. Should benchmark this
-        if (auto.args) {
-          this[auto.methodName].apply(this, auto.args);
-        } else {
-          this[auto.methodName](auto.value1, auto.value2);
+
+        const localMethod = this[auto.methodName as keyof typeof this];
+        if (typeof localMethod === 'function') {
+          if (auto.args) {
+            localMethod(...auto.args);
+          } else {
+            localMethod(auto.value1, auto.value2);
+          }
         }
 
         // if this one isn't persistent delete it

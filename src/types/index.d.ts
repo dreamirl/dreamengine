@@ -33,4 +33,14 @@ declare global {
     | TextRenderer
     | TextureRenderer
     | TilingRenderer;
+
+  type Automatism = {
+    methodName: string;
+    interval: number;
+    persistent: boolean;
+    timeSinceLastCall: number;
+    value1: any;
+    value2: any;
+    args: any;
+  };
 }
