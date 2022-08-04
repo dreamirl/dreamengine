@@ -385,6 +385,10 @@ class GameObject extends AdvancedContainer {
       rd.anchor.set(0.5, 0.5);
     }
 
+    if(this.renderer == undefined){
+      this.renderer = rd;
+    }
+
     this.renderers.push(rd);
     this.addChild(rd);
 
