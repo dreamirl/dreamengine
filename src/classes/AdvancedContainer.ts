@@ -96,7 +96,7 @@ export default class AdvancedContainer extends Container {
       this.shakeComp = new ShakeComponent(this);
       this.components.push(this.shakeComp);
     }
-    this.shakeComp.shake(xRange, yRange, duration);
+    this.shakeComp.shake(xRange, yRange, duration, callback);
   }
 
   scaleTo(targetScale: Point2D, duration: number = 500, callback = () => {}){

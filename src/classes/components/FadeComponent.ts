@@ -12,7 +12,7 @@ export default class FadeComponent extends Component {
     to: number = 0,
     from: number = parent.alpha,
     force: boolean = true,
-    callback?: () => void,
+    callback = () => {},
     selfDestruct: boolean = true,
   ) {
     super(parent);
@@ -28,7 +28,7 @@ export default class FadeComponent extends Component {
     to: number,
     duration: number,
     force: boolean,
-    callback?: () => void,
+    callback = () => {},
   ) {
     if (force) {
       this.enable = true;
@@ -50,11 +50,11 @@ export default class FadeComponent extends Component {
     this._fadeData = data;
   }
 
-  fadeTo(to: number, duration: number, force: boolean, callback?: () => void) {
+  fadeTo(to: number, duration: number, force: boolean, callback = () => {}) {
     this.fade(this.parent.alpha, to, duration, force, callback);
   }
 
-  fadeOut(duration: number, force: boolean, callback?: () => void) {
+  fadeOut(duration: number, force: boolean, callback = () => {}) {
     if (force) {
       this.enable = true;
       this.parent.alpha = this.parent.alpha > 0 ? this.parent.alpha : 1; // make sure to prevent any blink side effect
@@ -63,7 +63,7 @@ export default class FadeComponent extends Component {
     this.fade(this.parent.alpha, 0, duration, force, callback);
   }
 
-  fadeIn(duration: number, force: boolean, callback?: () => void) {
+  fadeIn(duration: number, force: boolean, callback = () => {}) {
     if (force) {
       this.enable = true;
       this.parent.alpha = this.parent.alpha < 1 ? this.parent.alpha : 0; // make sure to prevent any blink side effect
