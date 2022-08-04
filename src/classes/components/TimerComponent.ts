@@ -21,9 +21,15 @@ export default class TimerComponent extends Component {
       callback,
       interval,
       persistent,
-      id: '',
+      id,
       timeSinceLastCall: 0,
     };
+
+    return id;
+  }
+
+  clear(id: string) {
+    delete this._timers[id];
   }
 
   /**

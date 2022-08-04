@@ -6,41 +6,73 @@ import ShakeComponent from './components/ShakeComponent';
 import TimerComponent from './components/TimerComponent';
 
 export default class AdvancedContainer extends Container {
-  private components: Component[] = [];
-  private shakeComp?: ShakeComponent = undefined;
-  private fadeComp?: FadeComponent = undefined;
-  private scaleComp?: ScaleComponent = undefined;
-  private timerComp?: TimerComponent = undefined;
+  private _components: Component[] = [];
+
+  private _shakeComp?: ShakeComponent = undefined;
+  private get shakeComp() {
+    if (!this._shakeComp) {
+      this._shakeComp = new ShakeComponent(this);
+      this.addComponent(this._shakeComp);
+    }
+    return this._shakeComp;
+  }
+
+  private _fadeComp?: FadeComponent = undefined;
+  private get fadeComp() {
+    if (!this._fadeComp) {
+      this._fadeComp = new FadeComponent(this);
+      this.addComponent(this._fadeComp);
+    }
+    return this._fadeComp;
+  }
+
+  private _scaleComp?: ScaleComponent = undefined;
+  private get scaleComp() {
+    if (!this._scaleComp) {
+      this._scaleComp = new ScaleComponent(this);
+      this.addComponent(this._scaleComp);
+    }
+    return this._scaleComp;
+  }
+
+  private _timerComp?: TimerComponent = undefined;
+  private get timerComp() {
+    if (!this._timerComp) {
+      this._timerComp = new TimerComponent(this);
+      this.addComponent(this._timerComp);
+    }
+    return this._timerComp;
+  }
 
   update(time: number) {
-    this.components.forEach((c) => {
+    this._components.forEach((c) => {
       c._update(time);
     });
   }
 
   addComponent(component: Component) {
-    this.components.push(component);
+    this._components.push(component);
   }
 
   removeComponent(componentReference: Component) {
-    this.components.splice(this.components.indexOf(componentReference), 1);
+    this._components.splice(this._components.indexOf(componentReference), 1);
   }
 
   getComponent(name: string) {
-    return this.components.find((v) => v.name === name);
+    return this._components.find((v) => v.name === name);
   }
 
   timeout(
     callback: () => void,
-    interval?: number,
-    persistent?: boolean,
+    interval: number = 0,
+    persistent: boolean = false,
     id?: string,
   ) {
-    if (!this.timerComp) {
-      this.timerComp = new TimerComponent(this);
-      this.addComponent(this.timerComp);
-    }
-    this.timerComp.invoke(callback, interval, persistent, id);
+    return this.timerComp.invoke(callback, interval, persistent, id);
+  }
+
+  clearTimeout(id: string) {
+    this.timerComp.clear(id);
   }
 
   /**
@@ -53,10 +85,6 @@ export default class AdvancedContainer extends Container {
     force: boolean = true,
     callback?: () => void,
   ) {
-    if (!this.fadeComp) {
-      this.fadeComp = new FadeComponent(this);
-      this.addComponent(this.fadeComp);
-    }
     this.fadeComp.fade(from, to, duration, force, callback);
   }
 
@@ -66,10 +94,6 @@ export default class AdvancedContainer extends Container {
     force: boolean = true,
     callback?: () => void,
   ) {
-    if (!this.fadeComp) {
-      this.fadeComp = new FadeComponent(this);
-      this.addComponent(this.fadeComp);
-    }
     this.fadeComp.fadeTo(to, duration, force, callback);
   }
 
@@ -78,18 +102,10 @@ export default class AdvancedContainer extends Container {
     force: boolean = true,
     callback?: () => void,
   ) {
-    if (!this.fadeComp) {
-      this.fadeComp = new FadeComponent(this);
-      this.addComponent(this.fadeComp);
-    }
     this.fadeComp.fadeOut(duration, force, callback);
   }
 
   fadeIn(duration: number = 500, force: boolean = true, callback?: () => void) {
-    if (!this.fadeComp) {
-      this.fadeComp = new FadeComponent(this);
-      this.addComponent(this.fadeComp);
-    }
     this.fadeComp.fadeIn(duration, force, callback);
   }
 
@@ -105,18 +121,10 @@ export default class AdvancedContainer extends Container {
     duration: number = 500,
     callback = () => {},
   ) {
-    if (!this.shakeComp) {
-      this.shakeComp = new ShakeComponent(this);
-      this.addComponent(this.shakeComp);
-    }
     this.shakeComp.shake(xRange, yRange, duration, callback);
   }
 
   scaleTo(targetScale: Point2D, duration: number = 500, callback = () => {}) {
-    if (!this.scaleComp) {
-      this.scaleComp = new ScaleComponent(this);
-      this.addComponent(this.scaleComp);
-    }
     this.scaleComp.scaleTo(targetScale, duration, callback);
   }
 }
