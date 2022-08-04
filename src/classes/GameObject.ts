@@ -277,8 +277,8 @@ class GameObject extends AdvancedContainer {
     }
   }
 
-  setScale(x: number, y?: number){
-    if(y == undefined) y = x;
+  setScale(x: number, y?: number) {
+    if (y == undefined) y = x;
     this.scale.set(x, y);
   }
 
@@ -821,10 +821,12 @@ class GameObject extends AdvancedContainer {
         const localMethod = this[auto.methodName as keyof typeof this];
         if (typeof localMethod === 'function') {
           if (auto.args) {
-            localMethod(...auto.args);
+            localMethod.call(this, ...auto.args);
           } else {
-            localMethod(auto.value1, auto.value2);
+            localMethod.call(this, auto.value1, auto.value2);
           }
+        } else {
+          console.warn('Automatism call is not a function', auto.methodName);
         }
 
         // if this one isn't persistent delete it
