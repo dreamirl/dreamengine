@@ -43,4 +43,12 @@ declare global {
     value2: any;
     args: any;
   };
+
+  type TimerComponentData = {
+    callback: () => void;
+    interval: number;
+    persistent?: boolean;
+    id?: string;
+    timeSinceLastCall: number;
+  };
 }
