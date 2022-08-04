@@ -4,7 +4,7 @@ import Events from './utils/Events';
  * config contain various stuff for the engine
  * @namespace config
  */
-var config = {
+const config = {
   DEName: 'config',
   VERSION: '2.0',
   _DEBUG: 0,
@@ -12,6 +12,13 @@ var config = {
   ALLOW_ONBEFOREUNLOAD: true,
   DEFAULT_TEXT_RESOLUTION: 2,
   DEFAULT_POOL_NAME: 'default',
+  notifications: {
+    enable: true, // notifications enable by default
+    gamepadEnable: true,
+    gamepadAvalaible: 'Gamepad avalaible !',
+    gamepadChange: true,
+    achievementUnlockDuration: 8000,
+  },
 };
 
 Object.defineProperties(config, {
@@ -45,13 +52,5 @@ Object.defineProperties(config, {
     },
   },
 });
-
-config.notifications = {
-  enable: true, // notifications enable by default
-  gamepadEnable: true,
-  gamepadAvalaible: 'Gamepad avalaible !',
-  gamepadChange: true,
-  achievementUnlockDuration: 8000,
-};
 
 export default config;
