@@ -95,10 +95,7 @@ export default class FadeComponent extends Component {
 
         this.parent.emit('fadeEnd', this);
 
-        if (this._fadeData.callback) {
-          this._fadeData.callback.call(this);
-        }
-
+        this._fadeData.callback();
         if (this.selfDestruct) this.destroy();
       }
     }

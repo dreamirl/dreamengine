@@ -90,9 +90,7 @@ export default class ShakeComponent extends Component {
 
       this.parent.emit('shakeEnd');
 
-      if (shake.callback) {
-        shake.callback.call(this);
-      }
+      shake.callback();
       if (this._selfDestruct) {
         this.destroy();
       }
