@@ -156,7 +156,7 @@ class GameObject extends AdvancedContainer {
   extra: Record<string, any> = {};
 
   constructor(
-    params: Partial<{ [K in keyof GameObject]: GameObject[K] | undefined }>,
+    params: Partial<{ [K in keyof GameObject]: GameObject[K] | undefined }> = {},
   ) {
     super();
 
