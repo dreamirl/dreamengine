@@ -474,7 +474,7 @@ class GameObject extends AdvancedContainer {
    * object reference
    */
   remove(object: GameObject) {
-    var index = this.gameObjects.indexOf(object);
+    const index = this.gameObjects.indexOf(object);
 
     if (index !== -1) {
       this.gameObjects.splice(index, 1);
