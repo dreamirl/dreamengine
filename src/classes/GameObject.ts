@@ -156,7 +156,9 @@ class GameObject extends AdvancedContainer {
   extra: Record<string, any> = {};
 
   constructor(
-    params: Partial<{ [K in keyof GameObject]: GameObject[K] | undefined }> = {},
+    params: Partial<{
+      [K in keyof GameObject]: GameObject[K] | undefined;
+    }> = {},
   ) {
     super();
 
@@ -583,7 +585,7 @@ class GameObject extends AdvancedContainer {
     // }
 
     for (var i = 0, obj; i < this.gameObjects.length; ++i) {
-      obj = this.remove(i);
+      obj = this.remove(this.gameObjects[i]);
       obj.killMePlease();
     }
 
