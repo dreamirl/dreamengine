@@ -277,6 +277,11 @@ class GameObject extends AdvancedContainer {
     }
   }
 
+  setScale(x: number, y?: number){
+    if(y == undefined) y = x;
+    this.scale.set(x, y);
+  }
+
   _createDebugRenderer() {
     if (this._debugRenderer) {
       return;
