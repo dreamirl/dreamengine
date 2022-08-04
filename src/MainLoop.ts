@@ -83,7 +83,7 @@ class MainLoop {
       return;
     }
 
-    requestAnimationFrame(this.loop);
+    requestAnimationFrame(() => this.loop());
 
     // regulate fps OR if the Time machine is stopped
     if (!Time.update()) {
