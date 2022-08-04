@@ -1,7 +1,7 @@
 import AdvancedContainer from './AdvancedContainer';
 
 export default class Component {
-  private _enable = false;
+  private _enable = true;
   protected _name = 'Component';
 
   constructor(public readonly parent: AdvancedContainer) {}

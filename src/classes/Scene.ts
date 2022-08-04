@@ -228,8 +228,12 @@ class Scene<T extends GameObject = GameObject> extends Container {
     }
 
     // if it's an index, it's dangerous D: (excepted when it came from update, which is faster than idnexindexOf)
-    this.removeChild(object);
-    this.gameObjects.splice(this.gameObjects.indexOf(object), 1);
+    const index = this.gameObjects.indexOf(object);
+
+    if (index !== -1) {
+      this.gameObjects.splice(index, 1);
+      this.removeChild(object);
+    }
 
     this.emit('update-children');
     return object;
