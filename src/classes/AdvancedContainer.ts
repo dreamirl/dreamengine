@@ -1,12 +1,14 @@
 import { Container } from 'pixi.js';
 import Component from './Component';
 import FadeComponent from './components/FadeComponent';
+import ScaleComponent from './components/ScaleComponent';
 import ShakeComponent from './components/ShakeComponent';
 
 export default class AdvancedContainer extends Container {
   private components: Component[] = [];
   private shakeComp?: ShakeComponent = undefined;
   private fadeComp?: FadeComponent = undefined;
+  private scaleComp?: ScaleComponent = undefined;
 
   update(time: number) {
     this.components.forEach((c) => {
@@ -95,5 +97,13 @@ export default class AdvancedContainer extends Container {
       this.components.push(this.shakeComp);
     }
     this.shakeComp.shake(xRange, yRange, duration);
+  }
+
+  scaleTo(targetScale: Point2D, duration: number = 500, callback = () => {}){
+    if (!this.scaleComp) {
+      this.scaleComp = new ScaleComponent(this);
+      this.components.push(this.scaleComp);
+    }
+    this.scaleComp.scaleTo(targetScale, duration, callback);
   }
 }
