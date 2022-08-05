@@ -30,7 +30,7 @@ class MainLoop {
   }
 
   createLoader() {
-    const t = new TextRenderer('Loading...', {
+    const loaderTextRd = new TextRenderer('Loading...', {
       textStyle: {
         fill: 'white',
         fontSize: 35,
@@ -39,34 +39,35 @@ class MainLoop {
         align: 'center',
       },
     });
-    this.loader.addRenderer(t);
+    this.loader.addRenderer(loaderTextRd);
 
     let n_dots = 0;
-    this.loader.animateLoader = function () {
-      var dots = '.';
-      for (var i = 0; i < 3; ++i) {
-        dots += n_dots < i ? ' ' : '.';
-      }
+    this.loader.timeout(
+      () => {
+        var dots = '.';
+        for (var i = 0; i < 3; ++i) {
+          dots += n_dots < i ? ' ' : '.';
+        }
 
-      ++n_dots;
-      if (n_dots > 3) {
-        n_dots = 0;
-      }
-      this.renderer.text = 'Loading' + dots;
-    };
-    this.loader.addAutomatism('animateLoader', 'animateLoader', {
-      interval: 500,
-    });
+        ++n_dots;
+        if (n_dots > 3) {
+          n_dots = 0;
+        }
+        loaderTextRd.text = 'Loading' + dots;
+      },
+      500,
+      true,
+    );
     this.loader.renderer.y += 150;
     Events.on('ImageManager-pool-progress', (poolName, progression) => {
       this.loader.removeAutomatism('animateLoader');
       poolName == config.DEFAULT_POOL_NAME
-        ? (this.loader.renderer.text = progression + '%')
-        : (this.loader.renderer.text = poolName + ': ' + progression + '%');
+        ? (loaderTextRd.text = progression + '%')
+        : (loaderTextRd.text = poolName + ': ' + progression + '%');
     });
     Events.on('ImageManager-pool-complete', (poolName) => {
       this.loader.removeAutomatism('animateLoader');
-      this.loader.renderer.text = '100%';
+      loaderTextRd.text = '100%';
     });
   }
 
@@ -137,19 +138,15 @@ class MainLoop {
 
 const mainLoop = new MainLoop();
 
-Events.on(
-  'lang-changed',
-  function () {
-    for (var i = 0, s; (s = mainLoop.scenes[i]); ++i) {
-      for (var ii = 0, g; (g = s.gameObjects[ii]); ++ii) {
-        checkGameObjectsTextRenderer(g);
-      }
+Events.on('lang-changed', () => {
+  for (var i = 0, s; (s = mainLoop.scenes[i]); ++i) {
+    for (var ii = 0, g; (g = s.gameObjects[ii]); ++ii) {
+      checkGameObjectsTextRenderer(g);
     }
-  },
-  mainLoop,
-);
+  }
+});
 
-function checkGameObjectsTextRenderer(go) {
+function checkGameObjectsTextRenderer(go: GameObject) {
   for (var ix = 0, sub; (sub = go.gameObjects[ix]); ++ix) {
     checkGameObjectsTextRenderer(sub);
   }
