@@ -1,4 +1,5 @@
 import AdvancedContainer from './AdvancedContainer';
+import * as PIXI from 'pixi.js';
 
 export default class Component {
   private _enable = true;
@@ -56,5 +57,10 @@ export default class Component {
   }
   public set onDestroy(callback: () => void) {
     this._onDestroy = callback;
+  }
+
+  private _emitter = new PIXI.utils.EventEmitter();
+  public get emitter(){
+    return this._emitter;
   }
 }
