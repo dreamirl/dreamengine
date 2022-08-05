@@ -26,6 +26,11 @@ import Save from './utils/Save';
 
 // engine custom renderer
 import GameObject from './classes/GameObject';
+import Component from './classes/Component';
+import ShakeComponent from './classes/components/ShakeComponent';
+import FadeComponent from './classes/components/FadeComponent';
+import ScaleComponent from './classes/components/ScaleComponent';
+import TimerComponent from './classes/components/TimerComponent';
 import AnimatedTextureRenderer from './classes/renderer/AnimatedTextureRenderer';
 import BaseRenderer from './classes/renderer/BaseRenderer';
 import BitmapTextRenderer from './classes/renderer/BitmapTextRenderer';
@@ -67,6 +72,11 @@ const DE = {
   NineSliceRenderer,
   AnimatedTextureRenderer,
   GameObject,
+  Component,
+  ShakeComponent,
+  FadeComponent,
+  ScaleComponent,
+  TimerComponent,
   Platform,
   PIXI,
 };
