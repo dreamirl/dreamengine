@@ -50,12 +50,18 @@ export default class AdvancedContainer extends Container {
     });
   }
 
-  addComponent(component: Component) {
+  addComponent(...components: Array<Component>) {
+    components.forEach((c) => this.addOneComponent(c));
+    return this;
+  }
+  addOneComponent(component: Component) {
     this._components.push(component);
+    return this;
   }
 
   removeComponent(componentReference: Component) {
     this._components.splice(this._components.indexOf(componentReference), 1);
+    return this;
   }
 
   getComponent(name: string) {
@@ -73,6 +79,7 @@ export default class AdvancedContainer extends Container {
 
   clearTimeout(id: string) {
     this.timerComp.clear(id);
+    return this;
   }
 
   /**
@@ -86,6 +93,7 @@ export default class AdvancedContainer extends Container {
     callback?: () => void,
   ) {
     this.fadeComp.fade(from, to, duration, force, callback);
+    return this;
   }
 
   fadeTo(
@@ -95,6 +103,7 @@ export default class AdvancedContainer extends Container {
     callback?: () => void,
   ) {
     this.fadeComp.fadeTo(to, duration, force, callback);
+    return this;
   }
 
   fadeOut(
@@ -103,10 +112,12 @@ export default class AdvancedContainer extends Container {
     callback?: () => void,
   ) {
     this.fadeComp.fadeOut(duration, force, callback);
+    return this;
   }
 
   fadeIn(duration: number = 500, force: boolean = true, callback?: () => void) {
     this.fadeComp.fadeIn(duration, force, callback);
+    return this;
   }
 
   /**
@@ -122,9 +133,11 @@ export default class AdvancedContainer extends Container {
     callback = () => {},
   ) {
     this.shakeComp.shake(xRange, yRange, duration, callback);
+    return this;
   }
 
   scaleTo(targetScale: Point2D, duration: number = 500, callback = () => {}) {
     this.scaleComp.scaleTo(targetScale, duration, callback);
+    return this;
   }
 }

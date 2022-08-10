@@ -421,16 +421,8 @@ class GameObject extends AdvancedContainer {
    * var myArray2 = [ object4, object5, object6 ]; // declare a second array with object inside as you wish
    * myObject.add( myArray, myArray2 ); // then call add with array and multi arguments
    */
-  add(...args: Array<any>) {
-    for (var i = 0; i < args.length; ++i) {
-      if (args[i].length !== undefined) {
-        for (var o = 0, m = args[i].length || 0; o < m; ++o) {
-          this.addOne(args[i][o]);
-        }
-      } else {
-        this.addOne(args[i]);
-      }
-    }
+  add(...gameObjects: Array<GameObject>) {
+    gameObjects.forEach((go) => this.addOne(go));
 
     // TODO used to sort z-index
     // this.sortChildren();
