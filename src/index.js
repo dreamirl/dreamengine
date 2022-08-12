@@ -25,12 +25,12 @@ import Platform from './utils/Platform';
 import Save from './utils/Save';
 
 // engine custom renderer
-import GameObject from './classes/GameObject';
 import Component from './classes/Component';
-import ShakeComponent from './classes/components/ShakeComponent';
 import FadeComponent from './classes/components/FadeComponent';
 import ScaleComponent from './classes/components/ScaleComponent';
+import ShakeComponent from './classes/components/ShakeComponent';
 import TimerComponent from './classes/components/TimerComponent';
+import GameObject from './classes/GameObject';
 import AnimatedTextureRenderer from './classes/renderer/AnimatedTextureRenderer';
 import BaseRenderer from './classes/renderer/BaseRenderer';
 import BitmapTextRenderer from './classes/renderer/BitmapTextRenderer';
@@ -189,7 +189,7 @@ DE.onLoad = function () {
 var _defaultPoolName = DE.CONFIG.DEFAULT_POOL_NAME;
 DE.start = function () {
   // make all audios instance and launch preload if required
-  DE.Audio.loadAudios(DE.___params.audios || []);
+  DE.Audio.initialize(DE.___params.audios);
   delete DE.___params;
 
   DE.MainLoop.launched = true;
