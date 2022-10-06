@@ -41,7 +41,7 @@ var Save = new (function () {
 
     this.version = about.gameVersion;
     if (ignoreVersion) {
-      this.version = window.localStorage.get(this.namespace);
+      this.version = window.localStorage.getItem(this.namespace);
     }
 
     this.saveModel = saveModel;
@@ -49,7 +49,7 @@ var Save = new (function () {
     // load save from storage
     for (var i in this.saveModel) {
       this.saveModel[i] =
-        window.localStorage.get(this.namespace + this.version + i) ||
+        window.localStorage.getItem(this.namespace + this.version + i) ||
         this.saveModel[i];
     }
 
@@ -62,14 +62,14 @@ var Save = new (function () {
     }
     // clean the localStorage to prevent zombie storage because upgraded version
     for (var i in this.saveModel) {
-      window.localStorage.remove(this.namespace + this.version + i);
+      window.localStorage.removeItem(this.namespace + this.version + i);
     }
 
     // setup the last version of the game, and rewrite datas
     this.version = about.gameVersion;
-    window.localStorage.set(this.namespace, this.version);
+    window.localStorage.setItem(this.namespace, this.version);
     for (var i in this.saveModel) {
-      window.localStorage.set(
+      window.localStorage.setItem(
         this.namespace + this.version + i,
         this.saveModel[i],
       );
@@ -113,7 +113,7 @@ var Save = new (function () {
   this.get = function (key) {
     if (!(key in this.saveModel)) {
       this.saveModel[key] =
-        window.localStorage.get(this.namespace + this.version + key) ||
+        window.localStorage.getItem(this.namespace + this.version + key) ||
         this.saveModel[key];
     }
     return this.saveModel[key];
@@ -154,7 +154,7 @@ var Save = new (function () {
       this.saveModel[nkey][path[1]] = value;
 
       if (this.useLocalStorage) {
-        window.localStorage.set(
+        window.localStorage.setItem(
           this.namespace + this.version + nkey,
           this.saveModel[nkey],
         );
@@ -166,7 +166,10 @@ var Save = new (function () {
       this.saveModel[nkey] = value;
 
       if (this.useLocalStorage) {
-        window.localStorage.set(this.namespace + this.version + nkey, value);
+        window.localStorage.setItem(
+          this.namespace + this.version + nkey,
+          value,
+        );
       }
     }
     Events.emit('Save-save', this.saveModel);
@@ -184,7 +187,7 @@ var Save = new (function () {
       return;
     }
     for (var i in this.saveModel) {
-      window.localStorage.set(
+      window.localStorage.setItem(
         this.namespace + this.version + i,
         this.saveModel[i],
       );
@@ -203,11 +206,14 @@ var Save = new (function () {
     if (!this.useLocalStorage) {
       return;
     }
-    window.localStorage.set(this.namespace + 'achievements', userAchievements);
+    window.localStorage.setItem(
+      this.namespace + 'achievements',
+      userAchievements,
+    );
   };
 
   this.loadAchievements = function () {
-    return window.localStorage.get(this.namespace + 'achievements') || {};
+    return window.localStorage.getItem(this.namespace + 'achievements') || {};
   };
 })();
 
