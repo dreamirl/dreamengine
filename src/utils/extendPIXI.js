@@ -1,6 +1,9 @@
 export default function (DE, PIXI) {
   PIXI.time = PIXI.Ticker.shared;
   DE.pixtime = PIXI.Ticker.shared;
+
+  // Not working in Vuejs, probably deprecated
+  return;
   PIXI.utils.sayHello = function (type) {
     if (type == 'WebGL') {
       type = type + ' ☺';
