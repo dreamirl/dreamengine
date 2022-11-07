@@ -40,6 +40,7 @@ class Inputs {
   usedInputs = {};
 
   isWindowFocused = true;
+  dontPreventDefault= false;
 
   _keyLocked = false;
   _keyLockNamesExceptions: string[] = [];
@@ -486,7 +487,7 @@ class Inputs {
       return false;
     }
 
-    if (!shouldPreventDefault) return false;
+    if (!shouldPreventDefault || this.dontPreventDefault) return false;
 
     e.preventDefault();
   }
