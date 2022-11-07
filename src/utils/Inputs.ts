@@ -40,7 +40,7 @@ class Inputs {
   usedInputs = {};
 
   isWindowFocused = true;
-  dontPreventDefault= false;
+  dontPreventDefault = false;
 
   _keyLocked = false;
   _keyLockNamesExceptions: string[] = [];
