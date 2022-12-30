@@ -11,7 +11,7 @@
   "devDependencies": {
     "cross-env": "^5.2.0",
     "parallel-webpack": "^2.2.0",
-    "webpack": "^3.8.1",
+    "webpack": "^5.75.0",
     "webpack-dev-server": "^3.11.0",
     "webpack-utf8-bom": "^1.2.0",
     "husky": "^7.0.0",
