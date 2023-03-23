@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import config from '../../config';
 import Localization from '../../utils/Localization';
-import BaseRenderer from './BaseRenderer';
+import BaseRenderer, { BaseRendererParams } from './BaseRenderer';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -33,7 +33,7 @@ export default class BitmapTextRenderer extends PIXI.BitmapText {
 
   constructor(
     text: string,
-    params: {
+    params: BaseRendererParams & {
       maxHeight?: number;
       maxWidth?: number;
       fontName: string;
@@ -124,18 +124,19 @@ export default class BitmapTextRenderer extends PIXI.BitmapText {
     }
   }
 
-  setScale(x: any, y?: number) {
+  setScale(x: number | { x: number; y: number }, y?: number) {
     if (y) {
-      if (x.x) {
+      if (x instanceof Object) {
         this.scale.set(x.x, x.y);
       } else {
         this.scale.set(x, x);
       }
     } else {
-      this.scale.set(x, y);
+      if (!(x instanceof Object)) {
+        this.scale.set(x, y);
+      }
     }
   }
-
   getWidth() {
     const textLocalBounds = this.getLocalBounds();
     return textLocalBounds.width;
@@ -155,8 +156,3 @@ export default class BitmapTextRenderer extends PIXI.BitmapText {
   }
   static DEName = 'BitmapTextRenderer';
 }
-
-//BitmapTextRenderer.prototype = Object.create(PIXI.BitmapText.prototype);
-BitmapTextRenderer.prototype.constructor = BitmapTextRenderer;
-
-BaseRenderer.inherits(BitmapTextRenderer);

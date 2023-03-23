@@ -1,7 +1,20 @@
 import * as PIXI from 'pixi.js';
 import ImageManager from '../../utils/ImageManager';
 import Time from '../../utils/Time';
-import BaseRenderer from './BaseRenderer';
+import BaseRenderer, { BaseRendererParams } from './BaseRenderer';
+
+export type SpriteDataType = {
+  startFrame: number;
+  endFrame: number;
+  totalFrame: number;
+  endLine: number;
+  totalLine: number;
+  interval: number;
+  animated: boolean;
+  reversed: boolean;
+  pingPongMode: boolean;
+  loop: boolean;
+};
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -34,24 +47,26 @@ export default class SpriteRenderer extends BaseRenderer {
   public isOver: number;
   public loop: number;
   public pingPongMode: boolean;
-  public spriteName: string | undefined;
-  public isAtlasTexture: boolean;
-  public spriteData: any;
-  public lastAnim: number;
-  public normalTexture: any;
+  public spriteName?: string;
+  public isAtlasTexture?: boolean;
+  public spriteData?: SpriteDataType;
+  public lastAnim?: number;
+  public normalTexture?: PIXI.Texture<PIXI.Resource>;
   public fw: number;
   public fh: number;
-  public endLine: any;
-  public baseTexture: any;
-  public normalName: string | undefined;
-  public baseNormalTexture: any;
+  public endLine?: number;
+  public baseTexture?: PIXI.BaseTexture<PIXI.Resource>;
+  public normalName?: string;
+  public baseNormalTexture?: PIXI.BaseTexture<PIXI.Resource>;
 
-  constructor(params: {
-    spriteName?: string;
-    spriteUrl?: string;
-    textureName?: string;
-    spriteData?: any;
-  }) {
+  constructor(
+    params: BaseRendererParams & {
+      spriteName?: string;
+      spriteUrl?: string;
+      textureName?: string;
+      spriteData?: SpriteDataType;
+    },
+  ) {
     super();
     this.spriteName =
       params.spriteName || params.spriteUrl || params.textureName;
@@ -200,8 +215,6 @@ export default class SpriteRenderer extends BaseRenderer {
     this.onAnimEnd = function () {};
     this.changeSprite(this.spriteName, params);
 
-    this.lastAnim = 0;
-
     this.fw = 0;
     this.fh = 0;
 
@@ -270,9 +283,11 @@ export default class SpriteRenderer extends BaseRenderer {
       }
     }
 
-    this._originalTexture.frame.x = this._currentFrame * this.fw;
-    this._originalTexture.frame.y = this._currentLine * this.fh;
-    this._originalTexture.updateUvs();
+    if (this._originalTexture) {
+      this._originalTexture.frame.x = this._currentFrame * this.fw;
+      this._originalTexture.frame.y = this._currentLine * this.fh;
+      this._originalTexture.updateUvs();
+    }
 
     if (this.normalTexture) {
       this.normalTexture.frame.x = this._currentFrame * this.fw;
@@ -378,29 +393,29 @@ export default class SpriteRenderer extends BaseRenderer {
       spriteName?: string | undefined;
       spriteUrl?: string | undefined;
       textureName?: string | undefined;
-      spriteData?: any;
+      spriteData?: SpriteDataType;
       startFrame?: number;
       endFrame?: number;
       currentFrame?: number;
-      startLine?: any;
-      endLine?: any;
-      totalLine?: any;
-      interval?: any;
+      startLine?: number;
+      endLine?: number;
+      totalLine?: number;
+      interval?: number;
       animated?: boolean;
-      paused?: any;
-      isPaused?: boolean;
+      paused?: number;
+      isPaused?: number;
       reversed?: boolean;
       pingPongMode?: boolean;
       loop?: boolean;
-      normal?: any;
-      tint?: any;
+      normal?: string;
+      tint?: number;
       filters?: any;
-      hue?: any;
-      saturation?: any;
-      brightness?: any;
-      contrast?: any;
-      blackAndWhite?: any;
-      greyscale?: any;
+      hue?: number | ValueMultiply | Array<number & boolean>;
+      saturation?: number | ValueMultiply | Array<number & boolean>;
+      brightness?: number | ValueMultiply | Array<number & boolean>;
+      contrast?: number | ValueMultiply | Array<number & boolean>;
+      blackAndWhite?: boolean;
+      greyscale?: number | ValueMultiply | Array<number & boolean>;
     },
   ) {
     params = params || {};
@@ -450,28 +465,30 @@ export default class SpriteRenderer extends BaseRenderer {
     this.isOver = 0;
     this.loop = params.loop != undefined ? params.loop : d.loop || this.loop;
 
-    this.baseTexture = this._getTexture(this.spriteName);
+    this.baseTexture = this._getTexture(this.spriteName).baseTexture;
 
     if (params.normal) {
       this.normalName = params.normal;
-      this.baseNormalTexture = this._getTexture(params.normal);
+      this.baseNormalTexture = this._getTexture(params.normal).baseTexture;
     }
 
-    this.fw = (this.baseTexture.width / this.totalFrame) >> 0;
-    this.fh = (this.baseTexture.height / this.totalLine) >> 0;
-    var size = new PIXI.Rectangle(
-      this._currentFrame * this.fw,
-      this._currentLine * this.fh,
-      this.fw,
-      this.fh,
-    );
-    this.texture = new PIXI.Texture(
-      this.baseTexture,
-      size,
-      size.clone(),
-      undefined,
-      undefined,
-    );
+    if (this.baseTexture) {
+      this.fw = (this.baseTexture.width / this.totalFrame) >> 0;
+      this.fh = (this.baseTexture.height / this.totalLine) >> 0;
+      var size = new PIXI.Rectangle(
+        this._currentFrame * this.fw,
+        this._currentLine * this.fh,
+        this.fw,
+        this.fh,
+      );
+      this.texture = new PIXI.Texture(
+        this.baseTexture,
+        size,
+        size.clone(),
+        undefined,
+        undefined,
+      );
+    }
     this._originalTexture = this.texture;
 
     if (this.baseNormalTexture) {
@@ -497,42 +514,50 @@ export default class SpriteRenderer extends BaseRenderer {
     }
 
     if (params.hue) {
-      if (params.hue.length) {
-        this.setHue(params.hue[0], params.hue[1]);
-      } else if (params.hue.value) {
-        this.setHue(params.hue.value, params.hue.multiply);
+      if (params.hue instanceof Object) {
+        if (params.hue instanceof Array && params.hue.length) {
+          this.setHue(params.hue[0], params.hue[1]);
+        } else if (!(params.hue instanceof Array)) {
+          this.setHue(params.hue.value, params.hue.multiply);
+        }
       } else {
         this.setHue(params.hue, false);
       }
     }
 
     if (params.saturation) {
-      if (params.saturation.length) {
-        this.setSaturation(params.saturation[0], params.saturation[1]);
-      } else if (params.saturation.value) {
-        this.setSaturation(params.saturation.value, params.saturation.multiply);
+      if (params.saturation instanceof Object) {
+        if (params.saturation instanceof Array && params.saturation.length) {
+          this.setHue(params.saturation[0], params.saturation[1]);
+        } else if (!(params.saturation instanceof Array)) {
+          this.setHue(params.saturation.value, params.saturation.multiply);
+        }
       } else {
-        this.setSaturation(params.saturation, false);
+        this.setHue(params.saturation, false);
       }
     }
 
     if (params.brightness) {
-      if (params.brightness.length) {
-        this.setBrightness(params.brightness[0], params.brightness[1]);
-      } else if (params.brightness.value) {
-        this.setBrightness(params.brightness.value, params.brightness.multiply);
+      if (params.brightness instanceof Object) {
+        if (params.brightness instanceof Array && params.brightness.length) {
+          this.setHue(params.brightness[0], params.brightness[1]);
+        } else if (!(params.brightness instanceof Array)) {
+          this.setHue(params.brightness.value, params.brightness.multiply);
+        }
       } else {
-        this.setBrightness(params.brightness, false);
+        this.setHue(params.brightness, false);
       }
     }
 
     if (params.contrast) {
-      if (params.contrast.length) {
-        this.setContrast(params.contrast[0], params.contrast[1]);
-      } else if (params.contrast.value) {
-        this.setContrast(params.contrast.value, params.contrast.multiply);
+      if (params.contrast instanceof Object) {
+        if (params.contrast instanceof Array && params.contrast.length) {
+          this.setHue(params.contrast[0], params.contrast[1]);
+        } else if (!(params.contrast instanceof Array)) {
+          this.setHue(params.contrast.value, params.contrast.multiply);
+        }
       } else {
-        this.setContrast(params.contrast, false);
+        this.setHue(params.contrast, false);
       }
     }
 
@@ -541,20 +566,19 @@ export default class SpriteRenderer extends BaseRenderer {
     }
 
     if (params.greyscale) {
-      if (params.greyscale.length) {
-        this.setGreyscale(params.greyscale[0], params.greyscale[1]);
-      } else if (params.greyscale.value) {
-        this.setGreyscale(params.greyscale.value, params.greyscale.multiply);
+      if (params.greyscale instanceof Object) {
+        if (params.greyscale instanceof Array && params.greyscale.length) {
+          this.setHue(params.greyscale[0], params.greyscale[1]);
+        } else if (!(params.greyscale instanceof Array)) {
+          this.setHue(params.greyscale.value, params.greyscale.multiply);
+        }
       } else {
-        this.setGreyscale(params.greyscale, false);
+        this.setHue(params.greyscale, false);
       }
     }
   }
   static DEName = 'SpriteRenderer';
 }
-
-//SpriteRenderer.prototype = Object.create(PIXI.Sprite.prototype);
-SpriteRenderer.prototype.constructor = SpriteRenderer;
 
 Object.defineProperties(SpriteRenderer.prototype, {
   currentFrame: {

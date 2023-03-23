@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import BaseRenderer from './BaseRenderer';
+import BaseRenderer, { BaseRendererParams } from './BaseRenderer';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -20,12 +20,14 @@ import BaseRenderer from './BaseRenderer';
 export default class TextureRenderer extends PIXI.Sprite {
   private _textureName: string | undefined;
   public sprite: PIXI.Sprite | undefined;
-  constructor(params: {
-    spriteName: string;
-    spriteUrl: string;
-    textureName: string;
-    texture: PIXI.Texture<PIXI.Resource> | undefined;
-  }) {
+  constructor(
+    params: BaseRendererParams & {
+      spriteName: string;
+      spriteUrl: string;
+      textureName: string;
+      texture: PIXI.Texture<PIXI.Resource> | undefined;
+    },
+  ) {
     if (
       !params.spriteName &&
       !params.spriteUrl &&
@@ -74,5 +76,3 @@ export default class TextureRenderer extends PIXI.Sprite {
   }
   static DEName = 'TextureRenderer';
 }
-
-BaseRenderer.inherits(TextureRenderer);

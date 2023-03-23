@@ -36,8 +36,3 @@ export default class GraphicRenderer extends PIXI.Graphics {
 
   static DEName = 'GraphicRenderer';
 }
-
-//GraphicRenderer.prototype = Object.create(PIXI.Graphics.prototype);
-GraphicRenderer.prototype.constructor = GraphicRenderer;
-
-BaseRenderer.inherits(GraphicRenderer);

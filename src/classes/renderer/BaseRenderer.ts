@@ -3,47 +3,14 @@ import Time from '../../utils/Time';
 import GameObject from '../GameObject';
 
 export type BaseRendererParams = {
-  [x: string]: any;
-  width?: number;
   height?: number;
-  color?: string;
-  fill?: string;
-  lineStyle?: string;
-  backgroundImage?: any;
-  spriteName?: string;
-  spriteUrl?: string;
-  textureName?: string;
-  spriteData?: any;
-  maxHeight?: number;
-  maxWidth?: number;
-  resolution?: any;
-  localizationKey?: any;
-  textStyle?: Partial<PIXI.ITextStyle> | undefined;
-  animated?: boolean;
-  loop?: boolean;
-  reversed?: boolean;
-  interval?: number;
-  pingPongMode?: boolean;
-  sheetName?: string;
-  animationName?: string;
-  endFrame?: number;
-  startFrame?: number;
-  pause?: boolean;
-  currentFrame?: number;
-  tint?: any;
-  randomFrame?: number;
-  fontName?: string;
-  fontSize?: number;
-  texture?: PIXI.Texture<PIXI.Resource>;
-  x?: number;
-  y?: number;
-  preventCenter?: boolean;
+  width?: number;
+  size?: number;
   alpha?: number;
   opacity?: number;
   scale?: { x: number; y: number };
   scaleX?: number;
   scaleY?: number;
-  size?: any;
 };
 
 var _inherits = [
@@ -78,7 +45,7 @@ export default class BaseRenderer extends PIXI.Sprite {
     done: boolean;
   };
   public scaleData: {
-    callback: any;
+    callback?: () => void;
     destY: number;
     destX: number;
     dirY: number;
@@ -100,9 +67,8 @@ export default class BaseRenderer extends PIXI.Sprite {
     stepValY: number;
   };
 
-  sleep: boolean = false;
+  sleep = false;
 
-  // Voir PIXI.filters.
   blackAndWhiteFilter: any;
   grayscaleFilter: any;
   contrastFilter: any;
@@ -110,9 +76,9 @@ export default class BaseRenderer extends PIXI.Sprite {
   saturationFilter: any;
   hueFilter: any;
 
-  _originalTexture: any;
-  preventCenter: boolean | undefined;
-  gameObject: GameObject | undefined;
+  _originalTexture?: PIXI.Texture<PIXI.Resource>;
+  preventCenter?: boolean;
+  gameObject?: GameObject;
 
   constructor() {
     super();
@@ -185,15 +151,18 @@ export default class BaseRenderer extends PIXI.Sprite {
       delete params.opacity;
       delete params.size;
 
-      for (var i in params) {
+      for (var [i, value] of Object.entries(params)) {
         if (target[i] && target[i].set) {
-          if (params[i].x !== undefined || params[i].y !== undefined) {
-            target[i].set(params[i].x || 0, params[i].y || 0);
+          if (
+            value instanceof Object &&
+            (value.x !== undefined || value.y !== undefined)
+          ) {
+            target[i].set(value.x || 0, value.y || 0);
           } else {
-            target[i].set(params[i]);
+            target[i].set(value);
           }
         } else {
-          target[i] = params[i];
+          target[i] = value;
         }
       }
     }
@@ -209,15 +178,17 @@ export default class BaseRenderer extends PIXI.Sprite {
     }
   };
 
-  setScale(x: any, y?: number) {
+  setScale(x: number | { x: number; y: number }, y?: number) {
     if (y) {
-      if (x.x) {
+      if (x instanceof Object) {
         this.scale.set(x.x, x.y);
       } else {
         this.scale.set(x, x);
       }
     } else {
-      this.scale.set(x, y);
+      if (!(x instanceof Object)) {
+        this.scale.set(x, y);
+      }
     }
   }
 
@@ -355,11 +326,27 @@ export default class BaseRenderer extends PIXI.Sprite {
    * @example // scale to 2,3 in 1 second
    * myRenderer.scaleTo( { x: 2, y: 3 }, 1000 );
    */
-  scaleTo(duration: number, callback: any, scaleX: number, scaleY?: number) {
-    var dscale = {
-      x: scaleX,
-      y: scaleY ? scaleY : scaleX,
-    };
+  scaleTo(
+    duration: number,
+    callback: () => void,
+    scale: { x: number; y: number } | number,
+  ) {
+    if (scale instanceof Object) {
+      var dscale = {
+        x: scale.x,
+        y: scale.y,
+      };
+    } else if (scale !== undefined) {
+      var dscale = {
+        x: scale,
+        y: scale,
+      };
+    } else {
+      var dscale = {
+        x: 1,
+        y: 1,
+      };
+    }
     this.scaleData = {
       valX: -(
         this.scale.x - (dscale.x !== undefined ? dscale.x : this.scale.x)

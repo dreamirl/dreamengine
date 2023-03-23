@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import BaseRenderer from './BaseRenderer';
+import BaseRenderer, { BaseRendererParams } from './BaseRenderer';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -18,7 +18,7 @@ import BaseRenderer from './BaseRenderer';
 
 export default class NineSliceRenderer extends PIXI.NineSlicePlane {
   constructor(
-    params: {
+    params: BaseRendererParams & {
       texture: PIXI.Texture<PIXI.Resource>;
       spriteName: string;
       spriteUrl: string;
@@ -67,5 +67,3 @@ export default class NineSliceRenderer extends PIXI.NineSlicePlane {
   }
   static DEName = 'NineSliceRenderer';
 }
-
-BaseRenderer.inherits(NineSliceRenderer);

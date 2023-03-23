@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import config from '../../config';
 import Localization from '../../utils/Localization';
-import BaseRenderer from './BaseRenderer';
+import BaseRenderer, { BaseRendererParams } from './BaseRenderer';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -28,16 +28,16 @@ import BaseRenderer from './BaseRenderer';
  */
 
 export default class TextRenderer extends PIXI.Text {
-  maxHeight: number | undefined;
-  maxWidth: number | undefined;
-  localizationKey: string | undefined;
+  maxHeight?: number;
+  maxWidth?: number;
+  localizationKey?: string;
 
   constructor(
     text: string,
-    params: {
+    params: BaseRendererParams & {
       maxHeight?: number;
       maxWidth?: number;
-      resolution?: any;
+      resolution?: number;
       localizationKey?: string;
       textStyle?: PIXI.TextStyle;
     },
@@ -126,21 +126,18 @@ export default class TextRenderer extends PIXI.Text {
     }
   }
 
-  setScale(x: any, y?: number) {
+  setScale(x: number | { x: number; y: number }, y?: number) {
     if (y) {
-      if (x.x) {
+      if (x instanceof Object) {
         this.scale.set(x.x, x.y);
       } else {
         this.scale.set(x, x);
       }
     } else {
-      this.scale.set(x, y);
+      if (!(x instanceof Object)) {
+        this.scale.set(x, y);
+      }
     }
   }
   static DEName = 'TextRenderer';
 }
-
-//TextRenderer.prototype = Object.create(PIXI.Text.prototype);
-TextRenderer.prototype.constructor = TextRenderer;
-
-BaseRenderer.inherits(TextRenderer);

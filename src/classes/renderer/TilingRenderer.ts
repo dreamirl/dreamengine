@@ -51,7 +51,3 @@ export default class TilingRenderer extends PIXI.TilingSprite {
   }
   static DEName = 'TilingRenderer';
 }
-//TilingRenderer.prototype = Object.create(PIXI.TilingSprite.prototype);
-TilingRenderer.prototype.constructor = TilingRenderer;
-
-BaseRenderer.inherits(TilingRenderer);

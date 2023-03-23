@@ -1,10 +1,10 @@
 import * as PIXI from 'pixi.js';
 import Time from '../../utils/Time';
-import BaseRenderer from './BaseRenderer';
+import BaseRenderer, { BaseRendererParams } from './BaseRenderer';
 
 export default class AnimatedTextureRenderer extends BaseRenderer {
   private _imageNames: string[];
-  private _textures: [];
+  private _textures: PIXI.Texture<PIXI.Resource>[];
   private _currentFrame: number;
   public lastAnim: number;
   public animated: boolean;
@@ -22,7 +22,7 @@ export default class AnimatedTextureRenderer extends BaseRenderer {
 
   constructor(
     imageNames: string[],
-    params: {
+    params: BaseRendererParams & {
       animated?: boolean;
       loop?: boolean;
       reversed?: boolean;
@@ -154,7 +154,7 @@ export default class AnimatedTextureRenderer extends BaseRenderer {
   }
   set imageNames(names) {
     this._imageNames = names;
-    const textures: any = [];
+    const textures: PIXI.Texture<PIXI.Resource>[] = [];
     names.forEach((imgName) => textures.push(PIXI.utils.TextureCache[imgName]));
     this.textures = textures;
   }
@@ -219,5 +219,3 @@ export default class AnimatedTextureRenderer extends BaseRenderer {
 
   static DEName = 'AnimatedTextureRenderer';
 }
-
-BaseRenderer.inherits(AnimatedTextureRenderer);

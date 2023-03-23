@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
-import BaseRenderer from './BaseRenderer';
+import { ILineStyleOptions } from 'pixi.js';
+import BaseRenderer, { BaseRendererParams } from './BaseRenderer';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -18,23 +19,23 @@ import BaseRenderer from './BaseRenderer';
 
 export default class RectRenderer extends PIXI.Graphics {
   private _initial: {
-    width: number;
-    height: number;
-    fill: any;
-    color: string;
-    lineStyle: any;
+    width?: number;
+    height?: number;
+    fill?: boolean;
+    color?: number;
+    lineStyle?: [options?: ILineStyleOptions];
   };
 
   constructor(
     width: number,
     height: number,
-    color: string,
-    params: {
+    color: number,
+    params: BaseRendererParams & {
       width?: number;
       height?: number;
-      color?: string;
-      fill?: any;
-      lineStyle?: string;
+      color?: number;
+      fill?: boolean;
+      lineStyle?: [options?: ILineStyleOptions];
     },
   ) {
     super();
@@ -65,17 +66,23 @@ export default class RectRenderer extends PIXI.Graphics {
     BaseRenderer.instantiate(this, _params);
   }
 
-  updateRender(params: {
-    width?: number;
-    height?: number;
-    color?: any;
-    fill?: any;
-    lineStyle?: string;
-  }) {
+  updateRender(
+    params: BaseRendererParams & {
+      width?: number;
+      height?: number;
+      color?: number;
+      fill?: boolean;
+      lineStyle?: [options?: ILineStyleOptions];
+    },
+  ) {
     this.clear();
 
     if (params && (params.lineStyle || this._initial.lineStyle)) {
-      this.lineStyle.apply(this, params.lineStyle || this._initial.lineStyle); // 4, 0xFF3300, 1);
+      if (params.lineStyle !== undefined) {
+        this.lineStyle.apply(this, params.lineStyle); // 4, 0xFF3300, 1);
+      } else if (this._initial.lineStyle !== undefined) {
+        this.lineStyle.apply(this, this._initial.lineStyle); // 4, 0xFF3300, 1);
+      }
     }
 
     if (
@@ -83,14 +90,14 @@ export default class RectRenderer extends PIXI.Graphics {
       params.fill !== false ||
       (params.fill === undefined && this._initial.fill !== false)
     ) {
-      this.beginFill(params.color || this._initial.color || '0xFF3300');
+      this.beginFill(params.color || this._initial.color || 0xff3300);
     }
 
     this.drawRect(
       0,
       0,
-      params.width || this._initial.width,
-      params.height || this._initial.height,
+      params.width || this._initial.width || 0,
+      params.height || this._initial.height || 0,
     );
 
     this.endFill();
@@ -107,8 +114,3 @@ export default class RectRenderer extends PIXI.Graphics {
   }
   static DEName = 'RectRenderer';
 }
-
-//RectRenderer.prototype = Object.create(PIXI.Graphics.prototype);
-RectRenderer.prototype.constructor = RectRenderer;
-
-BaseRenderer.inherits(RectRenderer);
