@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import BaseRenderer from './BaseRenderer';
+import BaseRenderer, { BaseRendererParams } from './BaseRenderer';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -15,30 +15,29 @@ import BaseRenderer from './BaseRenderer';
  *   renderer: new DE.GraphicRenderer( [ { "beginFill": "0x66CCFF" }, { "drawRect": [ 0, 0, 50, 50 ] }, { "endFill": [] } ] )
  * } );
  */
-
-function GraphicRenderer(methods, params) {
-  PIXI.Graphics.call(this);
-
-  if (methods) {
-    for (var i = 0; i < methods.length; ++i) {
-      for (var n in methods[i]) {
-        if (methods[i][n] instanceof Array) {
-          this[n].apply(this, methods[i][n]);
-        } else {
-          this[n].call(this, methods[i][n]);
+export default class GraphicRenderer extends PIXI.Graphics {
+  constructor(methods: any[], params: BaseRendererParams) {
+    super();
+    PIXI.Graphics.call(this);
+    if (methods) {
+      for (var i = 0; i < methods.length; ++i) {
+        for (var n in methods[i]) {
+          if (methods[i][n] instanceof Array) {
+            (this as any)[n].apply(this, methods[i][n]);
+          } else {
+            (this as any)[n].call(this, methods[i][n]);
+          }
         }
       }
     }
+
+    BaseRenderer.instantiate(this, params);
   }
 
-  BaseRenderer.instantiate(this, params);
+  static DEName = 'GraphicRenderer';
 }
 
-GraphicRenderer.prototype = Object.create(PIXI.Graphics.prototype);
+//GraphicRenderer.prototype = Object.create(PIXI.Graphics.prototype);
 GraphicRenderer.prototype.constructor = GraphicRenderer;
 
 BaseRenderer.inherits(GraphicRenderer);
-
-GraphicRenderer.prototype.DEName = 'GraphicRenderer';
-
-export default GraphicRenderer;
