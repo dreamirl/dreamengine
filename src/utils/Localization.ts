@@ -72,6 +72,7 @@ const LANGUAGES_CODES_TABLE = [
 class Localization {
   /**
    * Return the current language
+   * @memberOf Localization
    * @type {String}
    */
   public get currentLang(): string {
@@ -80,6 +81,7 @@ class Localization {
 
   /**
    * Set the current language, if the language is not available, the first available language will be used
+   * @memberOf Localization
    * @type {String}
    */
   public set currentLang(value: string) {
@@ -88,6 +90,7 @@ class Localization {
 
   /**
    * Return the current language
+   * @memberOf Localization
    * @type {String}
    */
   public get currentLanguage(): string {
@@ -96,6 +99,7 @@ class Localization {
 
   /**
    * Set the current language, if the language is not available, the first available language will be used
+   * @memberOf Localization
    * @type {String}
    */
   public set currentLanguage(lang: string) {
@@ -110,6 +114,7 @@ class Localization {
    * Return available languages (Protected by copying the array)
    * (Yes there is a typo in the name, it's here for compatibility reasons)
    * @deprecated Use `availableLanguages` instead
+   * @memberOf Localization
    * @type {String[]}
    */
   public get avalaibleLang(): string[] {
@@ -118,6 +123,7 @@ class Localization {
 
   /**
    * Return available languages (Protected by copying the array)
+   * @memberOf Localization
    * @type {String[]}
    */
   public get availableLanguages(): string[] {
@@ -171,6 +177,7 @@ class Localization {
    * @memberOf Localization
    * @param {String} [fullKey] - The key you want
    * @param {String} [language] - The language you want
+   * @return {String} The value for the key in the current language
    */
   public get(fullKey?: string, language?: string): string {
     if (!fullKey) {
@@ -215,6 +222,7 @@ class Localization {
    * Return the value for the key in every available languages.
    * @memberOf Localization
    * @param {String} fullKey - the key you want
+   * @return {Object} The value for the key in every available languages
    */
   public getAll(fullKey: string): Record<string, string> {
     const results: Record<string, string> = {};
@@ -239,8 +247,10 @@ class Localization {
 
   /**
    * Private method to merge two localization objects
+   * @memberOf Localization
    * @param old
    * @param toMerge
+   * @return {Object}
    * @private
    */
   private merge(old: LocalizationObject, toMerge: LocalizationObject): LocalizationObject {
@@ -283,7 +293,7 @@ class Localization {
    * @param {String} lang - Target language
    * @param {String} key - The key you want
    */
-  public forceGet(lang: string, key: string) {
+  public forceGet(lang: string, key: string): string | null {
     if (!this._availableLanguages.includes(lang)) {
       return null;
     }
@@ -294,6 +304,7 @@ class Localization {
   /**
    * Set the current language
    * If no language is given, set the browser language or english as default in this order if those are available.
+   * @memberOf Localization
    * @type {String}
    */
   public setLang(language?: string) {
@@ -316,7 +327,8 @@ class Localization {
   /**
    * Set the current language.
    * If no language is given, set the browser language or english as default in this order if those are available.
-   * @param language
+   * @memberOf Localization
+   * @param {String} [language]
    */
   public setLanguage(language?: string) {
     const oldLanguage = this._currentLanguage;
