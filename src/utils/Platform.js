@@ -97,7 +97,7 @@ var Platform = new (function () {
   this.user.onLogged = function () {
     return new Promise((res, rej) => {
       Events.on('nebula-logged-success', function (nebulaData) {
-        Localization.getLang(nebulaData.lang || Localization.currentLang);
+        Localization.getLang(nebulaData.lang || Localization.currentLanguage);
         nebulaData.type = 'nebula';
         DE.Platform.user._data = nebulaData;
         return res(nebulaData);

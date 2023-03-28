@@ -163,7 +163,7 @@ const Achievements = new (function () {
   this.unlocked = function (achievement) {
     this.userAchievements[achievement.namespace].complete = true;
     var name =
-      achievement.names[Localization.currentLang] ||
+      achievement.names[Localization.currentLanguage] ||
       achievement.names.en ||
       'null';
     var url = this.achievementsUrl + achievement.namespace + '.png';

@@ -252,7 +252,7 @@ class Inputs {
     if (config.ALLOW_ONBEFOREUNLOAD) {
       window.onbeforeunload = function (e) {
         if (!window.leavePage)
-          return _langs[Localization.currentLang]['leave-page'];
+          return _langs[Localization.currentLanguage]['leave-page'];
       };
       window.onunload = function (e) {
         Events.emit('unload-game');
