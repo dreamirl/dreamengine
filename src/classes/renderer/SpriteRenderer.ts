@@ -410,12 +410,27 @@ export default class SpriteRenderer extends BaseRenderer {
       normal?: string;
       tint?: number;
       filters?: any;
-      hue?: number | ValueMultiply | Array<number & boolean>;
-      saturation?: number | ValueMultiply | Array<number & boolean>;
-      brightness?: number | ValueMultiply | Array<number & boolean>;
-      contrast?: number | ValueMultiply | Array<number & boolean>;
+      hue?:
+        | number
+        | { value: number; multiply: boolean }
+        | Array<number & boolean>;
+      saturation?:
+        | number
+        | { value: number; multiply: boolean }
+        | Array<number & boolean>;
+      brightness?:
+        | number
+        | { value: number; multiply: boolean }
+        | Array<number & boolean>;
+      contrast?:
+        | number
+        | { value: number; multiply: boolean }
+        | Array<number & boolean>;
       blackAndWhite?: boolean;
-      greyscale?: number | ValueMultiply | Array<number & boolean>;
+      greyscale?:
+        | number
+        | { value: number; multiply: boolean }
+        | Array<number & boolean>;
     },
   ) {
     params = params || {};

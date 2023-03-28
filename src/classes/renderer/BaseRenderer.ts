@@ -321,7 +321,7 @@ export default class BaseRenderer extends PIXI.Sprite {
    * you can only have one at a time
    * @public
    * @memberOf BaseRenderer
-   * @param {Object} scale give final x, and final y
+   * @param {Object | number} scale give final x, and final y
    * @param {Int} [duration=500] time duration
    * @example // scale to 2,3 in 1 second
    * myRenderer.scaleTo( { x: 2, y: 3 }, 1000 );
