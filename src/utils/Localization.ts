@@ -4,74 +4,224 @@ export interface LocalizationObject {
   [key: string]: string | LocalizationObject;
 }
 
-const LANGUAGES_CODES_TABLE = [
-  'fr',
-  'fr_FR',
-  'fr_BE',
-  'fr_CA',
-  'fr_CH',
-  'fr_LU',
-  'fr_MC',
-  'en',
-  'en_AU',
-  'en_BZ',
-  'en_CA',
-  'en_CB',
-  'en_GB',
-  'en_IE',
-  'en_JM',
-  'en_NZ',
-  'en_PH',
-  'en_TT',
-  'en_US',
-  'en_ZA',
-  'en_ZW',
-  'es',
-  'es_AR',
-  'es_BO',
-  'es_CL',
-  'es_CO',
-  'es_CR',
-  'es_DO',
-  'es_EC',
-  'es_ES',
-  'es_GT',
-  'es_HN',
-  'es_MX',
-  'es_NI',
-  'es_PA',
-  'es_PE',
-  'es_PR',
-  'es_PY',
-  'es_SV',
-  'es_UY',
-  'es_VE',
-  'pt',
-  'pt_BR',
-  'pt_PT',
-  'de',
-  'de_AT',
-  'de_CH',
-  'de_DE',
-  'de_LI',
-  'de_LU',
-  'it',
-  'it_CH',
-  'it_IT',
-  'ja',
-  'ja_JP',
-  'ru',
-  'ru_RU',
-];
+const LANGUAGES_CODES_TABLES: {
+  [key: string]: string[] | undefined;
+} = Object.freeze({
+  fr: [
+    'fr_FR',
+    'fr_BE',
+    'fr_CA',
+    'fr_CH',
+    'fr_LU',
+    'fr_MC'
+  ],
+  en: [
+    'en_AU',
+    'en_BZ',
+    'en_CA',
+    'en_CB',
+    'en_GB',
+    'en_IE',
+    'en_JM',
+    'en_NZ',
+    'en_PH',
+    'en_TT',
+    'en_US',
+    'en_ZA',
+    'en_ZW'
+  ],
+  es: [
+    'es_AR',
+    'es_BO',
+    'es_CL',
+    'es_CO',
+    'es_CR',
+    'es_DO',
+    'es_EC',
+    'es_ES',
+    'es_GT',
+    'es_HN',
+    'es_MX',
+    'es_NI',
+    'es_PA',
+    'es_PE',
+    'es_PR',
+    'es_PY',
+    'es_SV',
+    'es_UY',
+    'es_VE'
+  ],
+  pt: [
+    'pt_BR',
+    'pt_PT'
+  ],
+  de: [
+    'de_AT',
+    'de_CH',
+    'de_DE',
+    'de_LI',
+    'de_LU'
+  ],
+  it: [
+    'it_CH',
+    'it_IT'
+  ],
+  ja: [
+    'ja_JP'
+  ],
+  ru: [
+    'ru_RU'
+  ],
+  zh: [
+    "zh_CN",
+    "zh_SG",
+    "zh_HK",
+    "zh_MO",
+    "zh_TW"
+  ],
+  id: [
+    "id_ID"
+  ],
+  ko: [
+    "ko_KR"
+  ],
+  ab: [
+    "ab_GE"
+  ],
+  aa: [
+    "aa_ER",
+    "aa_ET"
+  ],
+  af: [
+    "af_ZA"
+  ],
+  ak: [
+    "ak_GH"
+  ],
+  sq: [
+    "sq_AL"
+  ],
+  am: [
+    "am_ET"
+  ],
+  ar: [
+    "ar_DZ",
+    "ar_BH",
+    "ar_EG",
+    "ar_IQ",
+    "ar_JO",
+    "ar_KW",
+    "ar_LB",
+    "ar_LY",
+    "ar_MA",
+    "ar_OM",
+    "ar_QA",
+    "ar_SA",
+    "ar_SD",
+    "ar_SY",
+    "ar_TN",
+    "ar_AE",
+    "ar_YE"
+  ],
+  an: [
+    "an_ES"
+  ],
+  hy: [
+    "hy_AM"
+  ],
+  as: [
+    "as_IN"
+  ],
+  av: [
+    "av_RU"
+  ],
+  ae: [
+    "ae_RU"
+  ],
+  ay: [
+    "ay_BO",
+    "ay_PE"
+  ],
+  az: [
+    "az_AZ"
+  ],
+  bm: [
+    "bm_ML"
+  ],
+  ba: [
+    "ba_RU"
+  ],
+  eu: [
+    "eu_ES"
+  ],
+  be: [
+    "be_BY"
+  ],
+  bn: [
+    "bn_BD",
+    "bn_IN"
+  ],
+  bh: [
+    "bh_IN"
+  ],
+  bi: [
+    "bi_VU"
+  ],
+  bs: [
+    "bs_BA"
+  ],
+  br: [
+    "br_FR"
+  ],
+  bg: [
+    "bg_BG"
+  ],
+  my: [
+    "my_MM"
+  ],
+  ca: [
+    "ca_ES"
+  ]
+});
+
+const REVERSE_LANGUAGES_CODES_TABLES = Object.freeze(
+  Object.keys(LANGUAGES_CODES_TABLES)
+    .reduce((acc, key) => {
+      const value = LANGUAGES_CODES_TABLES[key] as string[];
+
+      value.forEach((lang) => {
+        acc[lang] = key;
+      });
+
+      return acc;
+    }, {} as Record<string, string>)
+);
+
+export type LocalizationInitializationOptions = {
+  /**
+   * Whether to use the short language code as a fallback when the full language code is not available in the 'get' method.
+   * For example, if the language is `fr_FR` and the dictionary does not contain the value for `fr_FR` but contains the value for `fr`, then the value for `fr` will be used.
+   * @default false
+   * @type {boolean}
+   */
+  useShortLanguageCodeAsFallback: boolean;
+  /**
+   * Whether to use the short language code as a fallback when the full language dictionary is available but the key is not.
+   * @default true
+   * @type {boolean}
+   */
+  useShortLanguageCodeValueInGetAllOnMissingKey: boolean;
+};
 
 /**
  * Provide a dictionary system to easily implement localization in your game :)
  * This system is initiated by another system because the current language is provided by the platform
  * @namespace Localization
  */
-class Localization {
+export class Localization {
   /**
    * Return the current language
+   * @deprecated Use `currentLanguage` instead
    * @memberOf Localization
    * @type {String}
    */
@@ -81,6 +231,7 @@ class Localization {
 
   /**
    * Set the current language, if the language is not available, the first available language will be used
+   * @deprecated Use `currentLanguage` instead
    * @memberOf Localization
    * @type {String}
    */
@@ -98,14 +249,16 @@ class Localization {
   }
 
   /**
-   * Set the current language, if the language is not available, the first available language will be used
+   * Set the current language using the 'setLanguage' method but if the language is not available nothing will happen.
    * @memberOf Localization
    * @type {String}
    */
   public set currentLanguage(lang: string) {
-    if (this._availableLanguages.includes(lang)) {
-      this._currentLanguage = lang;
+    if (!this._availableLanguages.includes(lang)) {
+      return;
     }
+
+    this.setLanguage(lang);
   }
 
   private _currentLanguage: string = 'en';
@@ -134,20 +287,36 @@ class Localization {
 
   private _dictionaries: Record<string, LocalizationObject> = { en: {} };
 
+  private _options: LocalizationInitializationOptions = Object.freeze({
+    useShortLanguageCodeAsFallback: false,
+    useShortLanguageCodeValueInGetAllOnMissingKey: true,
+  });
+
   public readonly DEName = 'Localization';
 
   /**
    * Initialize the Localization module
    * @memberOf Localization
    * @param {Object} dictionaries - Every localization structured in a named tree
+   * @param {Object} [options] - Options for the initialization
    */
-  public init(dictionaries: Record<string, LocalizationObject>) {
+  public init(dictionaries: Record<string, LocalizationObject>, options?: Partial<LocalizationInitializationOptions>) {
+    this._dictionaries = {};
+    this._availableLanguages = [];
+
     for (const lang in dictionaries) {
       this._dictionaries[lang] = dictionaries[lang];
 
       if (!this._availableLanguages.includes(lang)) {
         this._availableLanguages.push(lang);
       }
+    }
+
+    if (options) {
+      this._options = Object.freeze({
+        ...this._options,
+        ...options,
+      });
     }
   }
 
@@ -160,14 +329,16 @@ class Localization {
   public addDictionary(dictionaries: Record<string, LocalizationObject>, merge: boolean) {
     for (const lang in dictionaries) {
       if (!this._dictionaries[lang]) {
-        this._dictionaries[lang] = {};
+        this._dictionaries[lang] = dictionaries[lang];
+        continue;
       }
 
       if (merge) {
         this._dictionaries[lang] = this.merge(this._dictionaries[lang], dictionaries[lang]);
-      } else {
-        this._dictionaries[lang] = dictionaries[lang];
+        continue;
       }
+
+      this._dictionaries[lang] = dictionaries[lang];
     }
   }
 
@@ -184,38 +355,96 @@ class Localization {
       return '';
     }
 
-    let lang = language || this.currentLanguage;
-    if (!this._availableLanguages.includes(lang)) {
-      lang = 'en';
+    let l = language || this.currentLanguage;
+    const shortL = REVERSE_LANGUAGES_CODES_TABLES[l];
+
+    const langToTest = [
+      this._availableLanguages.includes(l)
+        ? l
+        : undefined,
+      (
+        this._options.useShortLanguageCodeAsFallback &&
+        shortL &&
+        this._availableLanguages.includes(shortL)
+      )
+        ? shortL
+        : undefined,
+      this._availableLanguages.includes('en')
+        ? 'en'
+        : undefined,
+    ] as (string | undefined)[];
+
+    const filteredLangToTest = langToTest.filter((lang) => lang !== undefined) as string[];
+
+    if (filteredLangToTest.length === 0) {
+      console.warn(`No language dictionaries for the languages (\'${langToTest.join('\', \'')}\')`);
+      return fullKey;
     }
 
     const keys = fullKey.split('.');
 
-    let currentLocalizationObject = this._dictionaries[lang];
+    const oldKeysArrays = [];
+    for (const langTest of filteredLangToTest) {
+      const currentLocalization: LocalizationObject = this._dictionaries[langTest];
+      const value = this._get(currentLocalization, [...keys]);
 
-    const oldKeys: string[] = []
+
+      if (value.result !== null) {
+        return value.result;
+      }
+
+      oldKeysArrays.push(value.oldKeys);
+    }
+
+    const longestOldKeys = oldKeysArrays.reduce((a, b) => a.length > b.length ? a : b);
+
+    console.warn(`(Localization tree depth exceeded for key: ${longestOldKeys.join('.')})`)
+    console.warn(`Localization key not found: ${fullKey}`);
+
+    return fullKey;
+  }
+
+  /**
+   * Private method used by the get method.
+   * @memberOf Localization
+   * @param localizationObject
+   * @param keys
+   * @return {Object}
+   * @private
+   */
+  private _get(localizationObject: LocalizationObject, keys: string[]): {
+    result: Nullable<string>,
+    oldKeys: string[],
+  } {
+    let currentLocalizationObject = localizationObject;
+    let result: Nullable<string> = null;
+    const oldKeys: string[] = [];
+
     do {
       const key = keys.shift()!;
-      const value = currentLocalizationObject[key];
+
+      const value: LocalizationObject | string | undefined = currentLocalizationObject[key];
 
       oldKeys.push(key);
 
       if (typeof value === 'string') {
         if (keys.length === 0) {
-          return value;
+          result = value;
+          break;
         }
-        break;
-      } else if (value === undefined) {
+
         break;
       } else if (typeof value === 'object') {
         currentLocalizationObject = value;
+      } else if (value === undefined) {
+        break;
       }
     } while (keys.length > 0);
 
-    console.warn(`(Localization tree depth exceeded for key: ${oldKeys.join('.')})`)
-    console.warn(`Localization key not found: ${fullKey} (${lang})`);
-
-    return fullKey;
+    return {
+      result,
+      oldKeys,
+    };
   }
 
   /**
@@ -233,14 +462,22 @@ class Localization {
 
     // Add "full codes" if devs are using "shorter codes"
     // Example, if you use 'en', you will get 'en', 'en_US', 'en_GB' etc...
-    LANGUAGES_CODES_TABLE.forEach(l => {
-      if (!l.includes('_')) return;
 
-      const shortLang = l.split('_')[0];
-      if (typeof results[shortLang] === 'string' && results[l] === undefined) {
-        results[l] = results[shortLang];
+    for (const lang in Object.keys(LANGUAGES_CODES_TABLES)) {
+      if (results[lang] === undefined) continue;
+
+      for (const fullLang of LANGUAGES_CODES_TABLES[lang]!) {
+        if (
+          !results[fullLang] ||
+          (
+            this._options.useShortLanguageCodeValueInGetAllOnMissingKey &&
+            results[fullLang] === fullKey
+          )
+        ) {
+          results[fullLang] = results[lang];
+        }
       }
-    });
+    }
 
     return results;
   }
@@ -293,9 +530,21 @@ class Localization {
    * @param {String} lang - Target language
    * @param {String} key - The key you want
    */
-  public forceGet(lang: string, key: string): string | null {
-    if (!this._availableLanguages.includes(lang)) {
+  public forceGet(lang: string, key: string): Nullable<string> {
+    const isLongLanguageCode = REVERSE_LANGUAGES_CODES_TABLES[lang] !== undefined;
+
+    if (!this._availableLanguages.includes(lang) && !isLongLanguageCode) {
       return null;
+    }
+
+    if (isLongLanguageCode) {
+      const shortLang = REVERSE_LANGUAGES_CODES_TABLES[lang]!;
+
+      if (!this._availableLanguages.includes(shortLang)) {
+        return null;
+      }
+
+      return this.get(key, shortLang);
     }
 
     return this.get(key, lang);
@@ -304,6 +553,7 @@ class Localization {
   /**
    * Set the current language
    * If no language is given, set the browser language or english as default in this order if those are available.
+   * @deprecated Just use the 'setLanguage' method or the getter of 'currentLanguage' now depending on your needs
    * @memberOf Localization
    * @type {String}
    */
