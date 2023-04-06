@@ -1,9 +1,5 @@
 ﻿import Events from './Events';
 
-export interface LocalizationObject {
-  [key: string]: string | LocalizationObject;
-}
-
 const LANGUAGES_CODES_TABLES: {
   [key: string]: string[] | undefined;
 } = Object.freeze({
@@ -197,6 +193,10 @@ const REVERSE_LANGUAGES_CODES_TABLES = Object.freeze(
     }, {} as Record<string, string>)
 );
 
+export interface LocalizationObject {
+  [key: string]: string | LocalizationObject;
+}
+
 export type LocalizationInitializationOptions = {
   /**
    * Whether to use the short language code as a fallback when the full language code is not available in the 'get' method.
@@ -207,6 +207,7 @@ export type LocalizationInitializationOptions = {
   useShortLanguageCodeAsFallback: boolean;
   /**
    * Whether to use the short language code as a fallback when the full language dictionary is available but the key is not.
+   * Specific to the 'getAll' method.
    * @default true
    * @type {boolean}
    */
@@ -321,25 +322,34 @@ export class Localization {
   }
 
   /**
-   * Add a dictionary to the Localization module, can complete or override existing data
+   * Add dictionaries to the Localization module, can complete or override existing data
    * @memberOf Localization
    * @param {Object} dictionaries - Every localization structured you want to add in a named tree
    * @param {Boolean} merge - If true, the given dictionary will be merged with the existing one (if any)
    */
-  public addDictionary(dictionaries: Record<string, LocalizationObject>, merge: boolean) {
+  public addDictionaries(dictionaries: Record<string, LocalizationObject>, merge: boolean = false) {
     for (const lang in dictionaries) {
-      if (!this._dictionaries[lang]) {
-        this._dictionaries[lang] = dictionaries[lang];
-        continue;
-      }
-
-      if (merge) {
+      if (merge && this._dictionaries[lang]) {
         this._dictionaries[lang] = this.merge(this._dictionaries[lang], dictionaries[lang]);
-        continue;
+      } else {
+        this._dictionaries[lang] = dictionaries[lang];
       }
 
-      this._dictionaries[lang] = dictionaries[lang];
+      if (!this._availableLanguages.includes(lang)) {
+        this._availableLanguages.push(lang);
+      }
     }
+  }
+
+  /**
+   * Add a dictionary to the Localization module, can complete or override existing data
+   * @memberOf Localization
+   * @param {String} lang - The language of the dictionary
+   * @param {Object} dictionary - The localization dictionary structured in a named tree
+   * @param {Boolean} merge - If true, the given dictionary will be merged with the existing one (if any)
+   */
+  public addDictionary(lang: string, dictionary: LocalizationObject, merge: boolean = false) {
+    this.addDictionaries({ [lang]: dictionary }, merge);
   }
 
   /**
@@ -356,27 +366,15 @@ export class Localization {
     }
 
     let l = language || this.currentLanguage;
-    const shortL = REVERSE_LANGUAGES_CODES_TABLES[l];
+    const shortL = REVERSE_LANGUAGES_CODES_TABLES[l] as string | undefined;
 
-    const langToTest = [
-      this._availableLanguages.includes(l)
-        ? l
-        : undefined,
-      (
-        this._options.useShortLanguageCodeAsFallback &&
-        shortL &&
-        this._availableLanguages.includes(shortL)
-      )
-        ? shortL
-        : undefined,
-      this._availableLanguages.includes('en')
-        ? 'en'
-        : undefined,
-    ] as (string | undefined)[];
+    const langToTest: string[] = this._options.useShortLanguageCodeAsFallback && shortL
+        ? [l, shortL, 'en']
+        : [l, 'en'];
 
-    const filteredLangToTest = langToTest.filter((lang) => lang !== undefined) as string[];
+    const availableLanguagesFromTest = langToTest.filter(l => this._availableLanguages.includes(l)) as string[];
 
-    if (filteredLangToTest.length === 0) {
+    if (availableLanguagesFromTest.length === 0) {
       console.warn(`No language dictionaries for the languages (\'${langToTest.join('\', \'')}\')`);
       return fullKey;
     }
@@ -384,8 +382,8 @@ export class Localization {
     const keys = fullKey.split('.');
 
     const oldKeysArrays = [];
-    for (const langTest of filteredLangToTest) {
-      const currentLocalization: LocalizationObject = this._dictionaries[langTest];
+    for (const lang of availableLanguagesFromTest) {
+      const currentLocalization: LocalizationObject = this._dictionaries[lang];
       const value = this._get(currentLocalization, [...keys]);
 
 
@@ -396,9 +394,9 @@ export class Localization {
       oldKeysArrays.push(value.oldKeys);
     }
 
-    const longestOldKeys = oldKeysArrays.reduce((a, b) => a.length > b.length ? a : b);
+    const biggestOldKeys = oldKeysArrays.reduce((a, b) => a.length > b.length ? a : b);
 
-    console.warn(`(Localization tree depth exceeded for key: ${longestOldKeys.join('.')})`)
+    console.warn(`(Localization tree depth exceeded for key: ${biggestOldKeys.join('.')})`)
     console.warn(`Localization key not found: ${fullKey}`);
 
     return fullKey;
@@ -589,7 +587,7 @@ export class Localization {
 
     for (const lang of this._availableLanguages) {
       if (lang.match(language)) {
-        this.currentLanguage = lang;
+        this._currentLanguage = lang;
         break;
       }
     }
