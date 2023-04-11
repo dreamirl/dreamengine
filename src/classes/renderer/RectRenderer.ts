@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { ILineStyleOptions } from 'pixi.js';
-import BaseRenderer, { BaseRendererParams } from './BaseRenderer';
+import '../renderer/ContainerExtensions';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -30,16 +30,13 @@ export default class RectRenderer extends PIXI.Graphics {
     width: number,
     height: number,
     color: number,
-    params: BaseRendererParams & {
-      width?: number;
-      height?: number;
+    params: Partial<PIXI.Graphics> & {
       color?: number;
       fill?: boolean;
       lineStyle?: [options?: ILineStyleOptions];
     },
   ) {
     super();
-    PIXI.Graphics.call(this);
     var _params = params;
 
     _params.width = width;
@@ -63,18 +60,16 @@ export default class RectRenderer extends PIXI.Graphics {
     delete _params.lineStyle;
     delete _params.fill;
 
-    BaseRenderer.instantiate(this, _params);
+    this.instantiate(this, params);
   }
 
-  updateRender(
-    params: BaseRendererParams & {
-      width?: number;
-      height?: number;
-      color?: number;
-      fill?: boolean;
-      lineStyle?: [options?: ILineStyleOptions];
-    },
-  ) {
+  updateRender(params: {
+    width?: number;
+    height?: number;
+    color?: number;
+    fill?: boolean;
+    lineStyle?: [options?: ILineStyleOptions];
+  }) {
     this.clear();
 
     if (params && (params.lineStyle || this._initial.lineStyle)) {

@@ -1,6 +1,5 @@
 import * as PIXI from 'pixi.js';
-import BaseRenderer, { BaseRendererParams } from './BaseRenderer';
-
+import '../renderer/ContainerExtensions';
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
  */
@@ -18,16 +17,14 @@ import BaseRenderer, { BaseRendererParams } from './BaseRenderer';
  */
 
 export default class TextureRenderer extends PIXI.Sprite {
-  private _textureName: string | undefined;
-  public sprite: PIXI.Sprite | undefined;
-  constructor(
-    params: BaseRendererParams & {
-      spriteName: string;
-      spriteUrl: string;
-      textureName: string;
-      texture: PIXI.Texture<PIXI.Resource> | undefined;
-    },
-  ) {
+  private _textureName?: string;
+  public sprite?: PIXI.Sprite;
+  constructor(params: {
+    spriteName?: string;
+    spriteUrl?: string;
+    textureName?: string;
+    texture?: PIXI.Texture<PIXI.Resource> | undefined;
+  }) {
     if (
       !params.spriteName &&
       !params.spriteUrl &&
@@ -44,12 +41,12 @@ export default class TextureRenderer extends PIXI.Sprite {
       params.texture
         ? params.texture
         : PIXI.utils.TextureCache[
-            params.spriteName || params.spriteUrl || params.textureName
+            params.spriteName! || params.spriteUrl! || params.textureName!
           ],
     );
+    this.instantiate(this, params);
     this._textureName =
       params.spriteName || params.spriteUrl || params.textureName;
-    BaseRenderer.instantiate(this, params);
   }
 
   get textureName() {

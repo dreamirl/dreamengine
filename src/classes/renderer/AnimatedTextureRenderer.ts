@@ -1,8 +1,8 @@
 import * as PIXI from 'pixi.js';
 import Time from '../../utils/Time';
-import BaseRenderer, { BaseRendererParams } from './BaseRenderer';
+import '../renderer/ContainerExtensions';
 
-export default class AnimatedTextureRenderer extends BaseRenderer {
+export default class AnimatedTextureRenderer extends PIXI.Sprite {
   private _imageNames: string[];
   private _textures: PIXI.Texture<PIXI.Resource>[];
   private _currentFrame: number;
@@ -17,12 +17,12 @@ export default class AnimatedTextureRenderer extends BaseRenderer {
   private _endFrame: number;
   public isOver: boolean;
   private _nextAnim: number;
-  public sheetName: string | undefined;
-  public animationName: string | undefined;
+  public sheetName?: string;
+  public animationName?: string;
 
   constructor(
     imageNames: string[],
-    params: BaseRendererParams & {
+    params: {
       animated?: boolean;
       loop?: boolean;
       reversed?: boolean;
@@ -38,8 +38,9 @@ export default class AnimatedTextureRenderer extends BaseRenderer {
       randomFrame?: number;
     },
   ) {
-    params = params || {};
     super();
+    this.instantiate(this, params);
+    params = params || {};
 
     this._imageNames = [];
     this._textures = [];
@@ -84,8 +85,6 @@ export default class AnimatedTextureRenderer extends BaseRenderer {
     if (params.randomFrame) {
       this.currentFrame = (Math.random() * this.textures.length) >> 0;
     }
-
-    BaseRenderer.instantiate(this, params);
   }
 
   changeSheet(sheetName: string, animationName: string) {

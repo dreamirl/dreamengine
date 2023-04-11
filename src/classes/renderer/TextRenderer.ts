@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import config from '../../config';
 import Localization from '../../utils/Localization';
-import BaseRenderer, { BaseRendererParams } from './BaseRenderer';
+import '../renderer/ContainerExtensions';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -34,7 +34,7 @@ export default class TextRenderer extends PIXI.Text {
 
   constructor(
     text: string,
-    params: BaseRendererParams & {
+    params: {
       maxHeight?: number;
       maxWidth?: number;
       resolution?: number;
@@ -43,6 +43,7 @@ export default class TextRenderer extends PIXI.Text {
     },
   ) {
     super();
+    this.instantiate(this, params);
     // force string conversion to avoid pure numbers
     text =
       text !== null && text !== undefined && text.toString
@@ -58,14 +59,11 @@ export default class TextRenderer extends PIXI.Text {
       this.localizationKey = text;
       this.text = Localization.get(this.localizationKey);
     }
-    PIXI.Text.call(this, text, new PIXI.TextStyle(_params.textStyle));
     delete _params.textStyle;
 
     if (!_params.resolution) {
       _params.resolution = config.DEFAULT_TEXT_RESOLUTION;
     }
-
-    BaseRenderer.instantiate(this, _params);
 
     this.maxWidth = _params.maxWidth;
     this.checkMaxWidth();
@@ -126,18 +124,5 @@ export default class TextRenderer extends PIXI.Text {
     }
   }
 
-  setScale(x: number | { x: number; y: number }, y?: number) {
-    if (y) {
-      if (x instanceof Object) {
-        this.scale.set(x.x, x.y);
-      } else {
-        this.scale.set(x, x);
-      }
-    } else {
-      if (!(x instanceof Object)) {
-        this.scale.set(x, y);
-      }
-    }
-  }
   static DEName = 'TextRenderer';
 }

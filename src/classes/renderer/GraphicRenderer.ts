@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import BaseRenderer, { BaseRendererParams } from './BaseRenderer';
+import '../renderer/ContainerExtensions';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -16,9 +16,8 @@ import BaseRenderer, { BaseRendererParams } from './BaseRenderer';
  * } );
  */
 export default class GraphicRenderer extends PIXI.Graphics {
-  constructor(methods: any[], params: BaseRendererParams) {
+  constructor(methods: any[]) {
     super();
-    PIXI.Graphics.call(this);
     if (methods) {
       for (var i = 0; i < methods.length; ++i) {
         for (var n in methods[i]) {
@@ -30,8 +29,6 @@ export default class GraphicRenderer extends PIXI.Graphics {
         }
       }
     }
-
-    BaseRenderer.instantiate(this, params);
   }
 
   static DEName = 'GraphicRenderer';

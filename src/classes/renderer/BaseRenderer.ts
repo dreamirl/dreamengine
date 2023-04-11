@@ -1,6 +1,8 @@
-import * as PIXI from 'pixi.js';
+import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
+import { Resource, Texture } from 'pixi.js';
 import Time from '../../utils/Time';
 import GameObject from '../GameObject';
+import '../renderer/ContainerExtensions';
 
 export type BaseRendererParams = {
   height?: number;
@@ -13,7 +15,7 @@ export type BaseRendererParams = {
   scaleY?: number;
 };
 
-var _inherits = [
+const _inherits = [
   'setScale',
   'applyFade',
   'fade',
@@ -32,9 +34,15 @@ var _inherits = [
   'setGreyscale',
   'setBlackAndWhite',
 ];
-var _attributes = ['fadeData', 'scaleData'];
+const _attributes = ['fadeData', 'scaleData'];
 
-export default class BaseRenderer extends PIXI.Sprite {
+export default class BaseRenderer {
+  /**
+   * object used to apply fade on final BaseRenderer rendering
+   * @protected
+   * @memberOf BaseRenderer
+   * @type {Object}
+   */
   public fadeData: {
     fadeScale?: number;
     dir?: number;
@@ -43,7 +51,19 @@ export default class BaseRenderer extends PIXI.Sprite {
     to: number;
     duration: number;
     done: boolean;
+  } = {
+    from: 1,
+    to: 0,
+    duration: 1000,
+    done: true,
   };
+
+  /**
+   * object used to apply scale on final Renderer rendering
+   * @protected
+   * @memberOf Renderer
+   * @type {Object}
+   */
   public scaleData: {
     callback?: () => void;
     destY: number;
@@ -65,129 +85,55 @@ export default class BaseRenderer extends PIXI.Sprite {
     valY: number;
     stepValX: number;
     stepValY: number;
+  } = {
+    fromx: 1,
+    tox: 0,
+    fromy: 1,
+    toy: 0,
+    duration: 1000,
+    done: true,
+    callback: undefined,
+    destX: 0,
+    destY: 0,
+    dirX: 0,
+    dirY: 0,
+    leftX: 0,
+    leftY: 0,
+    oDuration: 0,
+    scaleX: 1,
+    scaleY: 1,
+    stepValX: 0,
+    stepValY: 0,
+    valX: 0,
+    valY: 0,
   };
 
   sleep = false;
 
-  blackAndWhiteFilter: any;
-  grayscaleFilter: any;
-  contrastFilter: any;
-  brightnessFilter: any;
-  saturationFilter: any;
-  hueFilter: any;
+  public blackAndWhiteFilter?: ColorMatrixFilter;
+  grayscaleFilter?: ColorMatrixFilter;
+  contrastFilter?: ColorMatrixFilter;
+  brightnessFilter?: ColorMatrixFilter;
+  saturationFilter?: ColorMatrixFilter;
+  hueFilter?: ColorMatrixFilter;
 
-  _originalTexture?: PIXI.Texture<PIXI.Resource>;
+  _originalTexture?: Texture<Resource>;
   preventCenter?: boolean;
   gameObject?: GameObject;
-
-  constructor() {
-    super();
-    /**
-     * object used to apply fade on final BaseRenderer rendering
-     * @protected
-     * @memberOf BaseRenderer
-     * @type {Object}
-     */
-    this.fadeData = {
-      from: 1,
-      to: 0,
-      duration: 1000,
-      done: true,
-    };
-
-    /**
-     * object used to apply scale on final Renderer rendering
-     * @protected
-     * @memberOf Renderer
-     * @type {Object}
-     */
-    this.scaleData = {
-      fromx: 1,
-      tox: 0,
-      fromy: 1,
-      toy: 0,
-      duration: 1000,
-      done: true,
-      callback: undefined,
-      destX: 0,
-      destY: 0,
-      dirX: 0,
-      dirY: 0,
-      leftX: 0,
-      leftY: 0,
-      oDuration: 0,
-      scaleX: 1,
-      scaleY: 1,
-      stepValX: 0,
-      stepValY: 0,
-      valX: 0,
-      valY: 0,
-    };
-
-    //const _ignore = ['scale', 'scaleX', 'scaleY', 'opacity'];
-  }
-
-  static instantiate(target: any, params: BaseRendererParams) {
-    if (params) {
-      target.alpha = params.alpha || params.opacity || 1;
-      if (params.scale) {
-        params.scale = {
-          x: params.scale.x,
-          y: params.scale.y,
-        };
-      } else {
-        params.scale = {
-          x: params.scaleX ? params.scaleX : 1,
-          y: params.scaleY ? params.scaleY : 1,
-        };
-      }
-
-      if (params.size) {
-        params.width = params.size;
-        params.height = params.size;
-      }
-      delete params.scaleY;
-      delete params.scaleX;
-      delete params.opacity;
-      delete params.size;
-
-      for (var [i, value] of Object.entries(params)) {
-        if (target[i] && target[i].set) {
-          if (
-            value instanceof Object &&
-            (value.x !== undefined || value.y !== undefined)
-          ) {
-            target[i].set(value.x || 0, value.y || 0);
-          } else {
-            target[i].set(value);
-          }
-        } else {
-          target[i] = value;
-        }
-      }
-    }
-
-    for (let i = 0; i < _attributes.length; ++i) {
-      target[_attributes[i]] = [_attributes[i]];
-    }
-  }
-
-  static inherits = function (target: any) {
-    for (var i = 0; i < _inherits.length; ++i) {
-      target.prototype[_inherits[i]] = [_inherits[i]];
-    }
-  };
+  scale: { x: number; y: number } = { x: 1, y: 1 };
+  alpha: number = 1;
+  filters: ColorMatrixFilter[] = [];
 
   setScale(x: number | { x: number; y: number }, y?: number) {
     if (y) {
       if (x instanceof Object) {
-        this.scale.set(x.x, x.y);
+        this.scale = { x: x.x, y: x.y };
       } else {
-        this.scale.set(x, x);
+        this.scale = { x: x, y: x };
       }
     } else {
-      if (!(x instanceof Object)) {
-        this.scale.set(x, y);
+      if (!(x instanceof Object) && y) {
+        this.scale = { x: x, y: y };
       }
     }
   }
@@ -253,7 +199,7 @@ export default class BaseRenderer extends PIXI.Sprite {
    */
   fade(from: number, to: number, duration: number) {
     this.sleep = false;
-    var data = {
+    let data = {
       from: from || 1,
       to: to != undefined ? to : 0,
       duration: duration || 500,
@@ -387,7 +333,7 @@ export default class BaseRenderer extends PIXI.Sprite {
       return;
     }
 
-    var scaleD = this.scaleData;
+    const scaleD = this.scaleData;
 
     if (scaleD.valX != 0) {
       scaleD.stepValX =
@@ -497,9 +443,9 @@ export default class BaseRenderer extends PIXI.Sprite {
    */
   setHue(rotation: number, multiply: boolean) {
     if (!this.hueFilter) {
-      this.hueFilter = new PIXI.filters.ColorMatrixFilter();
+      this.hueFilter = new ColorMatrixFilter();
     } else {
-      this.hueFilter.hue(0, 0);
+      this.hueFilter.hue(0, false);
     }
 
     this.hueFilter.hue(rotation, multiply);
@@ -527,7 +473,7 @@ export default class BaseRenderer extends PIXI.Sprite {
    */
   setSaturation(amount: number, multiply: boolean) {
     if (!this.saturationFilter) {
-      this.saturationFilter = new PIXI.filters.ColorMatrixFilter();
+      this.saturationFilter = new ColorMatrixFilter();
     } else {
       this.saturationFilter.desaturate();
     }
@@ -557,9 +503,9 @@ export default class BaseRenderer extends PIXI.Sprite {
    */
   setBrightness(b: number, multiply: boolean) {
     if (!this.brightnessFilter) {
-      this.brightnessFilter = new PIXI.filters.ColorMatrixFilter();
+      this.brightnessFilter = new ColorMatrixFilter();
     } else {
-      this.brightnessFilter.brightness(0, 0);
+      this.brightnessFilter.brightness(0, false);
     }
 
     this.brightnessFilter.brightness(b, multiply);
@@ -587,9 +533,9 @@ export default class BaseRenderer extends PIXI.Sprite {
    */
   setContrast(amount: number, multiply: boolean) {
     if (!this.contrastFilter) {
-      this.contrastFilter = new PIXI.filters.ColorMatrixFilter();
+      this.contrastFilter = new ColorMatrixFilter();
     } else {
-      this.contrastFilter.contrast(0, 0);
+      this.contrastFilter.contrast(0, false);
     }
 
     this.contrastFilter.contrast(amount, multiply);
@@ -617,9 +563,9 @@ export default class BaseRenderer extends PIXI.Sprite {
    */
   setGreyscale(scale: number, multiply: boolean) {
     if (!this.grayscaleFilter) {
-      this.grayscaleFilter = new PIXI.filters.ColorMatrixFilter();
+      this.grayscaleFilter = new ColorMatrixFilter();
     } else {
-      this.grayscaleFilter.greyscale(0, 0);
+      this.grayscaleFilter.greyscale(0, false);
     }
 
     this.grayscaleFilter.greyscale(scale, multiply);
@@ -646,9 +592,9 @@ export default class BaseRenderer extends PIXI.Sprite {
    */
   setBlackAndWhite(multiply: boolean) {
     if (!this.blackAndWhiteFilter) {
-      this.blackAndWhiteFilter = new PIXI.filters.ColorMatrixFilter();
+      this.blackAndWhiteFilter = new ColorMatrixFilter();
     } else {
-      this.blackAndWhiteFilter.blackAndWhite(0);
+      this.blackAndWhiteFilter.blackAndWhite(false);
     }
 
     this.blackAndWhiteFilter.blackAndWhite(multiply);

@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import ImageManager from '../../utils/ImageManager';
 import Time from '../../utils/Time';
-import BaseRenderer, { BaseRendererParams } from './BaseRenderer';
+import '../renderer/ContainerExtensions';
 
 export type SpriteDataType = {
   startFrame: number;
@@ -31,7 +31,7 @@ export type SpriteDataType = {
  *   renderer: new DE.SpriteRenderer( { "spriteName": "ship", "scale": 0.7, "offsetY": -30 } )
  * } );
  */
-export default class SpriteRenderer extends BaseRenderer {
+export default class SpriteRenderer extends PIXI.Sprite {
   public startFrame: number;
   public endFrame: number;
   private _currentFrame: number;
@@ -41,11 +41,11 @@ export default class SpriteRenderer extends BaseRenderer {
   public totalLine: number;
   public interval: number;
   private _nextAnim: number;
-  public animated: number;
-  public isPaused: number;
-  public reversed: number;
+  public animated: boolean;
+  public isPaused: boolean;
+  public reversed: boolean;
   public isOver: number;
-  public loop: number;
+  public loop: boolean;
   public pingPongMode: boolean;
   public spriteName?: string;
   public isAtlasTexture?: boolean;
@@ -59,43 +59,90 @@ export default class SpriteRenderer extends BaseRenderer {
   public normalName?: string;
   public baseNormalTexture?: PIXI.BaseTexture<PIXI.Resource>;
 
-  constructor(
-    params: BaseRendererParams & {
-      spriteName?: string;
-      spriteUrl?: string;
-      textureName?: string;
-      spriteData?: SpriteDataType;
-    },
-  ) {
-    super();
-    this.spriteName =
+  constructor(params: {
+    spriteName?: string | undefined;
+    spriteUrl?: string | undefined;
+    textureName?: string | undefined;
+    spriteData?: SpriteDataType;
+    startFrame?: number;
+    endFrame?: number;
+    currentFrame?: number;
+    startLine?: number;
+    endLine?: number;
+    totalLine?: number;
+    interval?: number;
+    animated?: boolean;
+    paused?: boolean;
+    isPaused?: boolean;
+    reversed?: boolean;
+    pingPongMode?: boolean;
+    loop?: boolean;
+    normal?: string;
+    tint?: number;
+    filters?: any;
+    hue?:
+      | number
+      | { value: number; multiply: boolean }
+      | Array<number & boolean>;
+    saturation?:
+      | number
+      | { value: number; multiply: boolean }
+      | Array<number & boolean>;
+    brightness?:
+      | number
+      | { value: number; multiply: boolean }
+      | Array<number & boolean>;
+    contrast?:
+      | number
+      | { value: number; multiply: boolean }
+      | Array<number & boolean>;
+    blackAndWhite?: boolean;
+    greyscale?:
+      | number
+      | { value: number; multiply: boolean }
+      | Array<number & boolean>;
+  }) {
+    let tempSpriteName =
       params.spriteName || params.spriteUrl || params.textureName;
     delete params.spriteName;
-    if (!this.spriteName) {
+    if (!tempSpriteName) {
       throw new Error(
         'SpriteRenderer :: No spriteName defined -- declaration canceled',
       );
     }
 
-    this.isAtlasTexture = false;
-
-    let texture = this._getTexture(this.spriteName);
-    // only if no texture can be found either using standard url reading or naming in sheets
-    if (!texture) {
+    let tempTexture = SpriteRenderer._getTexture(tempSpriteName);
+    if (tempTexture) {
+      super(tempTexture);
+    } else {
       throw new Error(
         "SpriteRenderer :: Can't find image " +
-          this.spriteName +
+          tempSpriteName +
           ' in ImageManager, is the image a sheet ? Or maybe not loaded ?',
       );
     }
+
+    this.instantiate(this, params);
+
+    this.spriteName = tempSpriteName;
+    this.texture = tempTexture;
+
+    this.isAtlasTexture = false;
+
+    // let texture = this._getTexture(this.spriteName);
+    // // only if no texture can be found either using standard url reading or naming in sheets
+    // if (!texture) {
+    //   throw new Error(
+    //     "SpriteRenderer :: Can't find image " +
+    //       this.spriteName +
+    //       ' in ImageManager, is the image a sheet ? Or maybe not loaded ?',
+    //   );
+    // }
 
     if (!ImageManager.spritesData[this.spriteName]) {
       this.isAtlasTexture = true;
       this.spriteData = params.spriteData;
     }
-
-    PIXI.Sprite.call(this, texture);
-    BaseRenderer.instantiate(this, params);
 
     //Nb: every value here is set to 0/null/undefined, at the end of the declaration changeSprite is called and everything is correctly set here
     /**
@@ -167,21 +214,21 @@ export default class SpriteRenderer extends BaseRenderer {
      * @memberOf SpriteRenderer
      * @type {Int}
      */
-    this.animated = 0;
+    this.animated = false;
 
     /**
      * @public
      * @memberOf SpriteRenderer
      * @type {Int}
      */
-    this.isPaused = 0;
+    this.isPaused = false;
 
     /**
      * @public
      * @memberOf SpriteRenderer
      * @type {Int}
      */
-    this.reversed = 0;
+    this.reversed = false;
 
     /**
      * @public
@@ -195,7 +242,7 @@ export default class SpriteRenderer extends BaseRenderer {
      * @memberOf SpriteRenderer
      * @type {Int}
      */
-    this.loop = 0;
+    this.loop = false;
 
     //this._tint = params.tint || undefined;
 
@@ -207,16 +254,19 @@ export default class SpriteRenderer extends BaseRenderer {
      */
     this.pingPongMode = false;
 
+    //Tkt
+    this.fw = 0;
+    this.fh = 0;
+
+    this.scale = { x: 1, y: 1 };
+
     /**
      * @public
      * This function is called when the animation is over. Overwrite this function
      * @memberOf SpriteRenderer
      */
     this.onAnimEnd = function () {};
-    this.changeSprite(this.spriteName, params);
-
-    this.fw = 0;
-    this.fh = 0;
+    this.changeSprite(this.spriteName!, params);
 
     // was used to handle quality change
     // Events.on( 'quality-changed', function( n, nt, name )
@@ -228,7 +278,7 @@ export default class SpriteRenderer extends BaseRenderer {
     //   this.frameSizes.height = ImageManager.spritesData[ this.spriteName ].heightFrame;
     // }, this );
   }
-  private _getTexture(spriteName: string) {
+  private static _getTexture(spriteName: string) {
     if (ImageManager.spritesData[spriteName]) {
       return PIXI.utils.TextureCache[
         PIXI.Loader.shared.resources[spriteName].url
@@ -252,7 +302,6 @@ export default class SpriteRenderer extends BaseRenderer {
     if (this._nextAnim > 0) {
       return;
     }
-
     this._nextAnim = this.interval + this._nextAnim; // sub rest of previous anim time (if it take 50ms and we goes up to 55, remove 5)
     this.lastAnim = Date.now();
 
@@ -261,7 +310,7 @@ export default class SpriteRenderer extends BaseRenderer {
       if (this.loop) {
         this._currentFrame = this.startFrame;
         if (this.pingPongMode) {
-          this.reversed = 1;
+          this.reversed = true;
           this._currentFrame = this.endFrame - 1;
         }
       } else {
@@ -273,7 +322,7 @@ export default class SpriteRenderer extends BaseRenderer {
       if (this.loop) {
         this._currentFrame = this.endFrame;
         if (this.pingPongMode) {
-          this.reversed = 0;
+          this.reversed = false;
           this._currentFrame = this.startFrame + 1;
         }
       } else {
@@ -337,12 +386,12 @@ export default class SpriteRenderer extends BaseRenderer {
   /**
    * @public
    * @memberOf SpriteRenderer
-   * @type {Int}
+   * @type {Boolean}
    */
-  setPause(val: number) {
+  setPause(val: boolean) {
     this.isPaused = val;
     if (!val && !this.animated) {
-      this.animated = 1;
+      this.animated = true;
       this.lastAnim = Date.now();
     }
     return this;
@@ -375,9 +424,9 @@ export default class SpriteRenderer extends BaseRenderer {
   /**
    * @public
    * @memberOf SpriteRenderer
-   * @type {Int}
+   * @type {Boolean}
    */
-  setLoop(bool: number) {
+  setLoop(bool: boolean) {
     this.loop = bool;
     return this;
   }
@@ -402,8 +451,8 @@ export default class SpriteRenderer extends BaseRenderer {
       totalLine?: number;
       interval?: number;
       animated?: boolean;
-      paused?: number;
-      isPaused?: number;
+      paused?: boolean;
+      isPaused?: boolean;
       reversed?: boolean;
       pingPongMode?: boolean;
       loop?: boolean;
@@ -480,11 +529,13 @@ export default class SpriteRenderer extends BaseRenderer {
     this.isOver = 0;
     this.loop = params.loop != undefined ? params.loop : d.loop || this.loop;
 
-    this.baseTexture = this._getTexture(this.spriteName).baseTexture;
+    this.baseTexture = SpriteRenderer._getTexture(this.spriteName).baseTexture;
 
     if (params.normal) {
       this.normalName = params.normal;
-      this.baseNormalTexture = this._getTexture(params.normal).baseTexture;
+      this.baseNormalTexture = SpriteRenderer._getTexture(
+        params.normal,
+      ).baseTexture;
     }
 
     if (this.baseTexture) {

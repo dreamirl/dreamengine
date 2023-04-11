@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import BaseRenderer from './BaseRenderer';
+import '../renderer/ContainerExtensions';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -7,7 +7,7 @@ import BaseRenderer from './BaseRenderer';
 
 /**
  * @constructor TilingRenderer
- * @augments PIXI.Sprite
+ * @augments PIXI.TilingSprite
  * @class draw a sprite repeated as a Tile<br>
  * it works with any texture loaded in PIXI.utils.TextureCache (included json sheets)<br>
  * checkout PIXI.DisplayObject for all attributes
@@ -47,7 +47,7 @@ export default class TilingRenderer extends PIXI.TilingSprite {
       params.width,
       params.height,
     );
-    BaseRenderer.instantiate(this, params);
+    this.instantiate(this, params);
   }
   static DEName = 'TilingRenderer';
 }

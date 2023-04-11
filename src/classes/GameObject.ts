@@ -1,11 +1,12 @@
 import { Container, Point } from 'pixi.js';
 import config from '../config';
 import Events from '../utils/Events';
-import sortGameObjects from '../utils/sortGameObjects';
 import Time from '../utils/Time';
+import sortGameObjects from '../utils/sortGameObjects';
 import AdvancedContainer from './AdvancedContainer';
-import GraphicRenderer from './renderer/GraphicRenderer';
 import Vector2 from './Vector2';
+import MoveComponent from './components/MoveComponent';
+import GraphicRenderer from './renderer/GraphicRenderer';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -33,12 +34,21 @@ import Vector2 from './Vector2';
 
 class GameObject extends AdvancedContainer {
   public static DEName = 'GameObject';
-  override parent: GameObject; // TODO: ZARNA : ajouter Scene quand Scene sera en classe
+  override parent: GameObject = undefined; // TODO: ZARNA : ajouter Scene quand Scene sera en classe
   vector2: Vector2;
   renderers: (Container | DERenderers)[] = [];
   renderer: Container;
   _debugRenderer: Container | undefined;
   _lastLocalID: string;
+
+  protected override _moveComp?: MoveComponent = undefined;
+  protected override get moveComp() {
+    if (!this._moveComp) {
+      this._moveComp = new MoveComponent(this);
+      this.addComponent(this._moveComp);
+    }
+    return this._moveComp;
+  }
 
   /**
    * If false, the object wont be updated anymore (but still renderer).
@@ -99,7 +109,7 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    * @type {Object}
    */
-  _automatisms: Record<string, Automatism> = {};
+  _automatisms: Record<string, { 0: string; 1: Automatism }> = {};
 
   /**
    * used to make distinction between gameObject and pure PIXI DisplayObject
@@ -156,9 +166,9 @@ class GameObject extends AdvancedContainer {
   extra: Record<string, any> = {};
 
   constructor(
-    params: Partial<{
-      [K in keyof GameObject]: GameObject[K] | undefined;
-    }> = {},
+    params: Partial<GameObject> & {
+      automatisms?: Array<Array<any>>;
+    },
   ) {
     super();
 
@@ -203,7 +213,8 @@ class GameObject extends AdvancedContainer {
     }
 
     if (params.gameObjects) {
-      this.add(params.gameObjects);
+      this.add(...params.gameObjects);
+
       delete params.gameObjects;
     }
 
@@ -218,11 +229,20 @@ class GameObject extends AdvancedContainer {
     const { automatisms, ...restOfParams } = params;
     Object.assign(this, restOfParams);
 
+    console.log('Automatisms:', automatisms, 'params:', params);
     // this have to be at the end because we can define function just before
     if (automatisms) {
-      for (let id in automatisms) {
-        this.addAutomatism(id, id, automatisms[id]);
-      }
+      automatisms.forEach((auto) => {
+        this.addAutomatism(auto[0], auto[1], auto[2] ? auto[2] : undefined);
+      });
+      // for (let id in automatisms[0]) {
+      //   console.log(id, automatisms[id]);
+      //   this.addAutomatism(
+      //     automatisms[id],
+      //     automatisms[id].methodName,
+      //     automatisms[id],
+      //   );
+      // }
     }
 
     Events.on('change-debug', (debug, level) => {
@@ -245,7 +265,7 @@ class GameObject extends AdvancedContainer {
    * @type {Boolean}
    */
   get enable() {
-    return this.updatable || this.visible;
+    return this.updatable;
   }
   set enable(value) {
     // this is useful when you want to listen for enable changes externally
@@ -277,7 +297,7 @@ class GameObject extends AdvancedContainer {
     }
   }
 
-  setScale(x: number, y?: number) {
+  override setScale(x: number, y?: number) {
     if (y == undefined) y = x;
     this.scale.set(x, y);
   }
@@ -699,6 +719,7 @@ class GameObject extends AdvancedContainer {
    * } );
    */
   addAutomatism(id: string, methodName: string, params: Partial<Automatism>) {
+    console.log('method : ', methodName);
     params = params || {};
     methodName = methodName || id;
 
@@ -716,14 +737,14 @@ class GameObject extends AdvancedContainer {
     const automatism: Automatism = {
       interval: params.interval || Time.frameDelay,
       timeSinceLastCall: 0,
-      methodName: methodName,
+      methodName,
       value1: params.value1 || undefined,
       value2: params.value2 || undefined,
       args: params.args || undefined,
       persistent: params.persistent != false ? true : false,
     };
 
-    this._automatisms[id] = automatism;
+    this._automatisms[id] = { 0: automatism.methodName, 1: automatism };
   }
 
   /**
@@ -765,13 +786,13 @@ class GameObject extends AdvancedContainer {
   inverseAutomatism(autoName: string) {
     var at = this._automatisms[autoName];
 
-    if (at.args) {
-      for (var i = 0; i < at.args.length; ++i) {
-        at.args[i] = -at.args[i];
+    if (at[1].args) {
+      for (var i = 0; i < at[1].args.length; ++i) {
+        at[1].args[i] = -at[1].args[i];
       }
     } else {
-      at.value1 = -at.value1;
-      at.value2 = -at.value2;
+      at[1].value1 = -at[1].value1;
+      at[1].value2 = -at[1].value2;
     }
   }
 
@@ -805,24 +826,27 @@ class GameObject extends AdvancedContainer {
     // execute registered automatisms
     for (let a in this._automatisms) {
       const auto = this._automatisms[a];
-      auto.timeSinceLastCall += Time.frameDelayScaled;
-      if (auto.timeSinceLastCall > auto.interval) {
-        auto.timeSinceLastCall -= auto.interval;
+      if (auto[1].methodName == 'fire') {
+        console.log(auto[1].timeSinceLastCall, 'I want', auto[1].interval);
+      }
+      auto[1].timeSinceLastCall += Time.frameDelayScaled;
+      if (auto[1].timeSinceLastCall > auto[1].interval) {
+        auto[1].timeSinceLastCall -= auto[1].interval;
         // i think calling apply each update is slower than calling v1/v2. Should benchmark this
 
-        const localMethod = this[auto.methodName as keyof typeof this];
+        const localMethod = this[auto[1].methodName as keyof typeof this];
         if (typeof localMethod === 'function') {
-          if (auto.args) {
-            localMethod.call(this, ...auto.args);
+          if (auto[1].args) {
+            localMethod.call(this, ...auto[1].args);
           } else {
-            localMethod.call(this, auto.value1, auto.value2);
+            localMethod.call(this, auto[1].value1, auto[1].value2);
           }
         } else {
-          console.warn('Automatism call is not a function', auto.methodName);
+          console.warn('Automatism call is not a function', auto[1].methodName);
         }
 
         // if this one isn't persistent delete it
-        if (!auto.persistent) {
+        if (!auto[1].persistent) {
           delete this._automatisms[a];
         }
       }
@@ -870,6 +894,23 @@ class GameObject extends AdvancedContainer {
     }
 
     this._lastLocalID = this.position.scope._localID;
+  }
+
+  override moveToObject(
+    gameObject: GameObject,
+    duration: number = 500,
+    callback?: () => void,
+    curveName?: string,
+    forceLocalPos?: boolean, // TODO add curveName (not coded)
+  ) {
+    this.moveComp.moveToObject(
+      gameObject,
+      duration,
+      callback,
+      curveName,
+      forceLocalPos,
+    );
+    return this;
   }
 }
 

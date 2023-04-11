@@ -1,8 +1,10 @@
 import { Container } from 'pixi.js';
 import Component from './Component';
+import GameObject from './GameObject';
 import FadeComponent from './components/FadeComponent';
 import ScaleComponent from './components/ScaleComponent';
 import ShakeComponent from './components/ShakeComponent';
+import SimpleMoveComponent from './components/SimpleMoveComponent';
 import TimerComponent from './components/TimerComponent';
 
 export default class AdvancedContainer extends Container {
@@ -42,6 +44,15 @@ export default class AdvancedContainer extends Container {
       this.addComponent(this._timerComp);
     }
     return this._timerComp;
+  }
+
+  protected _moveComp?: SimpleMoveComponent = undefined;
+  protected get moveComp() {
+    if (!this._moveComp) {
+      this._moveComp = new SimpleMoveComponent(this);
+      this.addComponent(this._moveComp);
+    }
+    return this._moveComp;
   }
 
   update(time: number) {
@@ -85,7 +96,7 @@ export default class AdvancedContainer extends Container {
   /**
    * quick access to the FadeComponent
    */
-  fade(
+  override fade(
     from: number = 1,
     to: number = 0,
     duration: number = 500,
@@ -96,7 +107,7 @@ export default class AdvancedContainer extends Container {
     return this;
   }
 
-  fadeTo(
+  override fadeTo(
     to: number = 0,
     duration: number = 500,
     force: boolean = true,
@@ -106,7 +117,7 @@ export default class AdvancedContainer extends Container {
     return this;
   }
 
-  fadeOut(
+  override fadeOut(
     duration: number = 500,
     force: boolean = true,
     callback?: () => void,
@@ -115,7 +126,11 @@ export default class AdvancedContainer extends Container {
     return this;
   }
 
-  fadeIn(duration: number = 500, force: boolean = true, callback?: () => void) {
+  override fadeIn(
+    duration: number = 500,
+    force: boolean = true,
+    callback?: () => void,
+  ) {
     this.fadeComp.fadeIn(duration, force, callback);
     return this;
   }
@@ -136,8 +151,33 @@ export default class AdvancedContainer extends Container {
     return this;
   }
 
-  scaleTo(targetScale: Point2D, duration: number = 500, callback = () => {}) {
+  override scaleTo(
+    targetScale: Point2D,
+    duration: number = 500,
+    callback = () => {},
+  ) {
     this.scaleComp.scaleTo(targetScale, duration, callback);
+    return this;
+  }
+
+  moveTo(
+    pos: Point2D | GameObject,
+    duration: number,
+    callback = () => {},
+    curveName?: string,
+    forceLocalPos?: boolean, // TODO add curveName (not coded) && mettre en place un deplacement local
+  ) {
+    this.moveComp.moveTo(this, pos, duration, callback, curveName);
+    return this;
+  }
+
+  moveToObject(
+    gameObject: GameObject,
+    duration: number = 500,
+    callback?: () => void,
+    curveName?: string,
+  ) {
+    this.moveComp.moveToObject(gameObject, duration, callback, curveName);
     return this;
   }
 }
