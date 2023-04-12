@@ -51,4 +51,6 @@ declare global {
     id?: string;
     timeSinceLastCall: number;
   };
+
+  type Nullable<T> = T | null;
 }
