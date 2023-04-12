@@ -39,7 +39,7 @@ class GameObject extends AdvancedContainer {
   renderers: (Container | DERenderers)[] = [];
   renderer: Container;
   _debugRenderer: Container | undefined;
-  _lastLocalID: string;
+  _lastLocalID: string = '';
 
   protected override _moveComp?: MoveComponent = undefined;
   protected override get moveComp() {
@@ -168,6 +168,7 @@ class GameObject extends AdvancedContainer {
   constructor(
     params: Partial<GameObject> & {
       automatisms?: Array<Array<any>>;
+      scale?: number;
     },
   ) {
     super();
@@ -189,7 +190,8 @@ class GameObject extends AdvancedContainer {
      * @type {PIXI.Point}
      */
     if (params.scale) {
-      this.scale.set(params.scale.x, params.scale.y);
+      if (params.scale.x) this.scale.set(params.scale.x, params.scale.y);
+      else this.scale.set(params.scale);
       delete params.scale;
     }
     // call correctly the scale modifier to update zscale and worldScale
@@ -208,13 +210,12 @@ class GameObject extends AdvancedContainer {
 
     this.renderer = this.renderers[0];
 
-    if (config.DEBUG) {
+    if (config._DEBUG) {
       this._createDebugRenderer();
     }
 
     if (params.gameObjects) {
       this.add(...params.gameObjects);
-
       delete params.gameObjects;
     }
 
@@ -229,7 +230,7 @@ class GameObject extends AdvancedContainer {
     const { automatisms, ...restOfParams } = params;
     Object.assign(this, restOfParams);
 
-    console.log('Automatisms:', automatisms, 'params:', params);
+    //console.log('Automatisms:', automatisms, 'params:', params);
     // this have to be at the end because we can define function just before
     if (automatisms) {
       automatisms.forEach((auto) => {
@@ -473,7 +474,7 @@ class GameObject extends AdvancedContainer {
 
     this.addChild(object);
 
-    if (config.DEBUG && !object._debugRenderer) {
+    if (config._DEBUG && !object._debugRenderer) {
       object._createDebugRenderer();
     }
 
@@ -719,7 +720,6 @@ class GameObject extends AdvancedContainer {
    * } );
    */
   addAutomatism(id: string, methodName: string, params: Partial<Automatism>) {
-    console.log('method : ', methodName);
     params = params || {};
     methodName = methodName || id;
 
@@ -826,9 +826,6 @@ class GameObject extends AdvancedContainer {
     // execute registered automatisms
     for (let a in this._automatisms) {
       const auto = this._automatisms[a];
-      if (auto[1].methodName == 'fire') {
-        console.log(auto[1].timeSinceLastCall, 'I want', auto[1].interval);
-      }
       auto[1].timeSinceLastCall += Time.frameDelayScaled;
       if (auto[1].timeSinceLastCall > auto[1].interval) {
         auto[1].timeSinceLastCall -= auto[1].interval;
@@ -894,6 +891,19 @@ class GameObject extends AdvancedContainer {
     }
 
     this._lastLocalID = this.position.scope._localID;
+  }
+
+  override moveTo(
+    pos: Point2D | GameObject,
+    duration: number,
+    callback = () => {},
+    curveName?: string,
+    forceLocalPos: boolean = false, // TODO add curveName (not coded) && mettre en place un deplacement local
+  ) {
+    if (pos.x == undefined) pos.x = this.x;
+    if (pos.y == undefined) pos.y = this.y;
+    this.moveComp.moveTo(pos, duration, callback, curveName, forceLocalPos);
+    return this;
   }
 
   override moveToObject(

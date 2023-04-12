@@ -122,8 +122,6 @@ export default class SpriteRenderer extends PIXI.Sprite {
       );
     }
 
-    this.instantiate(this, params);
-
     this.spriteName = tempSpriteName;
     this.texture = tempTexture;
 
@@ -268,6 +266,7 @@ export default class SpriteRenderer extends PIXI.Sprite {
     this.onAnimEnd = function () {};
     this.changeSprite(this.spriteName!, params);
 
+    this.instantiate(this, params);
     // was used to handle quality change
     // Events.on( 'quality-changed', function( n, nt, name )
     // {

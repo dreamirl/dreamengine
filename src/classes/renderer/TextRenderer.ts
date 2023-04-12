@@ -42,7 +42,7 @@ export default class TextRenderer extends PIXI.Text {
       textStyle?: PIXI.TextStyle;
     },
   ) {
-    super();
+    super(text);
     this.instantiate(this, params);
     // force string conversion to avoid pure numbers
     text =

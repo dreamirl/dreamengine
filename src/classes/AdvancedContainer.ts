@@ -2,6 +2,7 @@ import { Container } from 'pixi.js';
 import Component from './Component';
 import GameObject from './GameObject';
 import FadeComponent from './components/FadeComponent';
+import FocusComponent, { FocusOption } from './components/FocusComponent';
 import ScaleComponent from './components/ScaleComponent';
 import ShakeComponent from './components/ShakeComponent';
 import SimpleMoveComponent from './components/SimpleMoveComponent';
@@ -53,6 +54,15 @@ export default class AdvancedContainer extends Container {
       this.addComponent(this._moveComp);
     }
     return this._moveComp;
+  }
+
+  protected _focusComp?: FocusComponent = undefined;
+  protected get focusComp() {
+    if (!this._focusComp) {
+      this._focusComp = new FocusComponent(this);
+      this.addComponent(this._focusComp);
+    }
+    return this._focusComp;
   }
 
   update(time: number) {
@@ -167,7 +177,9 @@ export default class AdvancedContainer extends Container {
     curveName?: string,
     forceLocalPos?: boolean, // TODO add curveName (not coded) && mettre en place un deplacement local
   ) {
-    this.moveComp.moveTo(this, pos, duration, callback, curveName);
+    if (pos.x == undefined) pos.x = this.x;
+    if (pos.y == undefined) pos.y = this.y;
+    this.moveComp.moveTo(pos, duration, callback, curveName);
     return this;
   }
 
@@ -178,6 +190,16 @@ export default class AdvancedContainer extends Container {
     curveName?: string,
   ) {
     this.moveComp.moveToObject(gameObject, duration, callback, curveName);
+    return this;
+  }
+
+  focus(gameObject: GameObject, params: FocusOption) {
+    this.focusComp.focus(gameObject, params);
+    return this;
+  }
+
+  stopFocus() {
+    this.focusComp.stopFocus();
     return this;
   }
 }

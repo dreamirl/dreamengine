@@ -1,14 +1,27 @@
 import * as PIXI from 'pixi.js';
+import Scene from './Scene';
 import RectRenderer from './renderer/RectRenderer';
 import TilingRenderer from './renderer/TilingRenderer';
 
 // update is the one requiring all the features, so prototype is complete
 import AdvancedContainer from './AdvancedContainer';
-import FocusComponent from './components/FocusComponent';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
  */
+
+type CameraParams = {
+  interactive?: boolean;
+  name?: string;
+  backgroundImage?: string;
+  backgroundColor?: number;
+  scale?: Point2D | number;
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+  scene: Scene;
+};
 
 /**
  * @constructor Camera
@@ -36,15 +49,11 @@ import FocusComponent from './components/FocusComponent';
  * @property {String} [tag="none"] assign tags if it's can be useful for you
  * @property {Scene} [scene=null] you can give a scene on creation, or later
  **/
-class Camera extends AdvancedContainer {
+export default class Camera extends AdvancedContainer {
   private _hasMoved = false;
 
-  public target;
-  private _focusOptions;
-  private _focusOffsets = { x: 0, y: 0 };
-
   public id: string;
-  private _scene;
+  private _scene?: Scene;
   public background;
   public renderSizes: PIXI.Point;
   public limits;
@@ -74,7 +83,13 @@ class Camera extends AdvancedContainer {
     prevY: 0,
   };
 
-  constructor(x, y, width, height, params) {
+  constructor(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    params: CameraParams,
+  ) {
     super();
 
     this.renderSizes = new PIXI.Point(width, height);
@@ -90,7 +105,7 @@ class Camera extends AdvancedContainer {
 
     this.name = _params.name || '';
     this.id = 'camera_' + Date.now() + '-' + Math.random() * Date.now();
-    this._scene = null;
+    this._scene = undefined;
     // this._gui   = _params.gui || undefined;
 
     if (_params.backgroundImage) {
@@ -111,10 +126,9 @@ class Camera extends AdvancedContainer {
       this.addChild(this.background);
     }
 
-    this.scale.set(
-      _params.scaleX || _params.scale ? _params.scale.x || _params.scale : 1,
-      _params.scaleY || _params.scale ? _params.scale.y || _params.scale : 1,
-    );
+    if (_params.scale == undefined) this.scale.set(1);
+    else if (typeof _params.scale == 'number') this.scale.set(_params.scale);
+    else this.scale.set(_params.scale.x, _params.scale.y);
 
     /**
      * allow to set limits on the Camera, useful to block the camera when it reach the end of level scroll
@@ -164,7 +178,7 @@ class Camera extends AdvancedContainer {
     }
 
     this._scene = scene;
-    this.addChild(scene);
+    this.addChild(scene!);
   }
 
   /**
@@ -232,7 +246,10 @@ class Camera extends AdvancedContainer {
    * @private
    * @memberOf Camera
    */
-  _pointerHandler(type: string, event) {
+  _pointerHandler(
+    type: 'Move' | 'Down' | 'Up' | 'Over' | 'Out' | 'Tap' | 'UpOutside',
+    event: any,
+  ) {
     var pos = {
       x: event.data.global.x + (this.pivot.x - this.x),
       y: event.data.global.y + (this.pivot.y - this.y),
@@ -241,25 +258,25 @@ class Camera extends AdvancedContainer {
     this['_customPointer' + type](pos, event);
   }
 
-  _pointermove(e) {
+  _pointermove(e: any) {
     this._pointerHandler('Move', e);
   }
-  _pointerdown(e) {
+  _pointerdown(e: any) {
     this._pointerHandler('Down', e);
   }
-  _pointerup(e) {
+  _pointerup(e: any) {
     this._pointerHandler('Up', e);
   }
-  _pointerover(e) {
+  _pointerover(e: any) {
     this._pointerHandler('Over', e);
   }
-  _pointerout(e) {
+  _pointerout(e: any) {
     this._pointerHandler('Out', e);
   }
-  _pointertap(e) {
+  _pointertap(e: any) {
     this._pointerHandler('Tap', e);
   }
-  _pointerupoutside(e) {
+  _pointerupoutside(e: any) {
     this._pointerHandler('UpOutside', e);
   }
 
@@ -269,44 +286,44 @@ class Camera extends AdvancedContainer {
    * @private
    * @memberOf Camera
    */
-  private _customPointerMove = function (pos, event) {};
+  private _customPointerMove = function (pos: Point2D, event: any) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerDown = function (pos, event) {};
+  private _customPointerDown = function (pos: Point2D, event: any) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerUp = function (pos, event) {};
+  private _customPointerUp = function (pos: Point2D, event: any) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerOver = function (pos, event) {};
+  private _customPointerOver = function (pos: Point2D, event: any) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerOut = function (pos, event) {};
+  private _customPointerOut = function (pos: Point2D, event: any) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerTap = function (pos, event) {};
+  private _customPointerTap = function (pos: Point2D, event: any) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerUpOutside = function (pos, event) {};
+  private _customPointerUpOutside = function (pos: Point2D, event: any) {};
 
   /**
    * this update the lifecycle of the camera, binded on rendering because if a Camera is "off" it doesn't need to be updated
    * @memberOf Camera
    * @protected
    */
-  update(time: number) {
+  override update(time: number) {
     super.update(time);
 
     // TODO: It works as it is but it was used with the quality ratio (not reimplemented atm)
@@ -345,35 +362,6 @@ class Camera extends AdvancedContainer {
     }
   }
 
-  focus = FocusComponent.prototype.focus;
-
-  /**
-   * apply focus on target if there is one
-   * You shouldn't call or change this method
-   * @protected
-   * @memberOf Camera
-   */
-  applyFocus() {
-    if (!this.target) {
-      return;
-    }
-
-    var pos = this.target.getWorldPos();
-    if (this._focusOptions.x) {
-      const deltaX = this.pivot.x - (pos.x + this._focusOffsets.x);
-      this.x = this.pivot.x + deltaX;
-    }
-    if (this._focusOptions.y) {
-      const deltaY = this.pivot.y - (pos.y + this._focusOffsets.y);
-      this.y = this.pivot.y + deltaY;
-    }
-    if (this._focusOptions.rotation) {
-      this.rotation = -this.target.rotation;
-    }
-  }
-
   // name registered in engine declaration
   static DEName = 'Camera';
 }
-
-export default Camera;

@@ -7,7 +7,7 @@ import Events from './utils/Events';
 const config = {
   DEName: 'config',
   VERSION: '2.0',
-  _DEBUG: 0,
+  _DEBUG: false,
   _DEBUG_LEVEL: 0,
   ALLOW_ONBEFOREUNLOAD: true,
   DEFAULT_TEXT_RESOLUTION: 2,

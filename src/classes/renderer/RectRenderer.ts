@@ -34,7 +34,7 @@ export default class RectRenderer extends PIXI.Graphics {
       color?: number;
       fill?: boolean;
       lineStyle?: [options?: ILineStyleOptions];
-    },
+    } = {},
   ) {
     super();
     var _params = params;

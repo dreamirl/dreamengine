@@ -9,7 +9,7 @@ export default class SimpleMoveComponent extends Component {
    * @memberOf GameObject
    * @type {Object}
    */
-  private _moveData = {
+  protected _moveData = {
     done: true,
     distX: 0,
     distY: 0,
@@ -31,7 +31,6 @@ export default class SimpleMoveComponent extends Component {
 
   constructor(
     public override readonly parent: AdvancedContainer,
-    origin?: Point2D,
     pos?: Point2D,
     duration?: number,
     callback?: () => void,
@@ -39,9 +38,9 @@ export default class SimpleMoveComponent extends Component {
   ) {
     super(parent);
 
-    if (pos && origin) {
+    if (pos) {
       this._selfDestruct = selfDestruct;
-      this.moveTo(origin, pos, duration, callback);
+      this.moveTo(pos, duration, callback);
     }
   }
 
@@ -53,7 +52,7 @@ export default class SimpleMoveComponent extends Component {
   ) {
     let dest = gameObject.getWorldPos();
 
-    this.moveTo(this.parent, dest, duration, callback, curveName);
+    this.moveTo(dest, duration, callback, curveName);
   }
 
   /**
@@ -70,17 +69,23 @@ export default class SimpleMoveComponent extends Component {
    * player.moveTo( bonus, 1000, function(){ console.log( this ) } );
    */
   moveTo(
-    origin: Point2D,
     dest: Point2D,
     duration: number = 500,
     callback = () => {},
     curveName?: string,
   ) {
+    if (!dest.x) {
+      dest.x = this.parent.x;
+    }
+    if (!dest.y) {
+      dest.y = this.parent.y;
+    }
+
     this._moveData = {
-      distX: -(origin.x - dest.x),
-      distY: -(origin.y - dest.y),
-      dirX: origin.x > dest.x ? 1 : -1,
-      dirY: origin.y > dest.y ? 1 : -1,
+      distX: -(this.parent.x - dest.x),
+      distY: -(this.parent.y - dest.y),
+      dirX: this.parent.x > dest.x ? 1 : -1,
+      dirY: this.parent.y > dest.y ? 1 : -1,
       duration: duration || 500,
       oDuration: duration || 500,
       curveName: curveName || 'linear',

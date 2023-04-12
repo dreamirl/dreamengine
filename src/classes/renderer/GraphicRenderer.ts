@@ -16,7 +16,7 @@ import '../renderer/ContainerExtensions';
  * } );
  */
 export default class GraphicRenderer extends PIXI.Graphics {
-  constructor(methods: any[]) {
+  constructor(methods: any[], params?: Partial<GraphicRenderer>) {
     super();
     if (methods) {
       for (var i = 0; i < methods.length; ++i) {
@@ -29,6 +29,7 @@ export default class GraphicRenderer extends PIXI.Graphics {
         }
       }
     }
+    this.instantiate(this, params);
   }
 
   static DEName = 'GraphicRenderer';
