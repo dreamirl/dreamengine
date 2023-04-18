@@ -1,11 +1,9 @@
 import { Container } from 'pixi.js';
 import Component from './Component';
 import GameObject from './GameObject';
-import FadeComponent from './components/FadeComponent';
+import Tween from './Tween';
 import FocusComponent, { FocusOption } from './components/FocusComponent';
-import ScaleComponent from './components/ScaleComponent';
 import ShakeComponent from './components/ShakeComponent';
-import SimpleMoveComponent from './components/SimpleMoveComponent';
 import TimerComponent from './components/TimerComponent';
 
 export default class AdvancedContainer extends Container {
@@ -20,24 +18,6 @@ export default class AdvancedContainer extends Container {
     return this._shakeComp;
   }
 
-  private _fadeComp?: FadeComponent = undefined;
-  private get fadeComp() {
-    if (!this._fadeComp) {
-      this._fadeComp = new FadeComponent(this);
-      this.addComponent(this._fadeComp);
-    }
-    return this._fadeComp;
-  }
-
-  private _scaleComp?: ScaleComponent = undefined;
-  private get scaleComp() {
-    if (!this._scaleComp) {
-      this._scaleComp = new ScaleComponent(this);
-      this.addComponent(this._scaleComp);
-    }
-    return this._scaleComp;
-  }
-
   private _timerComp?: TimerComponent = undefined;
   private get timerComp() {
     if (!this._timerComp) {
@@ -45,15 +25,6 @@ export default class AdvancedContainer extends Container {
       this.addComponent(this._timerComp);
     }
     return this._timerComp;
-  }
-
-  protected _moveComp?: SimpleMoveComponent = undefined;
-  protected get moveComp() {
-    if (!this._moveComp) {
-      this._moveComp = new SimpleMoveComponent(this);
-      this.addComponent(this._moveComp);
-    }
-    return this._moveComp;
   }
 
   protected _focusComp?: FocusComponent = undefined;
@@ -103,46 +74,48 @@ export default class AdvancedContainer extends Container {
     return this;
   }
 
-  /**
-   * quick access to the FadeComponent
-   */
-  override fade(
-    from: number = 1,
-    to: number = 0,
-    duration: number = 500,
-    force: boolean = true,
-    callback?: () => void,
+  fadeTo(
+    value: number,
+    frames: number,
+    onComplete: () => {},
+    onCompleteParams?: any,
+    autostart: boolean = true,
+    easing?: () => {},
   ) {
-    this.fadeComp.fade(from, to, duration, force, callback);
-    return this;
+    new Tween.Tween(
+      this,
+      'alpha',
+      value,
+      frames,
+      autostart,
+      easing,
+    ).setOnComplete(onComplete, onCompleteParams || {});
   }
 
-  override fadeTo(
-    to: number = 0,
-    duration: number = 500,
-    force: boolean = true,
-    callback?: () => void,
+  fadeOut(
+    frames: number,
+    onComplete: () => {},
+    onCompleteParams?: any,
+    autostart: boolean = true,
+    easing?: () => {},
   ) {
-    this.fadeComp.fadeTo(to, duration, force, callback);
-    return this;
+    new Tween.Tween(this, 'alpha', 0, frames, autostart, easing).setOnComplete(
+      onComplete,
+      onCompleteParams || {},
+    );
   }
 
-  override fadeOut(
-    duration: number = 500,
-    force: boolean = true,
-    callback?: () => void,
+  fadeIn(
+    frames: number,
+    onComplete: () => {},
+    onCompleteParams?: any,
+    autostart: boolean = true,
+    easing?: () => {},
   ) {
-    this.fadeComp.fadeOut(duration, force, callback);
-    return this;
-  }
-
-  override fadeIn(
-    duration: number = 500,
-    force: boolean = true,
-    callback?: () => void,
-  ) {
-    this.fadeComp.fadeIn(duration, force, callback);
-    return this;
+    new Tween.Tween(this, 'alpha', 1, frames, autostart, easing).setOnComplete(
+      onComplete,
+      onCompleteParams || {},
+    );
   }
 
   /**
@@ -161,35 +134,43 @@ export default class AdvancedContainer extends Container {
     return this;
   }
 
-  override scaleTo(
+  scaleTo(
     targetScale: Point2D,
-    duration: number = 500,
-    callback = () => {},
+    frames: number,
+    onComplete: () => {},
+    onCompleteParams?: any,
+    autostart: boolean = true,
+    easing?: () => {},
   ) {
-    this.scaleComp.scaleTo(targetScale, duration, callback);
-    return this;
+    new Tween.Tween(this, 'scale.x', targetScale.x, frames, autostart, easing);
+    new Tween.Tween(
+      this,
+      'scale.y',
+      targetScale.y,
+      frames,
+      autostart,
+      easing,
+    ).setOnComplete(onComplete, onCompleteParams || {});
   }
 
   moveTo(
-    pos: Point2D | GameObject,
-    duration: number,
-    callback = () => {},
-    curveName?: string,
-    forceLocalPos?: boolean, // TODO add curveName (not coded) && mettre en place un deplacement local
+    dest: Point2D,
+    frames: number,
+    onComplete: () => {},
+    onCompleteParams?: any,
+    autostart: boolean = true,
+    forceLocalPos: boolean = false,
+    easing?: () => {},
   ) {
-    if (pos.x == undefined) pos.x = this.x;
-    if (pos.y == undefined) pos.y = this.y;
-    this.moveComp.moveTo(pos, duration, callback, curveName);
-    return this;
-  }
-
-  moveToObject(
-    gameObject: GameObject,
-    duration: number = 500,
-    callback?: () => void,
-    curveName?: string,
-  ) {
-    this.moveComp.moveToObject(gameObject, duration, callback, curveName);
+    if (this.parent && !forceLocalPos) {
+      let parentPos = this.parent.getGlobalPosition();
+      dest = { x: dest.x - parentPos.x, y: dest.y - parentPos.y };
+    }
+    new Tween.Tween(this, 'x', dest.x, frames, autostart, easing);
+    new Tween.Tween(this, 'y', dest.y, frames, autostart, easing).setOnComplete(
+      onComplete,
+      onCompleteParams || {},
+    );
     return this;
   }
 

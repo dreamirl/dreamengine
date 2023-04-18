@@ -26,8 +26,6 @@ import Save from './utils/Save';
 
 // engine custom renderer
 import Component from './classes/Component';
-import FadeComponent from './classes/components/FadeComponent';
-import ScaleComponent from './classes/components/ScaleComponent';
 import ShakeComponent from './classes/components/ShakeComponent';
 import TimerComponent from './classes/components/TimerComponent';
 import GameObject from './classes/GameObject';
@@ -74,8 +72,6 @@ const DE = {
   GameObject,
   Component,
   ShakeComponent,
-  FadeComponent,
-  ScaleComponent,
   TimerComponent,
   Platform,
   PIXI,

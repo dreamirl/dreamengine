@@ -5,7 +5,6 @@ import Time from '../utils/Time';
 import sortGameObjects from '../utils/sortGameObjects';
 import AdvancedContainer from './AdvancedContainer';
 import Vector2 from './Vector2';
-import MoveComponent from './components/MoveComponent';
 import GraphicRenderer from './renderer/GraphicRenderer';
 
 /**
@@ -40,15 +39,6 @@ class GameObject extends AdvancedContainer {
   renderer: Container;
   _debugRenderer: Container | undefined;
   _lastLocalID: string = '';
-
-  protected override _moveComp?: MoveComponent = undefined;
-  protected override get moveComp() {
-    if (!this._moveComp) {
-      this._moveComp = new MoveComponent(this);
-      this.addComponent(this._moveComp);
-    }
-    return this._moveComp;
-  }
 
   /**
    * If false, the object wont be updated anymore (but still renderer).
@@ -296,11 +286,6 @@ class GameObject extends AdvancedContainer {
         this.parent._shouldSortChildren = true;
       }
     }
-  }
-
-  override setScale(x: number, y?: number) {
-    if (y == undefined) y = x;
-    this.scale.set(x, y);
   }
 
   _createDebugRenderer() {
@@ -891,36 +876,6 @@ class GameObject extends AdvancedContainer {
     }
 
     this._lastLocalID = this.position.scope._localID;
-  }
-
-  override moveTo(
-    pos: Point2D | GameObject,
-    duration: number,
-    callback = () => {},
-    curveName?: string,
-    forceLocalPos: boolean = false, // TODO add curveName (not coded) && mettre en place un deplacement local
-  ) {
-    if (pos.x == undefined) pos.x = this.x;
-    if (pos.y == undefined) pos.y = this.y;
-    this.moveComp.moveTo(pos, duration, callback, curveName, forceLocalPos);
-    return this;
-  }
-
-  override moveToObject(
-    gameObject: GameObject,
-    duration: number = 500,
-    callback?: () => void,
-    curveName?: string,
-    forceLocalPos?: boolean, // TODO add curveName (not coded)
-  ) {
-    this.moveComp.moveToObject(
-      gameObject,
-      duration,
-      callback,
-      curveName,
-      forceLocalPos,
-    );
-    return this;
   }
 }
 

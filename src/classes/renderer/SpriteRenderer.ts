@@ -59,49 +59,51 @@ export default class SpriteRenderer extends PIXI.Sprite {
   public normalName?: string;
   public baseNormalTexture?: PIXI.BaseTexture<PIXI.Resource>;
 
-  constructor(params: {
-    spriteName?: string | undefined;
-    spriteUrl?: string | undefined;
-    textureName?: string | undefined;
-    spriteData?: SpriteDataType;
-    startFrame?: number;
-    endFrame?: number;
-    currentFrame?: number;
-    startLine?: number;
-    endLine?: number;
-    totalLine?: number;
-    interval?: number;
-    animated?: boolean;
-    paused?: boolean;
-    isPaused?: boolean;
-    reversed?: boolean;
-    pingPongMode?: boolean;
-    loop?: boolean;
-    normal?: string;
-    tint?: number;
-    filters?: any;
-    hue?:
-      | number
-      | { value: number; multiply: boolean }
-      | Array<number & boolean>;
-    saturation?:
-      | number
-      | { value: number; multiply: boolean }
-      | Array<number & boolean>;
-    brightness?:
-      | number
-      | { value: number; multiply: boolean }
-      | Array<number & boolean>;
-    contrast?:
-      | number
-      | { value: number; multiply: boolean }
-      | Array<number & boolean>;
-    blackAndWhite?: boolean;
-    greyscale?:
-      | number
-      | { value: number; multiply: boolean }
-      | Array<number & boolean>;
-  }) {
+  constructor(
+    params: Partial<PIXI.Sprite> & {
+      spriteName?: string | undefined;
+      spriteUrl?: string | undefined;
+      textureName?: string | undefined;
+      spriteData?: SpriteDataType;
+      startFrame?: number;
+      endFrame?: number;
+      currentFrame?: number;
+      startLine?: number;
+      endLine?: number;
+      totalLine?: number;
+      interval?: number;
+      animated?: boolean;
+      paused?: boolean;
+      isPaused?: boolean;
+      reversed?: boolean;
+      pingPongMode?: boolean;
+      loop?: boolean;
+      normal?: string;
+      tint?: number;
+      filters?: any;
+      hue?:
+        | number
+        | { value: number; multiply: boolean }
+        | Array<number & boolean>;
+      saturation?:
+        | number
+        | { value: number; multiply: boolean }
+        | Array<number & boolean>;
+      brightness?:
+        | number
+        | { value: number; multiply: boolean }
+        | Array<number & boolean>;
+      contrast?:
+        | number
+        | { value: number; multiply: boolean }
+        | Array<number & boolean>;
+      blackAndWhite?: boolean;
+      greyscale?:
+        | number
+        | { value: number; multiply: boolean }
+        | Array<number & boolean>;
+    },
+  ) {
     let tempSpriteName =
       params.spriteName || params.spriteUrl || params.textureName;
     delete params.spriteName;
