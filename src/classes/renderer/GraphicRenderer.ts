@@ -19,8 +19,8 @@ export default class GraphicRenderer extends PIXI.Graphics {
   constructor(methods: any[], params?: Partial<GraphicRenderer>) {
     super();
     if (methods) {
-      for (var i = 0; i < methods.length; ++i) {
-        for (var n in methods[i]) {
+      for (let i = 0; i < methods.length; ++i) {
+        for (let n in methods[i]) {
           if (methods[i][n] instanceof Array) {
             (this as any)[n].apply(this, methods[i][n]);
           } else {

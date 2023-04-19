@@ -49,7 +49,7 @@ PIXI.Container.prototype.instantiate = function (target, params) {
     delete params.opacity;
     delete params.size;
 
-    for (var i in params) {
+    for (let i in params) {
       if (target[i] && target[i].set) {
         if (params[i].x !== undefined || params[i].y !== undefined) {
           target[i].set(params[i].x || 0, params[i].y || 0);

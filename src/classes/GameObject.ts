@@ -192,7 +192,7 @@ class GameObject extends AdvancedContainer {
     }
 
     if (params.renderers) {
-      for (var i = 0; i < params.renderers.length; ++i) {
+      for (let i = 0; i < params.renderers.length; ++i) {
         this.addRenderer(params.renderers[i]);
       }
       delete params.renderers;
@@ -374,8 +374,8 @@ class GameObject extends AdvancedContainer {
    * can be a simple position x-y
    */
   lookAt(vector2: any, angleOffset: number) {
-    var origin = { x: 0, y: 0 };
-    var otherPos = vector2.toGlobal ? vector2.toGlobal(origin) : vector2;
+    let origin = { x: 0, y: 0 };
+    let otherPos = vector2.toGlobal ? vector2.toGlobal(origin) : vector2;
     this.rotation = this.vector2.getAngle(otherPos) + (angleOffset || 0);
 
     return this;
@@ -494,7 +494,7 @@ class GameObject extends AdvancedContainer {
    * object reference or object index in the gameObjects array
    */
   delete(object: GameObject) {
-    var target = this.remove(object);
+    let target = this.remove(object);
 
     target.killMePlease();
     return this;
@@ -507,7 +507,7 @@ class GameObject extends AdvancedContainer {
    */
   deleteAll() {
     while (this.gameObjects.length) {
-      var target = this.remove(this.gameObjects[0]);
+      let target = this.remove(this.gameObjects[0]);
       target.killMePlease();
     }
     return this;
@@ -591,7 +591,7 @@ class GameObject extends AdvancedContainer {
     //   this.children = [];
     // }
 
-    for (var i = 0, obj; i < this.gameObjects.length; ++i) {
+    for (let i = 0, obj; i < this.gameObjects.length; ++i) {
       obj = this.remove(this.gameObjects[i]);
       obj.killMePlease();
     }
@@ -654,8 +654,8 @@ class GameObject extends AdvancedContainer {
   // a tester
   getWorldPos(): Point2D {
     if (this.parent && this.parent.getWorldPos) {
-      var pos = this.parent.getWorldPos();
-      var harmonics = this.parent.vector2.getHarmonics();
+      let pos = this.parent.getWorldPos();
+      let harmonics = this.parent.vector2.getHarmonics();
 
       return {
         x:
@@ -754,7 +754,7 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    */
   removeAutomatisms() {
-    for (var i in this._automatisms) {
+    for (let i in this._automatisms) {
       delete this._automatisms[i];
     }
   }
@@ -769,10 +769,10 @@ class GameObject extends AdvancedContainer {
    * myObject.inverseAutomatism( "translateY" ); // this will inverse the value applied on the automatized translateY action
    */
   inverseAutomatism(autoName: string) {
-    var at = this._automatisms[autoName];
+    let at = this._automatisms[autoName];
 
     if (at[1].args) {
-      for (var i = 0; i < at[1].args.length; ++i) {
+      for (let i = 0; i < at[1].args.length; ++i) {
         at[1].args[i] = -at[1].args[i];
       }
     } else {
@@ -835,7 +835,7 @@ class GameObject extends AdvancedContainer {
     }
 
     // childs update
-    for (var c = 0, g; (g = this.gameObjects[c]); c++) {
+    for (let c = 0, g; (g = this.gameObjects[c]); c++) {
       if (g.flag !== null) {
         switch (g.flag) {
           case 'delete':
@@ -849,7 +849,7 @@ class GameObject extends AdvancedContainer {
 
     // this apply update on each renderer
     if (this.visible) {
-      for (var i = 0, r; (r = this.renderers[i]); ++i) {
+      for (let i = 0, r; (r = this.renderers[i]); ++i) {
         if (r.update!) {
           r.update(Time.deltaTime);
         }

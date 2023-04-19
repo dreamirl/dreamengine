@@ -71,7 +71,7 @@ export default class Camera extends AdvancedContainer {
     this.x = (this.renderSizes.x / 2) >> 0;
     this.y = (this.renderSizes.y / 2) >> 0;
 
-    var _params = params || {};
+    let _params = params || {};
 
     this.interactive =
       params.interactive !== undefined ? params.interactive : true;
@@ -221,7 +221,7 @@ export default class Camera extends AdvancedContainer {
     type: 'Move' | 'Down' | 'Up' | 'Over' | 'Out' | 'Tap' | 'UpOutside',
     event: any,
   ) {
-    var pos = {
+    let pos = {
       x: event.data.global.x + (this.pivot.x - this.x),
       y: event.data.global.y + (this.pivot.y - this.y),
     };
@@ -313,7 +313,7 @@ export default class Camera extends AdvancedContainer {
    * @memberOf Camera
    */
   checkLimits(qualityRatio: number = 1) {
-    var limits = this.limits;
+    let limits = this.limits;
     if (limits.minX != undefined && this.x < limits.minX * qualityRatio) {
       this.x = limits.minX * qualityRatio;
     } else if (

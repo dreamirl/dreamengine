@@ -492,7 +492,7 @@ export default class SpriteRenderer extends PIXI.Sprite {
       );
     }
 
-    var d = this.spriteData || ImageManager.spritesData[this.spriteName];
+    let d = this.spriteData || ImageManager.spritesData[this.spriteName];
 
     this.startFrame = params.startFrame || d.startFrame || 0;
     this.endFrame = params.endFrame || d.endFrame || d.totalFrame - 1 || 0;
@@ -542,7 +542,7 @@ export default class SpriteRenderer extends PIXI.Sprite {
     if (this.baseTexture) {
       this.fw = (this.baseTexture.width / this.totalFrame) >> 0;
       this.fh = (this.baseTexture.height / this.totalLine) >> 0;
-      var size = new PIXI.Rectangle(
+      let size = new PIXI.Rectangle(
         this._currentFrame * this.fw,
         this._currentLine * this.fh,
         this.fw,
@@ -559,7 +559,7 @@ export default class SpriteRenderer extends PIXI.Sprite {
     this._originalTexture = this.texture;
 
     if (this.baseNormalTexture) {
-      var normsize = new PIXI.Rectangle(
+      let normsize = new PIXI.Rectangle(
         this._currentFrame * this.fw,
         this._currentLine * this.fh,
         this.fw,

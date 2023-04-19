@@ -44,8 +44,8 @@ class MainLoop {
     let n_dots = 0;
     this.loader.timeout(
       () => {
-        var dots = '.';
-        for (var i = 0; i < 3; ++i) {
+        let dots = '.';
+        for (let i = 0; i < 3; ++i) {
           dots += n_dots < i ? ' ' : '.';
         }
 
@@ -139,21 +139,21 @@ class MainLoop {
 const mainLoop = new MainLoop();
 
 Events.on('lang-changed', () => {
-  for (var i = 0, s; (s = mainLoop.scenes[i]); ++i) {
-    for (var ii = 0, g; (g = s.gameObjects[ii]); ++ii) {
+  for (let i = 0, s; (s = mainLoop.scenes[i]); ++i) {
+    for (let ii = 0, g; (g = s.gameObjects[ii]); ++ii) {
       checkGameObjectsTextRenderer(g);
     }
   }
 });
 
 function checkGameObjectsTextRenderer(go: GameObject) {
-  for (var ix = 0, sub; (sub = go.gameObjects[ix]); ++ix) {
+  for (let ix = 0, sub; (sub = go.gameObjects[ix]); ++ix) {
     checkGameObjectsTextRenderer(sub);
   }
   if (!go.renderers) {
     return;
   }
-  for (var ir = 0, r; (r = go.renderers[ir]); ++ir) {
+  for (let ir = 0, r; (r = go.renderers[ir]); ++ir) {
     if (r.localizationKey) {
       r.text = Localization.get(r.localizationKey);
       r.checkMaxWidth();

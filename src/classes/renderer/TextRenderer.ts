@@ -49,7 +49,7 @@ export default class TextRenderer extends PIXI.Text {
       text !== null && text !== undefined && text.toString
         ? text.toString()
         : text;
-    var _params = params || {};
+    let _params = params || {};
 
     if (_params.localizationKey) {
       this.localizationKey = _params.localizationKey;
