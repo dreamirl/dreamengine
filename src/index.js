@@ -85,7 +85,7 @@ DE.VERSION = DE.config.VERSION;
 DE.CONFIG = DE.config;
 
 // enhance PIXI
-extendPIXI(DE, PIXI);
+extendPIXI(DE);
 
 /*
  * init engine with custom inputs, images data, audio data, locales
