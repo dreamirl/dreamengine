@@ -76,43 +76,43 @@ export default class AdvancedContainer extends Container {
 
   fadeTo(
     value: number,
-    frames: number,
-    onComplete: () => {},
+    duration: number,
+    onComplete: () => void,
     onCompleteParams?: any,
     autostart: boolean = true,
-    easing?: () => {},
+    easing: (x: number) => number = Tween.Easing.noEase,
   ) {
     new Tween.Tween(
       this,
       'alpha',
       value,
-      frames,
+      duration,
       autostart,
       easing,
     ).setOnComplete(onComplete, onCompleteParams || {});
   }
 
   fadeOut(
-    frames: number,
-    onComplete: () => {},
+    duration: number,
+    onComplete: () => void,
     onCompleteParams?: any,
     autostart: boolean = true,
-    easing?: () => {},
+    easing: (x: number) => number = Tween.Easing.noEase,
   ) {
-    new Tween.Tween(this, 'alpha', 0, frames, autostart, easing).setOnComplete(
+    new Tween.Tween(this, 'alpha', 0, duration, autostart, easing).setOnComplete(
       onComplete,
       onCompleteParams || {},
     );
   }
 
   fadeIn(
-    frames: number,
-    onComplete: () => {},
+    duration: number,
+    onComplete: () => void,
     onCompleteParams?: any,
     autostart: boolean = true,
-    easing?: () => {},
+    easing: (x: number) => number = Tween.Easing.noEase,
   ) {
-    new Tween.Tween(this, 'alpha', 1, frames, autostart, easing).setOnComplete(
+    new Tween.Tween(this, 'alpha', 1, duration, autostart, easing).setOnComplete(
       onComplete,
       onCompleteParams || {},
     );
@@ -136,18 +136,18 @@ export default class AdvancedContainer extends Container {
 
   scaleTo(
     targetScale: Point2D,
-    frames: number,
-    onComplete: () => {},
+    duration: number,
+    onComplete: () => void,
     onCompleteParams?: any,
     autostart: boolean = true,
-    easing?: () => {},
+    easing: (x: number) => number = Tween.Easing.noEase,
   ) {
-    new Tween.Tween(this, 'scale.x', targetScale.x, frames, autostart, easing);
+    new Tween.Tween(this, 'scale.x', targetScale.x, duration, autostart, easing);
     new Tween.Tween(
       this,
       'scale.y',
       targetScale.y,
-      frames,
+      duration,
       autostart,
       easing,
     ).setOnComplete(onComplete, onCompleteParams || {});
@@ -155,19 +155,19 @@ export default class AdvancedContainer extends Container {
 
   moveTo(
     dest: Point2D,
-    frames: number,
-    onComplete: () => {},
+    duration: number,
+    onComplete: () => void,
     onCompleteParams?: any,
     autostart: boolean = true,
     forceLocalPos: boolean = false,
-    easing?: () => {},
+    easing: (x: number) => number = Tween.Easing.noEase,
   ) {
     if (this.parent && !forceLocalPos) {
       let parentPos = this.parent.getGlobalPosition();
       dest = { x: dest.x - parentPos.x, y: dest.y - parentPos.y };
     }
-    new Tween.Tween(this, 'x', dest.x, frames, autostart, easing);
-    new Tween.Tween(this, 'y', dest.y, frames, autostart, easing).setOnComplete(
+    new Tween.Tween(this, 'x', dest.x, duration, autostart, easing);
+    new Tween.Tween(this, 'y', dest.y, duration, autostart, easing).setOnComplete(
       onComplete,
       onCompleteParams || {},
     );

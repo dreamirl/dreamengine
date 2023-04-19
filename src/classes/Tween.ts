@@ -16,25 +16,25 @@ export let tweens: Tween[] = [];
 
 class Tween {
   targetValue: number;
-  startValue: number = 0;
+  startValue: number;
   active: boolean;
   currentFrame: number;
-  endFrame: number;
+  tweenDuration: number;
   object: any;
   property: string;
   onUpdate?: (params: any) => void;
   onUpdateParams?: any;
-  onComplete?: (params: any) => void;
+  onComplete?: (params?: any) => void;
   onCompleteParams?: any;
-  easing: any;
+  easing: (x: number) => number;
 
   constructor(
     object: any,
     property: string,
-    value: number,
-    frames: number,
+    targetValue: number,
+    tweenDuration: number,
     autostart: boolean = true,
-    easing?: () => void,
+    easing: (x: number) => number = noEase,
   ) {
     this.object = object;
     const properties = property.split('.');
@@ -46,26 +46,22 @@ class Tween {
       }
     }
 
-    this.targetValue = value;
-    this.startValue;
+    this.targetValue = targetValue;
+    this.startValue = 0;
     this.active = autostart;
     this.currentFrame = 0;
-    this.endFrame = frames;
-    this.onUpdate;
-    this.onUpdateParams;
-    this.onComplete;
-    this.onCompleteParams;
-    this.easing = easing || noEase;
+    this.tweenDuration = tweenDuration;
+    this.easing = easing;
 
     tweens.push(this);
   }
 
-  setOnUpdate(callback: () => void, parameters: any) {
+  setOnUpdate(callback: (arg?: any) => void, parameters?: any) {
     this.onUpdate = callback;
     this.onUpdateParams = parameters;
   }
 
-  setOnComplete(callback: () => void, parameters: any) {
+  setOnComplete(callback: (arg?: any) => void, parameters?: any) {
     this.onComplete = callback;
     this.onCompleteParams = parameters;
   }
@@ -81,19 +77,19 @@ class Tween {
     }
   }
 
-  update() {
+  update(deltaTime: number) {
     if (!this.active) {
       return false;
     }
     if (this.currentFrame == 0) {
       this.initIterations();
     }
-    this.currentFrame++;
-    if (this.currentFrame <= this.endFrame) {
+    this.currentFrame += deltaTime;
+    if (this.currentFrame <= this.tweenDuration) {
       if (this.property != '') {
         const newValue =
           this.startValue +
-          this.targetValue * this.easing(this.currentFrame / this.endFrame);
+          this.targetValue * this.easing(this.currentFrame / this.tweenDuration);
         this.object[this.property] = newValue;
         if (this.onUpdate != null) {
           this.onUpdate(this.onUpdateParams);
@@ -101,6 +97,7 @@ class Tween {
       }
       return false;
     } else {
+      this.object[this.property] = this.startValue + this.targetValue;
       this.active = false;
       if (this.onComplete != null) {
         this.onComplete(this.onCompleteParams);
@@ -287,10 +284,13 @@ function inOutBounce(x: number) {
 }
 
 // Call this every Frame of your Game/Application to keep the tweens running.
-function update() {
+function update(deltaTime: number) {
   for (let i = 0; i < tweens.length; ++i) {
     const tween = tweens[i];
-    if (tween.update()) {
+    if(tween.object.name == 'La target'){
+      console.log('Pos before: ', tween.object.x, tween.object.y);
+    }
+    if (tween.update(deltaTime)) {
       const index = tweens.indexOf(tween);
       if (index != -1) {
         tweens.splice(index, 1);
@@ -315,44 +315,46 @@ function update() {
 	new ChainedTween([tween1, tween2]);
 */
 
-class ChainedTween {
+class ChainedTween extends Tween{
   tweensChained: Tween[] = [];
-  onComplete?: () => {};
   complete: boolean = false;
 
-  constructor(tweensToAdd: Tween[]) {
+  constructor(tweensToAdd: Tween[], onCompleteCb?: (params?: any) => void, onCompleteParameters?: any) {
+    super(undefined, '', 0, 0)
+    this.onComplete = onCompleteCb;
+    this.onCompleteParams = onCompleteParameters;
     this.tweensChained = tweensToAdd;
     for (let i = 1; i < tweensToAdd.length; i++) {
+      this.tweensChained[i].update = (deltaTime: number) => {
+        const res =  this.tweensChained[i].update(deltaTime);
+        if(res){
+          this.tweenFinished();
+        }
+        return res;
+      }
       this.tweensChained[i].active = false;
     }
+    this.tweensChained[0].start();
     tweens.push(...tweensToAdd);
   }
 
-  update() {
+  tweenFinished(){
+    this.tweensChained.splice(0, 1);
+    if (this.tweensChained.length != 0)
+      this.tweensChained[0].start();
+    else{
+      if (this.onComplete) {
+        this.onComplete(this.onCompleteParams);
+      }
+      this.complete = true;
+    }
+  }
+
+  override update() {
     if (this.complete) {
       return true;
     }
-    if (this.tweensChained.length == 0) {
-      if (this.onComplete) {
-        this.onComplete();
-      }
-      this.complete = true;
-      return true;
-    }
-    const currentTween = this.tweensChained[0];
-    if (!currentTween.active) {
-      currentTween.start();
-    }
-    const finished = currentTween.update();
-    if (finished) {
-      console.log(this.tweensChained.length);
-      this.tweensChained.splice(0, 1);
-    }
     return false;
-  }
-
-  setOnComplete(callback: () => {}) {
-    this.onComplete = callback;
   }
 
   cancel() {
