@@ -27,6 +27,7 @@ declare module 'pixi.js' {
     setGreyscale(scale: number, multiply: boolean): void;
     applyScale(): void;
     setSize(width: number, height: number, preventCenter: boolean): void;
+    setScale(x: number | {x: number, y: number}, y?: number): void;
     center(): void;
     instantiate(target: any, params: any): void;
   }
@@ -65,6 +66,20 @@ PIXI.Container.prototype.instantiate = function (target, params) {
   //   this[_attributes[i]] = this[_attributes[i]];
   // }
 };
+
+PIXI.Container.prototype.setScale = function (x: number | {x: number, y: number}, y?: number){
+  if (y == undefined) {
+    if (x instanceof Object) {
+      this.scale = { x: x.x, y: x.y };
+    } else {
+      this.scale = { x: x, y: x };
+    }
+  } else {
+    if (!(x instanceof Object) && y) {
+      this.scale = { x: x, y: y };
+    }
+  }
+}
 
 PIXI.Container.prototype.setTint = function (value: PIXI.COLOR_MASK_BITS) {
   this.tint = value || 0xffffff;
