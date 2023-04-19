@@ -1,6 +1,5 @@
 import * as PIXI from 'pixi.js';
-import BaseRenderer from './BaseRenderer';
-
+import '../renderer/ContainerExtensions';
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
  */
@@ -17,8 +16,15 @@ import BaseRenderer from './BaseRenderer';
  * } );
  */
 
-class TextureRenderer extends PIXI.Sprite {
-  constructor(params) {
+export default class TextureRenderer extends PIXI.Sprite {
+  private _textureName?: string;
+  public sprite?: PIXI.Sprite;
+  constructor(params: {
+    spriteName?: string;
+    spriteUrl?: string;
+    textureName?: string;
+    texture?: PIXI.Texture<PIXI.Resource> | undefined;
+  }) {
     if (
       !params.spriteName &&
       !params.spriteUrl &&
@@ -35,36 +41,35 @@ class TextureRenderer extends PIXI.Sprite {
       params.texture
         ? params.texture
         : PIXI.utils.TextureCache[
-            params.spriteName || params.spriteUrl || params.textureName
+            params.spriteName! || params.spriteUrl! || params.textureName!
           ],
     );
+    this.instantiate(this, params);
     this._textureName =
       params.spriteName || params.spriteUrl || params.textureName;
-    BaseRenderer.instantiate(this, params);
   }
 
   get textureName() {
     return this._textureName;
   }
   set textureName(textureName) {
-    this.changeTexture(textureName);
+    if (textureName !== undefined) {
+      this.changeTexture(textureName);
+    }
   }
+
+  /**
+   * @public
+   * @memberOf TextureRenderer
+   * @type {Int}
+   */
+  changeTexture(textureName: string) {
+    if (!textureName) {
+      throw new Error('TextureRenderer :: changeTexture -- need textureName');
+    }
+
+    this._textureName = textureName;
+    this.texture = PIXI.utils.TextureCache[textureName];
+  }
+  static DEName = 'TextureRenderer';
 }
-
-BaseRenderer.inherits(TextureRenderer);
-TextureRenderer.prototype.DEName = 'TextureRenderer';
-
-/**
- * @public
- * @memberOf TextureRenderer
- * @type {Int}
- */
-TextureRenderer.prototype.changeTexture = function (textureName) {
-  if (!textureName) {
-    throw new Error('TextureRenderer :: changeTexture -- need textureName');
-  }
-
-  this._textureName = textureName;
-  this.texture = PIXI.utils.TextureCache[textureName];
-};
-export default TextureRenderer;

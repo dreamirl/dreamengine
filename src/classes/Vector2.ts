@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import Time from '../utils/Time';
+import GameObject from './GameObject';
 
 const _PI = Math.PI;
 /**
@@ -17,9 +18,9 @@ class Vector2 extends PIXI.Container {
   private _rotation = 0;
   private _cosAngle = 1;
   private _sinAngle = 0;
-  public gameObject;
+  public override gameObject: GameObject;
 
-  constructor(x, y, gameObject?) {
+  constructor(x: number, y: number, gameObject?: GameObject) {
     super();
 
     this._x = x;
@@ -61,7 +62,7 @@ class Vector2 extends PIXI.Container {
     }
   }
 
-  _updateRotation(value) {
+  _updateRotation(value: number) {
     this._rotation = value;
     if (this._rotation == 0) {
       this._sinAngle = 0;
@@ -80,16 +81,16 @@ class Vector2 extends PIXI.Container {
    * @param {Boolean} [ignoreDelta] if you want to prevent deltaTime adjustment
    * @returns {Vector2} this current instance
    */
-  translate(vector2, absolute, ignoreDelta) {
+  translate(vector2: Vector2, absolute?: boolean, ignoreDelta?: boolean) {
     if ((!vector2.x && vector2.x != 0) || (!vector2.y && vector2.y != 0)) {
       throw new Error(vector2 + ' is not a Vector2');
     }
 
     if (!ignoreDelta) {
-      vector2 = {
-        x: vector2.x * Time.deltaTime,
-        y: vector2.y * Time.deltaTime,
-      };
+      vector2 = new Vector2(
+        vector2.x * Time.deltaTime,
+        vector2.y * Time.deltaTime,
+      );
     }
 
     if (!absolute) {
@@ -114,7 +115,7 @@ class Vector2 extends PIXI.Container {
    * @param {Float} newAngle
    * @returns {Float} this.rotation current rotation
    */
-  setRotation(newAngle) {
+  setRotation(newAngle: number) {
     this.rotation = newAngle % (_PI * 2);
     return this.rotation;
   }
@@ -127,7 +128,7 @@ class Vector2 extends PIXI.Container {
    * @param {Boolean} [ignoreDelta] if you want to prevent deltaTime adjustment
    * @returns {Float} this.rotation current rotation
    */
-  rotate(angle, ignoreDelta) {
+  rotate(angle: number, ignoreDelta: boolean) {
     if (ignoreDelta) return this.setRotation(this.rotation + angle);
     return this.setRotation(this.rotation + angle * Time.deltaTime);
   }
@@ -139,7 +140,7 @@ class Vector2 extends PIXI.Container {
    * @param {Float} coef
    * @returns {Vector2} this current instance
    */
-  multiply(coef) {
+  multiply(coef: number) {
     this.x *= coef;
     this.y *= coef;
     return this;
@@ -157,7 +158,7 @@ class Vector2 extends PIXI.Container {
       this.y = 0;
       return this;
     }
-    var len = Math.sqrt(this.x * this.x + this.y * this.y);
+    let len = Math.sqrt(this.x * this.x + this.y * this.y);
     this.x = this.x / len;
     this.y = this.y / len;
     return this;
@@ -171,7 +172,7 @@ class Vector2 extends PIXI.Container {
    * @param {Vector2} b second vector2
    * @returns {Vector2} this current instance
    */
-  getVector(a, b) {
+  getVector(a: Vector2, b: Vector2) {
     if (
       (!a.x && a.x != 0) ||
       (!a.y && a.y != 0) ||
@@ -193,7 +194,7 @@ class Vector2 extends PIXI.Container {
    * @param {Vector2} vector2
    * @returns {Float} radians value
    */
-  getVectorAngle(vector2) {
+  getVectorAngle(vector2: Vector2) {
     return (Math.atan2(vector2.y, vector2.x) + _PI * 0.5) % (_PI * 2);
   }
 
@@ -206,7 +207,7 @@ class Vector2 extends PIXI.Container {
    * @param {Vector2} b second vector2
    * @returns {Float} dotProduct result
    */
-  dotProduct(a, b?) {
+  dotProduct(a: Vector2, b?: Vector2) {
     if (!a.x || !a.y) {
       throw new Error('Vector2 need two Vector2 to return dotProduct');
     }
@@ -224,12 +225,16 @@ class Vector2 extends PIXI.Container {
    * @param {Vector2} b second vector2
    * @returns {Float} angle result
    */
-  getAngle(otherA, otherB?) {
+  getAngle(otherA: Vector2, otherB?: Vector2) {
     if (!otherB) {
       otherB = this;
 
       if (this.gameObject) {
-        otherB = this.gameObject.toGlobal({ x: 0, y: 0 });
+        const toGlob = this.gameObject.toGlobal({ x: 0, y: 0 });
+        otherB = new Vector2(
+          toGlob.x * Time.deltaTime,
+          toGlob.y * Time.deltaTime,
+        );
       }
     }
     return Math.atan2(otherA.y - otherB.y, otherA.x - otherB.x);
@@ -238,14 +243,14 @@ class Vector2 extends PIXI.Container {
   /**
    * I keep this function because I accidentally coded something fun with, so... :D
    */
-  wtfAngle(a, b?) {
+  wtfAngle(a: Vector2, b?: Vector2) {
     let tmp_vectorB: Vector2;
     if (b && b.x) {
       tmp_vectorB = new Vector2(b.x, b.y).normalize();
     } else {
       tmp_vectorB = new Vector2(this.x, this.y).normalize();
     }
-    var tmp_vectorA = new Vector2(a.x, a.y).normalize();
+    let tmp_vectorA = new Vector2(a.x, a.y).normalize();
     return Math.acos(tmp_vectorA.dotProduct(tmp_vectorB));
   }
 
@@ -259,10 +264,10 @@ class Vector2 extends PIXI.Container {
   /****
    * getDistance@Int( other@Vector2 )
    */
-  getDistance(other) {
-    var x = this.x - other.x;
+  getDistance(other: Vector2) {
+    let x = this.x - other.x;
     x *= x;
-    var y = this.y - other.y;
+    let y = this.y - other.y;
     y *= y;
     return Math.sqrt(x + y);
   }
@@ -275,13 +280,13 @@ class Vector2 extends PIXI.Container {
    * @param {Float} range
    * @returns {Boolean} isInRange result
    */
-  isInRangeFrom(other, range) {
+  isInRangeFrom(other: Vector2, range: number) {
     range *= range;
-    var x = this.x - other.x;
+    let x = this.x - other.x;
     x *= x;
-    var y = this.y - other.y;
+    let y = this.y - other.y;
     y *= y;
-    var dist = x + y;
+    let dist = x + y;
     if (dist <= range) {
       return true;
     }
@@ -296,7 +301,7 @@ class Vector2 extends PIXI.Container {
    * @param {Float} [rotation] used by gameObjects in getPos and other
    * @returns {Harmonics} harmonics (cosinus and sinus)
    */
-  getHarmonics(rotation?) {
+  getHarmonics(rotation?: number) {
     if (rotation) {
       return {
         cos: Math.cos(rotation + this.rotation),
@@ -313,18 +318,18 @@ class Vector2 extends PIXI.Container {
    * @param {Vector2|Float} Vector2 or x / y
    * @returns {Vector2} this current instance
    */
-  setPosition(first, y?) {
-    if (first.x !== undefined || first.y !== undefined) {
-      this.x = first.x != undefined ? first.x : this.x;
-      this.y = first.y != undefined ? first.y : this.y;
+  setPosition(first: Vector2 | number, y?: number) {
+    if(typeof first === 'number'){
+      this.x = first != undefined ? first : this.x;
+      this.y = y != undefined ? y : this.y;
       return this;
     }
-    this.x = first != undefined ? first : this.x;
-    this.y = y != undefined ? y : this.y;
+    this.x = first.x != undefined ? first.x : this.x;
+    this.y = first.y != undefined ? first.y : this.y;
     return this;
   }
 
-  set(first, y?) {
+  set(first: Vector2 | number, y?: number) {
     this.setPosition(first, y);
   }
 
@@ -342,12 +347,12 @@ class Vector2 extends PIXI.Container {
   Example, if A = 0 and B = PI*2, then difference is 0.
   (or A = 0.1 B = 6, difference is 0.383185307179586)
   */
-  getAnglesDifference(angleA, angleB?) {
+  getAnglesDifference(angleA: number, angleB?: number) {
     if (angleB === undefined) {
       angleB = this.rotation;
     }
 
-    var difference = angleA - angleB;
+    let difference = angleA - angleB;
     if (difference < -_PI) {
       difference += _PI * 2;
     } else if (difference > _PI) {
@@ -361,9 +366,9 @@ class Vector2 extends PIXI.Container {
    * @public
    * @memberOf Vector2
    */
-  turnVector(angle) {
-    var cos = this._cosAngle;
-    var sin = this._sinAngle;
+  turnVector(angle: number) {
+    let cos = this._cosAngle;
+    let sin = this._sinAngle;
     if (angle !== undefined) {
       cos = Math.cos(angle);
       sin = Math.sin(angle);
@@ -371,8 +376,8 @@ class Vector2 extends PIXI.Container {
 
     // why calling this function otherwise?
     if (cos !== 0 || sin !== 0) {
-      var x = this.x;
-      var y = this.y;
+      let x = this.x;
+      let y = this.y;
       this.x = x * cos + y * -sin;
       this.y = x * sin + y * cos;
     }
@@ -386,16 +391,16 @@ class Vector2 extends PIXI.Container {
    * @public
    * @memberOf Vector2
    */
-  getTurnedVector(angle) {
-    var cos = this._cosAngle;
-    var sin = this._sinAngle;
+  getTurnedVector(angle: number) {
+    let cos = this._cosAngle;
+    let sin = this._sinAngle;
     if (angle !== undefined) {
       cos = Math.cos(angle);
       sin = Math.sin(angle);
     }
 
-    var x = this.x;
-    var y = this.y;
+    let x = this.x;
+    let y = this.y;
 
     // why calling this function otherwise?
     if (cos !== 0 || sin !== 0) {

@@ -1,11 +1,46 @@
 import * as PIXI from 'pixi.js';
 import Time from '../../utils/Time';
-import BaseRenderer from './BaseRenderer';
+import '../renderer/ContainerExtensions';
 
-class AnimatedTextureRenderer extends PIXI.Sprite {
-  constructor(imageNames, params) {
-    params = params || {};
+export default class AnimatedTextureRenderer extends PIXI.Sprite {
+  private _imageNames: string[];
+  private _textures: PIXI.Texture<PIXI.Resource>[];
+  private _currentFrame: number;
+  public lastAnim: number;
+  public animated: boolean;
+  private _isPaused: boolean;
+  public loop: boolean;
+  public reversed: boolean;
+  public interval: number;
+  public pingPongMode: boolean;
+  private _startFrame: number;
+  private _endFrame: number;
+  public isOver: boolean;
+  private _nextAnim: number;
+  public sheetName?: string;
+  public animationName?: string;
+
+  constructor(
+    imageNames: string[],
+    params: {
+      animated?: boolean;
+      loop?: boolean;
+      reversed?: boolean;
+      interval?: number;
+      pingPongMode?: boolean;
+      sheetName?: string;
+      animationName?: string;
+      endFrame?: number;
+      startFrame?: number;
+      pause?: boolean;
+      currentFrame?: number;
+      tint?: number;
+      randomFrame?: number;
+    },
+  ) {
     super();
+    this.instantiate(this, params);
+    params = params || {};
 
     this._imageNames = [];
     this._textures = [];
@@ -25,7 +60,8 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
     if (imageNames) {
       this.imageNames = imageNames;
     } else {
-      this.changeSheet(params.sheetName, params.animationName);
+      if (params.sheetName && params.animationName)
+        this.changeSheet(params.sheetName, params.animationName);
     }
 
     if (params.endFrame) {
@@ -35,7 +71,7 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
       this.startFrame = params.startFrame;
     }
     this.pause = !!params.pause;
-    this._currentFrame = parseInt(params.currentFrame || 0);
+    this._currentFrame = params.currentFrame ? params.currentFrame : 0;
 
     this._nextAnim = this.interval;
 
@@ -49,11 +85,9 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
     if (params.randomFrame) {
       this.currentFrame = (Math.random() * this.textures.length) >> 0;
     }
-
-    BaseRenderer.instantiate(this, params);
   }
 
-  changeSheet(sheetName, animationName) {
+  changeSheet(sheetName: string, animationName: string) {
     this.sheetName = sheetName;
     this.animationName = animationName;
 
@@ -119,7 +153,7 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
   }
   set imageNames(names) {
     this._imageNames = names;
-    const textures = [];
+    const textures: PIXI.Texture<PIXI.Resource>[] = [];
     names.forEach((imgName) => textures.push(PIXI.utils.TextureCache[imgName]));
     this.textures = textures;
   }
@@ -166,7 +200,7 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
     }
   }
 
-  gotoAndPause(frame) {
+  gotoAndPause(frame: number) {
     this.isOver = false;
     this.currentFrame = frame;
     this.pause = true;
@@ -179,11 +213,8 @@ class AnimatedTextureRenderer extends PIXI.Sprite {
     this.isOver = false;
     this.currentFrame = this.reversed ? this.endFrame : this.startFrame;
   }
+
+  onAnimEnd() {}
+
+  static DEName = 'AnimatedTextureRenderer';
 }
-
-BaseRenderer.inherits(AnimatedTextureRenderer);
-AnimatedTextureRenderer.prototype.DEName = 'AnimatedTextureRenderer';
-
-AnimatedTextureRenderer.prototype.onAnimEnd = function () {};
-
-export default AnimatedTextureRenderer;

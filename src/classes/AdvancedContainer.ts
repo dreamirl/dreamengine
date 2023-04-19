@@ -1,7 +1,8 @@
 import { Container } from 'pixi.js';
 import Component from './Component';
-import FadeComponent from './components/FadeComponent';
-import ScaleComponent from './components/ScaleComponent';
+import GameObject from './GameObject';
+import Tween from './Tween';
+import FocusComponent, { FocusOption } from './components/FocusComponent';
 import ShakeComponent from './components/ShakeComponent';
 import TimerComponent from './components/TimerComponent';
 
@@ -17,24 +18,6 @@ export default class AdvancedContainer extends Container {
     return this._shakeComp;
   }
 
-  private _fadeComp?: FadeComponent = undefined;
-  private get fadeComp() {
-    if (!this._fadeComp) {
-      this._fadeComp = new FadeComponent(this);
-      this.addComponent(this._fadeComp);
-    }
-    return this._fadeComp;
-  }
-
-  private _scaleComp?: ScaleComponent = undefined;
-  private get scaleComp() {
-    if (!this._scaleComp) {
-      this._scaleComp = new ScaleComponent(this);
-      this.addComponent(this._scaleComp);
-    }
-    return this._scaleComp;
-  }
-
   private _timerComp?: TimerComponent = undefined;
   private get timerComp() {
     if (!this._timerComp) {
@@ -42,6 +25,15 @@ export default class AdvancedContainer extends Container {
       this.addComponent(this._timerComp);
     }
     return this._timerComp;
+  }
+
+  protected _focusComp?: FocusComponent = undefined;
+  protected get focusComp() {
+    if (!this._focusComp) {
+      this._focusComp = new FocusComponent(this);
+      this.addComponent(this._focusComp);
+    }
+    return this._focusComp;
   }
 
   update(time: number) {
@@ -82,42 +74,48 @@ export default class AdvancedContainer extends Container {
     return this;
   }
 
-  /**
-   * quick access to the FadeComponent
-   */
-  fade(
-    from: number = 1,
-    to: number = 0,
-    duration: number = 500,
-    force: boolean = true,
-    callback?: () => void,
-  ) {
-    this.fadeComp.fade(from, to, duration, force, callback);
-    return this;
-  }
-
   fadeTo(
-    to: number = 0,
-    duration: number = 500,
-    force: boolean = true,
-    callback?: () => void,
+    value: number,
+    duration: number,
+    onComplete: () => void,
+    onCompleteParams?: any,
+    autostart: boolean = true,
+    easing: (x: number) => number = Tween.Easing.noEase,
   ) {
-    this.fadeComp.fadeTo(to, duration, force, callback);
-    return this;
+    new Tween.Tween(
+      this,
+      'alpha',
+      value,
+      duration,
+      autostart,
+      easing,
+    ).setOnComplete(onComplete, onCompleteParams || {});
   }
 
   fadeOut(
-    duration: number = 500,
-    force: boolean = true,
-    callback?: () => void,
+    duration: number,
+    onComplete: () => void,
+    onCompleteParams?: any,
+    autostart: boolean = true,
+    easing: (x: number) => number = Tween.Easing.noEase,
   ) {
-    this.fadeComp.fadeOut(duration, force, callback);
-    return this;
+    new Tween.Tween(this, 'alpha', 0, duration, autostart, easing).setOnComplete(
+      onComplete,
+      onCompleteParams || {},
+    );
   }
 
-  fadeIn(duration: number = 500, force: boolean = true, callback?: () => void) {
-    this.fadeComp.fadeIn(duration, force, callback);
-    return this;
+  fadeIn(
+    duration: number,
+    onComplete: () => void,
+    onCompleteParams?: any,
+    autostart: boolean = true,
+    easing: (x: number) => number = Tween.Easing.noEase,
+  ) {
+    new Tween.Tween(this, 'alpha', 1, duration, autostart, easing).setOnComplete(
+      onComplete,
+      onCompleteParams || {},
+    );
   }
 
   /**
@@ -136,8 +134,53 @@ export default class AdvancedContainer extends Container {
     return this;
   }
 
-  scaleTo(targetScale: Point2D, duration: number = 500, callback = () => {}) {
-    this.scaleComp.scaleTo(targetScale, duration, callback);
+  scaleTo(
+    targetScale: Point2D,
+    duration: number,
+    onComplete: () => void,
+    onCompleteParams?: any,
+    autostart: boolean = true,
+    easing: (x: number) => number = Tween.Easing.noEase,
+  ) {
+    new Tween.Tween(this, 'scale.x', targetScale.x, duration, autostart, easing);
+    new Tween.Tween(
+      this,
+      'scale.y',
+      targetScale.y,
+      duration,
+      autostart,
+      easing,
+    ).setOnComplete(onComplete, onCompleteParams || {});
+  }
+
+  moveTo(
+    dest: Point2D,
+    duration: number,
+    onComplete: () => void,
+    onCompleteParams?: any,
+    autostart: boolean = true,
+    forceLocalPos: boolean = false,
+    easing: (x: number) => number = Tween.Easing.noEase,
+  ) {
+    if (this.parent && !forceLocalPos) {
+      let parentPos = this.parent.getGlobalPosition();
+      dest = { x: dest.x - parentPos.x, y: dest.y - parentPos.y };
+    }
+    new Tween.Tween(this, 'x', dest.x, duration, autostart, easing);
+    new Tween.Tween(this, 'y', dest.y, duration, autostart, easing).setOnComplete(
+      onComplete,
+      onCompleteParams || {},
+    );
+    return this;
+  }
+
+  focus(gameObject: GameObject, params: FocusOption) {
+    this.focusComp.focus(gameObject, params);
+    return this;
+  }
+
+  stopFocus() {
+    this.focusComp.stopFocus();
     return this;
   }
 }
