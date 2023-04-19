@@ -50,38 +50,11 @@ type CameraParams = {
  * @property {Scene} [scene=null] you can give a scene on creation, or later
  **/
 export default class Camera extends AdvancedContainer {
-  private _hasMoved = false;
-
   public id: string;
   private _scene?: Scene;
   public background;
   public renderSizes: PIXI.Point;
   public limits;
-
-  /**
-   * object used to apply fade transition
-   * @protected
-   * @memberOf Camera
-   * @type {Object}
-   */
-  private _fadeData = {
-    from: 1,
-    to: 0,
-    duration: 1000,
-    done: true,
-  };
-
-  /**
-   * object used to apply shake
-   * @protected
-   * @memberOf Camera
-   * @type {Object}
-   */
-  private _shakeData = {
-    done: true,
-    prevX: 0,
-    prevY: 0,
-  };
 
   constructor(
     x: number,
@@ -141,8 +114,6 @@ export default class Camera extends AdvancedContainer {
       minY: _params.minY != undefined ? _params.minY : undefined,
       maxY: _params.maxY != undefined ? _params.maxY : undefined,
     };
-
-    this._hasMoved = false;
 
     if (_params.scene) {
       this.scene = _params.scene;
