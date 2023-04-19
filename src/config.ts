@@ -1,56 +1,49 @@
 import Events from './utils/Events';
 
 /**
- * config contain various stuff for the engine
+ * Config contain various stuff for the engine
  * @namespace config
  */
-const config = {
-  DEName: 'config',
-  VERSION: '2.0',
-  _DEBUG: 0,
-  _DEBUG_LEVEL: 0,
-  ALLOW_ONBEFOREUNLOAD: true,
-  DEFAULT_TEXT_RESOLUTION: 2,
-  DEFAULT_POOL_NAME: 'default',
-  notifications: {
-    enable: true, // notifications enable by default
+export class EngineConfig {
+  public readonly DEName: string = 'config';
+  public readonly VERSION: string = '2.0';
+
+  public DEFAULT_POOL_NAME: string = 'default';
+  public DEFAULT_TEXT_RESOLUTION: number = 2;
+  public ALLOW_ONBEFOREUNLOAD: boolean = true;
+
+  private _DEBUG: number = 0;
+  public get DEBUG(): number {
+    return this._DEBUG;
+  }
+  public set DEBUG(value: number) {
+    this._DEBUG = value;
+    Events.emit('change-debug', value, this._DEBUG_LEVEL);
+  }
+
+  private _DEBUG_LEVEL: number = 0;
+  public get DEBUG_LEVEL(): number {
+    return this._DEBUG_LEVEL;
+  }
+  public set DEBUG_LEVEL(value: number) {
+    this._DEBUG_LEVEL = value;
+    Events.emit('change-debug', this._DEBUG, value);
+  }
+
+  public notifications: {
+    enable: boolean;
+    gamepadEnable: boolean;
+    gamepadAvalaible: string;
+    gamepadChange: boolean;
+    achievementUnlockDuration: number;
+  } = {
+    enable: true,
     gamepadEnable: true,
-    gamepadAvalaible: 'Gamepad avalaible !',
+    gamepadAvalaible: 'Gamepad available !',
     gamepadChange: true,
     achievementUnlockDuration: 8000,
-  },
-};
+  };
+}
 
-Object.defineProperties(config, {
-  /**
-   * getter/setter for DEBUG_LEVEL, emit an event "change-debug"
-   * @memberOf config
-   * @public
-   */
-  DEBUG: {
-    get: function () {
-      return config._DEBUG;
-    },
-    set: function (bool) {
-      Events.emit('change-debug', bool, config._DEBUG_LEVEL);
-      config._DEBUG = bool;
-    },
-  },
-
-  /**
-   * getter/setter for DEBUG_LEVEL, emit an event "change-debug"
-   * @memberOf config
-   * @public
-   */
-  DEBUG_LEVEL: {
-    get: function () {
-      return config._DEBUG_LEVEL;
-    },
-    set: function (bool) {
-      Events.emit('change-debug', config._DEBUG, bool);
-      config._DEBUG_LEVEL = bool;
-    },
-  },
-});
-
+const config = new EngineConfig();
 export default config;
