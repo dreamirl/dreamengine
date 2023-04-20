@@ -27,6 +27,8 @@ export default class Event<
 > {
   private readonly emitter = new EventEmitter();
 
+  public Emitter = EventEmitter;
+
   public on<T extends string & keyof TEventsTypes>(
     event: T,
     listener: (...args: TEventsTypes[T][]) => void,

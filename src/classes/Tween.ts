@@ -287,9 +287,6 @@ function inOutBounce(x: number) {
 function update(deltaTime: number) {
   for (let i = 0; i < tweens.length; ++i) {
     const tween = tweens[i];
-    if(tween.object.name == 'La target'){
-      console.log('Pos before: ', tween.object.x, tween.object.y);
-    }
     if (tween.update(deltaTime)) {
       const index = tweens.indexOf(tween);
       if (index != -1) {

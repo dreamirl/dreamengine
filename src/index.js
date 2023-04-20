@@ -39,12 +39,14 @@ import SpriteRenderer from './classes/renderer/SpriteRenderer';
 import TextRenderer from './classes/renderer/TextRenderer';
 import TextureRenderer from './classes/renderer/TextureRenderer';
 import TilingRenderer from './classes/renderer/TilingRenderer';
+import Tween from './classes/Tween';
 
 const DE = {
   config,
   about,
   Events,
   Time,
+  Tween,
   MainLoop,
   Save,
   Inputs,
