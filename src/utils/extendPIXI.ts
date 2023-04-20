@@ -1,5 +1,7 @@
-export default function (DE, PIXI) {
-  PIXI.time = PIXI.Ticker.shared;
+import * as PIXI from 'pixi.js';
+
+export default function (DE: any) {
+  //PIXI.time = PIXI.Ticker.shared; // Utilisé nul part je crois donc à check
   DE.pixtime = PIXI.Ticker.shared;
 
   // Not working in Vuejs, probably deprecated
