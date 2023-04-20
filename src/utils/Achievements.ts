@@ -18,7 +18,6 @@ const langs: Record<string, string> = {
 
 type ObjectiveEqualType = 'equal' | '=' | '==';
 type ObjectiveOtherType = 'increment' | '+' | '++' | '>=' | '<';
-type ObjectiveType = ObjectiveEqualType | ObjectiveOtherType;
 
 type EqualObjective = {
   type: ObjectiveEqualType;
@@ -133,7 +132,7 @@ export class Achievements<T extends Achievement> {
 
     this.userAchievements = userAchievements || Save.loadAchievements();
 
-    Events.on('games-datas', this.checkEvent);
+    Events.on('games-datas', (objectiveName: string, value: string | number) => this.checkEvent(objectiveName, value));
   }
 
   /**
@@ -172,11 +171,8 @@ export class Achievements<T extends Achievement> {
    */
   public isUnlock(namespace: string): boolean {
     for (const achievement of this.achievements) {
-      if (achievement.namespace != namespace) {
-        continue;
-      }
-
-      return this.userAchievements[namespace]?.complete || false;
+      if (achievement.namespace == namespace)
+        return this.userAchievements[namespace]?.complete || false;
     }
 
     console.warn(`Achievement '${namespace}' not found`);
@@ -197,27 +193,26 @@ export class Achievements<T extends Achievement> {
       return;
     }
 
-    if (!this.userAchievements[achievement.namespace]) {
+    if (!this.userAchievements[achievement.namespace] || !this.userAchievements[achievement.namespace].objectives) {
       this.userAchievements[achievement.namespace] = { objectives: {} };
     }
 
     const userAchievement = this.userAchievements[achievement.namespace];
 
     switch (objective.type) {
+      case 'increment':
       case '+':
       case '++':
-      case 'increment':
         if (!userAchievement.objectives[targetKey]) {
           userAchievement.objectives[targetKey] = { value: 0 };
         }
 
         const userObjectiveValue = userAchievement.objectives[targetKey].value;
 
-        if (typeof value === 'string' || typeof userObjectiveValue === 'string') {
-          return;
+        if (typeof value === 'number' && typeof userObjectiveValue === 'number') {
+          (userAchievement.objectives[targetKey].value as number) += value || 1;
         }
 
-        userAchievement.objectives[targetKey].value = userObjectiveValue + value || 1;
         break;
       default:
         // 'equal', '>=', '<', other
@@ -260,7 +255,7 @@ export class Achievements<T extends Achievement> {
         case '>=':
           if (
             userAchievementObjectives[objectiveName].value !== undefined &&
-            userAchievementObjectives[objectiveName].value! <= objective.target
+            userAchievementObjectives[objectiveName].value as number <= objective.target
           ) {
             objectiveComplete = false;
           }
@@ -268,7 +263,7 @@ export class Achievements<T extends Achievement> {
         case '<':
           if (
             userAchievementObjectives[objectiveName].value !== undefined &&
-            userAchievementObjectives[objectiveName].value! > objective.target
+            userAchievementObjectives[objectiveName].value as number > objective.target
           ) {
             objectiveComplete = false;
           }
