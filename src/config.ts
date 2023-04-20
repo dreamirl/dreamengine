@@ -12,11 +12,11 @@ export class EngineConfig {
   public DEFAULT_TEXT_RESOLUTION: number = 2;
   public ALLOW_ONBEFOREUNLOAD: boolean = true;
 
-  private _DEBUG: number = 0;
-  public get DEBUG(): number {
+  private _DEBUG: boolean = false;
+  public get DEBUG(): boolean {
     return this._DEBUG;
   }
-  public set DEBUG(value: number) {
+  public set DEBUG(value: boolean) {
     this._DEBUG = value;
     Events.emit('change-debug', value, this._DEBUG_LEVEL);
   }
