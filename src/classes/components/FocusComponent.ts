@@ -2,11 +2,19 @@ import AdvancedContainer from '../AdvancedContainer';
 import Component from '../Component';
 import GameObject from '../GameObject';
 
+export type FocusOption = {
+  offset?: Point2D;
+  x?: boolean;
+  y?: boolean;
+  rotation?: boolean;
+};
+
 export default class FocusComponent extends Component {
-  target: GameObject;
-  private _focusOptions: any;
-  private _focusOffsets: any;
+  target?: GameObject;
+  private _focusOptions: FocusOption = {};
+  private _focusOffsets: Point2D = { x: 0, y: 0 };
   protected override _name = 'FocusComponent';
+  private isMyTargetAChild = false;
 
   constructor(parent: AdvancedContainer, target?: GameObject) {
     super(parent);
@@ -24,7 +32,7 @@ export default class FocusComponent extends Component {
       pos = this.target.getWorldPos();
     }
 
-    let parentPos = this.parent;
+    let parentPos = this.parent.getGlobalPosition();
     // TODO: to fix (to finish)
     // if (this.parent.getWorldPos) {
     //   parentPos = this.parent.getWorldPos();
@@ -32,11 +40,30 @@ export default class FocusComponent extends Component {
     //   parentPos = this.parent;
     // }
 
+    console.log(
+      pos.x,
+      pos.y,
+      '  ',
+      this.parent.x,
+      this.parent.y,
+      '  pivot:',
+      this.parent.pivot.x,
+      this.parent.pivot.y,
+      ' rotation:',
+      this.target.rotation,
+    );
     if (this._focusOptions.x) {
-      this.parent.x = pos.x + (this._focusOffsets.x || 0) - parentPos.x;
+      if (this.isMyTargetAChild) {
+        console.log('Ouian');
+        this.parent.x =
+          2 * this.parent.pivot.x - (pos.x + this._focusOffsets.x);
+      } else this.parent.x = pos.x + this._focusOffsets.x;
     }
     if (this._focusOptions.y) {
-      this.parent.y = pos.y + (this._focusOffsets.y || 0) - parentPos.y;
+      if (this.isMyTargetAChild) {
+        this.parent.y =
+          2 * this.parent.pivot.y - (pos.y + this._focusOffsets.y);
+      } else this.parent.y = pos.y + this._focusOffsets.y;
     }
     if (this._focusOptions.rotation) {
       this.parent.rotation = this.target.rotation;
@@ -53,26 +80,35 @@ export default class FocusComponent extends Component {
    * @example // create a fx for your ship, decal a little on left, and lock y
    * fx.focus( player, { lock: { y: true }, offsets: { x: -200, y: 0 } } );
    */
-  focus(target: GameObject, params: any = {}) {
+  focus(target: GameObject, params: FocusOption = {}) {
     this.target = target;
-    this._focusOptions = Object.assign(
-      {
-        x: true,
-        y: true,
-        rotation: false,
-      },
-      params.options,
-    );
+    this._focusOptions = params;
+
+    this.isMyTargetAChild = false;
+    let parentChecker: GameObject | undefined = target.parent;
+    while (parentChecker != undefined) {
+      console.log('nb Check');
+      if (parentChecker === this.parent) {
+        this.isMyTargetAChild = true;
+        parentChecker = undefined;
+      } else {
+        parentChecker = parentChecker.parent;
+      }
+    }
 
     // focus default x/y
     this._focusOptions.x = this._focusOptions.x !== false ? true : false;
     this._focusOptions.y = this._focusOptions.y !== false ? true : false;
+    this._focusOptions.rotation =
+      this._focusOptions.rotation !== false ? true : false;
 
-    this._focusOffsets = Object.assign(
-      { x: 0, y: 0 },
-      params.offsets || params.offset,
-    );
+    this._focusOffsets = Object.assign({ x: 0, y: 0 }, params.offset);
 
+    return this;
+  }
+
+  stopFocus() {
+    this.target = undefined;
     return this;
   }
 }

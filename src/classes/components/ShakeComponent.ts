@@ -77,7 +77,7 @@ export default class ShakeComponent extends Component {
       return;
     }
 
-    var shake = this._shakeData;
+    let shake = this._shakeData;
     // restore previous shake
     this.parent.x -= shake.prevX;
     this.parent.y -= shake.prevY;

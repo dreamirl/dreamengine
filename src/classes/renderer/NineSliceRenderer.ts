@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import BaseRenderer from './BaseRenderer';
+import '../renderer/ContainerExtensions';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -17,7 +17,21 @@ import BaseRenderer from './BaseRenderer';
  */
 
 export default class NineSliceRenderer extends PIXI.NineSlicePlane {
-  constructor(params, left, top, right, bottom) {
+  constructor(
+    params: {
+      texture?: PIXI.Texture<PIXI.Resource>;
+      spriteName?: string;
+      spriteUrl?: string;
+      textureName?: string;
+      x?: number;
+      y?: number;
+      preventCenter?: boolean;
+    },
+    left?: number,
+    top?: number,
+    right?: number,
+    bottom?: number,
+  ) {
     if (
       !params.spriteName &&
       !params.spriteUrl &&
@@ -29,27 +43,22 @@ export default class NineSliceRenderer extends PIXI.NineSlicePlane {
       );
       return;
     }
-
     super(
       params.texture
         ? params.texture
         : PIXI.utils.TextureCache[
-            params.spriteName || params.spriteUrl || params.textureName
+            params.spriteName! || params.spriteUrl! || params.textureName!
           ],
       left,
       top,
       right,
       bottom,
     );
-
-    BaseRenderer.instantiate(this, params);
+    this.instantiate(this, params);
 
     if (!params.x && !params.y && !params.preventCenter) {
       this.center();
     }
   }
+  static DEName = 'NineSliceRenderer';
 }
-
-BaseRenderer.inherits(NineSliceRenderer);
-
-NineSliceRenderer.prototype.DEName = 'NineSliceRenderer';

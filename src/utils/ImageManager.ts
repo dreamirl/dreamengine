@@ -30,6 +30,31 @@ import Events from './Events';
     Event.emit( "loadFilesStart" );
   } );
   */
+type InitImageData = {
+  0: string,
+  1: string,
+  2?: any
+} | string
+
+type PoolContent = {name?: string, url: string, parameters?: any}
+type PoolType = Record<string, PoolContent[]>
+
+type SpriteData = {
+  totalLine: number,
+  totalFrame: number,
+  startFrame: number,
+  endFrame: number,
+  interval: number,
+  reversed: boolean,
+  loop: boolean,
+  animated: boolean,
+  pingPongMode: boolean,
+}
+
+interface InitFunctionParam {
+  [parametre: string]: InitImageData[]; // indique que chaque paramètre doit correspondre à un nombre
+  default: InitImageData[]; // définit un paramètre par défaut obligatoire
+}
 
 const PIXI_LOADER = PIXI.Loader.shared;
 PIXI_LOADER.pre((resource, next) => {
@@ -40,21 +65,38 @@ PIXI_LOADER.pre((resource, next) => {
   next();
 });
 
-var _loadingImages = null;
-var _indexLoading = 0;
-var ImageManager = new (function () {
-  this.DEName = 'ImageManager';
+let _loadingImages = null;
+let _indexLoading = 0;
 
-  // quality var define what we need and how to use it
-  this.pathPrefix = '';
-  this.imageNotRatio = false;
-  this.ratioToConception = 1;
+class ImageManager{
+  public readonly DEName = 'ImageManager'
+  pathPrefix: string;
+  imageNotRatio: boolean;
+  ratioToConception: number;
+  baseUrl: string;
 
-  this.baseUrl = 'img/';
+  pools: PoolType = {default: []};
+  spritesData: Record<string, SpriteData>;
 
-  this.spritesData = {}; // store data for SpriteRenderer
-  this._waitingPools = []; // cannot load multiple resources / pools // have to queue
-  this._waitingSolo = []; // cannot load multiple resources / pools // have to queue
+  private _waitingPools: {name: string, customEventName: string}[]
+  private _waitingSolo: InitImageData[]
+  private _nLoads = 0;
+
+  constructor(){
+
+    // quality var define what we need and how to use it
+    this.pathPrefix = '';
+    this.imageNotRatio = false;
+    this.ratioToConception = 1;
+  
+    this.baseUrl = 'img/';
+  
+    this.spritesData = {}; // store data for SpriteRenderer
+    this._waitingPools = []; // cannot load multiple resources / pools // have to queue
+    this._waitingSolo = []; // cannot load multiple resources / pools // have to queue
+  }
+  
+  
 
   /**
    * main init function, create pool and set baseUrl in an object, used to load things later
@@ -62,22 +104,21 @@ var ImageManager = new (function () {
    * @protected
    * @memberOf ImageManager
    */
-  this.init = function (baseUrl, pools) {
+  init(baseUrl: string, pools: InitFunctionParam) {
     this.baseUrl = baseUrl;
     PIXI_LOADER.baseUrl = baseUrl;
 
-    this.pools = pools;
+    this.pools = {};
 
-    var version = config.USE_APPCACHE ? '' : '?v' + about.gameVersion;
-    var p, data;
-    for (var i in pools) {
-      p = pools[i];
+    let version = config.USE_APPCACHE ? '' : '?v' + about.gameVersion;
+    for (let i in pools) {
+      let p = pools[i];
       this.pools[i] = [];
-      for (var n = 0; n < p.length; ++n) {
-        data = p[n];
+      for (let n = 0; n < Object.keys(p).length; ++n) {
+        let data = p[n];
         if (typeof data === 'string') {
-          this.pools[i].push(data);
-        } else if (data.length && data.push) {
+          this.pools[i].push({url: data});
+        } else if (typeof data[0] === typeof data[1]) {
           if (!data[2]) {
             data[2] = {};
           }
@@ -109,8 +150,8 @@ var ImageManager = new (function () {
    * @public
    * @memberOf ImageManager
    */
-  this.loadPool = function (poolName, customEventName, resetLoader) {
-    var self = this;
+  loadPool(poolName: string, customEventName: string, resetLoader: boolean = false) {
+    let self = this;
 
     if (this.pools[poolName].length == 0) {
       setTimeout(function () {
@@ -146,7 +187,7 @@ var ImageManager = new (function () {
    * @private
    * @memberOf ImageManager
    */
-  this._onProgress = function (poolName, loader, customEventName) {
+  _onProgress(poolName: string, loader: PIXI.Loader, customEventName: string) {
     Events.emit(
       'ImageManager-pool-progress',
       poolName,
@@ -169,18 +210,18 @@ var ImageManager = new (function () {
    * @private
    * @memberOf ImageManager
    */
-  this._onComplete = function (poolName, customEventName) {
+  _onComplete(poolName: string, customEventName: string) {
     console.log('ImageManager load complete: ', poolName);
     Events.emit('ImageManager-pool-complete', poolName);
     Events.emit('ImageManager-pool-' + poolName + '-loaded');
     Events.emit('ImageManager-' + customEventName + '-loaded');
 
     // dequeue waiting pools here
-    if (this._waitingPools.length) {
-      var pool = this._waitingPools.shift();
+    if (this._waitingPools.length != 0) {
+      let pool = this._waitingPools.shift()!;
       this.loadPool(pool.name, pool.customEventName);
-    } else if (this._waitingSolo.length) {
-      var solo = this._waitingSolo.shift();
+    } else if (this._waitingSolo.length != 0) {
+      let solo = this._waitingSolo.shift()!;
       this.load(solo);
     }
   };
@@ -190,16 +231,16 @@ var ImageManager = new (function () {
    * @public
    * @memberOf ImageManager
    */
-  this.load = function (data) {
+  load(data: InitImageData) {
     if (PIXI_LOADER.resources[data[0]]) {
       PIXI.utils.TextureCache[PIXI_LOADER.resources[data[0]].url].destroy();
       delete PIXI_LOADER.resources[data[0]];
     }
 
-    var dataLoad = data;
+    let dataLoad: PoolContent | InitImageData = data;
 
     if (typeof data === 'string') {
-    } else if (data.length && data.push) {
+    } else if (typeof data[0] === typeof data[1]) {
       if (!data[2]) {
         data[2] = {};
       }
@@ -216,9 +257,9 @@ var ImageManager = new (function () {
         pingPongMode:
           data[2].pingPongMode !== undefined ? data[2].pingPongMode : false,
       };
-      var url = data[1];
+      let url = data[1];
       // external images don't receive the version as they could already have custom params
-      if (url.split('://') === 1) {
+      if (url.split('://').length === 1) {
         url += '?v' + config.VERSION;
       }
       dataLoad = { name: data[0], url };
@@ -226,16 +267,20 @@ var ImageManager = new (function () {
 
     if (PIXI_LOADER.loading) {
       // console.log( "WARN ImageManager: PIXI loader is already loading stuff, this call has been queued" );
-      this._waitingSolo.push(dataLoad);
+      this._waitingSolo.push(data);
       return;
     }
 
-    var self = this;
-    PIXI_LOADER.add(dataLoad).load(function () {
+    let self = this;
+    PIXI_LOADER.add(dataLoad as PoolContent).load(function () {
       // PIXI_LOADER.reset();
       // TODO find a way to prevent "success" trigger if the image failed to load
       PIXI_LOADER.onProgress.detachAll();
-      self._onComplete(null, dataLoad.name ? dataLoad.name : dataLoad);
+      if(typeof dataLoad === 'string')
+        self._onComplete('', dataLoad);
+      else
+        self._onComplete('', (dataLoad as PoolContent).url);
+
     });
   };
 
@@ -244,21 +289,22 @@ var ImageManager = new (function () {
    * @public
    * @memberOf ImageManager
    */
-  this.unloadPool = function (poolName) {
-    var pool = this.pools[poolName];
-    for (var i = 0, res, t = pool.length; i < t; ++i) {
+  unloadPool(poolName: string) {
+    let pool = this.pools[poolName];
+    for (let i = 0, res, t = pool.length; i < t; ++i) {
       res = pool[i];
 
       PIXI.utils.TextureCache[
-        PIXI_LOADER.resources[res.name || res].url
+        PIXI_LOADER.resources[res.name || res.url].url
       ].destroy(true);
 
       // needed ?
       // PIXI doesn't remove it from resources after the texture has been destroyed
       // what is the best practice for this ?
-      delete PIXI_LOADER.resources[pool[i].name || pool[i]];
+      delete PIXI_LOADER.resources[pool[i].name || pool[i].url];
     }
   };
-})();
+}
 
-export default ImageManager;
+const imgManag = new ImageManager();
+export default imgManag;
