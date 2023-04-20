@@ -26,8 +26,6 @@ import Save from './utils/Save';
 
 // engine custom renderer
 import Component from './classes/Component';
-import FadeComponent from './classes/components/FadeComponent';
-import ScaleComponent from './classes/components/ScaleComponent';
 import ShakeComponent from './classes/components/ShakeComponent';
 import TimerComponent from './classes/components/TimerComponent';
 import GameObject from './classes/GameObject';
@@ -41,12 +39,14 @@ import SpriteRenderer from './classes/renderer/SpriteRenderer';
 import TextRenderer from './classes/renderer/TextRenderer';
 import TextureRenderer from './classes/renderer/TextureRenderer';
 import TilingRenderer from './classes/renderer/TilingRenderer';
+import Tween from './classes/Tween';
 
 const DE = {
   config,
   about,
   Events,
   Time,
+  Tween,
   MainLoop,
   Save,
   Inputs,
@@ -74,8 +74,6 @@ const DE = {
   GameObject,
   Component,
   ShakeComponent,
-  FadeComponent,
-  ScaleComponent,
   TimerComponent,
   Platform,
   PIXI,

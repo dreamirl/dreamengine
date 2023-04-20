@@ -244,16 +244,16 @@ class Render extends EventEmitter {
    * @memberOf Render
    */
   resizeRatio(w: number, h: number, stretch: boolean = false) {
-    var baseW = this._savedSizes.x;
-    var baseH = this._savedSizes.y;
-    var calcRatio = w / baseW;
+    let baseW = this._savedSizes.x;
+    let baseH = this._savedSizes.y;
+    let calcRatio = w / baseW;
 
     if (calcRatio * baseH > h) {
       calcRatio = h / baseH;
     }
 
-    var newW = (calcRatio * baseW) >> 0;
-    var newH = (calcRatio * baseH) >> 0;
+    let newW = (calcRatio * baseW) >> 0;
+    let newH = (calcRatio * baseH) >> 0;
 
     // if we want to stretch the canvas to keep the same viewport size
     if (stretch) {
@@ -404,7 +404,7 @@ class Render extends EventEmitter {
   }
 
   update(time: number) {
-    for (var i = 0, c = this.mainContainer.updatables.length; i < c; ++i) {
+    for (let i = 0, c = this.mainContainer.updatables.length; i < c; ++i) {
       this.mainContainer.updatables[i].update(time);
     }
   }

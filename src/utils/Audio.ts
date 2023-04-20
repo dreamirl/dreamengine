@@ -31,7 +31,7 @@ type ChannelData = {
 };
 
 class Audio {
-  static DEName = 'Audio';
+  public static readonly DEName = 'Audio';
   private _howler = howler;
   public get howler() {
     return this._howler;
