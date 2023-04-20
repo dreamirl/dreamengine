@@ -71,7 +71,11 @@ class MainLoop {
     });
   }
 
-  updateLoaderImage(loader: any) {
+  updateLoaderImage(loader: {
+    0: string,
+    1: string,
+    2?: any
+  }) {
     // TOTO créer un type "imageParams"
     this.loader.addRenderer(
       new SpriteRenderer({ spriteName: loader[0], scale: loader[2].scale }),

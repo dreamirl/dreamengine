@@ -10,9 +10,9 @@ import extendPIXI from './utils/extendPIXI';
 import Events from './utils/Events';
 import Time from './utils/Time';
 import Achievements from './utils/Achievements';
-import Audio from './utils/Audio';
+import Audio, { AudioParam } from './utils/Audio';
 import gamepad from './utils/gamepad';
-import ImageManager from './utils/ImageManager';
+import ImageManager, { InitFunctionParam } from './utils/ImageManager';
 import Inputs from './utils/Inputs';
 import Localization from './utils/Localization';
 import Notifications from './utils/Notifications';
@@ -39,30 +39,90 @@ import TilingRenderer from './classes/renderer/TilingRenderer';
 
 // Custom classes
 import Component from './classes/Component';
-import FadeComponent from './classes/components/FadeComponent';
-import ScaleComponent from './classes/components/ScaleComponent';
 import ShakeComponent from './classes/components/ShakeComponent';
 import TimerComponent from './classes/components/TimerComponent';
 import GameObject from './classes/GameObject';
+import Tween from './classes/Tween';
 
 type InitParams = {
+  onReady: () => void,
+  onLoad?: () => void,
+  inputs?: Record<string, {keycodes: string[]}>,
+  audios?: {
+    masterVolume: number;
+    channels: Record<string, number>;
+    sounds: AudioParam[];
+  },
+  dictionary?: any, // TODO Need le typage de Localization
+  images?: {baseUrl: string, pools: InitFunctionParam},
+  achievements?: any, // TODO Need le typage d'achievements
+  saveModel?: { nShoots: 0 },
+  saveIgnoreVersion?: boolean,
   about?: Partial<GameAboutInfo>;
+  ignoreNotifications?: boolean;
+  ignoreNotification?: boolean;
+  useNotifications?: boolean;
+  notifications?: any;
+  preventGamepad?: boolean;
+  loader?: {
+    url?: string,
+    totalFrame?: number,
+    interval?: number,
+    animated?: boolean,
+    scale?: number
+  }
 }
 
 export class Engine {
+  public ___params?: InitParams = {onReady: ()=>{}};
+
   public static readonly about = about;
 
   // Renderers
-  public static readonly BaseRenderer = BaseRenderer;
-  public static readonly TextureRenderer = TextureRenderer;
-  public static readonly SpriteRenderer = SpriteRenderer;
-  public static readonly TilingRenderer = TilingRenderer;
-  public static readonly TextRenderer = TextRenderer;
-  public static readonly BitmapTextRenderer = BitmapTextRenderer;
-  public static readonly RectRenderer = RectRenderer;
-  public static readonly GraphicRenderer = GraphicRenderer;
-  public static readonly NineSliceRenderer = NineSliceRenderer;
-  public static readonly AnimatedTextureRenderer = AnimatedTextureRenderer;
+  public readonly BaseRenderer = BaseRenderer;
+  public readonly TextureRenderer = TextureRenderer;
+  public readonly SpriteRenderer = SpriteRenderer;
+  public readonly TilingRenderer = TilingRenderer;
+  public readonly TextRenderer = TextRenderer;
+  public readonly BitmapTextRenderer = BitmapTextRenderer;
+  public readonly RectRenderer = RectRenderer;
+  public readonly GraphicRenderer = GraphicRenderer;
+  public readonly NineSliceRenderer = NineSliceRenderer;
+  public readonly AnimatedTextureRenderer = AnimatedTextureRenderer;
+
+  // Utils
+  public readonly config = config;
+  public readonly about = about;
+  public readonly Events = Events;
+  public readonly Time = Time;
+  public readonly MainLoop = MainLoop;
+  public readonly Save = Save;
+  public readonly Inputs = Inputs;
+  public readonly gamepad = gamepad;
+  public readonly Audio = Audio;
+  public readonly Localization = Localization;
+  public readonly Notifications = Notifications;
+  public readonly Achievements = Achievements;
+  public readonly ImageManager = ImageManager;
+  public readonly Render = Render;
+  public readonly Scene = Scene;
+  public readonly Gui = Gui;
+  public readonly Camera = Camera;
+  public readonly Vector2 = Vector2;
+  public readonly Tween = Tween;
+
+  // GameObject
+  public readonly GameObject = GameObject;
+  public readonly Component = Component;
+  public readonly ShakeComponent = ShakeComponent;
+  public readonly TimerComponent = TimerComponent;
+  public readonly Platform = Platform;
+  public readonly PIXI = PIXI;
+
+  private customOnLoad: () => void = () => {
+    console.log('You have to give a onLoad callback to the DE.init options');
+  };
+
 
   public get CONFIG(): typeof config {
     return config;
@@ -93,51 +153,64 @@ export class Engine {
 
   public start() {
     // Make all audios instance and launch preload if required
-    Audio.initialize(DE.___params.audios);
-    delete DE.___params;
+    if(this.___params){
+      Audio.initialize(this.___params.audios);
+      delete this.___params;
+    }
+    
+    const _defaultPoolName = DE.CONFIG.DEFAULT_POOL_NAME;
+
+    window.addEventListener('unhandledrejection', function (event) {
+      // the event object has two special properties:
+      console.error(event.promise); // [object Promise] - the promise that generated the error
+      console.error(event.reason); // Error: Whoops! - the unhandled error object
+    });
 
     MainLoop.launched = true;
     MainLoop.loop();
 
     Platform.beforeStartingEngine()
-        .catch((e) => console.error(e))
+        .catch((e: Error) => console.error(e))
         .then(() => {
           // hack to leave the promise context swallowing throws
           setTimeout(() => {
-            if (!DE.Platform.preventEngineLoader) {
-              DE.MainLoop.createLoader();
-              DE.MainLoop.displayLoader = true;
-              DE.Events.once(
+            if (!this.Platform.preventEngineLoader) {
+              this.MainLoop.createLoader();
+              this.MainLoop.displayLoader = true;
+              this.Events.once(
                   'ImageManager-pool-' + _defaultPoolName + '-loaded',
-                  function () {
-                    setTimeout(() => DE.onLoad(), 500);
+                  () => {
+                    setTimeout(() => this.onLoad(), 500);
                   },
               );
-              DE.ImageManager.loadPool(_defaultPoolName);
+              this.ImageManager.loadPool(_defaultPoolName);
             } else {
               this.onLoad();
             }
           });
         });
-    DE.emit('change-debug', DE.config.DEBUG, DE.config.DEBUG_LEVEL);
+    this.emit('change-debug', this.config.DEBUG, this.config.DEBUG_LEVEL);
   }
 
   /**
    * Pause the engine.
    */
   public pause() {
-    this._paused = true;
-
-    Inputs.stopListening();
+    this.paused = true;
+    this.MainLoop.launched = false;
+    this.Inputs.isListening = false;
   }
 
   /**
    * Unpause the engine.
    */
   public unPause() {
-    this._paused = false;
-
-    Inputs.startListening();
+    this.paused = false;
+    this.Inputs.isListening = true;
+    this.MainLoop.launched = true;
+    this.Time.lastCalcul = Date.now();
+    this.Time.currentTime = Date.now();
+    this.MainLoop.loop();
   }
 
   /*
@@ -146,9 +219,10 @@ export class Engine {
    * call this method when all your stuff is ready
    */
   public init(params: InitParams) {
-    if (!params) {
+    if (params == undefined) {
       throw 'Cannot init DreamEngine without the options, take a sample for easy start';
     }
+    extendPIXI(DE);
 
     // configuration through a global script tag is possible
     window.ENGINE_SETTING = window.ENGINE_SETTING || {};
@@ -170,11 +244,11 @@ export class Engine {
     // set achievements with your custom list
     Achievements.init(params.achievements || []);
 
-    DE.Time.onTimeStop = () => {
-      DE.emit('window-lost-focus');
+    this.Time.onTimeStop = () => {
+      this.emit('window-lost-focus');
     };
-    DE.Time.onTimeResume = () => {
-      DE.emit('window-focus');
+    this.Time.onTimeResume = () => {
+      this.emit('window-focus');
     };
 
     if (
@@ -182,16 +256,16 @@ export class Engine {
         params.useNotifications !== false &&
         !params.ignoreNotification
     ) {
-      DE.Notifications.init(params.notifications || {});
+      this.Notifications.init(params.notifications || {});
     } else {
-      DE.config.notifications.enable = false;
+      this.config.notifications.enable = false;
     }
 
     // init input listener with your custom list
-    DE.Inputs.init(params.inputs || {});
+    this.Inputs.init(params.inputs || {});
 
     if (!params.preventGamepad) {
-      DE.gamepad.init();
+      this.gamepad.init();
     }
 
     if (!params.onLoad) {
@@ -199,41 +273,57 @@ export class Engine {
           'No onLoad given on init, nothing will happen after images load',
       );
     }
-    this.customOnLoad =
-        params.onLoad ||
-        function () {
-          console.log('You have to give a onLoad callback to the DE.init options');
+    if(params.onLoad)
+      this.customOnLoad = params.onLoad
+        
+
+    this.emit('change-debug', this.config.DEBUG, this.config.DEBUG_LEVEL);
+
+    if (!this.Platform.preventEngineLoader) {
+      if(params.images){
+        this.ImageManager.init(params.images.baseUrl, params.images.pools);
+
+        // load the loader sprite image
+        params.loader = params.loader || {};
+        const loader = {
+          0: 'loader',
+          1: params.loader.url || 'loader.png',
+          2: {
+            totalFrame: params.loader.totalFrame || 16,
+            interval: params.loader.interval || 45,
+            animated:
+                params.loader.animated !== undefined ? params.loader.animated : true,
+            scale: params.loader.scale || 1,
+          },
         };
-
-    DE.emit('change-debug', DE.config.DEBUG, DE.config.DEBUG_LEVEL);
-
-    if (!DE.Platform.preventEngineLoader) {
-      DE.ImageManager.init(params.images.baseUrl, params.images.pools);
-
-      // load the loader sprite image
-      params.loader = params.loader || {};
-      var loader = [
-        'loader',
-        params.loader.url || 'loader.png',
-        {
-          totalFrame: params.loader.totalFrame || 16,
-          interval: params.loader.interval || 45,
-          animated:
-              params.loader.animated !== undefined ? params.loader.animated : true,
-          scale: params.loader.scale || 1,
-        },
-      ];
-      DE.Events.once('ImageManager-loader-loaded', function () {
-        DE.MainLoop.updateLoaderImage(loader);
-      });
-      DE.ImageManager.load(loader);
+        this.Events.once('ImageManager-loader-loaded', () => {
+          this.MainLoop.updateLoaderImage(loader);
+        });
+        this.ImageManager.load(loader);
+      }
     }
 
-    DE.___params = params;
+    this.___params = params;
 
     params.onReady();
 
-    DE.emit('change-debug', DE.config.DEBUG, DE.config.DEBUG_LEVEL);
+    this.emit('change-debug', this.config.DEBUG, this.config.DEBUG_LEVEL);
+  }
+
+  // quick event access
+  on(eventName: string, listener: (...args: any) => void) {
+    this.Events.on(eventName, listener);
+  }
+  emit(eventName: string, ...params: Array<any>) {
+    this.Events.emit(eventName, ...params);
+  }
+  trigger(eventName: string, ...params: Array<any>) {
+    this.Events.emit(eventName, ...params);
+  }
+
+  onLoad() {
+    this.customOnLoad();
+    this.MainLoop.displayLoader = false;
   };
 }
 
@@ -271,50 +361,8 @@ export default DE;
 };*/
 
 // enhance PIXI
-extendPIXI(DE, PIXI);
 
 // this is called when the pool "default" is loaded (the MainLoop will display a loader)
-DE.onLoad = function () {
-  DE.customOnLoad();
-  DE.MainLoop.displayLoader = false;
-};
 
-var _defaultPoolName = DE.CONFIG.DEFAULT_POOL_NAME;
-DE.start = function () {
-  //
 
-};
 
-window.addEventListener('unhandledrejection', function (event) {
-  // the event object has two special properties:
-  console.error(event.promise); // [object Promise] - the promise that generated the error
-  console.error(event.reason); // Error: Whoops! - the unhandled error object
-});
-
-// pause / unpause the game
-DE.pause = function () {
-  this.paused = true;
-  this.MainLoop.launched = false;
-  this.Inputs.listening = false;
-};
-DE.unPause = function () {
-  this.paused = false;
-  this.Inputs.listening = true;
-  this.MainLoop.launched = true;
-  this.Time.lastCalcul = Date.now();
-  this.Time.currentTime = Date.now();
-  this.MainLoop.loop();
-};
-
-// quick event access
-DE.on = function () {
-  this.Events.on.apply(this.Events, arguments);
-};
-DE.emit = function () {
-  this.Events.emit.apply(this.Events, arguments);
-};
-DE.trigger = function () {
-  this.Events.emit.apply(this.Events, arguments);
-};
-
-export default DE;

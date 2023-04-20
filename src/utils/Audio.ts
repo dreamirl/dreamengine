@@ -1,7 +1,7 @@
 import howler from 'howler';
 import about from '../about';
 
-type AudioParam = {
+export type AudioParam = {
   name: string;
   path: string;
   formats: string[]; // = ['ogg'];
@@ -72,18 +72,22 @@ class Audio {
     return this;
   }
 
-  initialize(audioParams: {
+  initialize(audioParams?: {
     masterVolume: number;
     channels: Record<string, number>;
     sounds: AudioParam[];
   }) {
+    if(audioParams === undefined){
+      this.volume = 1;
+      return;
+    }
     this.volume = audioParams.masterVolume;
 
     for (let key in audioParams.channels) {
       this.addChannel(key, audioParams.channels[key]);
     }
 
-    this.loadAudios(audioParams.sounds);
+    //this.loadAudios(audioParams.sounds);
   }
 
   loadAudios(audioList: AudioParam[]) {

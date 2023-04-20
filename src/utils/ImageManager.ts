@@ -51,7 +51,7 @@ type SpriteData = {
   pingPongMode: boolean,
 }
 
-interface InitFunctionParam {
+export interface InitFunctionParam {
   [parametre: string]: InitImageData[]; // indique que chaque paramètre doit correspondre à un nombre
   default: InitImageData[]; // définit un paramètre par défaut obligatoire
 }
@@ -78,7 +78,7 @@ class ImageManager{
   pools: PoolType = {default: []};
   spritesData: Record<string, SpriteData>;
 
-  private _waitingPools: {name: string, customEventName: string}[]
+  private _waitingPools: {name: string, customEventName?: string}[]
   private _waitingSolo: InitImageData[]
   private _nLoads = 0;
 
@@ -150,7 +150,7 @@ class ImageManager{
    * @public
    * @memberOf ImageManager
    */
-  loadPool(poolName: string, customEventName: string, resetLoader: boolean = false) {
+  loadPool(poolName: string, customEventName?: string, resetLoader: boolean = false) {
     let self = this;
 
     if (this.pools[poolName].length == 0) {
@@ -187,7 +187,7 @@ class ImageManager{
    * @private
    * @memberOf ImageManager
    */
-  _onProgress(poolName: string, loader: PIXI.Loader, customEventName: string) {
+  _onProgress(poolName: string, loader: PIXI.Loader, customEventName?: string) {
     Events.emit(
       'ImageManager-pool-progress',
       poolName,
@@ -198,11 +198,12 @@ class ImageManager{
       poolName,
       loader.progress.toString().slice(0, 5),
     );
-    Events.emit(
-      'ImageManager-' + customEventName + '-progress',
-      poolName,
-      loader.progress.toString().slice(0, 5),
-    );
+    if(customEventName)
+      Events.emit(
+        'ImageManager-' + customEventName + '-progress',
+        poolName,
+        loader.progress.toString().slice(0, 5),
+      );
   };
 
   /**
@@ -210,11 +211,12 @@ class ImageManager{
    * @private
    * @memberOf ImageManager
    */
-  _onComplete(poolName: string, customEventName: string) {
+  _onComplete(poolName: string, customEventName?: string) {
     console.log('ImageManager load complete: ', poolName);
     Events.emit('ImageManager-pool-complete', poolName);
     Events.emit('ImageManager-pool-' + poolName + '-loaded');
-    Events.emit('ImageManager-' + customEventName + '-loaded');
+    if(customEventName)
+      Events.emit('ImageManager-' + customEventName + '-loaded');
 
     // dequeue waiting pools here
     if (this._waitingPools.length != 0) {

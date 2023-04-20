@@ -113,7 +113,7 @@ export class Achievements<T extends Achievement> {
    * @param {Record<string, Achievement>} userAchievements - List of unlocked achievements
    */
   public init(list: T[], userAchievements?: Record<string, UserAchievement>) {
-    const availableLanguagesFromLocalization = Localization.availableLanguages;
+    const availableLanguagesFromLocalization = Localization.avalaibleLang;
 
     for (const lang in langs) {
       if (!availableLanguagesFromLocalization.includes(lang)) {
