@@ -19,19 +19,11 @@ const config = {
     gamepadChange: true,
     achievementUnlockDuration: 8000,
   },
-};
-
-Object.defineProperties(config, {
-  /**
-   * getter/setter for DEBUG_LEVEL, emit an event "change-debug"
-   * @memberOf config
-   * @public
-   */
   DEBUG: {
     get: function () {
       return config._DEBUG;
     },
-    set: function (bool) {
+    set: function (bool: boolean) {
       Events.emit('change-debug', bool, config._DEBUG_LEVEL);
       config._DEBUG = bool;
     },
@@ -46,11 +38,11 @@ Object.defineProperties(config, {
     get: function () {
       return config._DEBUG_LEVEL;
     },
-    set: function (bool) {
+    set: function (bool: number) {
       Events.emit('change-debug', config._DEBUG, bool);
       config._DEBUG_LEVEL = bool;
     },
   },
-});
+};
 
 export default config;

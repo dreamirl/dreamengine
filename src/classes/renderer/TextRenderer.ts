@@ -39,7 +39,7 @@ export default class TextRenderer extends PIXI.Text {
       maxWidth?: number;
       resolution?: number;
       localizationKey?: string;
-      textStyle?: PIXI.TextStyle;
+      textStyle?: Partial<PIXI.TextStyle>;
     },
   ) {
     super(text);

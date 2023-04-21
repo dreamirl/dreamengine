@@ -59,8 +59,8 @@ class Time {
    * getDelta@Float
     previously it was private
     */
-  public static getDelta = function () {
-    return this.deltaTime;
+  public static getDelta() {
+    return Time.deltaTime;
   };
 }
 
