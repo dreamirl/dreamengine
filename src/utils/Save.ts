@@ -17,13 +17,14 @@ import Events from './Events';
    if you want to ignore backup olds version when saving, add saveIgnoreVersion = true on Engine Initialisation
  * @namespace Save
  */
-var Save = new (function () {
-  this.DEName = 'Save';
+export class Save {
+  DEName = 'Save';
 
-  this.saveModel = {};
-  this.namespace = 'My-Dreamengine-Game';
+  saveModel = {};
+  namespace = 'My-Dreamengine-Game';
+  version?: string;
 
-  this.useLocalStorage = true;
+  useLocalStorage = true;
 
   /**
    * init the save (called by the engine: DE.init), you can ignoreVersion to get the previous one and update it
@@ -33,11 +34,12 @@ var Save = new (function () {
     * @param {Object} saveModel - the scheme of your game save object
     * @param {Boolean} ignoreVersion - will read old save if true
     */
-  this.init = function (saveModel, ignoreVersion) {
+  init(saveModel, ignoreVersion: boolean) {
     saveModel = saveModel || {};
     if (!saveModel.settings) saveModel.settings = {};
 
-    this.namespace = about.namespace;
+    if(about.namespace)
+      this.namespace = about.namespace;
 
     this.version = about.gameVersion;
     if (ignoreVersion) {
@@ -52,11 +54,13 @@ var Save = new (function () {
         window.localStorage.getItem(this.namespace + this.version + i) ||
         this.saveModel[i];
     }
+    
+    Events.on('unload-game', () => this.saveAll());
 
     this.loadSave(this.saveModel, true);
-  };
+  }
 
-  this.updateSave = function () {
+  updateSave() {
     if (!this.useLocalStorage) {
       return;
     }
@@ -74,7 +78,7 @@ var Save = new (function () {
         this.saveModel[i],
       );
     }
-  };
+  }
 
   /**
    * load the save from the localStorage, automatically called from Save.init
@@ -83,7 +87,7 @@ var Save = new (function () {
    * @param {Object} attrs - your data scheme, to check if there is a difference with previous save
    * @param {Boolean} useLocalStorage - if false, every call to localStorage will be prevented
    */
-  this.loadSave = function (attrs, useLocalStorage) {
+  loadSave(attrs, useLocalStorage) {
     this.useLocalStorage = useLocalStorage;
 
     for (var i in attrs) {
@@ -102,7 +106,7 @@ var Save = new (function () {
     }
     this.updateSave();
     Events.emit('Save-loaded', this.saveModel);
-  };
+  }
 
   /**
    * get the value of the key (not reading the localStorage directly)
@@ -110,24 +114,24 @@ var Save = new (function () {
    * @protected
    * @param {String} key - the key of the data you want from your scheme "saveModel"
    */
-  this.get = function (key) {
+  get(key) {
     if (!(key in this.saveModel)) {
       this.saveModel[key] =
         window.localStorage.getItem(this.namespace + this.version + key) ||
         this.saveModel[key];
     }
     return this.saveModel[key];
-  };
+  }
 
   /**
    * checks the existance of a key
    * returns true if the key exists, false if it doesn't
    * @param {String} key - the key of the data you want from your scheme "saveModel"
    */
-  this.exists = function (key) {
+  exists(key) {
     const value = this.get(key);
     return !(value === 'undefined' || value === undefined);
-  };
+  }
 
   /**
    * save the value with the given key
@@ -136,7 +140,7 @@ var Save = new (function () {
    * @param {String} key - the key used to save the data
    * @param {Any} value - the data to save
    */
-  this.save = function (key, value) {
+  save(key, value) {
     var path = key.split('.');
     var nkey = path[0];
 
@@ -173,7 +177,7 @@ var Save = new (function () {
       }
     }
     Events.emit('Save-save', this.saveModel);
-  };
+  }
 
   /**
    * automatically called when the page is closed, but you can manually call it whenever you want.
@@ -181,7 +185,7 @@ var Save = new (function () {
    * @memberOf Save
    * @protected
    */
-  this.saveAll = function () {
+  saveAll() {
     // if engine is configured to prevent use of localStorage, nothing is saved
     if (!this.useLocalStorage) {
       return;
@@ -192,8 +196,7 @@ var Save = new (function () {
         this.saveModel[i],
       );
     }
-  };
-  Events.on('unload-game', this.saveAll, this);
+  }
 
   /**
    * Save the achievements progression in the localStorage (it's called by @Achievements directly)
@@ -201,7 +204,7 @@ var Save = new (function () {
    * @protected
    * @param {Object} userAchievement - data object of user achievements progression
    */
-  this.saveAchievements = function (userAchievements) {
+  saveAchievements(userAchievements) {
     // if engine is configured to prevent use of localStorage, nothing is saved
     if (!this.useLocalStorage) {
       return;
@@ -210,11 +213,12 @@ var Save = new (function () {
       this.namespace + 'achievements',
       userAchievements,
     );
-  };
+  }
 
-  this.loadAchievements = function () {
+  loadAchievements() {
     return window.localStorage.getItem(this.namespace + 'achievements') || {};
-  };
-})();
+  }
+}
 
-export default Save;
+const save = new Save();
+export default save;

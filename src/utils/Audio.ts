@@ -87,7 +87,7 @@ class Audio {
       this.addChannel(key, audioParams.channels[key]);
     }
 
-    //this.loadAudios(audioParams.sounds);
+    this.loadAudios(audioParams.sounds);
   }
 
   loadAudios(audioList: AudioParam[]) {

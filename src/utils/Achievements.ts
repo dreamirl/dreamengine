@@ -255,7 +255,7 @@ export class Achievements<T extends Achievement> {
         case '>=':
           if (
             userAchievementObjectives[objectiveName].value !== undefined &&
-            userAchievementObjectives[objectiveName].value as number <= objective.target
+            (userAchievementObjectives[objectiveName].value as number) <= objective.target
           ) {
             objectiveComplete = false;
           }

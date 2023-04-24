@@ -159,7 +159,7 @@ class GameObject extends AdvancedContainer {
     params: Partial<GameObject> & {
       automatisms?: Array<Array<any>>;
       scale?: number;
-    },
+    } = {},
   ) {
     super();
 
