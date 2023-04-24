@@ -7,6 +7,10 @@ import Events from './Events';
 
 */
 
+type SaveModel = {
+  [x: string]: string | number | Object | Array<any> | SaveModel,
+}
+
 /**
  * singleton to make save easy, you can override save method to make yours
    by default save method take your params and set them in the saveTypeDefault object (passed when init)
@@ -20,9 +24,9 @@ import Events from './Events';
 export class Save {
   DEName = 'Save';
 
-  saveModel = {};
+  saveModel: SaveModel = {};
   namespace = 'My-Dreamengine-Game';
-  version?: string;
+  version: string | null = null;
 
   useLocalStorage = true;
 
@@ -34,7 +38,7 @@ export class Save {
     * @param {Object} saveModel - the scheme of your game save object
     * @param {Boolean} ignoreVersion - will read old save if true
     */
-  init(saveModel, ignoreVersion: boolean) {
+  init(saveModel: SaveModel, ignoreVersion: boolean) {
     saveModel = saveModel || {};
     if (!saveModel.settings) saveModel.settings = {};
 
@@ -73,10 +77,17 @@ export class Save {
     this.version = about.gameVersion;
     window.localStorage.setItem(this.namespace, this.version);
     for (var i in this.saveModel) {
-      window.localStorage.setItem(
-        this.namespace + this.version + i,
-        this.saveModel[i],
-      );
+      if(typeof this.saveModel[i] === 'string')
+        window.localStorage.setItem(
+          this.namespace + this.version + i,
+          this.saveModel[i] as string,
+        );
+      else{
+        window.localStorage.setItem(
+          this.namespace + this.version + i,
+          JSON.stringify(this.saveModel[i]),
+        );
+      }
     }
   }
 
@@ -87,7 +98,7 @@ export class Save {
    * @param {Object} attrs - your data scheme, to check if there is a difference with previous save
    * @param {Boolean} useLocalStorage - if false, every call to localStorage will be prevented
    */
-  loadSave(attrs, useLocalStorage) {
+  loadSave(attrs: SaveModel, useLocalStorage: boolean) {
     this.useLocalStorage = useLocalStorage;
 
     for (var i in attrs) {
@@ -114,11 +125,11 @@ export class Save {
    * @protected
    * @param {String} key - the key of the data you want from your scheme "saveModel"
    */
-  get(key) {
+  get(key: string) {
     if (!(key in this.saveModel)) {
-      this.saveModel[key] =
-        window.localStorage.getItem(this.namespace + this.version + key) ||
-        this.saveModel[key];
+      const load = window.localStorage.getItem(this.namespace + this.version + key);
+      if(load != undefined)
+        this.saveModel[key] = JSON.parse(load);
     }
     return this.saveModel[key];
   }
@@ -128,7 +139,7 @@ export class Save {
    * returns true if the key exists, false if it doesn't
    * @param {String} key - the key of the data you want from your scheme "saveModel"
    */
-  exists(key) {
+  exists(key: string) {
     const value = this.get(key);
     return !(value === 'undefined' || value === undefined);
   }
@@ -140,7 +151,7 @@ export class Save {
    * @param {String} key - the key used to save the data
    * @param {Any} value - the data to save
    */
-  save(key, value) {
+  save(key: string, value: any) {
     var path = key.split('.');
     var nkey = path[0];
 
@@ -154,13 +165,12 @@ export class Save {
       );
     }
     if (path.length == 2) {
-      if (value === undefined) value = this.get(nkey)[1];
-      this.saveModel[nkey][path[1]] = value;
+      (this.saveModel[nkey] as SaveModel)[path[1]] = value;
 
       if (this.useLocalStorage) {
         window.localStorage.setItem(
           this.namespace + this.version + nkey,
-          this.saveModel[nkey],
+          JSON.stringify(this.saveModel[nkey]),
         );
       }
     } else if (path.length == 1) {
@@ -172,7 +182,7 @@ export class Save {
       if (this.useLocalStorage) {
         window.localStorage.setItem(
           this.namespace + this.version + nkey,
-          value,
+          JSON.stringify(value),
         );
       }
     }
@@ -193,7 +203,7 @@ export class Save {
     for (var i in this.saveModel) {
       window.localStorage.setItem(
         this.namespace + this.version + i,
-        this.saveModel[i],
+        JSON.stringify(this.saveModel[i]),
       );
     }
   }
@@ -202,9 +212,9 @@ export class Save {
    * Save the achievements progression in the localStorage (it's called by @Achievements directly)
    * @memberOf Save
    * @protected
-   * @param {Object} userAchievement - data object of user achievements progression
+   * @param {String} userAchievement - data object of user achievements progression
    */
-  saveAchievements(userAchievements) {
+  saveAchievements(userAchievements: string) {
     // if engine is configured to prevent use of localStorage, nothing is saved
     if (!this.useLocalStorage) {
       return;
