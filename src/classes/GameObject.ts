@@ -256,7 +256,7 @@ class GameObject extends AdvancedContainer {
    * @type {Boolean}
    */
   get enable() {
-    return this.updatable;
+    return this.updatable || this.visible;
   }
   set enable(value) {
     // this is useful when you want to listen for enable changes externally
