@@ -25,11 +25,6 @@ type LocalSound = {
   howl: howler.Howl;
 };
 
-type ChannelData = {
-  name: string;
-  volume: number;
-};
-
 class Audio {
   public static readonly DEName = 'Audio';
   private _howler = howler;
@@ -143,14 +138,11 @@ class Audio {
 
     sound.volume(this.getSoundVolume(audioParam.name));
   }
-  get(name: string, getHowl: boolean = false) {
+  get(name: string) {
     if (!this.sounds[name]) {
       throw (
         'DE.Audio.get sound does not exists or yet declared/added => ' + name
       );
-    }
-    if (getHowl) {
-      return this.sounds[name].howl;
     }
     return this.sounds[name];
   }
@@ -190,7 +182,7 @@ class Audio {
   }
 
   play(name: string, spriteName?: string | undefined, soundID?: number) {
-    const sound = this.get(name, true);
+    const sound = this.get(name).howl;
     // if the sound was preload = false, it must be loaded now !
     if (sound.state() === 'unloaded') {
       sound.load();
@@ -201,18 +193,18 @@ class Audio {
   }
 
   pause(name: string, soundID?: number) {
-    const sound = this.get(name, true);
+    const sound = this.get(name).howl;
     sound.pause(soundID);
     return this;
   }
 
   stop(name: string, soundID?: number) {
-    const sound = this.get(name, true);
+    const sound = this.get(name).howl;
     sound.stop(soundID);
     return this;
   }
   mute(name: string, mute: boolean, soundID?: number) {
-    const sound = this.get(name, true);
+    const sound = this.get(name).howl;
     sound.mute(mute, soundID);
     return this;
   }
