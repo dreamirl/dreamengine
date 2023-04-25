@@ -283,7 +283,7 @@ export class Inputs {
     if (config.ALLOW_ONBEFOREUNLOAD) {
       window.onbeforeunload = (_e) => {
         if (!window.leavePage)
-          return _langs[Localization.currentLang as ('fr' | 'en')]['leave-page'];
+          return _langs[Localization.currentLanguage as ('fr' | 'en')]['leave-page'];
         return '';
       };
       window.onunload = (_e) => {

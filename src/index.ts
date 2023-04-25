@@ -224,9 +224,6 @@ export class Engine {
     }
     extendPIXI(DE);
 
-    // configuration through a global script tag is possible
-    window.ENGINE_SETTING = window.ENGINE_SETTING || {};
-
     // Set about data
     if (params.about) {
       about.set(params.about);

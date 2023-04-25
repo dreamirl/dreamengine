@@ -276,7 +276,7 @@ class ImageManager{
       if(typeof dataLoad === 'string')
         self._onComplete('', dataLoad);
       else
-        self._onComplete('', (dataLoad as PoolContent).url);
+        self._onComplete('', (dataLoad as PoolContent).name);
 
     });
   };

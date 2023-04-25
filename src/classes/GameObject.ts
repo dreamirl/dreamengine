@@ -226,14 +226,6 @@ class GameObject extends AdvancedContainer {
       automatisms.forEach((auto) => {
         this.addAutomatism(auto[0], auto[1], auto[2] ? auto[2] : undefined);
       });
-      // for (let id in automatisms[0]) {
-      //   console.log(id, automatisms[id]);
-      //   this.addAutomatism(
-      //     automatisms[id],
-      //     automatisms[id].methodName,
-      //     automatisms[id],
-      //   );
-      // }
     }
 
     Events.on('change-debug', (debug, _level) => {
@@ -704,10 +696,7 @@ class GameObject extends AdvancedContainer {
    *   , "persistent": false
    * } );
    */
-  addAutomatism(id: string, methodName: string, params: Partial<Automatism>) {
-    params = params || {};
-    methodName = methodName || id;
-
+  addAutomatism(id: string, methodName: string = id, params: Partial<Automatism> = {}) {
     if (!this[methodName as keyof typeof this]) {
       console.warn(
         "%cCouldn't found the method " +
