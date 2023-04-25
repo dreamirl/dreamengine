@@ -19,17 +19,54 @@ import Save from './Save';
  * this can be a problem for some Promise function
  * But should be most likely fine
  */
-var Platform = new (function () {
-  this.name = 'nebula';
-  this.touchPlatform = false;
+
+export type product = {
+  realCurrency: boolean;
+  /* user who created this entitie */
+  user_id: string;
+  date: { type: Date; default?: number };
+  available: { type: Boolean; required: true; default: false };
+  lang: String;
+  name: String;
+  description: String;
+  specs: String;
+  path: String;
+  namespace: String;
+  price: { type: Number; required: true; default: 1 };
+  discount: { type: Number; required: true; default: 1 };
+  currency: { type: String; required: true; default: 'euro' };
+  countries_available: Array<string>;
+  is_physical: Boolean;
+  weight: Number;
+  can_be_letter: Boolean;
+  stock: { type: Number; default: 0 };
+  use_quantity: { type: Boolean; default: false };
+  virtual_goods: Object;
+  physical_goods: Array<Object>;
+  // does we can buy twice a product with the namespace
+  is_unique: Boolean;
+  priority_order: { type: Number; default: 0 };
+  is_game: { type: Boolean; default: false };
+};
+
+class Platform {
+  name = 'nebula';
+  touchPlatform = false;
+  // prevent the engine to start with default loader (not useful by default, only if the targeted platform use a custom loader, as facebook do)
+  preventEngineLoader = false;
+  entryData: any = {};
+  user: user = new user();
+  social: social = new social();
+  ads: ads = new ads();
+  shop: shop = new shop();
   /**
    * init
    * @memberOf Platform
    * Call this before everything, but just after upgrading the Platform
    * to the current platform targeted
    */
-  this.init = function (params, callback) {
-    var ua = navigator.userAgent || navigator.vendor || window.opera;
+  init(_params: any, callback: () => {}) {
+    let ua = navigator.userAgent;
     if (
       /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(
         ua,
@@ -41,12 +78,12 @@ var Platform = new (function () {
       this.touchPlatform = true;
     }
 
-    return new Promise((res) => {
+    return new Promise<void>((res) => {
       setTimeout(() => callback());
       this.getEntryData();
       return res();
     });
-  };
+  }
 
   /**
    * beforeStartingEngine
@@ -54,199 +91,32 @@ var Platform = new (function () {
    * is automatically called in the DE.start function
    * trigger Nebula load by default, wont do anything it you don't use Nebula
    */
-  this.beforeStartingEngine = function () {
+  beforeStartingEngine() {
     Events.emit('force-nebula-load', false);
     return Promise.resolve();
-  };
-
-  // prevent the engine to start with default loader (not useful by default, only if the targeted platform use a custom loader, as facebook do)
-  this.preventEngineLoader = false;
+  }
 
   /**
    * entry data is filled on "start" when the user launch the game with a payload in the url
    * useful for refering links or things like that
    */
-  this.getEntryData = function () {
+  getEntryData() {
     const urlParams = window.location.search.split('?')[1];
-    var launchParams = {};
+    let launchParams: any = {};
+    let temp: string[];
     if (urlParams) {
       urlParams.split('&').forEach((val) => {
-        val = val.split('=');
-        launchParams[val[0]] = val[1];
+        temp = val.split('=');
+        let key = temp[0] as keyof any;
+        launchParams[key] = temp[1];
       });
     }
     this.entryData = launchParams;
-  };
-  this.entryData = {};
+  }
 
-  /**
-   *  !!!         USER STUFF        !!!
-   */
-  /**
-   * onUserLogged
-   * @memberOf Platform
-   * can be called anywhere, but after the Platform as been overriden
-   * by defaults it works with Nebula and returns nebulaData
-   * but if it's with facebook for example, then it return user fb data
-   * (fb_id, name, photo, etc)
-   * the fb data don't have the token required by nebula, or suns/dp
-   * the currencies have to be stored on the game's server (or on fb)
-   * and the token needs to be required for each risky action
-   */
-  this.user = {};
-  this.user.onLogged = function () {
-    return new Promise((res, rej) => {
-      Events.on('nebula-logged-success', function (nebulaData) {
-        Localization.getLang(nebulaData.lang || Localization.currentLang);
-        nebulaData.type = 'nebula';
-        DE.Platform.user._data = nebulaData;
-        return res(nebulaData);
-      });
-    });
-  };
-
-  /**
-   * onGameData
-   * @memberOf Platform
-   * can be called anywhere, but after the Platform as been overriden
-   * By defaults it works with Nebula and returns nebula's save
-   * but if it's with facebook for example, then it return user fb save
-   *
-   * By default (with Nebula), it handles Save update and Audio settings
-   * (any others settings implementation can be done through res)
-   */
-  this.user.onGameData = function () {
-    return new Promise((res, rej) => {
-      Events.on('nebula-game-connected-success', function (gameData) {
-        var settings = Save.get('settings');
-        Audio.music.mute(settings.musicMuted);
-        Audio.fx.mute(settings.fxMuted);
-        Audio.music.setVolume(settings.musicVolume);
-        Audio.fx.setVolume(settings.fxVolume);
-
-        return res(gameData);
-      });
-    });
-  };
-
-  this.getToken = function () {
+  getToken() {
     return '';
-  };
-
-  /**
-   *               SOCIAL STUFF
-   */
-  this.social = {};
-  // invite one or more friends to join
-  this.social.inviteFriends = () => {
-    return Promise.reject();
-  };
-
-  // send a social update (as a chat message)
-  this.social.sendUpdate = () => {
-    return Promise.reject();
-  };
-
-  // not used by nebula but social networks do use this
-  this.social.joinFriend = (friendId) => {
-    return Promise.resolve();
-  };
-
-  /**
-   *                ADS STUFF
-   */
-  this.ads = {};
-  this.ads.preloadStandardAd = function () {
-    return Promise.resolve();
-  };
-  this.ads._preloadedRewardedAds = {};
-  this.ads.preloadRewardedAd = function () {
-    return Promise.resolve();
-  };
-  this.ads.preloadRewardedAdByValue = function () {
-    return Promise.resolve();
-  };
-  this.ads.watchRewardedAd = function () {
-    return Promise.resolve();
-  };
-
-  /**
-   *               SHOP STUFF
-   *
-   * todo, Nebula implementation by default
-   * the shop define the standard items that can be purchased on the platform shop, usually, the shop is only about "real money products"
-   * everything that is traded with virtual currency is handled in a custom way, and later Nebula will offer a default implementation for multiverse games.
-   */
-  this.shop = {};
-  this.shop.isActive = false;
-  this.shop._products = [];
-  this.shop._purchases = []; // store user purchases
-  this.shop._productsById = {};
-  this.shop.isReady = false;
-
-  // todo
-  this.shop.init = function () {
-    return new Promise((res, rej) => {
-      console.warn(
-        "Platform.shop isn't implemented for Nebula yet, returning empty values",
-      );
-      rej('no-shop-implementation');
-    });
-  };
-  this.shop.getProducts = function () {
-    return new Promise((res, rej) => {
-      console.warn(
-        "Platform.shop isn't implemented for Nebula yet, returning empty values",
-      );
-      res([]);
-    });
-  };
-  this.shop.getPurchases = function () {
-    return new Promise((res, rej) => {
-      console.warn(
-        "Platform.shop isn't implemented for Nebula yet, returning empty values",
-      );
-      res([]);
-    });
-  };
-
-  /**
-   * useful to handle if an item must be purchased or traded against in-game currency
-   * usually the method called between game and server isn't the same
-   * if the item "isPlatformPurchase" it should be bought with the shop.purchase method
-   */
-  this.shop.isPlatformPurchase = function (product) {
-    return product.realCurrency === true; // subject to change
-  };
-
-  /**
-   * todo - actually doesn't exist on nebula so it can't be finished for now
-   * trigger the nebula payment shop tab by default
-   * on others platforms it open the associated payment defined by the plugin
-   */
-  this.shop.purchase = function () {};
-  this.shop.onStorePurchase = function (purchase, productID) {
-    console.warn(
-      'DE.Platform.shop.onStorePurchase is not implemented. If you are using the @GUI.ShopItem plugin, make sure to implement this function on your own',
-    );
-    console.log('Store purchase success', purchase, productID);
-  };
-
-  // middleware that should be called once the previous orders/purchases made by the user are fetched, the goal is to check if a purchase has been successful but not consumed yet
-  // because we don't want a user to pay and do not receive what he paid for :)
-  // also when doing "whipes" or "updates" it's easier to mark all order as "not delivered" and this function would do the job for you to refill the accounts with purchases
-  this.shop.consumeExistingPurchases = function () {
-    console.warn(
-      'DE.Platform.shop.consumeExistingPurchase is not implemented but has been called, make sure to implement it',
-    );
-  };
-  this.shop.onStorePurchaseFail = function (error, productID) {
-    console.warn(
-      'DE.Platform.shop.onStorePurchaseFail is not implemented. If you are using the @GUI.ShopItem plugin, make sure to implement this function on your own',
-    );
-    console.error('Error on purchase:', error, productID);
-  };
-  this.shop.consumePurchase = function () {};
+  }
 
   /**
    *               OTHER STUFF
@@ -261,9 +131,9 @@ var Platform = new (function () {
    *
    * If this change, just fill out this function
    */
-  this.canCreateShortcut = function () {
+  canCreateShortcut() {
     return false;
-  };
+  }
 
   /**
    * createShortcut
@@ -271,20 +141,185 @@ var Platform = new (function () {
    * for now it reject all the time by default (not included in web/client)
    * but if this change, make sure to prompt then do
    */
-  this.createShortcut = function () {
+  createShortcut() {
     return Promise.reject();
-  };
+  }
 
   /**
    * pushAnalytic
    * @memberOf Platform
    * send an event to gtag if it exist
    */
-  this.pushAnalytic = function (eventName, data) {
-    if (gtag) {
-      gtag('event', eventName, data);
-    }
-  };
-})();
 
-export default Platform;
+  pushAnalytic(eventName: string, data: any) {
+    gtag('event', eventName, data);
+  }
+}
+
+function gtag(..._args: any) {}
+
+class user {
+  _data: any;
+  /**
+   * onUserLogged
+   * @memberOf Platform
+   * can be called anywhere, but after the Platform as been overriden
+   * by defaults it works with Nebula and returns nebulaData
+   * but if it's with facebook for example, then it return user fb data
+   * (fb_id, name, photo, etc)
+   * the fb data don't have the token required by nebula, or suns/dp
+   * the currencies have to be stored on the game's server (or on fb)
+   * and the token needs to be required for each risky action
+   */
+
+  onLogged() {
+    return new Promise((res, _rej) => {
+      Events.on('nebula-logged-success', (nebulaData) => {
+        Localization.getLang(nebulaData.lang || Localization.currentLang);
+        nebulaData.type = 'nebula';
+        this._data = nebulaData;
+        return res(nebulaData);
+      });
+    });
+  }
+
+  /**
+   * onGameData
+   * @memberOf Platform
+   * can be called anywhere, but after the Platform as been overriden
+   * By defaults it works with Nebula and returns nebula's save
+   * but if it's with facebook for example, then it return user fb save
+   *
+   * By default (with Nebula), it handles Save update and Audio settings
+   * (any others settings implementation can be done through res)
+   */
+  onGameData() {
+    return new Promise((res, _rej) => {
+      Events.on('nebula-game-connected-success', function (gameData) {
+        var settings = Save.get('settings');
+        Audio.setChannelVolume('fx', settings.fxVolume);
+        Audio.setChannelVolume('music', settings.musicVolume);
+        Audio.setMuteAll('sfx', settings.fxMuted);
+        Audio.setMuteAll('music', settings.musicMuted);
+
+        return res(gameData);
+      });
+    });
+  }
+}
+
+class social {
+  // invite one or more friends to join
+  inviteFriends() {
+    return Promise.reject();
+  }
+
+  // send a social update (as a chat message)
+  sendUpdate() {
+    return Promise.reject();
+  }
+
+  // not used by nebula but social networks do use this
+  joinFriend(_friendId: string) {
+    return Promise.resolve();
+  }
+}
+
+class ads {
+  _preloadedRewardedAds = {};
+
+  preloadStandardAd() {
+    return Promise.resolve();
+  }
+  preloadRewardedAd() {
+    return Promise.resolve();
+  }
+  preloadRewardedAdByValue() {
+    return Promise.resolve();
+  }
+  watchRewardedAd() {
+    return Promise.resolve();
+  }
+}
+
+class shop {
+  /**
+   *               SHOP STUFF
+   *
+   * todo, Nebula implementation by default
+   * the shop define the standard items that can be purchased on the platform shop, usually, the shop is only about "real money products"
+   * everything that is traded with virtual currency is handled in a custom way, and later Nebula will offer a default implementation for multiverse games.
+   */
+  isActive = false;
+  _products: product[] = [];
+  _purchases = []; // store user purchases
+  _productsById: any = {};
+  isReady = false;
+
+  // todo
+  init() {
+    return new Promise((_res, rej) => {
+      console.warn(
+        "Platform.shop isn't implemented for Nebula yet, returning empty values",
+      );
+      rej('no-shop-implementation');
+    });
+  }
+  getProducts() {
+    return new Promise((res, _rej) => {
+      console.warn(
+        "Platform.shop isn't implemented for Nebula yet, returning empty values",
+      );
+      res([]);
+    });
+  }
+  getPurchases() {
+    return new Promise((res, _rej) => {
+      console.warn(
+        "Platform.shop isn't implemented for Nebula yet, returning empty values",
+      );
+      res([]);
+    });
+  }
+
+  /**
+   * useful to handle if an item must be purchased or traded against in-game currency
+   * usually the method called between game and server isn't the same
+   * if the item "isPlatformPurchase" it should be bought with the shop.purchase method
+   */
+  isPlatformPurchase(product: product) {
+    return product.realCurrency === true; // subject to change
+  }
+
+  /**
+   * todo - actually doesn't exist on nebula so it can't be finished for now
+   * trigger the nebula payment shop tab by default
+   * on others platforms it open the associated payment defined by the plugin
+   */
+  purchase() {}
+  onStorePurchase(purchase: any, productID: string) {
+    console.warn(
+      'DE.Platform.shop.onStorePurchase is not implemented. If you are using the @GUI.ShopItem plugin, make sure to implement this function on your own',
+    );
+    console.log('Store purchase success', purchase, productID);
+  }
+
+  // middleware that should be called once the previous orders/purchases made by the user are fetched, the goal is to check if a purchase has been successful but not consumed yet
+  // because we don't want a user to pay and do not receive what he paid for :)
+  // also when doing "whipes" or "updates" it's easier to mark all order as "not delivered" and this function would do the job for you to refill the accounts with purchases
+  consumeExistingPurchases() {
+    console.warn(
+      'DE.Platform.shop.consumeExistingPurchase is not implemented but has been called, make sure to implement it',
+    );
+  }
+  onStorePurchaseFail(error: any, productID: string) {
+    console.warn(
+      'DE.Platform.shop.onStorePurchaseFail is not implemented. If you are using the @GUI.ShopItem plugin, make sure to implement this function on your own',
+    );
+    console.error('Error on purchase:', error, productID);
+  }
+  consumePurchase() {}
+}
+
+const p = new Platform();
+export default p;
