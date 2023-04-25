@@ -267,6 +267,16 @@ class Audio {
     const id = names[(Math.random() * names.length) >> 0];
     return this.play(id);
   }
+
+  setMuteAll(channelName: string, value: boolean) {
+    if (!this.channels[channelName]) {
+      throw 'DE.Audio.muteAll channel does not exists ' + channelName;
+    }
+    this.channels[channelName].forEach((soundName) => {
+      this.mute(soundName, value);
+    });
+    return this;
+  }
 }
 
 const audioInstance = new Audio();
