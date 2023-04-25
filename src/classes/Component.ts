@@ -14,7 +14,7 @@ export default class Component {
     this.update(time);
   }
 
-  protected update(time: number) {}
+  protected update(_time: number) {}
 
   public get name() {
     return this._name;

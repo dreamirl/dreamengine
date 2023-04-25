@@ -10,7 +10,7 @@ import Scene from '../classes/Scene';
  * @function
  */
 function sortGameObjects(container: GameObject | Scene) {
-  container.gameObjects.sort(function (a, b) {
+  container.gameObjects.sort((a, b) => {
     if (b.zIndex == a.zIndex) {
       if (b.y == a.y) {
         return a.x - b.x;
@@ -27,7 +27,7 @@ function sortGameObjects(container: GameObject | Scene) {
   // we need container
   // so, remove container and let the dev choose the filtering OR remove the previous one and add a z conditional here ?
   if (container.children) {
-    container.children.sort(function (a, b) {
+    container.children.sort((a, b) => {
       if (b.zIndex == a.zIndex) {
         if (b.y == a.y) {
           return a.x - b.x;

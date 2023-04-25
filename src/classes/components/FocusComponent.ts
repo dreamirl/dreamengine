@@ -22,7 +22,7 @@ export default class FocusComponent extends Component {
     this.target = target!;
   }
 
-  override update(time: number) {
+  override update(_time: number) {
     if (!this.target) {
       return;
     }
@@ -32,29 +32,15 @@ export default class FocusComponent extends Component {
       pos = this.target.getWorldPos();
     }
 
-    let parentPos = this.parent.getGlobalPosition();
     // TODO: to fix (to finish)
+    // let parentPos = this.parent.getGlobalPosition();
     // if (this.parent.getWorldPos) {
     //   parentPos = this.parent.getWorldPos();
     // } else {
     //   parentPos = this.parent;
     // }
-
-    console.log(
-      pos.x,
-      pos.y,
-      '  ',
-      this.parent.x,
-      this.parent.y,
-      '  pivot:',
-      this.parent.pivot.x,
-      this.parent.pivot.y,
-      ' rotation:',
-      this.target.rotation,
-    );
     if (this._focusOptions.x) {
       if (this.isMyTargetAChild) {
-        console.log('Ouian');
         this.parent.x =
           2 * this.parent.pivot.x - (pos.x + this._focusOffsets.x);
       } else this.parent.x = pos.x + this._focusOffsets.x;

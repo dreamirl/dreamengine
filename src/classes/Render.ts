@@ -106,7 +106,7 @@ class Render extends EventEmitter {
    * @memberOf Render
    * @type {Function}
    */
-  private _resizeMethod = function (w: number, h: number) {};
+  private _resizeMethod = function (_w: number, _h: number) {};
   /**
    * Flag to prevent potential double event binding
    * @private
@@ -165,7 +165,7 @@ class Render extends EventEmitter {
     this.debugRender.y = 10;
     this.debugRender.x = 10;
 
-    Events.on('change-debug', (debug, level) => {
+    Events.on('change-debug', (_debug, level) => {
       if (level > 0) {
         this.mainContainer.addChild(this.debugRender);
       } else {
@@ -221,7 +221,7 @@ class Render extends EventEmitter {
 
     this.div.addEventListener(
       'fullscreenchange',
-      (e) => {
+      (_e) => {
         this.isFullscreen = !!document.fullscreenElement;
       },
       false,
@@ -287,13 +287,13 @@ class Render extends EventEmitter {
     switch (mode) {
       case 'stretch-ratio':
       case 'ratio-stretch':
-        this._resizeMethod = function (screenW, screenH) {
+        this._resizeMethod = (screenW, screenH) => {
           this.resizeRatio(screenW, screenH, true);
         };
         break;
       case 'stretch':
         // resize stretch = take immediately all the space available with a stretch
-        this._resizeMethod = function (screenW, screenH) {
+        this._resizeMethod = (screenW, screenH) => {
           // this.pixiRenderer.autoDensity = true; // TODO fix this or remove it ?
           this.pixiRenderer.resize(screenW, screenH);
           // this.pixiRenderer.autoDensity = false; // TODO fix this or remove it ?
@@ -302,19 +302,19 @@ class Render extends EventEmitter {
         break;
       case 'full':
         // resize full = take immediately all the space available in pure pixel
-        this._resizeMethod = function (screenW, screenH) {
+        this._resizeMethod = (screenW, screenH) => {
           // this.pixiRenderer.autoDensity = true; // TODO fix this or remove it ?
           this.pixiRenderer.resize(screenW, screenH);
         };
         break;
       // resize and respect the original ratio, but not stretching
       case 'ratio':
-        this._resizeMethod = function (screenW, screenH) {
+        this._resizeMethod = (screenW, screenH) => {
           this.resizeRatio(screenW, screenH, false);
         };
         break;
       default:
-        this._resizeMethod = function () {};
+        this._resizeMethod = () => {};
         break;
     }
   }
@@ -387,7 +387,7 @@ class Render extends EventEmitter {
    */
   render() {
     if (config.DEBUG_LEVEL) {
-      if (config.DEBUG_LEVEL == 'FPS_ONLY') {
+      if (config.DEBUG_LEVEL == 1) {
         this.debugRender.text = 'FPS: ' + Time.fps;
       } else {
         this.debugRender.text =

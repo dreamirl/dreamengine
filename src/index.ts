@@ -17,7 +17,7 @@ import Inputs from './utils/Inputs';
 import Localization from './utils/Localization';
 import Notifications from './utils/Notifications';
 import Platform from './utils/Platform';
-import Save from './utils/Save';
+import Save, { SaveModel } from './utils/Save';
 
 import Camera from './classes/Camera';
 import Gui from './classes/Gui';
@@ -47,7 +47,7 @@ import Tween from './classes/Tween';
 type InitParams = {
   onReady: () => void,
   onLoad?: () => void,
-  inputs?: Record<string, {keycodes: string[]}>,
+  inputs?: Record<string, {keycodes: string[], interval?: number, isLongPress?: boolean, stayOn?: boolean}>,
   audios?: {
     masterVolume: number;
     channels: Record<string, number>;
@@ -56,7 +56,7 @@ type InitParams = {
   dictionary?: any, // TODO Need le typage de Localization
   images?: {baseUrl: string, pools: InitFunctionParam},
   achievements?: any, // TODO Need le typage d'achievements
-  saveModel?: { nShoots: 0 },
+  saveModel?: SaveModel,
   saveIgnoreVersion?: boolean,
   about?: Partial<GameAboutInfo>;
   ignoreNotifications?: boolean;

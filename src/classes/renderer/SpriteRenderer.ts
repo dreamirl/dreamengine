@@ -265,7 +265,7 @@ export default class SpriteRenderer extends PIXI.Sprite {
      * This function is called when the animation is over. Overwrite this function
      * @memberOf SpriteRenderer
      */
-    this.onAnimEnd = function () {};
+    this.onAnimEnd = () => {};
     this.changeSprite(this.spriteName!, params);
 
     this.instantiate(this, params);
@@ -501,7 +501,7 @@ export default class SpriteRenderer extends PIXI.Sprite {
     this._currentLine = params.startLine || 0;
 
     this.startLine = params.startLine || 0;
-    this.endLine = params.endLine || d.endLine || d.totalLine - 1 || 0;
+    this.endLine = params.endLine || d.totalLine - 1 || 0;
 
     this.totalFrame = d.totalFrame || 1;
     this.totalLine = params.totalLine || d.totalLine || 1;

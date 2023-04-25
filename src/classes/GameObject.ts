@@ -236,7 +236,7 @@ class GameObject extends AdvancedContainer {
       // }
     }
 
-    Events.on('change-debug', (debug, level) => {
+    Events.on('change-debug', (debug, _level) => {
       if (debug) {
         this._createDebugRenderer();
       } else {

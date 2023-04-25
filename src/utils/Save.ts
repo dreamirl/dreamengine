@@ -1,4 +1,5 @@
 import about from '../about';
+import { UserAchievement } from './Achievements';
 import Events from './Events';
 
 /**
@@ -7,7 +8,7 @@ import Events from './Events';
 
 */
 
-type SaveModel = {
+export type SaveModel = {
   [x: string]: string | number | Object | Array<any> | SaveModel,
 }
 
@@ -38,7 +39,7 @@ export class Save {
     * @param {Object} saveModel - the scheme of your game save object
     * @param {Boolean} ignoreVersion - will read old save if true
     */
-  init(saveModel: SaveModel, ignoreVersion: boolean) {
+  init(saveModel?: SaveModel, ignoreVersion: boolean = false) {
     saveModel = saveModel || {};
     if (!saveModel.settings) saveModel.settings = {};
 
@@ -214,19 +215,22 @@ export class Save {
    * @protected
    * @param {String} userAchievement - data object of user achievements progression
    */
-  saveAchievements(userAchievements: string) {
+  saveAchievements(userAchievements: Record<string, UserAchievement>) {
     // if engine is configured to prevent use of localStorage, nothing is saved
     if (!this.useLocalStorage) {
       return;
     }
     window.localStorage.setItem(
       this.namespace + 'achievements',
-      userAchievements,
+      JSON.stringify(userAchievements),
     );
   }
 
   loadAchievements() {
-    return window.localStorage.getItem(this.namespace + 'achievements') || {};
+    const load = window.localStorage.getItem(this.namespace + 'achievements');
+    if(load != undefined)
+      return JSON.parse(load);
+    return {};
   }
 }
 

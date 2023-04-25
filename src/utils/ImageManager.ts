@@ -65,9 +65,6 @@ PIXI_LOADER.pre((resource, next) => {
   next();
 });
 
-let _loadingImages = null;
-let _indexLoading = 0;
-
 class ImageManager{
   public readonly DEName = 'ImageManager'
   pathPrefix: string;
@@ -80,7 +77,6 @@ class ImageManager{
 
   private _waitingPools: {name: string, customEventName?: string}[]
   private _waitingSolo: InitImageData[]
-  private _nLoads = 0;
 
   constructor(){
 
@@ -154,7 +150,7 @@ class ImageManager{
     let self = this;
 
     if (this.pools[poolName].length == 0) {
-      setTimeout(function () {
+      setTimeout(() => {
         self._onComplete(poolName, customEventName);
       }, 500);
       return;
@@ -171,13 +167,12 @@ class ImageManager{
 
     if (resetLoader) {
       PIXI_LOADER.reset();
-      this._nLoads = 0;
     }
 
-    PIXI_LOADER.onProgress.add((loader, resource) => {
+    PIXI_LOADER.onProgress.add((loader, _resource) => {
       self._onProgress(poolName, loader, customEventName);
     });
-    PIXI_LOADER.add(this.pools[poolName]).load(function () {
+    PIXI_LOADER.add(this.pools[poolName]).load(() => {
       self._onComplete(poolName, customEventName);
     });
   };
@@ -274,7 +269,7 @@ class ImageManager{
     }
 
     let self = this;
-    PIXI_LOADER.add(dataLoad as PoolContent).load(function () {
+    PIXI_LOADER.add(dataLoad as PoolContent).load(() => {
       // PIXI_LOADER.reset();
       // TODO find a way to prevent "success" trigger if the image failed to load
       PIXI_LOADER.onProgress.detachAll();

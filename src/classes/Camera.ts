@@ -219,7 +219,7 @@ export default class Camera extends AdvancedContainer {
    */
   _pointerHandler(
     type: 'Move' | 'Down' | 'Up' | 'Over' | 'Out' | 'Tap' | 'UpOutside',
-    event: any,
+    event: PIXI.InteractionEvent,
   ) {
     let pos = {
       x: event.data.global.x + (this.pivot.x - this.x),
@@ -257,37 +257,37 @@ export default class Camera extends AdvancedContainer {
    * @private
    * @memberOf Camera
    */
-  private _customPointerMove = function (pos: Point2D, event: any) {};
+  private _customPointerMove = function (pos: Point2D, event: PIXI.InteractionEvent) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerDown = function (pos: Point2D, event: any) {};
+  private _customPointerDown = function (pos: Point2D, event: PIXI.InteractionEvent) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerUp = function (pos: Point2D, event: any) {};
+  private _customPointerUp = function (pos: Point2D, event: PIXI.InteractionEvent) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerOver = function (pos: Point2D, event: any) {};
+  private _customPointerOver = function (pos: Point2D, event: PIXI.InteractionEvent) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerOut = function (pos: Point2D, event: any) {};
+  private _customPointerOut = function (pos: Point2D, event: PIXI.InteractionEvent) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerTap = function (pos: Point2D, event: any) {};
+  private _customPointerTap = function (pos: Point2D, event: PIXI.InteractionEvent) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerUpOutside = function (pos: Point2D, event: any) {};
+  private _customPointerUpOutside = function (pos: Point2D, event: PIXI.InteractionEvent) {};
 
   /**
    * this update the lifecycle of the camera, binded on rendering because if a Camera is "off" it doesn't need to be updated
