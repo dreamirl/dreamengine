@@ -81,7 +81,7 @@ class Vector2 extends PIXI.Container {
    * @param {Boolean} [ignoreDelta] if you want to prevent deltaTime adjustment
    * @returns {Vector2} this current instance
    */
-  translate(vector2: Vector2, absolute?: boolean, ignoreDelta?: boolean) {
+  translate(vector2: Vector2, absolute?: boolean, ignoreDelta: boolean = true) {
     if ((!vector2.x && vector2.x != 0) || (!vector2.y && vector2.y != 0)) {
       throw new Error(vector2 + ' is not a Vector2');
     }
@@ -128,7 +128,7 @@ class Vector2 extends PIXI.Container {
    * @param {Boolean} [ignoreDelta] if you want to prevent deltaTime adjustment
    * @returns {Float} this.rotation current rotation
    */
-  rotate(angle: number, ignoreDelta: boolean) {
+  rotate(angle: number, ignoreDelta: boolean = true) {
     if (ignoreDelta) return this.setRotation(this.rotation + angle);
     return this.setRotation(this.rotation + angle * Time.deltaTime);
   }

@@ -317,7 +317,7 @@ class GameObject extends AdvancedContainer {
    * if absolute, object will move on world axis instead this own axis
    * @example myObject.translate( { "x": 10, "y": 5 }, false );
    */
-  translate(pos: any, absolute: boolean, ignoreDeltaTime: boolean) {
+  translate(pos: any, absolute: boolean, ignoreDeltaTime: boolean = true) {
     this.vector2.translate(pos, absolute, ignoreDeltaTime);
     return this;
   }
@@ -329,7 +329,7 @@ class GameObject extends AdvancedContainer {
    * @param {Boolean} absolute
    * if absolute, object will move on world axis instead this own axis
    */
-  translateX(distance: number, absolute: boolean, ignoreDelta: boolean) {
+  translateX(distance: number, absolute: boolean, ignoreDelta: boolean = true) {
     this.translate({ x: distance, y: 0 }, absolute, ignoreDelta);
     return this;
   }
@@ -341,7 +341,7 @@ class GameObject extends AdvancedContainer {
    * @param {Boolean} absolute
    * if absolute, object will move on world axis instead this own axis
    */
-  translateY(distance: number, absolute: boolean, ignoreDelta: boolean) {
+  translateY(distance: number, absolute: boolean, ignoreDelta: boolean = true) {
     this.translate({ x: 0, y: distance }, absolute, ignoreDelta);
     return this;
   }
@@ -352,7 +352,7 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    * @param {Float} angle
    */
-  rotate(angle: number, ignoreDelta: boolean) {
+  rotate(angle: number, ignoreDelta: boolean = true) {
     this.vector2.rotate(angle, ignoreDelta);
     return this;
   }
