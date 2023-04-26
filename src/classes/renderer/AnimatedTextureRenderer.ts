@@ -21,7 +21,7 @@ export default class AnimatedTextureRenderer extends PIXI.Sprite {
   public animationName?: string;
 
   constructor(
-    imageNames: string[],
+    imageNames?: string[],
     params: {
       animated?: boolean;
       loop?: boolean;
@@ -36,11 +36,10 @@ export default class AnimatedTextureRenderer extends PIXI.Sprite {
       currentFrame?: number;
       tint?: number;
       randomFrame?: number;
-    },
+    } = {},
   ) {
     super();
     this.instantiate(this, params);
-    params = params || {};
 
     this._imageNames = [];
     this._textures = [];

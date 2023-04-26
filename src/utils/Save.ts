@@ -54,7 +54,7 @@ export class Save {
     this.saveModel = saveModel;
 
     // load save from storage
-    for (var i in this.saveModel) {
+    for (let i in this.saveModel) {
       this.saveModel[i] =
         window.localStorage.getItem(this.namespace + this.version + i) ||
         this.saveModel[i];
@@ -70,14 +70,14 @@ export class Save {
       return;
     }
     // clean the localStorage to prevent zombie storage because upgraded version
-    for (var i in this.saveModel) {
+    for (let i in this.saveModel) {
       window.localStorage.removeItem(this.namespace + this.version + i);
     }
 
     // setup the last version of the game, and rewrite datas
     this.version = about.gameVersion;
     window.localStorage.setItem(this.namespace, this.version);
-    for (var i in this.saveModel) {
+    for (let i in this.saveModel) {
       if(typeof this.saveModel[i] === 'string')
         window.localStorage.setItem(
           this.namespace + this.version + i,
@@ -102,7 +102,7 @@ export class Save {
   loadSave(attrs: SaveModel, useLocalStorage: boolean) {
     this.useLocalStorage = useLocalStorage;
 
-    for (var i in attrs) {
+    for (let i in attrs) {
       if (
         !this.saveModel[i] &&
         this.saveModel[i] !== false &&
@@ -153,8 +153,8 @@ export class Save {
    * @param {Any} value - the data to save
    */
   save(key: string, value: any) {
-    var path = key.split('.');
-    var nkey = path[0];
+    let path = key.split('.');
+    let nkey = path[0];
 
     if (!(nkey in this.saveModel)) {
       console.log(
@@ -201,7 +201,7 @@ export class Save {
     if (!this.useLocalStorage) {
       return;
     }
-    for (var i in this.saveModel) {
+    for (let i in this.saveModel) {
       window.localStorage.setItem(
         this.namespace + this.version + i,
         JSON.stringify(this.saveModel[i]),

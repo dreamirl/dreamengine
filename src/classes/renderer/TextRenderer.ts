@@ -40,7 +40,7 @@ export default class TextRenderer extends PIXI.Text {
       resolution?: number;
       localizationKey?: string;
       textStyle?: Partial<PIXI.TextStyle>;
-    },
+    } = {},
   ) {
     super(text);
     this.instantiate(this, params);
@@ -49,7 +49,7 @@ export default class TextRenderer extends PIXI.Text {
       text !== null && text !== undefined && text.toString
         ? text.toString()
         : text;
-    let _params = params || {};
+    let _params = params;
 
     if (_params.localizationKey) {
       this.localizationKey = _params.localizationKey;

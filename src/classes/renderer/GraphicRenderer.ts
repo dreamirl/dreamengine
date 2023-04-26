@@ -16,7 +16,7 @@ import '../renderer/ContainerExtensions';
  * } );
  */
 export default class GraphicRenderer extends PIXI.Graphics {
-  constructor(methods: any[], params?: Partial<GraphicRenderer>) {
+  constructor(methods?: any[], params?: Partial<GraphicRenderer>) {
     super();
     if (methods) {
       for (let i = 0; i < methods.length; ++i) {

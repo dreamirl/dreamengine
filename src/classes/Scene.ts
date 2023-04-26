@@ -136,7 +136,7 @@ class Scene<T extends GameObject = GameObject> extends Container {
       return;
     }
 
-    for (var i = 0, t = this.gameObjects.length, g; i < t; ++i) {
+    for (let i = 0, t = this.gameObjects.length, g; i < t; ++i) {
       g = this.gameObjects[i];
 
       if (!g) {
@@ -206,7 +206,7 @@ class Scene<T extends GameObject = GameObject> extends Container {
    * @param {GameObject} object can be the index of the GameObject in the gameObjects array
    */
   delete(object: T) {
-    var target = this.remove(object);
+    let target = this.remove(object);
     target.killMePlease();
 
     return this;

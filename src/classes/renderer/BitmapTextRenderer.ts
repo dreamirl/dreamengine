@@ -36,11 +36,11 @@ export default class BitmapTextRenderer extends PIXI.BitmapText {
     params: {
       maxHeight?: number;
       maxWidth?: number;
-      fontName: string;
-      fontSize: number;
+      fontName?: string;
+      fontSize?: number;
       localizationKey?: string;
       resolution?: number;
-    },
+    } = {},
   ) {
     super(text);
     this.instantiate(this, params);
@@ -49,7 +49,7 @@ export default class BitmapTextRenderer extends PIXI.BitmapText {
       text !== null && text !== undefined && text.toString
         ? text.toString()
         : text;
-    var _params = params || {};
+    let _params = params;
 
     if (_params.localizationKey) {
       this.localizationKey = _params.localizationKey;
@@ -60,7 +60,8 @@ export default class BitmapTextRenderer extends PIXI.BitmapText {
       text = Localization.get(this.localizationKey);
     }
 
-    this.fontName = params.fontName;
+    if(params.fontName)
+      this.fontName = params.fontName;
     if (!this.fontName) {
       throw new Error(
         'BitmapTextRender :: No fontName defined -- declaration canceled',
@@ -75,10 +76,7 @@ export default class BitmapTextRenderer extends PIXI.BitmapText {
       );
     }
 
-    this.fontSize = params.fontSize;
-    if (!this.fontSize) {
-      this.fontSize = PIXI.BitmapFont.available[this.fontName].size;
-    }
+    this.fontSize = params.fontSize ?? PIXI.BitmapFont.available[this.fontName].size;
 
     if (!_params.resolution) {
       _params.resolution = config.DEFAULT_TEXT_RESOLUTION;

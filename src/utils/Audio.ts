@@ -89,7 +89,7 @@ class Audio {
     audioList.forEach((audioParam) => {
       /* Howler format */
       let urls = [];
-      for (var i = 0; i < audioParam.formats.length; ++i) {
+      for (let i = 0; i < audioParam.formats.length; ++i) {
         urls.push(
           audioParam.path +
             '.' +

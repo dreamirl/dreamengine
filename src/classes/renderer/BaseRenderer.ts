@@ -277,18 +277,19 @@ export default class BaseRenderer {
     callback: () => void,
     scale: { x: number; y: number } | number,
   ) {
+    let dscale: Point2D;
     if (scale instanceof Object) {
-      var dscale = {
+      dscale = {
         x: scale.x,
         y: scale.y,
       };
     } else if (scale !== undefined) {
-      var dscale = {
+      dscale = {
         x: scale,
         y: scale,
       };
     } else {
-      var dscale = {
+      dscale = {
         x: 1,
         y: 1,
       };
