@@ -27,7 +27,6 @@ import Vector2 from './classes/Vector2';
 
 // Engine custom renderers
 import AnimatedTextureRenderer from './classes/renderer/AnimatedTextureRenderer';
-import BaseRenderer from './classes/renderer/BaseRenderer';
 import BitmapTextRenderer from './classes/renderer/BitmapTextRenderer';
 import GraphicRenderer from './classes/renderer/GraphicRenderer';
 import NineSliceRenderer from './classes/renderer/NineSliceRenderer';
@@ -79,7 +78,6 @@ export class Engine {
   public static readonly about = about;
 
   // Renderers
-  public readonly BaseRenderer = BaseRenderer;
   public readonly TextureRenderer = TextureRenderer;
   public readonly SpriteRenderer = SpriteRenderer;
   public readonly TilingRenderer = TilingRenderer;

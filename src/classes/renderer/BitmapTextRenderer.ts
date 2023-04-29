@@ -43,13 +43,17 @@ export default class BitmapTextRenderer extends PIXI.BitmapText {
     } = {},
   ) {
     super(text);
-    this.instantiate(this, params);
+
+    let _params = params;
+    if (!_params.resolution) {
+      _params.resolution = config.DEFAULT_TEXT_RESOLUTION;
+    }
+    this.instantiate(this, _params);
     // force string conversion to avoid pure numbers
     text =
       text !== null && text !== undefined && text.toString
         ? text.toString()
         : text;
-    let _params = params;
 
     if (_params.localizationKey) {
       this.localizationKey = _params.localizationKey;
@@ -77,10 +81,6 @@ export default class BitmapTextRenderer extends PIXI.BitmapText {
     }
 
     this.fontSize = params.fontSize ?? PIXI.BitmapFont.available[this.fontName].size;
-
-    if (!_params.resolution) {
-      _params.resolution = config.DEFAULT_TEXT_RESOLUTION;
-    }
 
     this.maxWidth = _params.maxWidth ? _params.maxWidth : 0;
     this.checkMaxWidth();

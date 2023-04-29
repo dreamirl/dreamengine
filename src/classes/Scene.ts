@@ -1,7 +1,7 @@
 import { Container } from 'pixi.js';
 import MainLoop from '../MainLoop';
-import sortGameObjects from '../utils/sortGameObjects';
 import GameObject from './GameObject';
+import config from '../config';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -16,9 +16,8 @@ import GameObject from './GameObject';
  * @example Game.scene = new DE.Scene( "Test" );
  */
 class Scene extends Container {
-  private _shouldSortChildren = false;
   /**
-   * it's a copy of PIXI.children, used by sortGameObjects middle-ware
+   * it's a copy of PIXI.children
    * @readonly
    * @memberOf Scene
    */
@@ -51,6 +50,7 @@ class Scene extends Container {
 
   constructor(name: string, addToTheMainLoop = true) {
     super();
+    this.sortableChildren = config.DEFAULT_SORTABLE_CHILDREN;
     this.name = name;
 
     if (addToTheMainLoop) {
@@ -121,8 +121,6 @@ class Scene extends Container {
       this.gameObjectsByTag[gameObject.tag].push(gameObject);
     }
 
-    this._shouldSortChildren = true;
-
     this.emit('update-children');
   }
 
@@ -164,22 +162,6 @@ class Scene extends Container {
     // {
     //   this.timers[ i ].update();
     // }
-
-    // TODO ?
-    if (this._shouldSortChildren) {
-      this.sortGameObjects();
-    }
-  }
-
-  /**
-   * Sort gameObjects in the scene along z axis or using z-index for objects on the same same plan.
-   * The priority is the following, z, z-index, y, x
-   * You shouldn't call this method directly because engine do it for you, but in some case it can be useful to do it yourself
-   * @protected
-   * @memberOf Scene
-   */
-  sortGameObjects() {
-    sortGameObjects(this);
   }
 
   // name registered in engine declaration

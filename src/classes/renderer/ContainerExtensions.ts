@@ -1,12 +1,10 @@
-import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 import * as PIXI from 'pixi.js';
-import GameObject from '../GameObject';
+import {ColorMatrixFilter} from '@pixi/filter-color-matrix'
 
 export {};
 
 declare module 'pixi.js' {
   interface Container {
-    gameObject: GameObject;
     hueFilter: ColorMatrixFilter;
     blackAndWhiteFilter: ColorMatrixFilter;
     saturationFilter: ColorMatrixFilter;
@@ -25,7 +23,6 @@ declare module 'pixi.js' {
     setBrightness(b: number, multiply: boolean): void;
     setContrast(amount: number, multiply: boolean): void;
     setGreyscale(scale: number, multiply: boolean): void;
-    applyScale(): void;
     setSize(width: number, height: number, preventCenter: boolean): void;
     setScale(x: number | {x: number, y: number}, y?: number): void;
     center(): void;
@@ -94,7 +91,7 @@ PIXI.Container.prototype.setHue = function (
   multiply: boolean,
 ) {
   if (!this.hueFilter) {
-    this.hueFilter = new ColorMatrixFilter();
+    this.hueFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
     this.hueFilter.hue(0, false);
   }
@@ -115,7 +112,7 @@ PIXI.Container.prototype.setHue = function (
 
 PIXI.Container.prototype.setBlackAndWhite = function (multiply: boolean) {
   if (!this.blackAndWhiteFilter) {
-    this.blackAndWhiteFilter = new ColorMatrixFilter();
+    this.blackAndWhiteFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
     this.blackAndWhiteFilter.blackAndWhite(false);
   }
@@ -139,7 +136,7 @@ PIXI.Container.prototype.setSaturation = function (
   multiply: boolean,
 ) {
   if (!this.saturationFilter) {
-    this.saturationFilter = new ColorMatrixFilter();
+    this.saturationFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
     this.saturationFilter.desaturate();
   }
@@ -163,7 +160,7 @@ PIXI.Container.prototype.setBrightness = function (
   multiply: boolean,
 ) {
   if (!this.brightnessFilter) {
-    this.brightnessFilter = new ColorMatrixFilter();
+    this.brightnessFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
     this.brightnessFilter.brightness(0, false);
   }
@@ -187,7 +184,7 @@ PIXI.Container.prototype.setContrast = function (
   multiply: boolean,
 ) {
   if (!this.contrastFilter) {
-    this.contrastFilter = new ColorMatrixFilter();
+    this.contrastFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
     this.contrastFilter.contrast(0, false);
   }
@@ -211,7 +208,7 @@ PIXI.Container.prototype.setGreyscale = function (
   multiply: boolean,
 ) {
   if (!this.grayscaleFilter) {
-    this.grayscaleFilter = new ColorMatrixFilter();
+    this.grayscaleFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
     this.grayscaleFilter.greyscale(0, false);
   }
