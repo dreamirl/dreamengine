@@ -801,11 +801,6 @@ class GameObject extends AdvancedContainer {
         if (r.update!) {
           r.update(Time.deltaTime);
         }
-
-        if (r.applyFade) {
-          r.applyFade();
-          r.applyScale();
-        }
       }
     }
 
