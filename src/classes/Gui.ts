@@ -7,23 +7,13 @@ import Scene from './Scene';
 
 /**
  * @constructor Gui
- * @class a Gui is over a world. You push GameObjects inside this.
- * There is no Gui Size, just objects inside
- * For rendering convenience it inherit from Scene
- * a Gui can be added to a Render and should be on top of everything
+ * @class DEPRECATED: a Gui used to be a Scene, but now it's just a GameObject.
+ * You may put it over a world, and push GameObjects inside it.
+ * A Gui can be added to a Render and should be on top of everything.
  * @example Game.gui = new DE.Gui( "Test" );
+ * @deprecated
  */
 class Gui extends GameObject {
-  constructor(name: string) {
-    super();
-    this.addChild(this.scene);
-  }
-
-  public scene: Scene = new Scene('gui', false);
-  // TODO la GUI doit avoir une scène séparée car on
-  // en fait un container, les container n'ont pas à gérer des objets
-  // attention cela dit car la scène s'auto ajoute a la MainLoop
-  // a voir si c'est la GUi qui update sa scène ou pas...
 
   // support trigger  -nop
   // Gui.prototype.trigger = Gui.prototype.emit;
@@ -40,19 +30,6 @@ class Gui extends GameObject {
   public set enable(bool) {
     this.visible = bool;
     this.renderable = bool;
-  }
-  override add(...gameObjects: GameObject[]) {
-    this.scene.add(...gameObjects);
-    return this;
-  }
-
-  override update(time: number) {
-    if (!this.enable) {
-      return;
-    }
-
-    super.update(time);
-    this.scene.update(time);
   }
 }
 
