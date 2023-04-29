@@ -140,15 +140,17 @@ class Audio {
   }
   get(name: string) {
     if (!this.sounds[name]) {
-      throw (
+      console.warn (
         'DE.Audio.get sound does not exists or yet declared/added => ' + name
       );
+      return undefined;
     }
     return this.sounds[name];
   }
   getSoundVolume(name: string): number {
     const sound = this.get(name);
-    return this.volume * this.mix[sound.channel] * sound.volume;
+    if(sound) return this.volume * this.mix[sound.channel] * sound.volume;
+    return 0
   }
   setSoundVolume(name: string, volume: number, id?: number) {
     const sound = this.sounds[name];
@@ -182,7 +184,9 @@ class Audio {
   }
 
   play(name: string, spriteName?: string | undefined, soundID?: number) {
-    const sound = this.get(name).howl;
+    const locSound = this.get(name)
+    if(!locSound) return '';
+    const sound = locSound.howl;
     // if the sound was preload = false, it must be loaded now !
     if (sound.state() === 'unloaded') {
       sound.load();
@@ -193,18 +197,24 @@ class Audio {
   }
 
   pause(name: string, soundID?: number) {
-    const sound = this.get(name).howl;
+    const locSound = this.get(name)
+    if(!locSound) return this;
+    const sound = locSound.howl;
     sound.pause(soundID);
     return this;
   }
 
   stop(name: string, soundID?: number) {
-    const sound = this.get(name).howl;
+    const locSound = this.get(name)
+    if(!locSound) return this;
+    const sound = locSound.howl;
     sound.stop(soundID);
     return this;
   }
   mute(name: string, mute: boolean, soundID?: number) {
-    const sound = this.get(name).howl;
+    const locSound = this.get(name)
+    if(!locSound) return this;
+    const sound = locSound.howl;
     sound.mute(mute, soundID);
     return this;
   }
