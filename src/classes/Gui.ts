@@ -41,8 +41,9 @@ class Gui extends GameObject {
     this.visible = bool;
     this.renderable = bool;
   }
-  add(...gameObjects: GameObject[]) {
+  override add(...gameObjects: GameObject[]) {
     this.scene.add(...gameObjects);
+    return this;
   }
 
   override update(time: number) {
