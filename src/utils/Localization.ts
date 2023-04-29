@@ -327,7 +327,7 @@ export class Localization {
    * @param {Object} dictionaries - Every localization structured you want to add in a named tree
    * @param {Boolean} merge - If true, the given dictionary will be merged with the existing one (if any)
    */
-  public addDictionaries(dictionaries: Record<string, LocalizationObject>, merge: boolean = false) {
+  public addDictionary(dictionaries: Record<string, LocalizationObject>, merge: boolean = false) {
     for (const lang in dictionaries) {
       if (merge && this._dictionaries[lang]) {
         this._dictionaries[lang] = this.merge(this._dictionaries[lang], dictionaries[lang]);
@@ -348,8 +348,8 @@ export class Localization {
    * @param {Object} dictionary - The localization dictionary structured in a named tree
    * @param {Boolean} merge - If true, the given dictionary will be merged with the existing one (if any)
    */
-  public addDictionary(lang: string, dictionary: LocalizationObject, merge: boolean = false) {
-    this.addDictionaries({ [lang]: dictionary }, merge);
+  public addOneDictionary(lang: string, dictionary: LocalizationObject, merge: boolean = false) {
+    this.addDictionary({ [lang]: dictionary }, merge);
   }
 
   /**
