@@ -1,4 +1,3 @@
-import AdvancedContainer from './AdvancedContainer';
 import GameObject from './GameObject';
 import Scene from './Scene';
 
@@ -14,7 +13,7 @@ import Scene from './Scene';
  * a Gui can be added to a Render and should be on top of everything
  * @example Game.gui = new DE.Gui( "Test" );
  */
-class Gui extends AdvancedContainer {
+class Gui extends GameObject {
   constructor(name: string) {
     super();
     this.addChild(this.scene);
