@@ -165,9 +165,9 @@ class GameObject extends AdvancedContainer {
       delete params.scale;
     }
     if(params.scaleX)
-      this.scale.x = params.scaleX;
-      if(params.scaleY)
-        this.scale.x = params.scaleY;
+      this.scale.set(params.scaleX, this.scale.y);
+    if(params.scaleY)
+    this.scale.set(this.scale.x, params.scaleY);
     
     // call correctly the scale modifier to update zscale and worldScale
 
