@@ -2,7 +2,6 @@ import { Container, Point } from 'pixi.js';
 import config from '../config';
 import Events from '../utils/Events';
 import Time from '../utils/Time';
-import sortGameObjects from '../utils/sortGameObjects';
 import AdvancedContainer from './AdvancedContainer';
 import Vector2 from './Vector2';
 import GraphicRenderer from './renderer/GraphicRenderer';
@@ -110,29 +109,6 @@ class GameObject extends AdvancedContainer {
   _isGameObject = true;
 
   /**
-   * when a children change his z or zindex property this attribute change to true and the gameObject sort his children in the next update call
-   * @private
-   * @memberOf GameObject
-   */
-  _shouldSortChildren = false;
-
-  /**
-   * used to clearly sort gameObjects rendering priority (higher is rendered over others)
-   * @private
-   * @memberOf GameObject
-   */
-  _zindex = 0;
-
-  /**
-   * create a scale to simulate a z axis (to create perspective) when changing z attribute
-   * this modifier is applied to scale (and savedScale store the old, not modified scale)
-   * @private
-   * @memberOf GameObject
-   * @type {Int}
-   */
-  _zscale = 1;
-
-  /**
    * store real scale (taking all parent in consideration)
    * worldScale is update directly when calling the constructor
    * this way you can know the real rendering scale (to the screen) with all modifiers
@@ -159,9 +135,13 @@ class GameObject extends AdvancedContainer {
     params: Partial<GameObject> & {
       automatisms?: Array<Array<any>>;
       scale?: number;
+      scaleX?: number;
+      scaleY?: number;
     } = {},
   ) {
     super();
+
+    this.sortableChildren = params.sortableChildren ?? config.DEFAULT_SORTABLE_CHILDREN;
 
     this.id = params.id !== undefined ? params.id : this.id;
     this.name = params.name || '';
@@ -184,6 +164,11 @@ class GameObject extends AdvancedContainer {
       else this.scale.set(params.scale);
       delete params.scale;
     }
+    if(params.scaleX)
+      this.scale.x = params.scaleX;
+      if(params.scaleY)
+        this.scale.x = params.scaleY;
+    
     // call correctly the scale modifier to update zscale and worldScale
 
     if (params.renderer) {
@@ -265,19 +250,6 @@ class GameObject extends AdvancedContainer {
   override set rotation(value) {
     this.vector2._updateRotation(value);
     this.transform.rotation = value;
-  }
-
-  override get zIndex() {
-    return this._zindex;
-  }
-  override set zIndex(zindex) {
-    if (typeof zindex == 'number') {
-      this._zindex = zindex;
-
-      if (this.parent) {
-        this.parent._shouldSortChildren = true;
-      }
-    }
   }
 
   _createDebugRenderer() {
@@ -455,8 +427,6 @@ class GameObject extends AdvancedContainer {
       object._createDebugRenderer();
     }
 
-    this._shouldSortChildren = true;
-
     return this;
   }
 
@@ -607,17 +577,6 @@ class GameObject extends AdvancedContainer {
     } else {
       return this.rotation;
     }
-  }
-
-  /**
-   * Sort gameObjects in the scene along z axis or using z-index for objects on the same same plan.
-   * The priority is the following, z, z-index, y, x
-   * You shouldn't call this method directly because engine do it for you, but in some case it can be useful to do it yourself
-   * @protected
-   * @memberOf GameObject
-   */
-  sortGameObjects() {
-    sortGameObjects(this);
   }
 
   /**
@@ -851,11 +810,6 @@ class GameObject extends AdvancedContainer {
     }
 
     super.update(time); // Update des components
-
-    // TODO should be optional and something we can shut down
-    if (this._shouldSortChildren) {
-      this.sortGameObjects();
-    }
 
     // update the hasMoved
     if (this._lastLocalID != this.position.scope._localID) {
