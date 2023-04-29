@@ -415,7 +415,7 @@ class GameObject extends AdvancedContainer {
     }
 
     if (object.parent) {
-      object.parent.removeChild(object); //TODO: ZARNA | A review Antoine (j'ai remplacé remove par removeChild vu que y'a pas remove sur PIXI.Container)
+      object.parent.remove(object); //TODO: ZARNA | A review Antoine (j'ai remplacé remove par removeChild vu que y'a pas remove sur PIXI.Container)
     }
 
     this.gameObjects.push(object);
