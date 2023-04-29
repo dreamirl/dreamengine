@@ -43,13 +43,16 @@ export default class TextRenderer extends PIXI.Text {
     } = {},
   ) {
     super(text, new PIXI.TextStyle(params.textStyle));
-    this.instantiate(this, params);
+    let _params = params;
+    if (!_params.resolution) {
+      _params.resolution = config.DEFAULT_TEXT_RESOLUTION;
+    }
+    this.instantiate(this, _params);
     // force string conversion to avoid pure numbers
     text =
       text !== null && text !== undefined && text.toString
         ? text.toString()
         : text;
-    let _params = params;
 
     if (_params.localizationKey) {
       this.localizationKey = _params.localizationKey;
@@ -60,10 +63,6 @@ export default class TextRenderer extends PIXI.Text {
       this.text = Localization.get(this.localizationKey);
     }
     delete _params.textStyle;
-
-    if (!_params.resolution) {
-      _params.resolution = config.DEFAULT_TEXT_RESOLUTION;
-    }
 
     this.maxWidth = _params.maxWidth;
     this.checkMaxWidth();
