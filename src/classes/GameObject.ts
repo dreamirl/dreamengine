@@ -580,7 +580,7 @@ class GameObject extends AdvancedContainer {
   }
 
   /**
-   * DEPRECATED you should use getGlobalPosition (from PIXI)
+   * DEPRECATED you should use emit
    * support for old version using trigger and not emit (I personally prefer emit when it's a client/server communication, and trigger when it's not services communication related )
    * but the engine will always support trigger AND emit
    * @deprecated
