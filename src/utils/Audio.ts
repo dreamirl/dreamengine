@@ -220,10 +220,10 @@ class Audio {
     return this;
   }
   stopAllAndPlay(
-    channelName: string,
     name: string,
-    sprite: string,
-    preserve: string[],
+    sprite?: string,
+    channelName?: string,
+    preserve: string[] = [],
   ) {
     this.stopAll(channelName, preserve);
     this.play(name, sprite);
