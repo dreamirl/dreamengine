@@ -1,6 +1,7 @@
 import { Container } from 'pixi.js';
 import MainLoop from '../MainLoop';
 import GameObject from './GameObject';
+import config from '../config';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -49,6 +50,7 @@ class Scene extends Container {
 
   constructor(name: string, addToTheMainLoop = true) {
     super();
+    this.sortableChildren = config.DEFAULT_SORTABLE_CHILDREN;
     this.name = name;
 
     if (addToTheMainLoop) {
