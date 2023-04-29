@@ -15,14 +15,14 @@ import GameObject from './GameObject';
  * a Scene can be added to a Render or a Camera can look at this Scene
  * @example Game.scene = new DE.Scene( "Test" );
  */
-class Scene<T extends GameObject = GameObject> extends Container {
+class Scene extends Container {
   private _shouldSortChildren = false;
   /**
    * it's a copy of PIXI.children, used by sortGameObjects middle-ware
    * @readonly
    * @memberOf Scene
    */
-  public gameObjects: T[] = [];
+  public gameObjects: GameObject[] = [];
 
   /**
    * @public
@@ -86,7 +86,7 @@ class Scene<T extends GameObject = GameObject> extends Container {
    * var myArray2 = [ object4, object5, object6 ]; // declare a second array with object inside as you wish
    * myScene.add( myArray, myArray2 ); // then call add with array and multi arguments
    */
-  add(...gameObjects: T[]) {
+  add(...gameObjects: Array<GameObject>) {
     gameObjects.forEach((go) => this.addOne(go));
   }
 
@@ -97,7 +97,7 @@ class Scene<T extends GameObject = GameObject> extends Container {
    * @param {GameObject} gameObject gameObject to add
    * @example myScene.addOne( car );
    */
-  addOne(gameObject: T) {
+  addOne(gameObject: GameObject) {
     // accept only gameObject to avoid errors
     // TS powa ? TODO a virer
     // if (!(gameObject instanceof GameObject)) {
@@ -205,7 +205,7 @@ class Scene<T extends GameObject = GameObject> extends Container {
    * @memberOf Scene
    * @param {GameObject} object can be the index of the GameObject in the gameObjects array
    */
-  delete(object: T) {
+  delete(object: GameObject) {
     let target = this.remove(object);
     target.killMePlease();
 
@@ -218,7 +218,7 @@ class Scene<T extends GameObject = GameObject> extends Container {
    * @memberOf Scene
    * @param {GameObject} object can be the index of the GameObject in the gameObjects array
    */
-  remove(object: T) {
+  remove(object: GameObject) {
     delete this.gameObjectsById[object.id];
     if (object.tag) {
       this.gameObjectsByTag[object.tag].splice(
