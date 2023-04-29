@@ -55,9 +55,7 @@ export class Save {
 
     // load save from storage
     for (let i in this.saveModel) {
-      this.saveModel[i] =
-        window.localStorage.getItem(this.namespace + this.version + i) ||
-        this.saveModel[i];
+      this.saveModel[i] = this.get(i);
     }
     
     Events.on('unload-game', () => this.saveAll());
