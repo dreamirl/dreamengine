@@ -401,7 +401,9 @@ class gamepads {
     cTime: number,
     type: string,
   ) {
-    for (let ind in arrayListeners[index].listeners) {
+    for (let [ind, lst] of Object.entries(arrayListeners[index].listeners)) {
+      const listener = lst as Listener;
+
       const i = parseInt(ind);
       if (!gamepadInterface[i]) {
         return;
@@ -414,7 +416,6 @@ class gamepads {
         elemForce = (gamepadInterface[i] as GamepadButton).value;
       }
       let eventBus = arrayListeners[index];
-      let listener: Listener = arrayListeners[index].listeners[i];
 
       if (Math.abs(elemForce) < 0.3) {
         elemForce = 0;
@@ -504,10 +505,16 @@ class gamepads {
       const i = parseInt(ind);
       if (
         gamepad.axes[i] > 0 &&
+        // @ts-ignore
         !this._axesListeners[gamepad.index].listeners[i]
       ) {
         this._btnsListeners[gamepad.index].emit('down' + i);
-        this._btnsListeners[gamepad.index].listeners[i] = true;
+
+        // @ts-ignore
+        if (this._btnsListeners[gamepad.index].listeners[i]) {
+          // @ts-ignore
+          this._btnsListeners[gamepad.index].listeners[i] = true;
+        }
         continue;
       }
     }
@@ -520,11 +527,13 @@ class gamepads {
   ) {
     if (!o[padIndex]) {
       o[padIndex] = new Events.Emitter();
-      o[padIndex].listeners = {};
+      o[padIndex].listeners = () => [];
       // addEvent( o[ padIndex ] );
     }
 
+    // @ts-ignore
     if (typeof o[padIndex].listeners[num] == 'undefined') {
+      // @ts-ignore
       o[padIndex].listeners[num] = { active: false, force: 0 };
     }
   }
@@ -539,7 +548,9 @@ class gamepads {
   ) {
     this._checkListeners(o, padIndex, num);
     o[padIndex].on(action + num, callBack);
-    o[padIndex].listeners[num].noRate = noRate;
+
+    // @ts-ignore
+    if (o[padIndex].listeners[num]) o[padIndex].listeners[num].noRate = noRate;
   }
 
   delListener(
@@ -565,6 +576,8 @@ class gamepads {
     this.delListener(o, padIndex, num, 'down');
     this.delListener(o, padIndex, num, 'up');
     this.delListener(o, padIndex, num, 'move');
+
+    // @ts-ignore
     delete o[padIndex].listeners[num];
   }
 
@@ -574,7 +587,7 @@ class gamepads {
     }
 
     for (let i in o[padIndex].listeners) {
-      this.delAllOfnum(o, padIndex, i);
+      this.delAllOfnum(o, padIndex, parseFloat(i));
     }
   }
 
@@ -826,12 +839,14 @@ class gamepads {
   }
 
   //Updates changes
-  updateByRate() { //Update every rate, which allow you to use on...Down to move something
+  updateByRate() {
+    //Update every rate, which allow you to use on...Down to move something
     this.update = this._updateRate;
     this.handleDown = this.handleDownRate;
   }
 
-  updateByChange() { //Update at every change
+  updateByChange() {
+    //Update at every change
     this.update = this._updateChange;
     this.handleDown = this.handleDownChange;
   }
