@@ -9,8 +9,8 @@ import Events from './Events';
 */
 
 export type SaveModel = {
-  [x: string]: string | number | Object | Array<any> | SaveModel,
-}
+  [x: string]: string | number | object | Array<any> | SaveModel;
+};
 
 /**
  * singleton to make save easy, you can override save method to make yours
@@ -39,12 +39,11 @@ export class Save {
     * @param {Object} saveModel - the scheme of your game save object
     * @param {Boolean} ignoreVersion - will read old save if true
     */
-  init(saveModel?: SaveModel, ignoreVersion: boolean = false) {
+  init(saveModel?: SaveModel, ignoreVersion = false) {
     saveModel = saveModel || {};
     if (!saveModel.settings) saveModel.settings = {};
 
-    if(about.namespace)
-      this.namespace = about.namespace;
+    if (about.namespace) this.namespace = about.namespace;
 
     this.version = about.gameVersion;
     if (ignoreVersion) {
@@ -54,10 +53,10 @@ export class Save {
     this.saveModel = saveModel;
 
     // load save from storage
-    for (let i in this.saveModel) {
+    for (const i in this.saveModel) {
       this.saveModel[i] = this.get(i);
     }
-    
+
     Events.on('unload-game', () => this.saveAll());
 
     this.loadSave(this.saveModel, true);
@@ -68,20 +67,20 @@ export class Save {
       return;
     }
     // clean the localStorage to prevent zombie storage because upgraded version
-    for (let i in this.saveModel) {
+    for (const i in this.saveModel) {
       window.localStorage.removeItem(this.namespace + this.version + i);
     }
 
     // setup the last version of the game, and rewrite datas
     this.version = about.gameVersion;
     window.localStorage.setItem(this.namespace, this.version);
-    for (let i in this.saveModel) {
-      if(typeof this.saveModel[i] === 'string')
+    for (const i in this.saveModel) {
+      if (typeof this.saveModel[i] === 'string')
         window.localStorage.setItem(
           this.namespace + this.version + i,
           this.saveModel[i] as string,
         );
-      else{
+      else {
         window.localStorage.setItem(
           this.namespace + this.version + i,
           JSON.stringify(this.saveModel[i]),
@@ -100,12 +99,8 @@ export class Save {
   loadSave(attrs: SaveModel, useLocalStorage: boolean) {
     this.useLocalStorage = useLocalStorage;
 
-    for (let i in attrs) {
-      if (
-        !this.saveModel[i] &&
-        this.saveModel[i] !== false &&
-        this.saveModel[i] !== 0
-      ) {
+    for (const i in attrs) {
+      if (!this.saveModel[i] && this.saveModel[i] !== 0) {
         Events.emit('Save-attr-not-found', i);
         console.log(
           'Seems your game version is to old, a new one will be created',
@@ -126,9 +121,10 @@ export class Save {
    */
   get(key: string) {
     if (!(key in this.saveModel)) {
-      const load = window.localStorage.getItem(this.namespace + this.version + key);
-      if(load != undefined)
-        this.saveModel[key] = JSON.parse(load);
+      const load = window.localStorage.getItem(
+        this.namespace + this.version + key,
+      );
+      if (load != undefined) this.saveModel[key] = JSON.parse(load);
     }
     return this.saveModel[key];
   }
@@ -151,8 +147,8 @@ export class Save {
    * @param {Any} value - the data to save
    */
   save(key: string, value: any) {
-    let path = key.split('.');
-    let nkey = path[0];
+    const path = key.split('.');
+    const nkey = path[0];
 
     if (!(nkey in this.saveModel)) {
       console.log(
@@ -199,7 +195,7 @@ export class Save {
     if (!this.useLocalStorage) {
       return;
     }
-    for (let i in this.saveModel) {
+    for (const i in this.saveModel) {
       window.localStorage.setItem(
         this.namespace + this.version + i,
         JSON.stringify(this.saveModel[i]),
@@ -226,8 +222,7 @@ export class Save {
 
   loadAchievements() {
     const load = window.localStorage.getItem(this.namespace + 'achievements');
-    if(load != undefined)
-      return JSON.parse(load);
+    if (load != undefined) return JSON.parse(load);
     return {};
   }
 }

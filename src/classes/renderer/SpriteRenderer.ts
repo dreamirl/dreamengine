@@ -104,7 +104,7 @@ export default class SpriteRenderer extends PIXI.Sprite {
         | Array<number & boolean>;
     },
   ) {
-    let tempSpriteName =
+    const tempSpriteName =
       params.spriteName || params.spriteUrl || params.textureName;
     delete params.spriteName;
     if (!tempSpriteName) {
@@ -113,7 +113,7 @@ export default class SpriteRenderer extends PIXI.Sprite {
       );
     }
 
-    let tempTexture = SpriteRenderer._getTexture(tempSpriteName);
+    const tempTexture = SpriteRenderer._getTexture(tempSpriteName);
     if (tempTexture) {
       super(tempTexture);
     } else {
@@ -492,7 +492,7 @@ export default class SpriteRenderer extends PIXI.Sprite {
       );
     }
 
-    let d = this.spriteData || ImageManager.spritesData[this.spriteName];
+    const d = this.spriteData || ImageManager.spritesData[this.spriteName];
 
     this.startFrame = params.startFrame || d.startFrame || 0;
     this.endFrame = params.endFrame || d.endFrame || d.totalFrame - 1 || 0;
@@ -542,7 +542,7 @@ export default class SpriteRenderer extends PIXI.Sprite {
     if (this.baseTexture) {
       this.fw = (this.baseTexture.width / this.totalFrame) >> 0;
       this.fh = (this.baseTexture.height / this.totalLine) >> 0;
-      let size = new PIXI.Rectangle(
+      const size = new PIXI.Rectangle(
         this._currentFrame * this.fw,
         this._currentLine * this.fh,
         this.fw,
@@ -559,7 +559,7 @@ export default class SpriteRenderer extends PIXI.Sprite {
     this._originalTexture = this.texture;
 
     if (this.baseNormalTexture) {
-      let normsize = new PIXI.Rectangle(
+      const normsize = new PIXI.Rectangle(
         this._currentFrame * this.fw,
         this._currentLine * this.fh,
         this.fw,

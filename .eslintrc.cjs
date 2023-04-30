@@ -56,6 +56,17 @@ module.exports = {
     //   },
     // ],
 
+    '@typescript-eslint/no-explicit-any': 'off',
+
+    // Should be enabled in the future
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
+    'no-prototype-builtins': 'off',
+    'prefer-spread': 'off',
+    '@typescript-eslint/no-this-alias': 'off',
+    'no-case-declarations': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
+
     '@typescript-eslint/no-unused-vars': [
       'warn',
       {

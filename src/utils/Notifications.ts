@@ -67,29 +67,29 @@ export type NotificationCreateResult = {
 export class Notifications {
   public static readonly DEName: string = 'Notifications';
 
-  private _notificationHeight: number = 0;
+  private _notificationHeight = 0;
 
   /**
    * The duration of the notification in milliseconds.
    * (default: 3500)
    * @type {number}
    */
-  public defaultExpirationTime: number = 3500;
+  public defaultExpirationTime = 3500;
 
   /**
    * The duration of the close animation in milliseconds.
    * (default: 400)
    * @type {number}
    */
-  public closeAnimationDuration: number = 400;
+  public closeAnimationDuration = 400;
 
-  private _notificationClassName: string = 'notification';
+  private _notificationClassName = 'notification';
 
-  private _notificationContainerId: string = 'notifsContainer';
+  private _notificationContainerId = 'notifsContainer';
   private _notificationContainer: Nullable<HTMLElement> = null;
 
-  private _template: string = ``;
-  private _templateSelectionId: string = 'notificationTemplate';
+  private _template = '';
+  private _templateSelectionId = 'notificationTemplate';
 
   private _notifications: { [id: string]: HTMLDivElement } = {};
 
@@ -110,30 +110,41 @@ export class Notifications {
   public get inited(): boolean {
     return this._initialized;
   }
-  private _initialized: boolean = false;
+  private _initialized = false;
 
   public init(options: Partial<NotificationOptions> = {}) {
-    this._notificationContainerId = options.selector || this._notificationContainerId;
-    this._templateSelectionId = options.templateName || this._templateSelectionId;
+    this._notificationContainerId =
+      options.selector || this._notificationContainerId;
+    this._templateSelectionId =
+      options.templateName || this._templateSelectionId;
 
-    this.closeAnimationDuration = options.closeAnimationDuration || this.closeAnimationDuration;
-    this.defaultExpirationTime = options.defaultExpirationTime || this.defaultExpirationTime;
+    this.closeAnimationDuration =
+      options.closeAnimationDuration || this.closeAnimationDuration;
+    this.defaultExpirationTime =
+      options.defaultExpirationTime || this.defaultExpirationTime;
 
-    this._notificationClassName = options.notificationClassName || this._notificationClassName;
+    this._notificationClassName =
+      options.notificationClassName || this._notificationClassName;
 
-    const notificationContainer = document.getElementById(this._notificationContainerId);
-    this._notificationContainer = (options.container || notificationContainer) || this._notificationContainer;
+    const notificationContainer = document.getElementById(
+      this._notificationContainerId,
+    );
+    this._notificationContainer =
+      options.container || notificationContainer || this._notificationContainer;
 
-    const templateContainer = document.getElementById(this._templateSelectionId);
-    this._template = (options.template || templateContainer?.innerHTML) || this._template;
+    const templateContainer = document.getElementById(
+      this._templateSelectionId,
+    );
+    this._template =
+      options.template || templateContainer?.innerHTML || this._template;
 
     if (!this._notificationContainer || !this._template) {
       throw new Error(
-        "Cannot initialize Notifications module without a container element AND a template -- " +
-        'container selector:: ' +
-        this._notificationContainerId +
-        ' -- templateName:: ' +
-        this._templateSelectionId
+        'Cannot initialize Notifications module without a container element AND a template -- ' +
+          'container selector:: ' +
+          this._notificationContainerId +
+          ' -- templateName:: ' +
+          this._templateSelectionId,
       );
     }
 
@@ -153,7 +164,10 @@ export class Notifications {
    * @param {int} [expirationTime] - The time notification will stay on screen from now on until the disappear animation start.
    * @example DE.Notifications.create( "hello world", 1500 );
    */
-  public create(text: string, expirationTime: number = this.defaultExpirationTime): Nullable<NotificationCreateResult> {
+  public create(
+    text: string,
+    expirationTime = this.defaultExpirationTime,
+  ): Nullable<NotificationCreateResult> {
     if (!config.notifications.enable) {
       return null;
     }
@@ -175,9 +189,11 @@ export class Notifications {
     notification.className = this._notificationClassName;
     notification.innerHTML = this._template;
     notification.getElementsByClassName('content')[0].innerHTML = text;
-    notification.getElementsByClassName('notifClose')[0].addEventListener('click', () => {
-      this.remove(id);
-    });
+    notification
+      .getElementsByClassName('notifClose')[0]
+      .addEventListener('click', () => {
+        this.remove(id);
+      });
 
     this._notificationContainer.appendChild(notification);
 
@@ -221,7 +237,8 @@ export class Notifications {
 
     const notificationElementClasses = notificationElement.className.split(' ');
     if (!notificationElementClasses.includes('disappear')) {
-      notificationElement.className = this._notificationClassName + ' disappear';
+      notificationElement.className =
+        this._notificationClassName + ' disappear';
     }
 
     setTimeout(() => {
@@ -229,7 +246,7 @@ export class Notifications {
     }, this.closeAnimationDuration);
 
     return true;
-  };
+  }
 
   /**
    * Remove a notification.
@@ -248,7 +265,8 @@ export class Notifications {
     this._notificationHeight -= height;
 
     if (this._notificationContainer !== null) {
-      this._notificationContainer.style.height = this._notificationHeight + 'px';
+      this._notificationContainer.style.height =
+        this._notificationHeight + 'px';
       this._notificationContainer.removeChild(notification);
     }
 

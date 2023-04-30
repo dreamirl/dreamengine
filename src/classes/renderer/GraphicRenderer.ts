@@ -20,7 +20,7 @@ export default class GraphicRenderer extends PIXI.Graphics {
     super();
     if (methods) {
       for (let i = 0; i < methods.length; ++i) {
-        for (let n in methods[i]) {
+        for (const n in methods[i]) {
           if (methods[i][n] instanceof Array) {
             (this as any)[n].apply(this, methods[i][n]);
           } else {

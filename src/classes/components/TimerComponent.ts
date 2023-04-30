@@ -39,7 +39,7 @@ export default class TimerComponent extends Component {
    * @memberOf GameObject
    */
   override update(time: number) {
-    for (let key in this._timers) {
+    for (const key in this._timers) {
       const timer = this._timers[key];
       timer.timeSinceLastCall += time;
       if (timer.timeSinceLastCall > timer.interval) {

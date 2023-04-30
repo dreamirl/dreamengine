@@ -1,4 +1,4 @@
-import { Container } from 'pixi.js';
+import * as PIXI from 'pixi.js';
 import Component from './Component';
 import GameObject from './GameObject';
 import Tween from './Tween';
@@ -6,7 +6,7 @@ import FocusComponent, { FocusOption } from './components/FocusComponent';
 import ShakeComponent from './components/ShakeComponent';
 import TimerComponent from './components/TimerComponent';
 
-export default class AdvancedContainer extends Container {
+export default class AdvancedContainer extends PIXI.Container {
   private _components: Component[] = [];
 
   private _shakeComp?: ShakeComponent = undefined;
@@ -60,12 +60,7 @@ export default class AdvancedContainer extends Container {
     return this._components.find((v) => v.name === name);
   }
 
-  timeout(
-    callback: () => void,
-    interval: number = 0,
-    persistent: boolean = false,
-    id?: string,
-  ) {
+  timeout(callback: () => void, interval = 0, persistent = false, id?: string) {
     return this.timerComp.invoke(callback, interval, persistent, id);
   }
 
@@ -79,7 +74,7 @@ export default class AdvancedContainer extends Container {
     duration: number,
     onComplete: () => void,
     onCompleteParams?: any,
-    autostart: boolean = true,
+    autostart = true,
     easing: (x: number) => number = Tween.Easing.noEase,
   ) {
     new Tween.Tween(
@@ -96,26 +91,34 @@ export default class AdvancedContainer extends Container {
     duration: number,
     onComplete: () => void,
     onCompleteParams?: any,
-    autostart: boolean = true,
+    autostart = true,
     easing: (x: number) => number = Tween.Easing.noEase,
   ) {
-    new Tween.Tween(this, 'alpha', 0, duration, autostart, easing).setOnComplete(
-      onComplete,
-      onCompleteParams || {},
-    );
+    new Tween.Tween(
+      this,
+      'alpha',
+      0,
+      duration,
+      autostart,
+      easing,
+    ).setOnComplete(onComplete, onCompleteParams || {});
   }
 
   fadeIn(
     duration: number,
     onComplete: () => void,
     onCompleteParams?: any,
-    autostart: boolean = true,
+    autostart = true,
     easing: (x: number) => number = Tween.Easing.noEase,
   ) {
-    new Tween.Tween(this, 'alpha', 1, duration, autostart, easing).setOnComplete(
-      onComplete,
-      onCompleteParams || {},
-    );
+    new Tween.Tween(
+      this,
+      'alpha',
+      1,
+      duration,
+      autostart,
+      easing,
+    ).setOnComplete(onComplete, onCompleteParams || {});
   }
 
   /**
@@ -127,8 +130,10 @@ export default class AdvancedContainer extends Container {
   shake(
     xRange: number,
     yRange: number,
-    duration: number = 500,
-    callback = () => {},
+    duration = 500,
+    callback = () => {
+      return;
+    },
   ) {
     this.shakeComp.shake(xRange, yRange, duration, callback);
     return this;
@@ -139,10 +144,17 @@ export default class AdvancedContainer extends Container {
     duration: number,
     onComplete: () => void,
     onCompleteParams?: any,
-    autostart: boolean = true,
+    autostart = true,
     easing: (x: number) => number = Tween.Easing.noEase,
   ) {
-    new Tween.Tween(this, 'scale.x', targetScale.x, duration, autostart, easing);
+    new Tween.Tween(
+      this,
+      'scale.x',
+      targetScale.x,
+      duration,
+      autostart,
+      easing,
+    );
     new Tween.Tween(
       this,
       'scale.y',
@@ -158,19 +170,23 @@ export default class AdvancedContainer extends Container {
     duration: number,
     onComplete: () => void,
     onCompleteParams?: any,
-    autostart: boolean = true,
-    forceLocalPos: boolean = false,
+    autostart = true,
+    forceLocalPos = false,
     easing: (x: number) => number = Tween.Easing.noEase,
   ) {
     if (this.parent && !forceLocalPos) {
-      let parentPos = this.parent.getGlobalPosition();
+      const parentPos = this.parent.getGlobalPosition();
       dest = { x: dest.x - parentPos.x, y: dest.y - parentPos.y };
     }
     new Tween.Tween(this, 'x', dest.x, duration, autostart, easing);
-    new Tween.Tween(this, 'y', dest.y, duration, autostart, easing).setOnComplete(
-      onComplete,
-      onCompleteParams || {},
-    );
+    new Tween.Tween(
+      this,
+      'y',
+      dest.y,
+      duration,
+      autostart,
+      easing,
+    ).setOnComplete(onComplete, onCompleteParams || {});
     return this;
   }
 

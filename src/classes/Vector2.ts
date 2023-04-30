@@ -81,7 +81,7 @@ class Vector2 extends PIXI.Container {
    * @param {Boolean} [ignoreDelta] if you want to prevent deltaTime adjustment
    * @returns {Vector2} this current instance
    */
-  translate(vector2: Vector2, absolute?: boolean, ignoreDelta: boolean = true) {
+  translate(vector2: Vector2, absolute?: boolean, ignoreDelta = true) {
     if ((!vector2.x && vector2.x != 0) || (!vector2.y && vector2.y != 0)) {
       throw new Error(vector2 + ' is not a Vector2');
     }
@@ -128,7 +128,7 @@ class Vector2 extends PIXI.Container {
    * @param {Boolean} [ignoreDelta] if you want to prevent deltaTime adjustment
    * @returns {Float} this.rotation current rotation
    */
-  rotate(angle: number, ignoreDelta: boolean = true) {
+  rotate(angle: number, ignoreDelta = true) {
     if (ignoreDelta) return this.setRotation(this.rotation + angle);
     return this.setRotation(this.rotation + angle * Time.deltaTime);
   }
@@ -158,7 +158,7 @@ class Vector2 extends PIXI.Container {
       this.y = 0;
       return this;
     }
-    let len = Math.sqrt(this.x * this.x + this.y * this.y);
+    const len = Math.sqrt(this.x * this.x + this.y * this.y);
     this.x = this.x / len;
     this.y = this.y / len;
     return this;
@@ -250,7 +250,7 @@ class Vector2 extends PIXI.Container {
     } else {
       tmp_vectorB = new Vector2(this.x, this.y).normalize();
     }
-    let tmp_vectorA = new Vector2(a.x, a.y).normalize();
+    const tmp_vectorA = new Vector2(a.x, a.y).normalize();
     return Math.acos(tmp_vectorA.dotProduct(tmp_vectorB));
   }
 
@@ -286,7 +286,7 @@ class Vector2 extends PIXI.Container {
     x *= x;
     let y = this.y - other.y;
     y *= y;
-    let dist = x + y;
+    const dist = x + y;
     if (dist <= range) {
       return true;
     }
@@ -376,8 +376,8 @@ class Vector2 extends PIXI.Container {
 
     // why calling this function otherwise?
     if (cos !== 0 || sin !== 0) {
-      let x = this.x;
-      let y = this.y;
+      const x = this.x;
+      const y = this.y;
       this.x = x * cos + y * -sin;
       this.y = x * sin + y * cos;
     }

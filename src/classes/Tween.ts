@@ -12,7 +12,7 @@
 	
 */
 
-export let tweens: Tween[] = [];
+export const tweens: Tween[] = [];
 
 class Tween {
   targetValue: number;
@@ -33,7 +33,7 @@ class Tween {
     property: string,
     targetValue: number,
     tweenDuration: number,
-    autostart: boolean = true,
+    autostart = true,
     easing: (x: number) => number = noEase,
   ) {
     this.object = object;
@@ -41,7 +41,7 @@ class Tween {
     this.property = properties[properties.length - 1];
     for (let i = 0; i < properties.length - 1; i++) {
       if (properties[i] as keyof typeof object) {
-        let temp = properties[i] as keyof typeof object;
+        const temp = properties[i] as keyof typeof object;
         this.object = this.object[temp];
       }
     }
@@ -89,7 +89,8 @@ class Tween {
       if (this.property != '') {
         const newValue =
           this.startValue +
-          this.targetValue * this.easing(this.currentFrame / this.tweenDuration);
+          this.targetValue *
+            this.easing(this.currentFrame / this.tweenDuration);
         this.object[this.property] = newValue;
         if (this.onUpdate != null) {
           this.onUpdate(this.onUpdateParams);
@@ -312,34 +313,37 @@ function update(deltaTime: number) {
 	new ChainedTween([tween1, tween2]);
 */
 
-class ChainedTween extends Tween{
+class ChainedTween extends Tween {
   tweensChained: Tween[] = [];
-  complete: boolean = false;
+  complete = false;
 
-  constructor(tweensToAdd: Tween[], onCompleteCb?: (params?: any) => void, onCompleteParameters?: any) {
-    super(undefined, '', 0, 0)
+  constructor(
+    tweensToAdd: Tween[],
+    onCompleteCb?: (params?: any) => void,
+    onCompleteParameters?: any,
+  ) {
+    super(undefined, '', 0, 0);
     this.onComplete = onCompleteCb;
     this.onCompleteParams = onCompleteParameters;
     this.tweensChained = tweensToAdd;
     for (let i = 1; i < tweensToAdd.length; i++) {
       this.tweensChained[i].update = (deltaTime: number) => {
-        const res =  this.tweensChained[i].update(deltaTime);
-        if(res){
+        const res = this.tweensChained[i].update(deltaTime);
+        if (res) {
           this.tweenFinished();
         }
         return res;
-      }
+      };
       this.tweensChained[i].active = false;
     }
     this.tweensChained[0].start();
     tweens.push(...tweensToAdd);
   }
 
-  tweenFinished(){
+  tweenFinished() {
     this.tweensChained.splice(0, 1);
-    if (this.tweensChained.length != 0)
-      this.tweensChained[0].start();
-    else{
+    if (this.tweensChained.length != 0) this.tweensChained[0].start();
+    else {
       if (this.onComplete) {
         this.onComplete(this.onCompleteParams);
       }

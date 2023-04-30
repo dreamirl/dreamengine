@@ -22,11 +22,11 @@ export default class ShakeComponent extends Component {
 
   constructor(
     parent: AdvancedContainer,
-    xRange: number = 0,
-    yRange: number = 0,
+    xRange = 0,
+    yRange = 0,
     duration?: number,
     callback?: () => void,
-    selfDestruct: boolean = true,
+    selfDestruct = true,
   ) {
     super(parent);
 
@@ -47,12 +47,7 @@ export default class ShakeComponent extends Component {
    * @example // shake with 10-10 force during 1sec
    * player.shake( 10, 10, 1000 );
    */
-  shake(
-    xRange: number,
-    yRange: number,
-    duration: number = 500,
-    callback = () => {},
-  ) {
+  shake(xRange: number, yRange: number, duration = 500, callback = () => {}) {
     this._shakeData = {
       done: false,
       duration,
@@ -77,7 +72,7 @@ export default class ShakeComponent extends Component {
       return;
     }
 
-    let shake = this._shakeData;
+    const shake = this._shakeData;
     // restore previous shake
     this.parent.x -= shake.prevX;
     this.parent.y -= shake.prevY;

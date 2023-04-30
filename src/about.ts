@@ -12,9 +12,9 @@ export class About {
   public static readonly DEName: string = 'About';
   public static readonly engineVersion: string = '2.0';
 
-  private _gameName: string = 'My-Dreamengine-Game';
-  private _gameVersion: string = '0.1.0';
-  private _gameAuthor: string = 'Dreamirl';
+  private _gameName = 'My-Dreamengine-Game';
+  private _gameVersion = '0.1.0';
+  private _gameAuthor = 'Dreamirl';
 
   private _namespace: Nullable<string> = null;
   private _gamePrice: Nullable<string | number> = null;

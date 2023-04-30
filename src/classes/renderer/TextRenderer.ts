@@ -43,7 +43,7 @@ export default class TextRenderer extends PIXI.Text {
     } = {},
   ) {
     super(text, new PIXI.TextStyle(params.textStyle));
-    let _params = params;
+    const _params = params;
     if (!_params.resolution) {
       _params.resolution = config.DEFAULT_TEXT_RESOLUTION;
     }
@@ -73,7 +73,7 @@ export default class TextRenderer extends PIXI.Text {
 
   checkMaxWidth() {
     if (this.maxWidth) {
-      let textMetrics = PIXI.TextMetrics.measureText(
+      const textMetrics = PIXI.TextMetrics.measureText(
         this.text,
         new PIXI.TextStyle(this.style),
       );
@@ -112,7 +112,7 @@ export default class TextRenderer extends PIXI.Text {
 
   checkMaxHeight() {
     if (this.maxHeight) {
-      let textMetrics = PIXI.TextMetrics.measureText(
+      const textMetrics = PIXI.TextMetrics.measureText(
         this.text,
         new PIXI.TextStyle(this.style),
       );

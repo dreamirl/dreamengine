@@ -37,7 +37,7 @@ export default class RectRenderer extends PIXI.Graphics {
     } = {},
   ) {
     super();
-    let _params = params;
+    const _params = params;
 
     _params.width = width;
     _params.height = height;

@@ -79,7 +79,11 @@ type InitParams = {
   };
 };
 
-let ___params: InitParams | undefined = { onReady: () => {} };
+let ___params: InitParams | undefined = {
+  onReady: () => {
+    return;
+  },
+};
 let paused = false;
 const isPaused = () => paused;
 

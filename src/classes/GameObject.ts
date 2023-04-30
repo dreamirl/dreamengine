@@ -36,7 +36,7 @@ class GameObject extends AdvancedContainer {
   renderers: (PIXI.Container | DERenderers)[] = [];
   renderer: PIXI.Container;
   _debugRenderer: PIXI.Container | undefined;
-  _lastLocalID: string = '';
+  _lastLocalID = '';
 
   /**
    * If false, the object wont be updated anymore (but still renderer).
@@ -83,7 +83,7 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    * @type {String}
    */
-  flag: string = '';
+  flag = '';
 
   /**
    * @readOnly
@@ -287,7 +287,7 @@ class GameObject extends AdvancedContainer {
    * if absolute, object will move on world axis instead this own axis
    * @example myObject.translate( { "x": 10, "y": 5 }, false );
    */
-  translate(pos: any, absolute: boolean, ignoreDeltaTime: boolean = true) {
+  translate(pos: any, absolute: boolean, ignoreDeltaTime = true) {
     this.vector2.translate(pos, absolute, ignoreDeltaTime);
     return this;
   }
@@ -299,7 +299,7 @@ class GameObject extends AdvancedContainer {
    * @param {Boolean} absolute
    * if absolute, object will move on world axis instead this own axis
    */
-  translateX(distance: number, absolute: boolean, ignoreDelta: boolean = true) {
+  translateX(distance: number, absolute: boolean, ignoreDelta = true) {
     this.translate({ x: distance, y: 0 }, absolute, ignoreDelta);
     return this;
   }
@@ -311,7 +311,7 @@ class GameObject extends AdvancedContainer {
    * @param {Boolean} absolute
    * if absolute, object will move on world axis instead this own axis
    */
-  translateY(distance: number, absolute: boolean, ignoreDelta: boolean = true) {
+  translateY(distance: number, absolute: boolean, ignoreDelta = true) {
     this.translate({ x: 0, y: distance }, absolute, ignoreDelta);
     return this;
   }
@@ -322,7 +322,7 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    * @param {Float} angle
    */
-  rotate(angle: number, ignoreDelta: boolean = true) {
+  rotate(angle: number, ignoreDelta = true) {
     this.vector2.rotate(angle, ignoreDelta);
     return this;
   }
@@ -336,8 +336,8 @@ class GameObject extends AdvancedContainer {
    * can be a simple position x-y
    */
   lookAt(vector2: any, angleOffset: number) {
-    let origin = { x: 0, y: 0 };
-    let otherPos = vector2.toGlobal ? vector2.toGlobal(origin) : vector2;
+    const origin = { x: 0, y: 0 };
+    const otherPos = vector2.toGlobal ? vector2.toGlobal(origin) : vector2;
     this.rotation = this.vector2.getAngle(otherPos) + (angleOffset || 0);
 
     return this;
@@ -350,7 +350,7 @@ class GameObject extends AdvancedContainer {
    * memberOf GameObject
    * param {PIXI.DisplayObject} rd - the renderer to add
    */
-  addOneRenderer(rd: Container | DERenderers) {
+  addOneRenderer(rd: PIXI.Container | DERenderers) {
     if (
       rd.anchor &&
       !rd.preventCenter &&
@@ -370,7 +370,7 @@ class GameObject extends AdvancedContainer {
     return this;
   }
 
-  addRenderer(...rds: (Container | DERenderers)[]) {
+  addRenderer(...rds: (PIXI.Container | DERenderers)[]) {
     rds.forEach((r) => this.addOneRenderer(r));
     return this;
   }
@@ -454,7 +454,7 @@ class GameObject extends AdvancedContainer {
    * object reference or object index in the gameObjects array
    */
   delete(object: GameObject) {
-    let target = this.remove(object);
+    const target = this.remove(object);
 
     target.killMePlease();
     return this;
@@ -467,7 +467,7 @@ class GameObject extends AdvancedContainer {
    */
   deleteAll() {
     while (this.gameObjects.length) {
-      let target = this.remove(this.gameObjects[0]);
+      const target = this.remove(this.gameObjects[0]);
       target.killMePlease();
     }
     return this;
@@ -526,8 +526,12 @@ class GameObject extends AdvancedContainer {
    * @example myObject.on( "kill", function( currentObject ){ console.log( "I'm dead in 16 milliseconds !" ); } );
    * @example myObject.on( "killed", function( currentObject ){ console.log( "Ok, now I'm dead" ); } );
    */
-  onKill() {} // TODO: ZARNA | Antoine ok ?
-  onKilled() {} // TODO: ZARNA | Antoine ok ?
+  onKill() {
+    return;
+  } // TODO: ZARNA | Antoine ok ?
+  onKilled() {
+    return;
+  } // TODO: ZARNA | Antoine ok ?
 
   /**
    * this function is called when the update loop remove this GameObject (after an askToKill call)<br>
@@ -610,8 +614,8 @@ class GameObject extends AdvancedContainer {
       this.parent instanceof GameObject &&
       this.parent.getWorldPos
     ) {
-      let pos = this.parent.getWorldPos();
-      let harmonics = this.parent.vector2.getHarmonics();
+      const pos = this.parent.getWorldPos();
+      const harmonics = this.parent.vector2.getHarmonics();
 
       return {
         x:
@@ -711,7 +715,7 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    */
   removeAutomatisms() {
-    for (let i in this._automatisms) {
+    for (const i in this._automatisms) {
       delete this._automatisms[i];
     }
   }
@@ -726,7 +730,7 @@ class GameObject extends AdvancedContainer {
    * myObject.inverseAutomatism( "translateY" ); // this will inverse the value applied on the automatized translateY action
    */
   inverseAutomatism(autoName: string) {
-    let at = this._automatisms[autoName];
+    const at = this._automatisms[autoName];
 
     if (at[1].args) {
       for (let i = 0; i < at[1].args.length; ++i) {
@@ -771,7 +775,7 @@ class GameObject extends AdvancedContainer {
     }
 
     // execute registered automatisms
-    for (let a in this._automatisms) {
+    for (const a in this._automatisms) {
       const auto = this._automatisms[a];
       auto[1].timeSinceLastCall += Time.frameDelayScaled;
       if (auto[1].timeSinceLastCall > auto[1].interval) {

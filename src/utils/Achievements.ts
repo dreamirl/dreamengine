@@ -90,7 +90,7 @@ export class Achievements<T extends Achievement> {
    * Url to the folder containing the achievement images.
    * @type {string}
    */
-  public achievementImagesUrl: string = 'img/achievements/';
+  public achievementImagesUrl = 'img/achievements/';
   /**
    * Url to the folder containing the achievement images.
    * @deprecated Use 'achievementImagesUrl' instead
@@ -108,7 +108,7 @@ export class Achievements<T extends Achievement> {
    * @type {string}
    * @default '.png'
    */
-  public achievementImageExtension: string = '.png';
+  public achievementImageExtension = '.png';
 
   /**
    * Initialize the 'achievements' module.

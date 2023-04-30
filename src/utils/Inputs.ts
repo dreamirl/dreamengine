@@ -16,7 +16,7 @@ type InputInfo = {
   inputs: Array<{ code: string; type: string }>;
   interval: number;
   lastCall: number;
-  actions: {};
+  actions: object;
   isDown: boolean;
   isLongPress: boolean;
   stayOn: boolean;
@@ -39,7 +39,7 @@ type Queue = {
  * @namespace Inputs
  */
 
-let _langs = {
+const _langs = {
   en: {
     'leave-page': "By leaving the page you'll lost any progression unsaved.",
   },
@@ -202,11 +202,11 @@ export class Inputs {
       }
     >,
   ) {
-    let newInputs: { [key: string]: InputInfo } = {};
+    const newInputs: { [key: string]: InputInfo } = {};
 
-    for (let i in customInputs) {
+    for (const i in customInputs) {
       newInputs[i] = {
-        inputs: new Array(),
+        inputs: [],
         interval: customInputs[i].interval || 0,
         lastCall: Date.now(),
         actions: {},
@@ -220,7 +220,7 @@ export class Inputs {
       for (let n = 0, I; (I = customInputs[i].keycodes[n]); ++n) {
         let type: 'KEYBOARD' | 'MOUSE' | 'GAMEPADAXES' | 'GAMEPADBUTTONS' =
           I[0] == 'K' || I[0] == 'k' ? 'KEYBOARD' : 'MOUSE';
-        let data = I.split('.');
+        const data = I.split('.');
         let gamepadID = 0;
         let name: string;
         if (data[0][0] == 'G') {
@@ -237,7 +237,7 @@ export class Inputs {
           name = I.slice(2, I.length);
         }
 
-        if (!typeof this.dbInputs[type].hasOwnProperty(name)) {
+        if (!this.dbInputs[type].hasOwnProperty(name)) {
           console.log(
             "%cWARN: Inputs: An input couldn't be found in the database, did you respect the caseSensitive ?:" +
               type +
@@ -290,18 +290,18 @@ export class Inputs {
         newInputs[i].lastCall = Date.now() + newInputs[i].interval;
       }
 
-      this.queue['keyDown'][i] = new Array();
-      this.queue['keyUp'][i] = new Array();
+      this.queue['keyDown'][i] = [];
+      this.queue['keyUp'][i] = [];
       // this.queue[ 'mouseDown' ][ i ] = new Array();
       // this.queue[ 'mouseUp' ][ i ]   = new Array();
-      this.queue['btnMoved'][i] = new Array();
-      this.queue['axeMoved'][i] = new Array();
-      this.queue['axeStart'][i] = new Array();
-      this.queue['axeStop'][i] = new Array();
+      this.queue['btnMoved'][i] = [];
+      this.queue['axeMoved'][i] = [];
+      this.queue['axeStart'][i] = [];
+      this.queue['axeStop'][i] = [];
     }
 
-    this.queue['axeMoved']['wheelTop'] = new Array();
-    this.queue['axeMoved']['wheelDown'] = new Array();
+    this.queue['axeMoved']['wheelTop'] = [];
+    this.queue['axeMoved']['wheelDown'] = [];
 
     this.usedInputs = newInputs;
     this.toggleListeners();
@@ -429,7 +429,7 @@ export class Inputs {
    * @memberOf Inputs
    */
   toggleListeners(canvas?: HTMLCanvasElement, bind?: boolean) {
-    let target = canvas || window;
+    const target = canvas || window;
     if (this.isListening && !bind) {
       target.removeEventListener(
         'keydown',
@@ -476,12 +476,12 @@ export class Inputs {
     code: string,
     type: 'KEYBOARD' | 'GAMEPADBUTTONS' | 'GAMEPADAXES',
   ) {
-    let inputs: string[] = [];
+    const inputs: string[] = [];
     // parse all gamesInputs
-    for (let i in this.usedInputs) {
+    for (const i in this.usedInputs) {
       // parse each inputs
-      for (let t in this.usedInputs[i].inputs) {
-        let input = this.usedInputs[i].inputs[t].code,
+      for (const t in this.usedInputs[i].inputs) {
+        const input = this.usedInputs[i].inputs[t].code,
           tp = this.usedInputs[i].inputs[t].type;
 
         if (input == code && tp == type) {
@@ -499,8 +499,8 @@ export class Inputs {
    * @param {DOMEvent} event
    */
   keyDown(event: KeyboardEvent) {
-    let e = event || window.event;
-    let code = e.which || e.keyCode;
+    const e = event || window.event;
+    const code = e.which || e.keyCode;
 
     // we can ignore a list a specified keys (if you are using these for your top-application for example, like F1, F2)
     if (this.ignoreKeys.indexOf(code) != -1) {
@@ -535,7 +535,7 @@ export class Inputs {
       return false;
     }
 
-    let inputsDown = this.findInputs(code.toString(), 'KEYBOARD');
+    const inputsDown = this.findInputs(code.toString(), 'KEYBOARD');
     let shouldPreventDefault = true;
     if (inputsDown !== false) {
       for (let i = 0, input; (input = inputsDown[i]); ++i) {
@@ -587,8 +587,8 @@ export class Inputs {
    * @param {DOMEvent} event
    */
   keyUp(event: KeyboardEvent) {
-    let e = event || window.event;
-    let code = e.which || e.keyCode;
+    const e = event || window.event;
+    const code = e.which || e.keyCode;
 
     if (code == this.dbInputs.KEYBOARD.shift) {
       this.isShiftDown = false;
@@ -640,7 +640,7 @@ export class Inputs {
       }
     }
 
-    let inputsUp = this.findInputs(code.toString(), 'KEYBOARD');
+    const inputsUp = this.findInputs(code.toString(), 'KEYBOARD');
     if (inputsUp !== false) {
       for (let i = 0, input; (input = inputsUp[i]); ++i) {
         if (this.usedInputs[input].isDown) {
@@ -671,10 +671,10 @@ export class Inputs {
    * @param {DOMEvent} event
    */
   keyPress(event: KeyboardEvent) {
-    let e = event || window.event;
-    let code = e.key;
+    const e = event || window.event;
+    const code = e.key;
 
-    let inputsPress = this.findInputs(code, 'KEYBOARD');
+    const inputsPress = this.findInputs(code, 'KEYBOARD');
     if (inputsPress !== false) {
       // for ( let i = 0, input; input = inputsPress[ i ]; ++i )
       // {

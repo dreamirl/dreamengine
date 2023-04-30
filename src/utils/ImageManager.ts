@@ -105,12 +105,12 @@ class ImageManager {
 
     this.pools = {};
 
-    let version = '?v' + about.gameVersion;
-    for (let i in pools) {
-      let p = pools[i];
+    const version = '?v' + about.gameVersion;
+    for (const i in pools) {
+      const p = pools[i];
       this.pools[i] = [];
       for (let n = 0; n < Object.keys(p).length; ++n) {
-        let data = p[n];
+        const data = p[n];
         if (typeof data === 'string') {
           this.pools[i].push({ url: data });
         } else if (typeof data[0] === typeof data[1]) {
@@ -145,12 +145,8 @@ class ImageManager {
    * @public
    * @memberOf ImageManager
    */
-  loadPool(
-    poolName: string,
-    customEventName?: string,
-    resetLoader: boolean = false,
-  ) {
-    let self = this;
+  loadPool(poolName: string, customEventName?: string, resetLoader = false) {
+    const self = this;
 
     if (this.pools[poolName].length == 0) {
       setTimeout(() => {
@@ -218,10 +214,10 @@ class ImageManager {
 
     // dequeue waiting pools here
     if (this._waitingPools.length != 0) {
-      let pool = this._waitingPools.shift()!;
+      const pool = this._waitingPools.shift()!;
       this.loadPool(pool.name, pool.customEventName);
     } else if (this._waitingSolo.length != 0) {
-      let solo = this._waitingSolo.shift()!;
+      const solo = this._waitingSolo.shift()!;
       this.load(solo);
     }
   }
@@ -239,8 +235,7 @@ class ImageManager {
 
     let dataLoad: PoolContent | InitImageData = data;
 
-    if (typeof data === 'string') {
-    } else if (typeof data[0] === typeof data[1]) {
+    if (typeof data !== 'string' && typeof data[0] === typeof data[1]) {
       if (!data[2]) {
         data[2] = {};
       }
@@ -271,7 +266,7 @@ class ImageManager {
       return;
     }
 
-    let self = this;
+    const self = this;
     PIXI_LOADER.add(dataLoad as PoolContent).load(() => {
       // PIXI_LOADER.reset();
       // TODO find a way to prevent "success" trigger if the image failed to load
@@ -287,7 +282,7 @@ class ImageManager {
    * @memberOf ImageManager
    */
   unloadPool(poolName: string) {
-    let pool = this.pools[poolName];
+    const pool = this.pools[poolName];
     for (let i = 0, res, t = pool.length; i < t; ++i) {
       res = pool[i];
 

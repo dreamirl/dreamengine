@@ -3,14 +3,7 @@
 const LANGUAGES_CODES_TABLES: {
   [key: string]: string[] | undefined;
 } = Object.freeze({
-  fr: [
-    'fr_FR',
-    'fr_BE',
-    'fr_CA',
-    'fr_CH',
-    'fr_LU',
-    'fr_MC'
-  ],
+  fr: ['fr_FR', 'fr_BE', 'fr_CA', 'fr_CH', 'fr_LU', 'fr_MC'],
   en: [
     'en_AU',
     'en_BZ',
@@ -24,7 +17,7 @@ const LANGUAGES_CODES_TABLES: {
     'en_TT',
     'en_US',
     'en_ZA',
-    'en_ZW'
+    'en_ZW',
   ],
   es: [
     'es_AR',
@@ -45,139 +38,60 @@ const LANGUAGES_CODES_TABLES: {
     'es_PY',
     'es_SV',
     'es_UY',
-    'es_VE'
+    'es_VE',
   ],
-  pt: [
-    'pt_BR',
-    'pt_PT'
-  ],
-  de: [
-    'de_AT',
-    'de_CH',
-    'de_DE',
-    'de_LI',
-    'de_LU'
-  ],
-  it: [
-    'it_CH',
-    'it_IT'
-  ],
-  ja: [
-    'ja_JP'
-  ],
-  ru: [
-    'ru_RU'
-  ],
-  zh: [
-    "zh_CN",
-    "zh_SG",
-    "zh_HK",
-    "zh_MO",
-    "zh_TW"
-  ],
-  id: [
-    "id_ID"
-  ],
-  ko: [
-    "ko_KR"
-  ],
-  ab: [
-    "ab_GE"
-  ],
-  aa: [
-    "aa_ER",
-    "aa_ET"
-  ],
-  af: [
-    "af_ZA"
-  ],
-  ak: [
-    "ak_GH"
-  ],
-  sq: [
-    "sq_AL"
-  ],
-  am: [
-    "am_ET"
-  ],
+  pt: ['pt_BR', 'pt_PT'],
+  de: ['de_AT', 'de_CH', 'de_DE', 'de_LI', 'de_LU'],
+  it: ['it_CH', 'it_IT'],
+  ja: ['ja_JP'],
+  ru: ['ru_RU'],
+  zh: ['zh_CN', 'zh_SG', 'zh_HK', 'zh_MO', 'zh_TW'],
+  id: ['id_ID'],
+  ko: ['ko_KR'],
+  ab: ['ab_GE'],
+  aa: ['aa_ER', 'aa_ET'],
+  af: ['af_ZA'],
+  ak: ['ak_GH'],
+  sq: ['sq_AL'],
+  am: ['am_ET'],
   ar: [
-    "ar_DZ",
-    "ar_BH",
-    "ar_EG",
-    "ar_IQ",
-    "ar_JO",
-    "ar_KW",
-    "ar_LB",
-    "ar_LY",
-    "ar_MA",
-    "ar_OM",
-    "ar_QA",
-    "ar_SA",
-    "ar_SD",
-    "ar_SY",
-    "ar_TN",
-    "ar_AE",
-    "ar_YE"
+    'ar_DZ',
+    'ar_BH',
+    'ar_EG',
+    'ar_IQ',
+    'ar_JO',
+    'ar_KW',
+    'ar_LB',
+    'ar_LY',
+    'ar_MA',
+    'ar_OM',
+    'ar_QA',
+    'ar_SA',
+    'ar_SD',
+    'ar_SY',
+    'ar_TN',
+    'ar_AE',
+    'ar_YE',
   ],
-  an: [
-    "an_ES"
-  ],
-  hy: [
-    "hy_AM"
-  ],
-  as: [
-    "as_IN"
-  ],
-  av: [
-    "av_RU"
-  ],
-  ae: [
-    "ae_RU"
-  ],
-  ay: [
-    "ay_BO",
-    "ay_PE"
-  ],
-  az: [
-    "az_AZ"
-  ],
-  bm: [
-    "bm_ML"
-  ],
-  ba: [
-    "ba_RU"
-  ],
-  eu: [
-    "eu_ES"
-  ],
-  be: [
-    "be_BY"
-  ],
-  bn: [
-    "bn_BD",
-    "bn_IN"
-  ],
-  bh: [
-    "bh_IN"
-  ],
-  bi: [
-    "bi_VU"
-  ],
-  bs: [
-    "bs_BA"
-  ],
-  br: [
-    "br_FR"
-  ],
-  bg: [
-    "bg_BG"
-  ],
-  my: [
-    "my_MM"
-  ],
-  ca: [
-    "ca_ES"
-  ]
+  an: ['an_ES'],
+  hy: ['hy_AM'],
+  as: ['as_IN'],
+  av: ['av_RU'],
+  ae: ['ae_RU'],
+  ay: ['ay_BO', 'ay_PE'],
+  az: ['az_AZ'],
+  bm: ['bm_ML'],
+  ba: ['ba_RU'],
+  eu: ['eu_ES'],
+  be: ['be_BY'],
+  bn: ['bn_BD', 'bn_IN'],
+  bh: ['bh_IN'],
+  bi: ['bi_VU'],
+  bs: ['bs_BA'],
+  br: ['br_FR'],
+  bg: ['bg_BG'],
+  my: ['my_MM'],
+  ca: ['ca_ES'],
 });
 
 export interface LocalizationObject {
@@ -209,7 +123,7 @@ export type LocalizationInitializationOptions = {
 export class Localization {
   private getShortLanguage(lang: string) {
     const str = lang.substring(0, lang.indexOf('_'));
-    return (str in LANGUAGES_CODES_TABLES ? str : undefined);
+    return str in LANGUAGES_CODES_TABLES ? str : undefined;
   }
 
   /**
@@ -254,7 +168,7 @@ export class Localization {
     this.setLanguage(lang);
   }
 
-  private _currentLanguage: string = 'en';
+  private _currentLanguage = 'en';
 
   /**
    * Return available languages (Protected by copying the array)
@@ -293,7 +207,10 @@ export class Localization {
    * @param {Object} dictionaries - Every localization structured in a named tree
    * @param {Object} [options] - Options for the initialization
    */
-  public init(dictionaries: Record<string, LocalizationObject>, options?: Partial<LocalizationInitializationOptions>) {
+  public init(
+    dictionaries: Record<string, LocalizationObject>,
+    options?: Partial<LocalizationInitializationOptions>,
+  ) {
     this._dictionaries = {};
     this._availableLanguages = [];
 
@@ -319,10 +236,16 @@ export class Localization {
    * @param {Object} dictionaries - Every localization structured you want to add in a named tree
    * @param {Boolean} merge - If true, the given dictionary will be merged with the existing one (if any)
    */
-  public addDictionary(dictionaries: Record<string, LocalizationObject>, merge: boolean = false) {
+  public addDictionary(
+    dictionaries: Record<string, LocalizationObject>,
+    merge = false,
+  ) {
     for (const lang in dictionaries) {
       if (merge && this._dictionaries[lang]) {
-        this._dictionaries[lang] = this.merge(this._dictionaries[lang], dictionaries[lang]);
+        this._dictionaries[lang] = this.merge(
+          this._dictionaries[lang],
+          dictionaries[lang],
+        );
       } else {
         this._dictionaries[lang] = dictionaries[lang];
       }
@@ -340,7 +263,11 @@ export class Localization {
    * @param {Object} dictionary - The localization dictionary structured in a named tree
    * @param {Boolean} merge - If true, the given dictionary will be merged with the existing one (if any)
    */
-  public addOneDictionary(lang: string, dictionary: LocalizationObject, merge: boolean = false) {
+  public addOneDictionary(
+    lang: string,
+    dictionary: LocalizationObject,
+    merge = false,
+  ) {
     this.addDictionary({ [lang]: dictionary }, merge);
   }
 
@@ -357,17 +284,24 @@ export class Localization {
       return '';
     }
 
-    let l = language || this.currentLanguage;
+    const l = language || this.currentLanguage;
     const shortL = this.getShortLanguage(l) as string | undefined;
 
-    const langToTest: string[] = this._options.useShortLanguageCodeAsFallback && shortL
+    const langToTest: string[] =
+      this._options.useShortLanguageCodeAsFallback && shortL
         ? [l, shortL, 'en']
         : [l, 'en'];
 
-    const availableLanguagesFromTest = langToTest.filter(l => this._availableLanguages.includes(l)) as string[];
+    const availableLanguagesFromTest = langToTest.filter((l) =>
+      this._availableLanguages.includes(l),
+    ) as string[];
 
     if (availableLanguagesFromTest.length === 0) {
-      console.warn(`No language dictionaries for the languages (\'${langToTest.join('\', \'')}\')`);
+      console.warn(
+        `No language dictionaries for the languages ('${langToTest.join(
+          "', '",
+        )}')`,
+      );
       return fullKey;
     }
 
@@ -393,9 +327,12 @@ export class Localization {
    * @return {Object}
    * @private
    */
-  private _get(localizationObject: LocalizationObject, keys: string[]): {
-    result: Nullable<string>,
-    oldKeys: string[],
+  private _get(
+    localizationObject: LocalizationObject,
+    keys: string[],
+  ): {
+    result: Nullable<string>;
+    oldKeys: string[];
   } {
     let currentLocalizationObject = localizationObject;
     let result: Nullable<string> = null;
@@ -404,7 +341,8 @@ export class Localization {
     do {
       const key = keys.shift()!;
 
-      const value: LocalizationObject | string | undefined = currentLocalizationObject[key];
+      const value: LocalizationObject | string | undefined =
+        currentLocalizationObject[key];
 
       oldKeys.push(key);
 
@@ -450,10 +388,8 @@ export class Localization {
       for (const fullLang of LANGUAGES_CODES_TABLES[lang]!) {
         if (
           !results[fullLang] ||
-          (
-            this._options.useShortLanguageCodeValueInGetAllOnMissingKey &&
-            results[fullLang] === fullKey
-          )
+          (this._options.useShortLanguageCodeValueInGetAllOnMissingKey &&
+            results[fullLang] === fullKey)
         ) {
           results[fullLang] = results[lang];
         }
@@ -471,7 +407,10 @@ export class Localization {
    * @return {Object}
    * @private
    */
-  private merge(old: LocalizationObject, toMerge: LocalizationObject): LocalizationObject {
+  private merge(
+    old: LocalizationObject,
+    toMerge: LocalizationObject,
+  ): LocalizationObject {
     const newValue: LocalizationObject = {};
 
     const oldKeys = Object.keys(old);
@@ -481,7 +420,8 @@ export class Localization {
 
     for (const key of keys) {
       const oldValue: LocalizationObject | string | undefined = old[key];
-      const toMergeValue: LocalizationObject | string | undefined = toMerge[key];
+      const toMergeValue: LocalizationObject | string | undefined =
+        toMerge[key];
 
       if (toMergeValue === undefined) {
         newValue[key] = oldValue;

@@ -243,17 +243,17 @@ class Render extends EventEmitter {
    * @public
    * @memberOf Render
    */
-  resizeRatio(w: number, h: number, stretch: boolean = false) {
-    let baseW = this._savedSizes.x;
-    let baseH = this._savedSizes.y;
+  resizeRatio(w: number, h: number, stretch = false) {
+    const baseW = this._savedSizes.x;
+    const baseH = this._savedSizes.y;
     let calcRatio = w / baseW;
 
     if (calcRatio * baseH > h) {
       calcRatio = h / baseH;
     }
 
-    let newW = (calcRatio * baseW) >> 0;
-    let newH = (calcRatio * baseH) >> 0;
+    const newW = (calcRatio * baseW) >> 0;
+    const newH = (calcRatio * baseH) >> 0;
 
     // if we want to stretch the canvas to keep the same viewport size
     if (stretch) {
@@ -329,12 +329,12 @@ class Render extends EventEmitter {
     let screenH = window.innerHeight || document.documentElement.clientHeight;
 
     if (this.div.parentElement) {
-      let divParentH = window
+      const divParentH = window
         .getComputedStyle(this.div.parentElement, null)
         .getPropertyValue('height');
       if (divParentH && screenH < document.body.clientHeight) {
-        let divW = this.div.parentElement.clientWidth;
-        let divH = this.div.parentElement.clientHeight;
+        const divW = this.div.parentElement.clientWidth;
+        const divH = this.div.parentElement.clientHeight;
 
         if (divH < screenH) {
           screenH = divH;

@@ -1,6 +1,4 @@
 class Time {
-  private constructor() {}
-
   public static DEName = 'Time';
   public static deltaTime = 1;
   public static missedFrame = 0;
@@ -61,7 +59,7 @@ class Time {
     */
   public static getDelta() {
     return Time.deltaTime;
-  };
+  }
 }
 
 // TODO

@@ -23,15 +23,15 @@ import EventEmitter from 'eventemitter3';
 
 function detectBrowser(browser: string) {
   if (browser == 'firefox') {
-    if (/Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent)) {
-      let ffversion = new Number(RegExp.$1); // capture x.x portion and store as a number
+    if (/Firefox[/\s](\d+\.\d+)/.test(navigator.userAgent)) {
+      const ffversion = new Number(RegExp.$1); // capture x.x portion and store as a number
       return ffversion;
     }
     return false;
   }
 
   if (browser == 'chrome') {
-    let nav = navigator.userAgent.toLowerCase();
+    const nav = navigator.userAgent.toLowerCase();
     // doesn't want mobile browser
     return (
       nav.indexOf('chrome') > -1 &&
@@ -64,7 +64,7 @@ export type WaitKeyCallback = (x: {
   sign?: string;
 }) => void;
 
-let gamepadAvalaible: boolean[] = [];
+const gamepadAvalaible: boolean[] = [];
 
 class gamepads {
   DEName = 'gamepad';
@@ -105,7 +105,7 @@ class gamepads {
 
       this._updateChange = (cTime) => {
         // [] fallback if there is not gamepads API
-        let gamepads = this.filterGamepads(
+        const gamepads = this.filterGamepads(
           navigator.getGamepads ? navigator.getGamepads() : [],
         );
 
@@ -125,12 +125,12 @@ class gamepads {
       };
 
       this._updateRate = (cTime) => {
-        let gamepads = this.filterGamepads(
+        const gamepads = this.filterGamepads(
           navigator.getGamepads ? navigator.getGamepads() : [],
         );
 
         for (let i = 0; i < gamepads.length; ++i) {
-          let gamepad = gamepads[i];
+          const gamepad = gamepads[i];
           if (gamepad) {
             this.handleGamepad(gamepad, cTime);
             continue;
@@ -184,7 +184,7 @@ class gamepads {
         return false;
       }
 
-      let idlower = g.id.toLowerCase();
+      const idlower = g.id.toLowerCase();
 
       return !(
         idlower.match('unknown') ||
@@ -268,7 +268,7 @@ class gamepads {
   }
 
   handleGamepad(gamepad: Gamepad, cTime: number) {
-    let index = gamepad.index;
+    const index = gamepad.index;
     this.gamepadsInfos[index] = gamepad;
     if (this._btnsListeners[index]) {
       this.handleListeners(
@@ -311,7 +311,7 @@ class gamepads {
       console.log('Disconnect gamepad ' + index, 2);
       if (config.notifications.gamepadChange) {
         this.isGamepadConnected = false;
-        for (let i in gamepadAvalaible) {
+        for (const i in gamepadAvalaible) {
           if (i != index.toString() && gamepadAvalaible[i]) {
             this.isGamepadConnected = true;
             break;
@@ -330,7 +330,7 @@ class gamepads {
 
   getGamepadsLength() {
     let n = 0;
-    for (let i in gamepadAvalaible) {
+    for (const i in gamepadAvalaible) {
       if (gamepadAvalaible[i]) {
         ++n;
       }
@@ -401,7 +401,7 @@ class gamepads {
     cTime: number,
     type: string,
   ) {
-    for (let [ind, lst] of Object.entries(arrayListeners[index].listeners)) {
+    for (const [ind, lst] of Object.entries(arrayListeners[index].listeners)) {
       const listener = lst as Listener;
 
       const i = parseInt(ind);
@@ -415,7 +415,7 @@ class gamepads {
       } else {
         elemForce = (gamepadInterface[i] as GamepadButton).value;
       }
-      let eventBus = arrayListeners[index];
+      const eventBus = arrayListeners[index];
 
       if (Math.abs(elemForce) < 0.3) {
         elemForce = 0;
@@ -501,7 +501,7 @@ class gamepads {
   }
 
   handleGamepadAxes(gamepad: Gamepad) {
-    for (let ind in this._axesListeners[gamepad.index].listeners) {
+    for (const ind in this._axesListeners[gamepad.index].listeners) {
       const i = parseInt(ind);
       if (
         gamepad.axes[i] > 0 &&
@@ -586,7 +586,7 @@ class gamepads {
       return;
     }
 
-    for (let i in o[padIndex].listeners) {
+    for (const i in o[padIndex].listeners) {
       this.delAllOfnum(o, padIndex, parseFloat(i));
     }
   }
@@ -596,7 +596,7 @@ class gamepads {
       return;
     }
 
-    for (let i in o) {
+    for (const i in o) {
       this.delAllListenersOfIndex(o, parseInt(i));
     }
   }

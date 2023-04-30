@@ -71,7 +71,7 @@ export default class Camera extends AdvancedContainer {
     this.x = (this.renderSizes.x / 2) >> 0;
     this.y = (this.renderSizes.y / 2) >> 0;
 
-    let _params = params || {};
+    const _params = params || {};
 
     this.interactive =
       params.interactive !== undefined ? params.interactive : true;
@@ -228,7 +228,7 @@ export default class Camera extends AdvancedContainer {
       | '_customPointerUpOutside',
     event: PIXI.InteractionEvent,
   ) {
-    let pos = {
+    const pos = {
       x: event.data.global.x + (this.pivot.x - this.x),
       y: event.data.global.y + (this.pivot.y - this.y),
     };
@@ -340,8 +340,8 @@ export default class Camera extends AdvancedContainer {
    * @protected
    * @memberOf Camera
    */
-  checkLimits(qualityRatio: number = 1) {
-    let limits = this.limits;
+  checkLimits(qualityRatio = 1) {
+    const limits = this.limits;
     if (limits.minX != undefined && this.x < limits.minX * qualityRatio) {
       this.x = limits.minX * qualityRatio;
     } else if (

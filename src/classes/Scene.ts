@@ -116,7 +116,7 @@ class Scene extends Container {
 
     if (gameObject.tag) {
       if (!this.gameObjectsByTag[gameObject.tag]) {
-        this.gameObjectsByTag[gameObject.tag] = new Array();
+        this.gameObjectsByTag[gameObject.tag] = [];
       }
       this.gameObjectsByTag[gameObject.tag].push(gameObject);
     }
@@ -188,7 +188,7 @@ class Scene extends Container {
    * @param {GameObject} object can be the index of the GameObject in the gameObjects array
    */
   delete(object: GameObject) {
-    let target = this.remove(object);
+    const target = this.remove(object);
     target.killMePlease();
 
     return this;

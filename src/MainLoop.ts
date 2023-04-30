@@ -110,7 +110,7 @@ class MainLoop {
     gamepad.update(Time.currentTime);
 
     while (Time.timeSinceLastFrame >= Time.frameDelay) {
-      for (let r in this.additionalModules)
+      for (const r in this.additionalModules)
         this.additionalModules[r]._update(Time.frameDelayScaled);
 
       for (let i = 0, r; (r = this.renders[i]); ++i) {
