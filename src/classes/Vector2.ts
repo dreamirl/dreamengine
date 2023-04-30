@@ -18,7 +18,7 @@ class Vector2 extends PIXI.Container {
   private _rotation = 0;
   private _cosAngle = 1;
   private _sinAngle = 0;
-  public override gameObject: GameObject;
+  public gameObject?: GameObject;
 
   constructor(x: number, y: number, gameObject?: GameObject) {
     super();
@@ -33,29 +33,29 @@ class Vector2 extends PIXI.Container {
    * @memberOf Vector2
    * @type {Float}
    */
-  public get x() {
+  public override get x() {
     return this.gameObject ? this.gameObject.x : this._x;
   }
-  public set x(value) {
+  public override set x(value) {
     this._x = value;
     if (this.gameObject) {
       this.gameObject.x = value;
     }
   }
-  public get y() {
+  public override get y() {
     return this.gameObject ? this.gameObject.y : this._y;
   }
-  public set y(value) {
+  public override set y(value) {
     this._y = value;
     if (this.gameObject) {
       this.gameObject.y = value;
     }
   }
 
-  public get rotation() {
+  public override get rotation() {
     return this.gameObject ? this.gameObject.rotation : this._rotation;
   }
-  public set rotation(value) {
+  public override set rotation(value) {
     this._updateRotation(value);
     if (this.gameObject) {
       this.gameObject.rotation = value;
@@ -319,7 +319,7 @@ class Vector2 extends PIXI.Container {
    * @returns {Vector2} this current instance
    */
   setPosition(first: Vector2 | number, y?: number) {
-    if(typeof first === 'number'){
+    if (typeof first === 'number') {
       this.x = first != undefined ? first : this.x;
       this.y = y != undefined ? y : this.y;
       return this;

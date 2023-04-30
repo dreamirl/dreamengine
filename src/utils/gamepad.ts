@@ -1,5 +1,4 @@
-﻿import MainLoop from '../MainLoop';
-import config from '../config';
+﻿import config from '../config';
 import Events from './Events';
 import Localization from './Localization';
 import Notifications from './Notifications';
@@ -23,15 +22,15 @@ import EventEmitter from 'eventemitter3';
 // let addEvent = Event.addEventCapabilities;
 
 function detectBrowser(browser: string) {
-  if(browser == 'firefox'){
+  if (browser == 'firefox') {
     if (/Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent)) {
       let ffversion = new Number(RegExp.$1); // capture x.x portion and store as a number
       return ffversion;
     }
     return false;
   }
-  
-  if(browser == 'chrome'){
+
+  if (browser == 'chrome') {
     let nav = navigator.userAgent.toLowerCase();
     // doesn't want mobile browser
     return (
@@ -46,30 +45,24 @@ function detectBrowser(browser: string) {
   return false;
 }
 
-type GamepadState = {
-  controllerId: number;
-  packetNumber: number;
-  [key: string]: number;
-}
-
 type Listener = {
   active: boolean;
-  force: number; 
+  force: number;
   noRate: boolean;
   timesTamp?: number;
   diffTime?: number;
-  count?: number,
-}
+  count?: number;
+};
 
 export type WaitKeyCallback = (x: {
-  success: boolean,
-  type: string,
-  gamepadType?: string,
-  keyName?: string | number,
-  compositeKeyName?: string,
-  compositeKeyNameWithoutGamepadIndex?: string,
-  sign?: string,
-}) => void
+  success: boolean;
+  type: string;
+  gamepadType?: string;
+  keyName?: string | number;
+  compositeKeyName?: string;
+  compositeKeyNameWithoutGamepadIndex?: string;
+  sign?: string;
+}) => void;
 
 let gamepadAvalaible: boolean[] = [];
 
@@ -77,13 +70,19 @@ class gamepads {
   DEName = 'gamepad';
   isGamepadConnected = false;
 
-  _btnsListeners: {[key: number] : EventEmitter} = {};
-  _axesListeners: {[key: number] : EventEmitter} = {};
+  _btnsListeners: { [key: number]: EventEmitter } = {};
+  _axesListeners: { [key: number]: EventEmitter } = {};
   _gamepads: (Gamepad | null)[] = [];
-  gamepadsInfos: {[x: number]: Gamepad | null} = {};
-  lastTimeStamps: {[x: number]: number | null} = {};
+  gamepadsInfos: { [x: number]: Gamepad | null } = {};
+  lastTimeStamps: { [x: number]: number | null } = {};
 
-  handleDown: (i: string, eventBus: EventEmitter, listener: Listener, elemForce: number, cTime: number) => boolean | void = () => {};
+  handleDown: (
+    i: string,
+    eventBus: EventEmitter,
+    listener: Listener,
+    elemForce: number,
+    cTime: number,
+  ) => boolean | void = () => {};
 
   isWaitingForAnyKey = false;
   waitForAnyKeyType = 'keyboard';
@@ -91,7 +90,7 @@ class gamepads {
 
   _updateChange = (_t: number) => {};
   _updateRate = (_t: number) => {};
-  
+
   update: (_t: number) => void = () => {};
 
   init() {
@@ -107,9 +106,7 @@ class gamepads {
       this._updateChange = (cTime) => {
         // [] fallback if there is not gamepads API
         let gamepads = this.filterGamepads(
-          navigator.getGamepads
-            ? navigator.getGamepads()
-            : [],
+          navigator.getGamepads ? navigator.getGamepads() : [],
         );
 
         for (let i = 0; i < gamepads.length; ++i) {
@@ -119,8 +116,7 @@ class gamepads {
               this.lastTimeStamps[i] != gamepads[i]!.timestamp
             ) {
               this.lastTimeStamps[i] = gamepads[i]!.timestamp;
-              if(gamepads[i] !== null)
-                this.handleGamepad(gamepads[i]!, cTime);
+              if (gamepads[i] !== null) this.handleGamepad(gamepads[i]!, cTime);
             }
           } else {
             this.disconnectGamepad(i);
@@ -130,9 +126,7 @@ class gamepads {
 
       this._updateRate = (cTime) => {
         let gamepads = this.filterGamepads(
-          navigator.getGamepads
-            ? navigator.getGamepads()
-            : [],
+          navigator.getGamepads ? navigator.getGamepads() : [],
         );
 
         for (let i = 0; i < gamepads.length; ++i) {
@@ -166,8 +160,16 @@ class gamepads {
       }*/
     }
 
-    window.addEventListener('MozGamepadConnected', (e) => this.gamepadConnected(e as GamepadEvent), false);
-    window.addEventListener('gamepadconnected', (e) => this.gamepadConnected(e), false);
+    window.addEventListener(
+      'MozGamepadConnected',
+      (e) => this.gamepadConnected(e as GamepadEvent),
+      false,
+    );
+    window.addEventListener(
+      'gamepadconnected',
+      (e) => this.gamepadConnected(e),
+      false,
+    );
     // window.addEventListener( "gamepaddisconnected", gamepadDisconnected, false ); // TODO
   }
 
@@ -252,7 +254,6 @@ class gamepads {
     return nGamepad;
   }*/
 
-
   //Firefox handler
   gamepadConnected(e: GamepadEvent) {
     Notifications.create(
@@ -261,7 +262,7 @@ class gamepads {
     );
     this._gamepads[e.gamepad.index] = e.gamepad;
     if (!this._gamepads.length) {
-      this. _gamepads.length = 0;
+      this._gamepads.length = 0;
     }
     this._gamepads.length++;
   }
@@ -280,7 +281,13 @@ class gamepads {
     }
 
     if (this._axesListeners[index]) {
-      this.handleListeners(index, gamepad.axes, this._axesListeners, cTime, 'axes');
+      this.handleListeners(
+        index,
+        gamepad.axes,
+        this._axesListeners,
+        cTime,
+        'axes',
+      );
     }
     if (!gamepadAvalaible[index]) {
       console.log('Gamepad connected ' + index, 2);
@@ -342,7 +349,12 @@ class gamepads {
     return false;
   }
 
-  handleDownChange(i: string, eventBus: EventEmitter, listener: Listener, elemForce: number) {
+  handleDownChange(
+    i: string,
+    eventBus: EventEmitter,
+    listener: Listener,
+    elemForce: number,
+  ) {
     if (this.overSensibility(elemForce) && !listener.active) {
       eventBus.emit('down' + i, elemForce, i);
       listener.active = true;
@@ -352,7 +364,13 @@ class gamepads {
   _firstRate = 500;
   _rate = 150;
 
-  handleDownRate(i: string, eventBus: EventEmitter, listener: Listener, elemForce: number, cTime: number) {
+  handleDownRate(
+    i: string,
+    eventBus: EventEmitter,
+    listener: Listener,
+    elemForce: number,
+    cTime: number,
+  ) {
     if (this.overSensibility(elemForce)) {
       if (!listener.active) {
         eventBus.emit('down' + i, elemForce, i);
@@ -379,7 +397,7 @@ class gamepads {
   handleListeners(
     index: number,
     gamepadInterface: readonly (number | GamepadButton)[],
-    arrayListeners: {[key: number] : EventEmitter},
+    arrayListeners: { [key: number]: EventEmitter },
     cTime: number,
     type: string,
   ) {
@@ -390,9 +408,9 @@ class gamepads {
       }
 
       let elemForce = 0;
-      if(typeof gamepadInterface[i] === 'number'){
-        elemForce = (gamepadInterface[i] as number);
-      }else{
+      if (typeof gamepadInterface[i] === 'number') {
+        elemForce = gamepadInterface[i] as number;
+      } else {
         elemForce = (gamepadInterface[i] as GamepadButton).value;
       }
       let eventBus = arrayListeners[index];
@@ -412,11 +430,11 @@ class gamepads {
             if (Math.abs(elemForce) < 0.8) {
               continue;
             }
-            
+
             let key: keyof typeof InputsManager.dbInputs.GAMEPADBUTTONS;
             let keyName: string | undefined = undefined;
             for (key in InputsManager.dbInputs.GAMEPADBUTTONS) {
-              if(InputsManager.dbInputs.GAMEPADBUTTONS[key] == i){
+              if (InputsManager.dbInputs.GAMEPADBUTTONS[key] == i) {
                 keyName = key;
                 break;
               }
@@ -451,9 +469,11 @@ class gamepads {
 
           if (type === 'buttons') {
             let key: keyof typeof InputsManager.dbInputs.GAMEPADBUTTONS;
-            let keyName: keyof typeof InputsManager.dbInputs.GAMEPADBUTTONS | undefined = undefined;
+            let keyName:
+              | keyof typeof InputsManager.dbInputs.GAMEPADBUTTONS
+              | undefined = undefined;
             for (key in InputsManager.dbInputs.GAMEPADBUTTONS) {
-              if(InputsManager.dbInputs.GAMEPADBUTTONS[key] == i){
+              if (InputsManager.dbInputs.GAMEPADBUTTONS[key] == i) {
                 keyName = key;
                 break;
               }
@@ -477,20 +497,27 @@ class gamepads {
         listener.count = 0;
       }
     }
-  };
+  }
 
   handleGamepadAxes(gamepad: Gamepad) {
     for (let ind in this._axesListeners[gamepad.index].listeners) {
       const i = parseInt(ind);
-      if (gamepad.axes[i] > 0 && !this._axesListeners[gamepad.index].listeners[i]) {
+      if (
+        gamepad.axes[i] > 0 &&
+        !this._axesListeners[gamepad.index].listeners[i]
+      ) {
         this._btnsListeners[gamepad.index].emit('down' + i);
         this._btnsListeners[gamepad.index].listeners[i] = true;
         continue;
       }
     }
-  };
+  }
 
-  _checkListeners(o: {[key: number] : EventEmitter}, padIndex: number, num: number) {
+  _checkListeners(
+    o: { [key: number]: EventEmitter },
+    padIndex: number,
+    num: number,
+  ) {
     if (!o[padIndex]) {
       o[padIndex] = new Events.Emitter();
       o[padIndex].listeners = {};
@@ -500,21 +527,37 @@ class gamepads {
     if (typeof o[padIndex].listeners[num] == 'undefined') {
       o[padIndex].listeners[num] = { active: false, force: 0 };
     }
-  };
+  }
 
-  addListener(o: {[key: number] : EventEmitter}, padIndex: number, num: number, action: string, callBack: (x: number) => void, noRate: boolean) {
+  addListener(
+    o: { [key: number]: EventEmitter },
+    padIndex: number,
+    num: number,
+    action: string,
+    callBack: (x: number) => void,
+    noRate: boolean,
+  ) {
     this._checkListeners(o, padIndex, num);
     o[padIndex].on(action + num, callBack);
     o[padIndex].listeners[num].noRate = noRate;
-  };
+  }
 
-  delListener(o: {[key: number] : EventEmitter}, padIndex: number, num: number, action: string) {
+  delListener(
+    o: { [key: number]: EventEmitter },
+    padIndex: number,
+    num: number,
+    action: string,
+  ) {
     if (o[padIndex]) {
       o[padIndex].removeListener(action + num);
     }
-  };
+  }
 
-  delAllOfnum(o: {[key: number] : EventEmitter}, padIndex: number, num: number) {
+  delAllOfnum(
+    o: { [key: number]: EventEmitter },
+    padIndex: number,
+    num: number,
+  ) {
     if (!o[padIndex]) {
       return;
     }
@@ -523,9 +566,9 @@ class gamepads {
     this.delListener(o, padIndex, num, 'up');
     this.delListener(o, padIndex, num, 'move');
     delete o[padIndex].listeners[num];
-  };
+  }
 
-  delAllListenersOfIndex(o: {[key: number] : EventEmitter}, padIndex: number) {
+  delAllListenersOfIndex(o: { [key: number]: EventEmitter }, padIndex: number) {
     if (!o[padIndex]) {
       return;
     }
@@ -533,9 +576,9 @@ class gamepads {
     for (let i in o[padIndex].listeners) {
       this.delAllOfnum(o, padIndex, i);
     }
-  };
+  }
 
-  delAllListeners(o: {[key: number] : EventEmitter}) {
+  delAllListeners(o: { [key: number]: EventEmitter }) {
     if (!o) {
       return;
     }
@@ -543,90 +586,167 @@ class gamepads {
     for (let i in o) {
       this.delAllListenersOfIndex(o, parseInt(i));
     }
-  };
+  }
 
   //On Btns
-  onBtnDown(padIndex: number, num: number, callBack: (x: number) => void, noRate: boolean) {
-    this.addListener(this._btnsListeners, padIndex, num, 'down', callBack, noRate);
-  };
+  onBtnDown(
+    padIndex: number,
+    num: number,
+    callBack: (x: number) => void,
+    noRate: boolean,
+  ) {
+    this.addListener(
+      this._btnsListeners,
+      padIndex,
+      num,
+      'down',
+      callBack,
+      noRate,
+    );
+  }
 
-  onBtnMove(padIndex: number, num: number, callBack: (x: number) => void, noRate: boolean) {
-    this.addListener(this._btnsListeners, padIndex, num, 'move', callBack, noRate);
-  };
+  onBtnMove(
+    padIndex: number,
+    num: number,
+    callBack: (x: number) => void,
+    noRate: boolean,
+  ) {
+    this.addListener(
+      this._btnsListeners,
+      padIndex,
+      num,
+      'move',
+      callBack,
+      noRate,
+    );
+  }
 
-  onBtnUp(padIndex: number, num: number, callBack: (x: number) => void, noRate: boolean) {
-    this.addListener(this._btnsListeners, padIndex, num, 'up', callBack, noRate);
-  };
+  onBtnUp(
+    padIndex: number,
+    num: number,
+    callBack: (x: number) => void,
+    noRate: boolean,
+  ) {
+    this.addListener(
+      this._btnsListeners,
+      padIndex,
+      num,
+      'up',
+      callBack,
+      noRate,
+    );
+  }
 
   //del Btns
   delBtnDown(padIndex: number, num: number) {
     this.delListener(this._btnsListeners, padIndex, num, 'down');
-  };
+  }
 
   delBtnMove(padIndex: number, num: number) {
     this.delListener(this._btnsListeners, padIndex, num, 'move');
-  };
+  }
 
   delBtnUp(padIndex: number, num: number) {
     this.delListener(this._btnsListeners, padIndex, num, 'up');
-  };
+  }
 
   delBtn(padIndex: number, num: number) {
     this.delAllOfnum(this._btnsListeners, padIndex, num);
-  };
+  }
 
   delBtnsPad(padIndex: number) {
     this.delAllListenersOfIndex(this._btnsListeners, padIndex);
-  };
+  }
 
   delBtnsListeners() {
     this.delAllListeners(this._btnsListeners);
-  };
+  }
 
   //On Axes
-  onAxeStart(padIndex: number, num: number, callBack: (x: number) => void, noRate: boolean) {
-    this.addListener(this._axesListeners, padIndex, num, 'down', callBack, noRate);
-  };
+  onAxeStart(
+    padIndex: number,
+    num: number,
+    callBack: (x: number) => void,
+    noRate: boolean,
+  ) {
+    this.addListener(
+      this._axesListeners,
+      padIndex,
+      num,
+      'down',
+      callBack,
+      noRate,
+    );
+  }
 
-  onAxeMove(padIndex: number, num: number, callBack: (x: number) => void, noRate: boolean) {
-    this.addListener(this._axesListeners, padIndex, num, 'move', callBack, noRate);
-  };
+  onAxeMove(
+    padIndex: number,
+    num: number,
+    callBack: (x: number) => void,
+    noRate: boolean,
+  ) {
+    this.addListener(
+      this._axesListeners,
+      padIndex,
+      num,
+      'move',
+      callBack,
+      noRate,
+    );
+  }
 
-  onAxeStop(padIndex: number, num: number, callBack: (x: number) => void, noRate: boolean) {
-    this.addListener(this._axesListeners, padIndex, num, 'up', callBack, noRate);
-  };
+  onAxeStop(
+    padIndex: number,
+    num: number,
+    callBack: (x: number) => void,
+    noRate: boolean,
+  ) {
+    this.addListener(
+      this._axesListeners,
+      padIndex,
+      num,
+      'up',
+      callBack,
+      noRate,
+    );
+  }
 
   //del Btns
   delAxeStart(padIndex: number, num: number) {
     this.delListener(this._axesListeners, padIndex, num, 'down');
-  };
+  }
 
   delAxeMove(padIndex: number, num: number) {
     this.delListener(this._axesListeners, padIndex, num, 'move');
-  };
+  }
 
   delAxeStop(padIndex: number, num: number) {
     this.delListener(this._axesListeners, padIndex, num, 'up');
-  };
+  }
 
   delAxe(padIndex: number, num: number) {
     this.delAllOfnum(this._axesListeners, padIndex, num);
-  };
+  }
 
   delAxesPad(padIndex: number) {
     this.delAllListenersOfIndex(this._axesListeners, padIndex);
-  };
+  }
 
   delAxesListeners() {
     this.delAllListeners(this._axesListeners);
-  };
+  }
 
   delListeners() {
     this.delAllListeners(this._axesListeners);
     this.delAllListeners(this._btnsListeners);
-  };
+  }
 
-  plugBtnToInput(inputs: Inputs, inputName: string, padIndex: number, num: number) {
+  plugBtnToInput(
+    inputs: Inputs,
+    inputName: string,
+    padIndex: number,
+    num: number,
+  ) {
     this.onBtnDown(
       padIndex,
       num,
@@ -655,9 +775,14 @@ class gamepads {
       },
       false,
     );
-  };
+  }
 
-  plugAxeToInput(Inputs: Inputs, inputName: string, padIndex: number, num: number) {
+  plugAxeToInput(
+    Inputs: Inputs,
+    inputName: string,
+    padIndex: number,
+    num: number,
+  ) {
     this.onAxeStart(
       padIndex,
       num,
@@ -701,18 +826,16 @@ class gamepads {
   }
 
   //Updates changes
-  updateByRate() //Update every rate, which allow you to use on...Down to move something
-  {
+  updateByRate() { //Update every rate, which allow you to use on...Down to move something
     this.update = this._updateRate;
     this.handleDown = this.handleDownRate;
   }
 
-  updateByChange() //Update at every change
-  {
+  updateByChange() { //Update at every change
     this.update = this._updateChange;
     this.handleDown = this.handleDownChange;
-  };
+  }
 }
 
-const gp = new gamepads()
+const gp = new gamepads();
 export default gp;

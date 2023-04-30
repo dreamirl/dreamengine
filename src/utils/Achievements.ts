@@ -49,7 +49,10 @@ export type UserAchievement = {
   complete?: boolean;
 };
 
-function isObjectiveComplete(achievement: UserAchievement, objectiveName: string): boolean {
+function isObjectiveComplete(
+  achievement: UserAchievement,
+  objectiveName: string,
+): boolean {
   if (achievement.complete) {
     return true;
   }
@@ -120,9 +123,12 @@ export class Achievements<T extends Achievement> {
         continue;
       }
 
-      Localization.addDictionary(lang, {
-        'achievement-unlock': langs[lang],
-      }, true);
+      Localization.addDictionary(
+        {
+          [lang]: { 'achievement-unlock': langs[lang] },
+        },
+        true,
+      );
     }
 
     this.achievements = [];
@@ -132,7 +138,9 @@ export class Achievements<T extends Achievement> {
 
     this.userAchievements = userAchievements || Save.loadAchievements();
 
-    Events.on('games-datas', (objectiveName: string, value: string | number) => this.checkEvent(objectiveName, value));
+    Events.on('games-datas', (objectiveName: string, value: string | number) =>
+      this.checkEvent(objectiveName, value),
+    );
   }
 
   /**
@@ -144,7 +152,11 @@ export class Achievements<T extends Achievement> {
    * @example DE.emit( "games-datas", "objective-name", myValue );
    */
   public checkEvent(eventName: string, value: string | number) {
-    for (let i = 0, achievement, userAchievement: UserAchievement; (achievement = this.achievements[i]); ++i) {
+    for (
+      let i = 0, achievement, userAchievement: UserAchievement;
+      (achievement = this.achievements[i]);
+      ++i
+    ) {
       userAchievement = this.userAchievements[achievement.namespace];
 
       for (const objectiveName in achievement.objectives) {
@@ -185,15 +197,24 @@ export class Achievements<T extends Achievement> {
    * @param targetKey - The name of the objective
    * @param value - The updated value or the amount to increment by (if the objective is an increment)
    */
-  public updateValue(achievement: Achievement, targetKey: string, value: string | number) {
+  public updateValue(
+    achievement: Achievement,
+    targetKey: string,
+    value: string | number,
+  ) {
     const objective = achievement.objectives[targetKey];
 
     if (!objective) {
-      console.warn(`Objective '${targetKey}' not found in achievement '${achievement.namespace}'`);
+      console.warn(
+        `Objective '${targetKey}' not found in achievement '${achievement.namespace}'`,
+      );
       return;
     }
 
-    if (!this.userAchievements[achievement.namespace] || !this.userAchievements[achievement.namespace].objectives) {
+    if (
+      !this.userAchievements[achievement.namespace] ||
+      !this.userAchievements[achievement.namespace].objectives
+    ) {
       this.userAchievements[achievement.namespace] = { objectives: {} };
     }
 
@@ -209,7 +230,10 @@ export class Achievements<T extends Achievement> {
 
         const userObjectiveValue = userAchievement.objectives[targetKey].value;
 
-        if (typeof value === 'number' && typeof userObjectiveValue === 'number') {
+        if (
+          typeof value === 'number' &&
+          typeof userObjectiveValue === 'number'
+        ) {
           (userAchievement.objectives[targetKey].value as number) += value || 1;
         }
 
@@ -224,7 +248,8 @@ export class Achievements<T extends Achievement> {
   }
 
   private checkUnlock(achievement: Achievement) {
-    const userAchievementObjectives = this.userAchievements[achievement.namespace].objectives;
+    const userAchievementObjectives =
+      this.userAchievements[achievement.namespace].objectives;
     const objectives = achievement.objectives;
 
     let achievementComplete = true;
@@ -245,7 +270,9 @@ export class Achievements<T extends Achievement> {
         case '=':
         case '==':
         case 'equal':
-          if (objective.target != userAchievementObjectives[objectiveName].value) {
+          if (
+            objective.target != userAchievementObjectives[objectiveName].value
+          ) {
             objectiveComplete = false;
           }
           break;
@@ -255,7 +282,8 @@ export class Achievements<T extends Achievement> {
         case '>=':
           if (
             userAchievementObjectives[objectiveName].value !== undefined &&
-            (userAchievementObjectives[objectiveName].value as number) <= objective.target
+            (userAchievementObjectives[objectiveName].value as number) <=
+              objective.target
           ) {
             objectiveComplete = false;
           }
@@ -263,7 +291,8 @@ export class Achievements<T extends Achievement> {
         case '<':
           if (
             userAchievementObjectives[objectiveName].value !== undefined &&
-            userAchievementObjectives[objectiveName].value as number > objective.target
+            (userAchievementObjectives[objectiveName].value as number) >
+              objective.target
           ) {
             objectiveComplete = false;
           }
@@ -294,7 +323,10 @@ export class Achievements<T extends Achievement> {
       achievement.names[Localization.currentLanguage] ||
       achievement.names.en ||
       'null';
-    const url = this.achievementImagesUrl + achievement.namespace + this.achievementImageExtension;
+    const url =
+      this.achievementImagesUrl +
+      achievement.namespace +
+      this.achievementImageExtension;
     const txt = (Localization.get('achievement-unlock') || '%name% unlocked')
       .replace(/%name%/gi, name)
       .replace(/%path%/gi, url);

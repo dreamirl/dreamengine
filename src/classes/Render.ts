@@ -54,7 +54,7 @@ class Render extends EventEmitter {
    * @private
    * @memberOf Render
    */
-  private _qualityRatio = 1;
+  // private _qualityRatio = 1;
 
   /**
    * the PIXI Renderer

@@ -65,17 +65,13 @@ class MainLoop {
         ? (loaderTextRd.text = progression + '%')
         : (loaderTextRd.text = poolName + ': ' + progression + '%');
     });
-    Events.on('ImageManager-pool-complete', (poolName) => {
+    Events.on('ImageManager-pool-complete', () => {
       this.loader.removeAutomatism('animateLoader');
       loaderTextRd.text = '100%';
     });
   }
 
-  updateLoaderImage(loader: {
-    0: string,
-    1: string,
-    2?: any
-  }) {
+  updateLoaderImage(loader: { 0: string; 1: string; 2?: any }) {
     // TOTO créer un type "imageParams"
     this.loader.addRenderer(
       new SpriteRenderer({ spriteName: loader[0], scale: loader[2].scale }),

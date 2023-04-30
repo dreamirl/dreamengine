@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import {ColorMatrixFilter} from '@pixi/filter-color-matrix'
+import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 
 export {};
 
@@ -24,7 +24,7 @@ declare module 'pixi.js' {
     setContrast(amount: number, multiply: boolean): void;
     setGreyscale(scale: number, multiply: boolean): void;
     setSize(width: number, height: number, preventCenter: boolean): void;
-    setScale(x: number | {x: number, y: number}, y?: number): void;
+    setScale(x: number | { x: number; y: number }, y?: number): void;
     center(): void;
     instantiate(target: any, params: any): void;
   }
@@ -64,7 +64,10 @@ PIXI.Container.prototype.instantiate = function (target, params) {
   // }
 };
 
-PIXI.Container.prototype.setScale = function (x: number | {x: number, y: number}, y?: number){
+PIXI.Container.prototype.setScale = function (
+  x: number | { x: number; y: number },
+  y?: number,
+) {
   if (y == undefined) {
     if (x instanceof Object) {
       this.scale = { x: x.x, y: x.y };
@@ -76,14 +79,13 @@ PIXI.Container.prototype.setScale = function (x: number | {x: number, y: number}
       this.scale = { x: x, y: y };
     }
   }
-}
+};
 
-PIXI.Container.prototype.setTint = function (value: PIXI.COLOR_MASK_BITS) {
+PIXI.Container.prototype.setTint = function (value: number) {
   this.tint = value || 0xffffff;
-  if (this._originalTexture) {
-    this._originalTexture.tint = this.tint;
-  }
-  return;
+  // if (this._originalTexture) {
+  //   this._originalTexture.tint = this.tint;
+  // }
 };
 
 PIXI.Container.prototype.setHue = function (

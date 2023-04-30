@@ -2,7 +2,8 @@
   "name": "@dreamirl/dreamengine",
   "version": "1.4.2",
   "description": "A simple and fast 2D engine based on PIXI",
-  "main": "src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "devDependencies": {
     "cross-env": "^5.2.0",
     "pixi.js": "^6.5.1",
@@ -17,7 +18,12 @@
   "scripts": {
     "format": "prettier --config .prettierrc.json --ignore-path .prettierignore --write \"**/*.{js,json,ts,tsx,md,html}\"",
     "test": "echo \"Error: no test specified this is a TODO\" && exit 1",
-    "watch": "echo TODO"
+    "watch": "echo TODO",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "build": "tsc -p tsconfig.json",
+    "prepack": "npm run build",
+    "postpack": "npm run build",
+    "postinstall": "npm run build"
   },
   "repository": {
     "type": "git",

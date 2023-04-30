@@ -196,7 +196,13 @@ class user {
   onGameData() {
     return new Promise((res, _rej) => {
       Events.on('nebula-game-connected-success', function (gameData) {
-        let settings = Save.get('settings');
+        let settings = Save.get('settings') as {
+          fxVolume: number;
+          musicVolume: number;
+          fxMuted: boolean;
+          musicMuted: boolean;
+        };
+
         Audio.setChannelVolume('fx', settings.fxVolume);
         Audio.setChannelVolume('music', settings.musicVolume);
         Audio.setMuteAll('sfx', settings.fxMuted);

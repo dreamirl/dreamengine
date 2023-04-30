@@ -32,7 +32,6 @@ import GraphicRenderer from './renderer/GraphicRenderer';
 
 class GameObject extends AdvancedContainer {
   public static DEName = 'GameObject';
-  override parent: GameObject = undefined; // TODO: ZARNA : ajouter Scene quand Scene sera en classe
   vector2: Vector2;
   renderers: (Container | DERenderers)[] = [];
   renderer: Container;
@@ -141,7 +140,8 @@ class GameObject extends AdvancedContainer {
   ) {
     super();
 
-    this.sortableChildren = params.sortableChildren ?? config.DEFAULT_SORTABLE_CHILDREN;
+    this.sortableChildren =
+      params.sortableChildren ?? config.DEFAULT_SORTABLE_CHILDREN;
 
     this.id = params.id !== undefined ? params.id : this.id;
     this.name = params.name || '';
@@ -164,11 +164,9 @@ class GameObject extends AdvancedContainer {
       else this.scale.set(params.scale);
       delete params.scale;
     }
-    if(params.scaleX)
-      this.scale.set(params.scaleX, this.scale.y);
-    if(params.scaleY)
-    this.scale.set(this.scale.x, params.scaleY);
-    
+    if (params.scaleX) this.scale.set(params.scaleX, this.scale.y);
+    if (params.scaleY) this.scale.set(this.scale.x, params.scaleY);
+
     // call correctly the scale modifier to update zscale and worldScale
 
     if (params.renderer) {
@@ -414,7 +412,7 @@ class GameObject extends AdvancedContainer {
       );
     }
 
-    if (object.parent) {
+    if (object.parent && object.parent instanceof GameObject) {
       object.parent.remove(object); //TODO: ZARNA | A review Antoine (j'ai remplacé remove par removeChild vu que y'a pas remove sur PIXI.Container)
     }
 
@@ -503,7 +501,10 @@ class GameObject extends AdvancedContainer {
     this.enable = false;
     this.flag = 'delete';
 
-    if (!this.parent || !this.parent.enable) {
+    if (
+      !this.parent ||
+      (this.parent instanceof GameObject && !this.parent.enable)
+    ) {
       this.killMePlease();
     }
 
@@ -572,7 +573,7 @@ class GameObject extends AdvancedContainer {
    * @public
    */
   getGlobalRotation(): number {
-    if (this.parent.getGlobalRotation) {
+    if (this.parent instanceof GameObject && this.parent.getGlobalRotation) {
       return this.rotation + this.parent.getGlobalRotation();
     } else {
       return this.rotation;
@@ -604,7 +605,11 @@ class GameObject extends AdvancedContainer {
 
   // a tester
   getWorldPos(): Point2D {
-    if (this.parent && this.parent.getWorldPos) {
+    if (
+      this.parent &&
+      this.parent instanceof GameObject &&
+      this.parent.getWorldPos
+    ) {
       let pos = this.parent.getWorldPos();
       let harmonics = this.parent.vector2.getHarmonics();
 
@@ -655,7 +660,11 @@ class GameObject extends AdvancedContainer {
    *   , "persistent": false
    * } );
    */
-  addAutomatism(id: string, methodName: string = id, params: Partial<Automatism> = {}) {
+  addAutomatism(
+    id: string,
+    methodName: string = id,
+    params: Partial<Automatism> = {},
+  ) {
     if (!this[methodName as keyof typeof this]) {
       console.warn(
         "%cCouldn't found the method " +
@@ -741,12 +750,17 @@ class GameObject extends AdvancedContainer {
   _updateWorldScale() {
     this.worldScale.set(this.scale.x, this.scale.y);
 
-    if (!this.parent || !this.parent._isGameObject) {
+    if (
+      !this.parent ||
+      (this.parent instanceof GameObject && !this.parent._isGameObject)
+    ) {
       return;
     }
 
-    this.worldScale.x = this.worldScale.x * this.parent.worldScale.x;
-    this.worldScale.y = this.worldScale.y * this.parent.worldScale.y;
+    if (this.parent instanceof GameObject) {
+      this.worldScale.x = this.worldScale.x * this.parent.worldScale.x;
+      this.worldScale.y = this.worldScale.y * this.parent.worldScale.y;
+    }
 
     return this;
   }
