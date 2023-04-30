@@ -1,4 +1,4 @@
-import { Container, Point } from 'pixi.js';
+import * as PIXI from 'pixi.js';
 import config from '../config';
 import Events from '../utils/Events';
 import Time from '../utils/Time';
@@ -33,9 +33,9 @@ import GraphicRenderer from './renderer/GraphicRenderer';
 class GameObject extends AdvancedContainer {
   public static DEName = 'GameObject';
   vector2: Vector2;
-  renderers: (Container | DERenderers)[] = [];
-  renderer: Container;
-  _debugRenderer: Container | undefined;
+  renderers: (PIXI.Container | DERenderers)[] = [];
+  renderer: PIXI.Container;
+  _debugRenderer: PIXI.Container | undefined;
   _lastLocalID: string = '';
 
   /**
@@ -115,7 +115,7 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    * @type {PIXI.Point}
    */
-  worldScale = new Point(1, 1);
+  worldScale = new PIXI.Point(1, 1);
 
   /**
    * can prevent event propagation
