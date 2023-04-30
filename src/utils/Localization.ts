@@ -180,19 +180,6 @@ const LANGUAGES_CODES_TABLES: {
   ]
 });
 
-const REVERSE_LANGUAGES_CODES_TABLES = Object.freeze(
-  Object.keys(LANGUAGES_CODES_TABLES)
-    .reduce((acc, key) => {
-      const value = LANGUAGES_CODES_TABLES[key] as string[];
-
-      value.forEach((lang) => {
-        acc[lang] = key;
-      });
-
-      return acc;
-    }, {} as Record<string, string>)
-);
-
 export interface LocalizationObject {
   [key: string]: string | LocalizationObject;
 }
@@ -220,6 +207,11 @@ export type LocalizationInitializationOptions = {
  * @namespace Localization
  */
 export class Localization {
+  private getShortLanguage(lang: string) {
+    const str = lang.substring(0, lang.indexOf('_'));
+    return (str in LANGUAGES_CODES_TABLES ? str : undefined);
+  }
+
   /**
    * Return the current language
    * @deprecated Use `currentLanguage` instead
@@ -366,7 +358,7 @@ export class Localization {
     }
 
     let l = language || this.currentLanguage;
-    const shortL = REVERSE_LANGUAGES_CODES_TABLES[l] as string | undefined;
+    const shortL = this.getShortLanguage(l) as string | undefined;
 
     const langToTest: string[] = this._options.useShortLanguageCodeAsFallback && shortL
         ? [l, shortL, 'en']
@@ -520,14 +512,14 @@ export class Localization {
    * @param {String} key - The key you want
    */
   public forceGet(lang: string, key: string): Nullable<string> {
-    const isLongLanguageCode = REVERSE_LANGUAGES_CODES_TABLES[lang] !== undefined;
+    const isLongLanguageCode = this.getShortLanguage(lang) !== undefined;
 
     if (!this._availableLanguages.includes(lang) && !isLongLanguageCode) {
       return null;
     }
 
     if (isLongLanguageCode) {
-      const shortLang = REVERSE_LANGUAGES_CODES_TABLES[lang]!;
+      const shortLang = this.getShortLanguage(lang)!;
 
       if (!this._availableLanguages.includes(shortLang)) {
         return null;
