@@ -263,6 +263,8 @@ const init = (params: InitParams) => {
   emit('change-debug', config.DEBUG, config.DEBUG_LEVEL);
 };
 
+export { Audio, ImageManager, MainLoop };
+
 export default {
   // Renderers
   TextureRenderer,
@@ -280,15 +282,12 @@ export default {
   about,
   Events,
   Time,
-  MainLoop,
   Save,
   Inputs,
   gamepad,
-  Audio,
   Localization,
   Notifications,
   Achievements,
-  ImageManager,
   Render,
   Scene,
   Gui,

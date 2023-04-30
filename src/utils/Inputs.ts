@@ -264,8 +264,9 @@ export class Inputs {
           }
         }
 
-        const typedType = type as keyof typeof this.dbInputs;
-        const typedName = name as keyof typeof this.dbInputs[typeof typedType];
+        const inputs = this.dbInputs;
+        const typedType = type as keyof typeof inputs;
+        const typedName = name as keyof typeof inputs[typeof typedType];
         const input =
           this.dbInputs[typedType] && this.dbInputs[typedType][typedName];
         if (input) {
