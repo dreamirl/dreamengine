@@ -283,6 +283,7 @@ export default {
   Events,
   Time,
   Save,
+  Audio,
   Inputs,
   gamepad,
   Localization,
