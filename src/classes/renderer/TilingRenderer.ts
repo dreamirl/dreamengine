@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import '../renderer/ContainerExtensions';
+import RendererInterface from './RendererInterface';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -16,7 +17,7 @@ import '../renderer/ContainerExtensions';
  *   renderer: new DE.TilingRenderer( { "backgroundImage": "mountains_repeat", width: 2000 } )
  * } );
  */
-export default class TilingRenderer extends PIXI.TilingSprite {
+export default class TilingRenderer extends PIXI.TilingSprite implements RendererInterface {
   constructor(params: {
     backgroundImage?: string;
     width?: number;
@@ -24,7 +25,7 @@ export default class TilingRenderer extends PIXI.TilingSprite {
     spriteName?: string;
     spriteUrl?: string;
     textureName?: string;
-  }) {
+  } & Partial<PIXI.TilingSprite> & Partial<RendererInterface>) {
     if (
       !params.backgroundImage &&
       !params.spriteName &&

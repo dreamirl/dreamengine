@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import config from '../../config';
 import Localization from '../../utils/Localization';
 import '../renderer/ContainerExtensions';
+import RendererInterface from './RendererInterface';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -27,7 +28,7 @@ import '../renderer/ContainerExtensions';
  * => intro.title will do Localization.get( "intro" ).title
  */
 
-export default class BitmapTextRenderer extends PIXI.BitmapText {
+export default class BitmapTextRenderer extends PIXI.BitmapText implements RendererInterface {
   localizationKey: string | undefined;
   maxHeight: number;
 
@@ -40,7 +41,7 @@ export default class BitmapTextRenderer extends PIXI.BitmapText {
       fontSize?: number;
       localizationKey?: string;
       resolution?: number;
-    } = {},
+    } & Partial<PIXI.BitmapText> & Partial<RendererInterface> = {},
   ) {
     super(text);
 

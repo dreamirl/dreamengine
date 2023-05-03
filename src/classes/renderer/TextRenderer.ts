@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import config from '../../config';
 import Localization from '../../utils/Localization';
 import '../renderer/ContainerExtensions';
+import RendererInterface from './RendererInterface';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -27,7 +28,7 @@ import '../renderer/ContainerExtensions';
  * => intro.title will do Localization.get( "intro" ).title
  */
 
-export default class TextRenderer extends PIXI.Text {
+export default class TextRenderer extends PIXI.Text implements RendererInterface {
   maxHeight?: number;
   maxWidth?: number;
   localizationKey?: string;
@@ -40,7 +41,7 @@ export default class TextRenderer extends PIXI.Text {
       resolution?: number;
       localizationKey?: string;
       textStyle?: Partial<PIXI.TextStyle>;
-    } = {},
+    } & Partial<PIXI.Text> & Partial<RendererInterface> = {},
   ) {
     super(text, new PIXI.TextStyle(params.textStyle));
     const _params = params;

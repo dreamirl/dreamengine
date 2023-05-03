@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import ImageManager from '../../utils/ImageManager';
 import Time from '../../utils/Time';
 import '../renderer/ContainerExtensions';
+import RendererInterface from './RendererInterface';
 
 export type SpriteDataType = {
   startFrame: number;
@@ -31,7 +32,7 @@ export type SpriteDataType = {
  *   renderer: new DE.SpriteRenderer( { "spriteName": "ship", "scale": 0.7, "offsetY": -30 } )
  * } );
  */
-export default class SpriteRenderer extends PIXI.Sprite {
+export default class SpriteRenderer extends PIXI.Sprite implements RendererInterface {
   public startFrame: number;
   public endFrame: number;
   private _currentFrame: number;
@@ -102,7 +103,7 @@ export default class SpriteRenderer extends PIXI.Sprite {
         | number
         | { value: number; multiply: boolean }
         | Array<number & boolean>;
-    },
+    } & Partial<RendererInterface>,
   ) {
     const tempSpriteName =
       params.spriteName || params.spriteUrl || params.textureName;

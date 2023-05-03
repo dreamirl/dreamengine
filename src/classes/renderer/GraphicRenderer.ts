@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import '../renderer/ContainerExtensions';
+import RendererInterface from './RendererInterface';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -15,8 +16,8 @@ import '../renderer/ContainerExtensions';
  *   renderer: new DE.GraphicRenderer( [ { "beginFill": "0x66CCFF" }, { "drawRect": [ 0, 0, 50, 50 ] }, { "endFill": [] } ] )
  * } );
  */
-export default class GraphicRenderer extends PIXI.Graphics {
-  constructor(methods?: any[], params?: Partial<GraphicRenderer>) {
+export default class GraphicRenderer extends PIXI.Graphics implements RendererInterface{
+  constructor(methods?: any[], params?: Partial<GraphicRenderer> & Partial<RendererInterface>) {
     super();
     if (methods) {
       for (let i = 0; i < methods.length; ++i) {

@@ -1,8 +1,9 @@
 import * as PIXI from 'pixi.js';
 import Time from '../../utils/Time';
 import '../renderer/ContainerExtensions';
+import RendererInterface from './RendererInterface';
 
-export default class AnimatedTextureRenderer extends PIXI.Sprite {
+export default class AnimatedTextureRenderer extends PIXI.Sprite implements RendererInterface {
   private _imageNames: string[];
   private _textures: PIXI.Texture<PIXI.Resource>[];
   private _currentFrame: number;
@@ -34,9 +35,8 @@ export default class AnimatedTextureRenderer extends PIXI.Sprite {
       startFrame?: number;
       pause?: boolean;
       currentFrame?: number;
-      tint?: number;
       randomFrame?: number;
-    } = {},
+    } & Partial<PIXI.Sprite> & Partial<RendererInterface> = {},
   ) {
     super();
     this.instantiate(this, params);

@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import '../renderer/ContainerExtensions';
+import RendererInterface from './RendererInterface';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -16,7 +17,7 @@ import '../renderer/ContainerExtensions';
  * } );
  */
 
-export default class NineSliceRenderer extends PIXI.NineSlicePlane {
+export default class NineSliceRenderer extends PIXI.NineSlicePlane implements RendererInterface {
   constructor(
     params: {
       texture?: PIXI.Texture<PIXI.Resource>;
@@ -26,7 +27,7 @@ export default class NineSliceRenderer extends PIXI.NineSlicePlane {
       x?: number;
       y?: number;
       preventCenter?: boolean;
-    },
+    } & Partial<PIXI.NineSlicePlane> & Partial<RendererInterface>,
     left?: number,
     top?: number,
     right?: number,

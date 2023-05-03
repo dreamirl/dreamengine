@@ -5,6 +5,7 @@ import Time from '../utils/Time';
 import AdvancedContainer from './AdvancedContainer';
 import Vector2 from './Vector2';
 import GraphicRenderer from './renderer/GraphicRenderer';
+import RendererInterface from './renderer/RendererInterface';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -33,8 +34,8 @@ import GraphicRenderer from './renderer/GraphicRenderer';
 class GameObject extends AdvancedContainer {
   public static DEName = 'GameObject';
   vector2: Vector2;
-  renderers: (PIXI.Container | DERenderers)[] = [];
-  renderer: PIXI.Container;
+  renderers: (PIXI.Container & RendererInterface)[] = [];
+  renderer: PIXI.Container & RendererInterface;
   _debugRenderer: PIXI.Container | undefined;
   _lastLocalID = '';
 
@@ -133,12 +134,13 @@ class GameObject extends AdvancedContainer {
   constructor(
     params: Partial<GameObject> & {
       automatisms?: Array<Array<any>>;
-      scale?: number;
+      scale?: number | Point2D;
       scaleX?: number;
       scaleY?: number;
     } = {},
   ) {
     super();
+
 
     this.sortableChildren =
       params.sortableChildren ?? config.DEFAULT_SORTABLE_CHILDREN;
@@ -161,7 +163,7 @@ class GameObject extends AdvancedContainer {
      */
     if (params.scale) {
       if (params.scale.x) this.scale.set(params.scale.x, params.scale.y);
-      else this.scale.set(params.scale);
+      else this.scale.set(params.scale as number);
       delete params.scale;
     }
     if (params.scaleX) this.scale.set(params.scaleX, this.scale.y);

@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import '../renderer/ContainerExtensions';
+import RendererInterface from './RendererInterface';
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
  */
@@ -16,7 +17,7 @@ import '../renderer/ContainerExtensions';
  * } );
  */
 
-export default class TextureRenderer extends PIXI.Sprite {
+export default class TextureRenderer extends PIXI.Sprite implements RendererInterface {
   private _textureName?: string;
   public sprite?: PIXI.Sprite;
   constructor(params: {
@@ -24,7 +25,7 @@ export default class TextureRenderer extends PIXI.Sprite {
     spriteUrl?: string;
     textureName?: string;
     texture?: PIXI.Texture<PIXI.Resource> | undefined;
-  }) {
+  } & Partial<PIXI.Sprite> & Partial<RendererInterface>) {
     if (
       !params.spriteName &&
       !params.spriteUrl &&

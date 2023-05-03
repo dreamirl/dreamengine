@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { ILineStyleOptions } from 'pixi.js';
 import '../renderer/ContainerExtensions';
+import RendererInterface from './RendererInterface';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -17,7 +18,7 @@ import '../renderer/ContainerExtensions';
  * } );
  */
 
-export default class RectRenderer extends PIXI.Graphics {
+export default class RectRenderer extends PIXI.Graphics implements RendererInterface {
   private _initial: {
     width?: number;
     height?: number;
@@ -34,7 +35,7 @@ export default class RectRenderer extends PIXI.Graphics {
       color?: number;
       fill?: boolean;
       lineStyle?: [options?: ILineStyleOptions];
-    } = {},
+    } & Partial<RendererInterface> = {},
   ) {
     super();
     const _params = params;
