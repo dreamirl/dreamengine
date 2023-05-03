@@ -33,6 +33,8 @@ import RendererInterface from './renderer/RendererInterface';
 
 class GameObject extends AdvancedContainer {
   public static DEName = 'GameObject';
+  // @ts-ignore
+  override parent: GameObject;
   vector2: Vector2;
   renderers: (PIXI.Container & RendererInterface)[] = [];
   renderer: PIXI.Container & RendererInterface;
