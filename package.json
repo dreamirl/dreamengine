@@ -23,12 +23,7 @@
   "scripts": {
     "format": "prettier --config .prettierrc.json --ignore-path .prettierignore --write \"**/*.{js,json,ts,tsx,md,html}\"",
     "test": "echo \"Error: no test specified this is a TODO\" && exit 1",
-    "watch": "echo TODO",
-    "check": "tsc -p tsconfig.json --noEmit",
-    "build": "tsc -p tsconfig.json",
-    "prepack": "npm run build",
-    "postpack": "npm run build",
-    "postinstall": "npm run build"
+    "watch": "echo TODO"
   },
   "repository": {
     "type": "git",
