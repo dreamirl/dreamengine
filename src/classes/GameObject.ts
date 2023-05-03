@@ -39,7 +39,7 @@ class GameObject extends AdvancedContainer {
   renderers: (PIXI.Container & RendererInterface)[] = [];
   renderer: PIXI.Container & RendererInterface;
   _debugRenderer: PIXI.Container | undefined;
-  _lastLocalID = '';
+  _lastLocalID: string = '';
 
   /**
    * If false, the object wont be updated anymore (but still renderer).
@@ -70,14 +70,14 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    * @type {String}
    */
-  override readonly name = '';
+  override readonly name: string = '';
 
   /**
    * @public
    * @memberOf GameObject
    * @type {String}
    */
-  tag = '';
+  tag: string = '';
 
   /**
    * Flag used in intern logic (for delete) but can be used outside when it's not conflicting with the engine's logic
@@ -86,7 +86,7 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    * @type {String}
    */
-  flag = '';
+  flag: string = '';
 
   /**
    * @readOnly
