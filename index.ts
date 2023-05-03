@@ -1,46 +1,46 @@
-import '../css/default.css';
+import './css/default.css';
 
 import * as PIXI from 'pixi.js';
-import about, { GameAboutInfo } from './about';
-import config from './config';
-import MainLoop from './MainLoop';
+import about, { GameAboutInfo } from './src/about';
+import config from './src/config';
+import MainLoop from './src/MainLoop';
 
 // Utils
-import Events from './utils/Events';
-import Time from './utils/Time';
-import Achievements from './utils/Achievements';
-import Audio, { AudioParam } from './utils/Audio';
-import gamepad from './utils/gamepad';
-import ImageManager, { InitFunctionParam } from './utils/ImageManager';
-import Inputs from './utils/Inputs';
-import Localization from './utils/Localization';
-import Notifications from './utils/Notifications';
-import Platform from './utils/Platform';
-import Save, { SaveModel } from './utils/Save';
+import Events from './src/utils/Events';
+import Time from './src/utils/Time';
+import Achievements from './src/utils/Achievements';
+import Audio, { AudioParam } from './src/utils/Audio';
+import gamepad from './src/utils/gamepad';
+import ImageManager, { InitFunctionParam } from './src/utils/ImageManager';
+import Inputs from './src/utils/Inputs';
+import Localization from './src/utils/Localization';
+import Notifications from './src/utils/Notifications';
+import Platform from './src/utils/Platform';
+import Save, { SaveModel } from './src/utils/Save';
 
-import Camera from './classes/Camera';
-import Gui from './classes/Gui';
-import Render from './classes/Render';
-import Scene from './classes/Scene';
-import Vector2 from './classes/Vector2';
+import Camera from './src/classes/Camera';
+import Gui from './src/classes/Gui';
+import Render from './src/classes/Render';
+import Scene from './src/classes/Scene';
+import Vector2 from './src/classes/Vector2';
 
 // Engine custom renderers
-import AnimatedTextureRenderer from './classes/renderer/AnimatedTextureRenderer';
-import BitmapTextRenderer from './classes/renderer/BitmapTextRenderer';
-import GraphicRenderer from './classes/renderer/GraphicRenderer';
-import NineSliceRenderer from './classes/renderer/NineSliceRenderer';
-import RectRenderer from './classes/renderer/RectRenderer';
-import SpriteRenderer from './classes/renderer/SpriteRenderer';
-import TextRenderer from './classes/renderer/TextRenderer';
-import TextureRenderer from './classes/renderer/TextureRenderer';
-import TilingRenderer from './classes/renderer/TilingRenderer';
+import AnimatedTextureRenderer from './src/classes/renderer/AnimatedTextureRenderer';
+import BitmapTextRenderer from './src/classes/renderer/BitmapTextRenderer';
+import GraphicRenderer from './src/classes/renderer/GraphicRenderer';
+import NineSliceRenderer from './src/classes/renderer/NineSliceRenderer';
+import RectRenderer from './src/classes/renderer/RectRenderer';
+import SpriteRenderer from './src/classes/renderer/SpriteRenderer';
+import TextRenderer from './src/classes/renderer/TextRenderer';
+import TextureRenderer from './src/classes/renderer/TextureRenderer';
+import TilingRenderer from './src/classes/renderer/TilingRenderer';
 
 // Custom classes
-import Component from './classes/Component';
-import ShakeComponent from './classes/components/ShakeComponent';
-import TimerComponent from './classes/components/TimerComponent';
-import GameObject from './classes/GameObject';
-import Tween from './classes/Tween';
+import Component from './src/classes/Component';
+import ShakeComponent from './src/classes/components/ShakeComponent';
+import TimerComponent from './src/classes/components/TimerComponent';
+import GameObject from './src/classes/GameObject';
+import Tween from './src/classes/Tween';
 
 type InitParams = {
   onReady: () => void;
