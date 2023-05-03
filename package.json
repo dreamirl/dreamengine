@@ -2,7 +2,7 @@
   "name": "@dreamirl/dreamengine",
   "version": "1.4.2",
   "description": "A simple and fast 2D engine based on PIXI",
-  "main": "./dist/index.js",
+  "main": "./dist/index.ts",
   "types": "./dist/index.d.ts",
   "devDependencies": {
     "@types/node": "^18.16.3",
