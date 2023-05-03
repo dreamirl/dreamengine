@@ -61,7 +61,7 @@ export default class SpriteRenderer extends PIXI.Sprite implements RendererInter
   public baseNormalTexture?: PIXI.BaseTexture<PIXI.Resource>;
 
   constructor(
-    params: Partial<PIXI.Sprite> & {
+    params: Partial<Omit<PIXI.Sprite, 'scale'>> & {
       spriteName?: string | undefined;
       spriteUrl?: string | undefined;
       textureName?: string | undefined;
@@ -82,6 +82,9 @@ export default class SpriteRenderer extends PIXI.Sprite implements RendererInter
       normal?: string;
       tint?: number;
       filters?: any;
+      scale?: number | Point2D;
+      scaleX?: number;
+      scaleY?: number;
       hue?:
         | number
         | { value: number; multiply: boolean }

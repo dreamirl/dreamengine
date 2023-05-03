@@ -1,12 +1,12 @@
-import AnimatedTextureRenderer from './renderer/AnimatedTextureRenderer';
-import BitmapTextRenderer from './renderer/BitmapTextRenderer';
-import GraphicRenderer from './renderer/GraphicRenderer';
-import NineSliceRenderer from './renderer/NineSliceRenderer';
-import RectRenderer from './renderer/RectRenderer';
-import SpriteRenderer from './renderer/SpriteRenderer';
-import TextRenderer from './renderer/TextRenderer';
-import TextureRenderer from './renderer/TextureRenderer';
-import TilingRenderer from './renderer/TilingRenderer';
+import AnimatedTextureRenderer from '../classes/renderer/AnimatedTextureRenderer';
+import BitmapTextRenderer from '../classes/renderer/BitmapTextRenderer';
+import GraphicRenderer from '../classes/renderer/GraphicRenderer';
+import NineSliceRenderer from '../classes/renderer/NineSliceRenderer';
+import RectRenderer from '../classes/renderer/RectRenderer';
+import SpriteRenderer from '../classes/renderer/SpriteRenderer';
+import TextRenderer from '../classes/renderer/TextRenderer';
+import TextureRenderer from '../classes/renderer/TextureRenderer';
+import TilingRenderer from '../classes/renderer/TilingRenderer';
 
 export {};
 declare global {

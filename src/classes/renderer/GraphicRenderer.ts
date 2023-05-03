@@ -17,7 +17,11 @@ import RendererInterface from './RendererInterface';
  * } );
  */
 export default class GraphicRenderer extends PIXI.Graphics implements RendererInterface{
-  constructor(methods?: any[], params?: Partial<GraphicRenderer> & Partial<RendererInterface>) {
+  constructor(methods?: any[], params?: Partial<Omit<GraphicRenderer, 'scale'>> & Partial<RendererInterface> & {
+    scale?: number | Point2D;
+    scaleX?: number;
+    scaleY?: number;
+  }) {
     super();
     if (methods) {
       for (let i = 0; i < methods.length; ++i) {

@@ -19,13 +19,16 @@ import RendererInterface from './RendererInterface';
  */
 export default class TilingRenderer extends PIXI.TilingSprite implements RendererInterface {
   constructor(params: {
+    scale?: number | Point2D;
+    scaleX?: number;
+    scaleY?: number;
     backgroundImage?: string;
     width?: number;
     height?: number;
     spriteName?: string;
     spriteUrl?: string;
     textureName?: string;
-  } & Partial<PIXI.TilingSprite> & Partial<RendererInterface>) {
+  } & Partial<Omit<PIXI.TilingSprite, 'scale'>> & Partial<RendererInterface>) {
     if (
       !params.backgroundImage &&
       !params.spriteName &&

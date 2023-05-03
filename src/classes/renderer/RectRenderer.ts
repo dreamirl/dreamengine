@@ -31,7 +31,10 @@ export default class RectRenderer extends PIXI.Graphics implements RendererInter
     width: number,
     height: number,
     color: number,
-    params: Partial<PIXI.Graphics> & {
+    params: Partial<Omit<PIXI.Graphics, 'scale'>> & {
+      scale?: number | Point2D;
+      scaleX?: number;
+      scaleY?: number;
       color?: number;
       fill?: boolean;
       lineStyle?: [options?: ILineStyleOptions];

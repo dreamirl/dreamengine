@@ -36,7 +36,10 @@ export default class AnimatedTextureRenderer extends PIXI.Sprite implements Rend
       pause?: boolean;
       currentFrame?: number;
       randomFrame?: number;
-    } & Partial<PIXI.Sprite> & Partial<RendererInterface> = {},
+      scale?: number | Point2D;
+      scaleX?: number;
+      scaleY?: number;
+    } & Partial<Omit<PIXI.Sprite, 'scale'>> & Partial<RendererInterface> = {},
   ) {
     super();
     this.instantiate(this, params);

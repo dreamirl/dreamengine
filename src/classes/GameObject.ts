@@ -132,7 +132,7 @@ class GameObject extends AdvancedContainer {
   extra: Record<string, any> = {};
 
   constructor(
-    params: Partial<GameObject> & {
+    params: Partial<Omit<GameObject, 'scale'>> & {
       automatisms?: Array<Array<any>>;
       scale?: number | Point2D;
       scaleX?: number;
@@ -155,14 +155,8 @@ class GameObject extends AdvancedContainer {
 
     this.vector2 = new Vector2(this.x, this.y, this);
 
-    /**
-     * save the scale before z applies (this way you can know the true scale of the object without any modifier)
-     * @public
-     * @memberOf GameObject
-     * @type {PIXI.Point}
-     */
     if (params.scale) {
-      if (params.scale.x) this.scale.set(params.scale.x, params.scale.y);
+      if ((params.scale as Point2D).x) this.scale.set((params.scale as Point2D).x, (params.scale as Point2D).y);
       else this.scale.set(params.scale as number);
       delete params.scale;
     }
@@ -352,7 +346,7 @@ class GameObject extends AdvancedContainer {
    * memberOf GameObject
    * param {PIXI.DisplayObject} rd - the renderer to add
    */
-  addOneRenderer(rd: PIXI.Container | DERenderers) {
+  addOneRenderer(rd: PIXI.Container & RendererInterface) {
     if (
       rd.anchor &&
       !rd.preventCenter &&
@@ -372,7 +366,7 @@ class GameObject extends AdvancedContainer {
     return this;
   }
 
-  addRenderer(...rds: (PIXI.Container | DERenderers)[]) {
+  addRenderer(...rds: (PIXI.Container & RendererInterface)[]) {
     rds.forEach((r) => this.addOneRenderer(r));
     return this;
   }

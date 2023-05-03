@@ -21,11 +21,14 @@ export default class TextureRenderer extends PIXI.Sprite implements RendererInte
   private _textureName?: string;
   public sprite?: PIXI.Sprite;
   constructor(params: {
+    scale?: number | Point2D;
+    scaleX?: number;
+    scaleY?: number;
     spriteName?: string;
     spriteUrl?: string;
     textureName?: string;
     texture?: PIXI.Texture<PIXI.Resource> | undefined;
-  } & Partial<PIXI.Sprite> & Partial<RendererInterface>) {
+  } & Partial<Omit<PIXI.Sprite, 'scale'>> & Partial<RendererInterface>) {
     if (
       !params.spriteName &&
       !params.spriteUrl &&

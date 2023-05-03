@@ -36,12 +36,15 @@ export default class TextRenderer extends PIXI.Text implements RendererInterface
   constructor(
     text: string,
     params: {
+      scale?: number | Point2D;
+      scaleX?: number;
+      scaleY?: number;
       maxHeight?: number;
       maxWidth?: number;
       resolution?: number;
       localizationKey?: string;
       textStyle?: Partial<PIXI.TextStyle>;
-    } & Partial<PIXI.Text> & Partial<RendererInterface> = {},
+    } & Partial<Omit<PIXI.Text, 'scale'>> & Partial<RendererInterface> = {},
   ) {
     super(text, new PIXI.TextStyle(params.textStyle));
     const _params = params;

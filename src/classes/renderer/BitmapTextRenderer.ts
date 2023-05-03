@@ -41,7 +41,10 @@ export default class BitmapTextRenderer extends PIXI.BitmapText implements Rende
       fontSize?: number;
       localizationKey?: string;
       resolution?: number;
-    } & Partial<PIXI.BitmapText> & Partial<RendererInterface> = {},
+      scale?: number | Point2D;
+      scaleX?: number;
+      scaleY?: number;
+    } & Partial<Omit<PIXI.BitmapText, 'scale'>> & Partial<RendererInterface> = {},
   ) {
     super(text);
 

@@ -24,10 +24,13 @@ export default class NineSliceRenderer extends PIXI.NineSlicePlane implements Re
       spriteName?: string;
       spriteUrl?: string;
       textureName?: string;
+      scale?: number | Point2D;
+      scaleX?: number;
+      scaleY?: number;
       x?: number;
       y?: number;
       preventCenter?: boolean;
-    } & Partial<PIXI.NineSlicePlane> & Partial<RendererInterface>,
+    } & Partial<Omit<PIXI.NineSlicePlane, 'scale'>> & Partial<RendererInterface>,
     left?: number,
     top?: number,
     right?: number,
