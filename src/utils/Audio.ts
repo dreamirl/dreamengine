@@ -88,7 +88,7 @@ class Audio {
   loadAudios(audioList: AudioParam[]) {
     audioList.forEach((audioParam) => {
       /* Howler format */
-      const urls = [];
+      const urls: string[] = [];
       for (let i = 0; i < audioParam.formats.length; ++i) {
         urls.push(
           audioParam.path +
