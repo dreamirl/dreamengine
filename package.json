@@ -2,7 +2,7 @@
   "name": "@dreamirl/dreamengine",
   "version": "1.4.2",
   "description": "A simple and fast 2D engine based on PIXI",
-  "main": "./index.ts",
+  "main": "./src/index.ts",
   "devDependencies": {
     "@types/node": "^18.16.3",
     "@typescript-eslint/eslint-plugin": "^5.10.0",
