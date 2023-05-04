@@ -3,34 +3,32 @@ import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 
 export {};
 
-declare module 'pixi.js' {
-  interface Container {
-    hueFilter: ColorMatrixFilter;
-    blackAndWhiteFilter: ColorMatrixFilter;
-    saturationFilter: ColorMatrixFilter;
-    brightnessFilter: ColorMatrixFilter;
-    contrastFilter: ColorMatrixFilter;
-    grayscaleFilter: ColorMatrixFilter;
-    sleep: boolean;
-    anchor?: PIXI.ObservablePoint;
-    preventCenter?: boolean;
-    tint?: number;
-    _originalTexture: PIXI.Texture<PIXI.Resource>;
-    setTint(value: number): void;
-    setHue(rotation: number, multiply: boolean): void;
-    setBlackAndWhite(multiply: boolean): void;
-    setSaturation(amount: number, multiply: boolean): void;
-    setBrightness(b: number, multiply: boolean): void;
-    setContrast(amount: number, multiply: boolean): void;
-    setGreyscale(scale: number, multiply: boolean): void;
-    setSize(width: number, height: number, preventCenter: boolean): void;
-    setScale(x: number | { x: number; y: number }, y?: number): void;
-    center(): void;
-    instantiate(target: any, params: any): void;
-  }
+export interface ContainerExtensions {
+  hueFilter?: ColorMatrixFilter;
+  blackAndWhiteFilter?: ColorMatrixFilter;
+  saturationFilter?: ColorMatrixFilter;
+  brightnessFilter?: ColorMatrixFilter;
+  contrastFilter?: ColorMatrixFilter;
+  grayscaleFilter?: ColorMatrixFilter;
+  sleep: boolean;
+  anchor?: PIXI.ObservablePoint;
+  preventCenter?: boolean;
+  tint?: number;
+  _originalTexture?: PIXI.Texture<PIXI.Resource>;
+  setTint(value: number): void;
+  setHue(rotation: number, multiply: boolean): void;
+  setBlackAndWhite(multiply: boolean): void;
+  setSaturation(amount: number, multiply: boolean): void;
+  setBrightness(b: number, multiply: boolean): void;
+  setContrast(amount: number, multiply: boolean): void;
+  setGreyscale(scale: number, multiply: boolean): void;
+  setSize(width: number, height: number, preventCenter: boolean): void;
+  setScale(x: number | { x: number; y: number }, y?: number): void;
+  center(): void;
+  instantiate(params: any): void;
 }
 
-PIXI.Container.prototype.instantiate = function (target, params) {
+export const instantiate = function (target: any, params: any) {
   if (params) {
     target.alpha = params.alpha || params.opacity || 1;
     params.scale = {
@@ -45,6 +43,11 @@ PIXI.Container.prototype.instantiate = function (target, params) {
     delete params.scaleX;
     delete params.opacity;
     delete params.size;
+
+    if(params.anchor && target.anchor){
+      target.anchor.x = params.anchor.x;
+      target.anchor.y = params.anchor.y;
+    }
 
     for (const i in params) {
       if (target[i] && target[i].set) {
@@ -64,192 +67,192 @@ PIXI.Container.prototype.instantiate = function (target, params) {
   // }
 };
 
-PIXI.Container.prototype.setScale = function (
+export const setScale = function (target: PIXI.Container & ContainerExtensions,
   x: number | { x: number; y: number },
   y?: number,
 ) {
   if (y == undefined) {
     if (x instanceof Object) {
-      this.scale = { x: x.x, y: x.y };
+      target.scale = { x: x.x, y: x.y };
     } else {
-      this.scale = { x: x, y: x };
+      target.scale = { x: x, y: x };
     }
   } else {
     if (!(x instanceof Object) && y) {
-      this.scale = { x: x, y: y };
+      target.scale = { x: x, y: y };
     }
   }
 };
 
-PIXI.Container.prototype.setTint = function (value: number) {
-  this.tint = value || 0xffffff;
-  // if (this._originalTexture) {
-  //   this._originalTexture.tint = this.tint;
+export const setTint = function (target: PIXI.Container & ContainerExtensions,value: number) {
+  target.tint = value || 0xffffff;
+  // if (target._originalTexture) {
+  //   target._originalTexture.tint = target.tint;
   // }
 };
 
-PIXI.Container.prototype.setHue = function (
+export const setHue = function (target: PIXI.Container & ContainerExtensions,
   rotation: number,
   multiply: boolean,
 ) {
-  if (!this.hueFilter) {
-    this.hueFilter = new PIXI.filters.ColorMatrixFilter();
+  if (!target.hueFilter) {
+    target.hueFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
-    this.hueFilter.hue(0, false);
+    target.hueFilter.hue(0, false);
   }
 
-  this.hueFilter.hue(rotation, multiply);
+  target.hueFilter.hue(rotation, multiply);
 
-  if (!this.filters || !this.filters.length) {
-    this.filters = [this.hueFilter];
+  if (!target.filters || !target.filters.length) {
+    target.filters = [target.hueFilter];
   } else if (
-    this.filters.length >= 1 &&
-    this.filters.indexOf(this.hueFilter) == -1
+    target.filters.length >= 1 &&
+    target.filters.indexOf(target.hueFilter) == -1
   ) {
-    this.filters = this.filters.concat([this.hueFilter]);
+    target.filters = target.filters.concat([target.hueFilter]);
   }
 
-  return this;
+  return target;
 };
 
-PIXI.Container.prototype.setBlackAndWhite = function (multiply: boolean) {
-  if (!this.blackAndWhiteFilter) {
-    this.blackAndWhiteFilter = new PIXI.filters.ColorMatrixFilter();
+export const setBlackAndWhite = function (target: PIXI.Container & ContainerExtensions,multiply: boolean) {
+  if (!target.blackAndWhiteFilter) {
+    target.blackAndWhiteFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
-    this.blackAndWhiteFilter.blackAndWhite(false);
+    target.blackAndWhiteFilter.blackAndWhite(false);
   }
 
-  this.blackAndWhiteFilter.blackAndWhite(multiply);
+  target.blackAndWhiteFilter.blackAndWhite(multiply);
 
-  if (!this.filters || !this.filters.length) {
-    this.filters = [this.blackAndWhiteFilter];
+  if (!target.filters || !target.filters.length) {
+    target.filters = [target.blackAndWhiteFilter];
   } else if (
-    this.filters.length >= 1 &&
-    this.filters.indexOf(this.blackAndWhiteFilter) == -1
+    target.filters.length >= 1 &&
+    target.filters.indexOf(target.blackAndWhiteFilter) == -1
   ) {
-    this.filters = this.filters.concat([this.blackAndWhiteFilter]);
+    target.filters = target.filters.concat([target.blackAndWhiteFilter]);
   }
 
-  return this;
+  return target;
 };
 
-PIXI.Container.prototype.setSaturation = function (
+export const setSaturation = function (target: PIXI.Container & ContainerExtensions,
   amount: number,
   multiply: boolean,
 ) {
-  if (!this.saturationFilter) {
-    this.saturationFilter = new PIXI.filters.ColorMatrixFilter();
+  if (!target.saturationFilter) {
+    target.saturationFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
-    this.saturationFilter.desaturate();
+    target.saturationFilter.desaturate();
   }
 
-  this.saturationFilter.saturate(amount, multiply);
+  target.saturationFilter.saturate(amount, multiply);
 
-  if (!this.filters || !this.filters.length) {
-    this.filters = [this.saturationFilter];
+  if (!target.filters || !target.filters.length) {
+    target.filters = [target.saturationFilter];
   } else if (
-    this.filters.length >= 1 &&
-    this.filters.indexOf(this.saturationFilter) == -1
+    target.filters.length >= 1 &&
+    target.filters.indexOf(target.saturationFilter) == -1
   ) {
-    this.filters = this.filters.concat([this.saturationFilter]);
+    target.filters = target.filters.concat([target.saturationFilter]);
   }
 
-  return this;
+  return target;
 };
 
-PIXI.Container.prototype.setBrightness = function (
+export const setBrightness = function (target: PIXI.Container & ContainerExtensions,
   b: number,
   multiply: boolean,
 ) {
-  if (!this.brightnessFilter) {
-    this.brightnessFilter = new PIXI.filters.ColorMatrixFilter();
+  if (!target.brightnessFilter) {
+    target.brightnessFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
-    this.brightnessFilter.brightness(0, false);
+    target.brightnessFilter.brightness(0, false);
   }
 
-  this.brightnessFilter.brightness(b, multiply);
+  target.brightnessFilter.brightness(b, multiply);
 
-  if (!this.filters || !this.filters.length) {
-    this.filters = [this.brightnessFilter];
+  if (!target.filters || !target.filters.length) {
+    target.filters = [target.brightnessFilter];
   } else if (
-    this.filters.length >= 1 &&
-    this.filters.indexOf(this.brightnessFilter) == -1
+    target.filters.length >= 1 &&
+    target.filters.indexOf(target.brightnessFilter) == -1
   ) {
-    this.filters = this.filters.concat([this.brightnessFilter]);
+    target.filters = target.filters.concat([target.brightnessFilter]);
   }
 
-  return this;
+  return target;
 };
 
-PIXI.Container.prototype.setContrast = function (
+export const setContrast = function (target: PIXI.Container & ContainerExtensions,
   amount: number,
   multiply: boolean,
 ) {
-  if (!this.contrastFilter) {
-    this.contrastFilter = new PIXI.filters.ColorMatrixFilter();
+  if (!target.contrastFilter) {
+    target.contrastFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
-    this.contrastFilter.contrast(0, false);
+    target.contrastFilter.contrast(0, false);
   }
 
-  this.contrastFilter.contrast(amount, multiply);
+  target.contrastFilter.contrast(amount, multiply);
 
-  if (!this.filters || !this.filters.length) {
-    this.filters = [this.contrastFilter];
+  if (!target.filters || !target.filters.length) {
+    target.filters = [target.contrastFilter];
   } else if (
-    this.filters.length >= 1 &&
-    this.filters.indexOf(this.contrastFilter) == -1
+    target.filters.length >= 1 &&
+    target.filters.indexOf(target.contrastFilter) == -1
   ) {
-    this.filters = this.filters.concat([this.contrastFilter]);
+    target.filters = target.filters.concat([target.contrastFilter]);
   }
 
-  return this;
+  return target;
 };
 
-PIXI.Container.prototype.setGreyscale = function (
+export const setGreyscale = function (target: PIXI.Container & ContainerExtensions,
   scale: number,
   multiply: boolean,
 ) {
-  if (!this.grayscaleFilter) {
-    this.grayscaleFilter = new PIXI.filters.ColorMatrixFilter();
+  if (!target.grayscaleFilter) {
+    target.grayscaleFilter = new PIXI.filters.ColorMatrixFilter();
   } else {
-    this.grayscaleFilter.greyscale(0, false);
+    target.grayscaleFilter.greyscale(0, false);
   }
 
-  this.grayscaleFilter.greyscale(scale, multiply);
+  target.grayscaleFilter.greyscale(scale, multiply);
 
-  if (!this.filters || !this.filters.length) {
-    this.filters = [this.grayscaleFilter];
+  if (!target.filters || !target.filters.length) {
+    target.filters = [target.grayscaleFilter];
   } else if (
-    this.filters.length >= 1 &&
-    this.filters.indexOf(this.grayscaleFilter) == -1
+    target.filters.length >= 1 &&
+    target.filters.indexOf(target.grayscaleFilter) == -1
   ) {
-    this.filters = this.filters.concat([this.grayscaleFilter]);
+    target.filters = target.filters.concat([target.grayscaleFilter]);
   }
 
-  return this;
+  return target;
 };
 
-PIXI.Container.prototype.setSize = function (
+export const setSize = function (target: PIXI.Container & ContainerExtensions,
   width: number,
   height: number,
   preventCenter: boolean,
 ) {
-  this.width = width;
-  this.height = height;
+  target.width = width;
+  target.height = height;
 
   if (preventCenter !== undefined) {
-    this.preventCenter = preventCenter;
+    target.preventCenter = preventCenter;
   }
-  if (this.preventCenter !== true && !this.anchor) {
-    this.center();
+  if (target.preventCenter !== true && !target.anchor) {
+    target.center();
   }
 };
 
-PIXI.Container.prototype.center = function () {
-  if (this.anchor && this.anchor.set) {
-    this.anchor.set(0.5, 0.5);
+export const center = function (target: PIXI.Container & ContainerExtensions,) {
+  if (target.anchor && target.anchor.set) {
+    target.anchor.set(0.5, 0.5);
   } else {
-    this.x = -(this.width || 0) / 2;
-    this.y = -(this.height || 0) / 2;
+    target.x = -(target.width || 0) / 2;
+    target.y = -(target.height || 0) / 2;
   }
 };

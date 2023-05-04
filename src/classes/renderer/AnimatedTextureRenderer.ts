@@ -2,8 +2,10 @@ import * as PIXI from 'pixi.js';
 import Time from '../../utils/Time';
 import '../renderer/ContainerExtensions';
 import RendererInterface from './RendererInterface';
+import { ContainerExtensions, center, instantiate, setBlackAndWhite, setBrightness, setContrast, setGreyscale, setHue, setSaturation, setScale, setSize, setTint } from '../renderer/ContainerExtensions';
+import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 
-export default class AnimatedTextureRenderer extends PIXI.Sprite implements RendererInterface {
+export default class AnimatedTextureRenderer extends PIXI.Sprite implements RendererInterface, ContainerExtensions {
   private _imageNames: string[];
   private _textures: PIXI.Texture<PIXI.Resource>[];
   private _currentFrame: number;
@@ -42,7 +44,7 @@ export default class AnimatedTextureRenderer extends PIXI.Sprite implements Rend
     } & Partial<Omit<PIXI.Sprite, 'scale'>> & Partial<RendererInterface> = {},
   ) {
     super();
-    this.instantiate(this, params);
+    this.instantiate(params);
 
     this._imageNames = [];
     this._textures = [];
@@ -88,6 +90,15 @@ export default class AnimatedTextureRenderer extends PIXI.Sprite implements Rend
       this.currentFrame = (Math.random() * this.textures.length) >> 0;
     }
   }
+  hueFilter?: ColorMatrixFilter | undefined;
+  blackAndWhiteFilter?: ColorMatrixFilter | undefined;
+  saturationFilter?: ColorMatrixFilter | undefined;
+  brightnessFilter?: ColorMatrixFilter | undefined;
+  contrastFilter?: ColorMatrixFilter | undefined;
+  grayscaleFilter?: ColorMatrixFilter | undefined;
+  sleep: boolean = false;
+  preventCenter?: boolean | undefined;
+  _originalTexture?: PIXI.Texture<PIXI.Resource> | undefined;
 
   changeSheet(sheetName: string, animationName: string) {
     this.sheetName = sheetName;
@@ -217,6 +228,19 @@ export default class AnimatedTextureRenderer extends PIXI.Sprite implements Rend
   }
 
   onAnimEnd() {}
+
+  
+  setTint(value: number): void{setTint(this, value);}
+  setHue(rotation: number, multiply: boolean): void{setHue(this, rotation, multiply);}
+  setBlackAndWhite(multiply: boolean): void{setBlackAndWhite(this, multiply);}
+  setSaturation(amount: number, multiply: boolean): void{setSaturation(this, amount, multiply);}
+  setBrightness(b: number, multiply: boolean): void{setBrightness(this, b, multiply);}
+  setContrast(amount: number, multiply: boolean): void{setContrast(this, amount, multiply);}
+  setGreyscale(scale: number, multiply: boolean): void{setGreyscale(this, scale, multiply);}
+  setSize(width: number, height: number, preventCenter: boolean): void{setSize(this, width, height, preventCenter);}
+  setScale(x: number | { x: number; y: number }, y?: number): void{setScale(this, x, y);}
+  center(): void{center(this);}
+  instantiate(params: any): void{instantiate(this, params);}
 
   static DEName = 'AnimatedTextureRenderer';
 }

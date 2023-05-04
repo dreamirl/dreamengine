@@ -3,6 +3,8 @@ import ImageManager from '../../utils/ImageManager';
 import Time from '../../utils/Time';
 import '../renderer/ContainerExtensions';
 import RendererInterface from './RendererInterface';
+import { ContainerExtensions, center, instantiate, setBlackAndWhite, setBrightness, setContrast, setGreyscale, setHue, setSaturation, setScale, setSize, setTint } from '../renderer/ContainerExtensions';
+import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 
 export type SpriteDataType = {
   startFrame: number;
@@ -32,7 +34,7 @@ export type SpriteDataType = {
  *   renderer: new DE.SpriteRenderer( { "spriteName": "ship", "scale": 0.7, "offsetY": -30 } )
  * } );
  */
-export default class SpriteRenderer extends PIXI.Sprite implements RendererInterface {
+export default class SpriteRenderer extends PIXI.Sprite implements RendererInterface, ContainerExtensions {
   public startFrame: number;
   public endFrame: number;
   private _currentFrame: number;
@@ -118,15 +120,14 @@ export default class SpriteRenderer extends PIXI.Sprite implements RendererInter
     }
 
     const tempTexture = SpriteRenderer._getTexture(tempSpriteName);
-    if (tempTexture) {
-      super(tempTexture);
-    } else {
+    if (!tempTexture) {
       throw new Error(
         "SpriteRenderer :: Can't find image " +
           tempSpriteName +
           ' in ImageManager, is the image a sheet ? Or maybe not loaded ?',
       );
     }
+    super(tempTexture);
 
     this.spriteName = tempSpriteName;
     this.texture = tempTexture;
@@ -272,7 +273,7 @@ export default class SpriteRenderer extends PIXI.Sprite implements RendererInter
     this.onAnimEnd = () => {};
     this.changeSprite(this.spriteName!, params);
 
-    this.instantiate(this, params);
+    this.instantiate(params);
     // was used to handle quality change
     // Events.on( 'quality-changed', function( n, nt, name )
     // {
@@ -648,6 +649,28 @@ export default class SpriteRenderer extends PIXI.Sprite implements RendererInter
       }
     }
   }
+
+  hueFilter?: ColorMatrixFilter | undefined;
+  blackAndWhiteFilter?: ColorMatrixFilter | undefined;
+  saturationFilter?: ColorMatrixFilter | undefined;
+  brightnessFilter?: ColorMatrixFilter | undefined;
+  contrastFilter?: ColorMatrixFilter | undefined;
+  grayscaleFilter?: ColorMatrixFilter | undefined;
+  sleep: boolean = false;
+  preventCenter?: boolean | undefined;
+  _originalTexture?: PIXI.Texture<PIXI.Resource> | undefined;
+  setTint(value: number): void{setTint(this, value);}
+  setHue(rotation: number, multiply: boolean): void{setHue(this, rotation, multiply);}
+  setBlackAndWhite(multiply: boolean): void{setBlackAndWhite(this, multiply);}
+  setSaturation(amount: number, multiply: boolean): void{setSaturation(this, amount, multiply);}
+  setBrightness(b: number, multiply: boolean): void{setBrightness(this, b, multiply);}
+  setContrast(amount: number, multiply: boolean): void{setContrast(this, amount, multiply);}
+  setGreyscale(scale: number, multiply: boolean): void{setGreyscale(this, scale, multiply);}
+  setSize(width: number, height: number, preventCenter: boolean): void{setSize(this, width, height, preventCenter);}
+  setScale(x: number | { x: number; y: number }, y?: number): void{setScale(this, x, y);}
+  center(): void{center(this);}
+  instantiate(params: any): void{instantiate(this, params);}
+
   static DEName = 'SpriteRenderer';
 }
 

@@ -66,7 +66,7 @@ export type WaitKeyCallback = (x: {
 
 const gamepadAvalaible: boolean[] = [];
 
-class gamepads {
+export class gamepads {
   DEName = 'gamepad';
   isGamepadConnected = false;
 

@@ -22,7 +22,8 @@
   "scripts": {
     "format": "prettier --config .prettierrc.json --ignore-path .prettierignore --write \"**/*.{js,json,ts,tsx,md,html}\"",
     "test": "echo \"Error: no test specified this is a TODO\" && exit 1",
-    "watch": "echo TODO"
+    "watch": "echo TODO",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",

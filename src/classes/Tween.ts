@@ -14,7 +14,7 @@
 
 export const tweens: Tween[] = [];
 
-class Tween {
+export class Tween {
   targetValue: number;
   startValue: number;
   active: boolean;
@@ -313,7 +313,7 @@ function update(deltaTime: number) {
 	new ChainedTween([tween1, tween2]);
 */
 
-class ChainedTween extends Tween {
+export class ChainedTween extends Tween {
   tweensChained: Tween[] = [];
   complete = false;
 

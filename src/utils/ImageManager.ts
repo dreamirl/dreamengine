@@ -67,7 +67,7 @@ PIXI_LOADER.pre((resource, next) => {
   next();
 });
 
-class ImageManager {
+export class ImageManager {
   public readonly DEName = 'ImageManager';
   pathPrefix: string;
   imageNotRatio: boolean;
@@ -77,8 +77,11 @@ class ImageManager {
   pools: PoolType = { default: [] };
   spritesData: Record<string, SpriteData>;
 
-  private _waitingPools: { name: string; customEventName?: string }[];
-  private _waitingSolo: InitImageData[];
+  /** DO NOT USE */
+  _waitingPools: { name: string; customEventName?: string }[];
+  
+  /** DO NOT USE */
+  _waitingSolo: InitImageData[];
 
   constructor() {
     // quality var define what we need and how to use it

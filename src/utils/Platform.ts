@@ -49,7 +49,7 @@ export type product = {
   is_game: { type: boolean; default: false };
 };
 
-class Platform {
+export class Platform {
   name = 'nebula';
   touchPlatform = false;
   // prevent the engine to start with default loader (not useful by default, only if the targeted platform use a custom loader, as facebook do)

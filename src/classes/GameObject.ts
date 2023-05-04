@@ -6,6 +6,8 @@ import AdvancedContainer from './AdvancedContainer';
 import Vector2 from './Vector2';
 import GraphicRenderer from './renderer/GraphicRenderer';
 import RendererInterface from './renderer/RendererInterface';
+import AnimatedTextureRenderer from './renderer/AnimatedTextureRenderer';
+import SpriteRenderer from './renderer/SpriteRenderer';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -355,7 +357,7 @@ class GameObject extends AdvancedContainer {
       rd.anchor.x === 0 &&
       rd.anchor.y === 0
     ) {
-      rd.anchor.set(0.5, 0.5);
+      (rd.anchor as PIXI.ObservablePoint).set(0.5, 0.5);
     }
 
     if (this.renderer == undefined) {
@@ -814,8 +816,8 @@ class GameObject extends AdvancedContainer {
     // this apply update on each renderer
     if (this.visible) {
       for (let i = 0, r; (r = this.renderers[i]); ++i) {
-        if (r.update!) {
-          r.update(Time.deltaTime);
+          if ((r as AnimatedTextureRenderer|SpriteRenderer).update) {
+          (r as AnimatedTextureRenderer|SpriteRenderer).update();
         }
       }
     }

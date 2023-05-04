@@ -25,14 +25,17 @@ type LocalSound = {
   howl: howler.Howl;
 };
 
-class Audio {
+export class Audio {
   public static readonly DEName = 'Audio';
-  private _howler = howler;
+  
+  /** DO NOT USE */
+  _howler = howler;
   public get howler() {
     return this._howler;
   }
 
-  private _volume = 1;
+  /** DO NOT USE */
+  _volume = 1;
   public get volume() {
     return this._volume;
   }
@@ -161,7 +164,8 @@ class Audio {
     sound.volume = volume;
     return sound.howl.volume(finalVolume);
   }
-  private refreshSoundVolume(name: string) {
+  /** DO NOT USE */
+  public refreshSoundVolume(name: string) {
     const sound = this.sounds[name];
     this.setSoundVolume(name, sound.volume);
   }
