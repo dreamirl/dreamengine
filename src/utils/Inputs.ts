@@ -1,4 +1,4 @@
-﻿import config from '../config';
+import config from '../config';
 import Events from './Events';
 import gamepad, { WaitKeyCallback } from './gamepad';
 import Localization from './Localization';
@@ -338,7 +338,7 @@ export class Inputs {
    * @public
    * @memberOf Inputs
    */
-  on(type: keyof Queue, input: string, callback: () => void) {
+  on(type: keyof Queue, input: string, callback: (value: number) => void) {
     if (!this.queue[type][input]) {
       console.log(
         '%cWARN: Inputs: Try to bind on a non existent input ::: ' +
