@@ -2,6 +2,9 @@ import * as PIXI from 'pixi.js';
 import config from '../../config';
 import Localization from '../../utils/Localization';
 import '../renderer/ContainerExtensions';
+import RendererInterface from './RendererInterface';
+import { ContainerExtensions, center, instantiate, setBlackAndWhite, setBrightness, setContrast, setGreyscale, setHue, setSaturation, setScale, setSize, setTint } from '../renderer/ContainerExtensions';
+import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -27,7 +30,7 @@ import '../renderer/ContainerExtensions';
  * => intro.title will do Localization.get( "intro" ).title
  */
 
-export default class TextRenderer extends PIXI.Text {
+export default class TextRenderer extends PIXI.Text implements RendererInterface, ContainerExtensions {
   maxHeight?: number;
   maxWidth?: number;
   localizationKey?: string;
@@ -35,19 +38,22 @@ export default class TextRenderer extends PIXI.Text {
   constructor(
     text: string,
     params: {
+      scale?: number | Point2D;
+      scaleX?: number;
+      scaleY?: number;
       maxHeight?: number;
       maxWidth?: number;
       resolution?: number;
       localizationKey?: string;
       textStyle?: Partial<PIXI.TextStyle>;
-    } = {},
+    } & Partial<Omit<PIXI.Text, 'scale'>> & Partial<RendererInterface> = {},
   ) {
     super(text, new PIXI.TextStyle(params.textStyle));
-    let _params = params;
+    const _params = params;
     if (!_params.resolution) {
       _params.resolution = config.DEFAULT_TEXT_RESOLUTION;
     }
-    this.instantiate(this, _params);
+    this.instantiate(_params);
     // force string conversion to avoid pure numbers
     text =
       text !== null && text !== undefined && text.toString
@@ -73,7 +79,7 @@ export default class TextRenderer extends PIXI.Text {
 
   checkMaxWidth() {
     if (this.maxWidth) {
-      let textMetrics = PIXI.TextMetrics.measureText(
+      const textMetrics = PIXI.TextMetrics.measureText(
         this.text,
         new PIXI.TextStyle(this.style),
       );
@@ -112,7 +118,7 @@ export default class TextRenderer extends PIXI.Text {
 
   checkMaxHeight() {
     if (this.maxHeight) {
-      let textMetrics = PIXI.TextMetrics.measureText(
+      const textMetrics = PIXI.TextMetrics.measureText(
         this.text,
         new PIXI.TextStyle(this.style),
       );
@@ -122,6 +128,27 @@ export default class TextRenderer extends PIXI.Text {
       }
     }
   }
+  
+  hueFilter?: ColorMatrixFilter | undefined;
+  blackAndWhiteFilter?: ColorMatrixFilter | undefined;
+  saturationFilter?: ColorMatrixFilter | undefined;
+  brightnessFilter?: ColorMatrixFilter | undefined;
+  contrastFilter?: ColorMatrixFilter | undefined;
+  grayscaleFilter?: ColorMatrixFilter | undefined;
+  sleep: boolean = false;
+  preventCenter?: boolean | undefined;
+  _originalTexture?: PIXI.Texture<PIXI.Resource> | undefined;
+  setTint(value: number): void{setTint(this, value);}
+  setHue(rotation: number, multiply: boolean): void{setHue(this, rotation, multiply);}
+  setBlackAndWhite(multiply: boolean): void{setBlackAndWhite(this, multiply);}
+  setSaturation(amount: number, multiply: boolean): void{setSaturation(this, amount, multiply);}
+  setBrightness(b: number, multiply: boolean): void{setBrightness(this, b, multiply);}
+  setContrast(amount: number, multiply: boolean): void{setContrast(this, amount, multiply);}
+  setGreyscale(scale: number, multiply: boolean): void{setGreyscale(this, scale, multiply);}
+  setSize(width: number, height: number, preventCenter: boolean): void{setSize(this, width, height, preventCenter);}
+  setScale(x: number | { x: number; y: number }, y?: number): void{setScale(this, x, y);}
+  center(): void{center(this);}
+  instantiate(params: any): void{instantiate(this, params);}
 
   static DEName = 'TextRenderer';
 }

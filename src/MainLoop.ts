@@ -1,6 +1,7 @@
 import Component from './classes/Component';
 import GameObject from './classes/GameObject';
 import Render from './classes/Render';
+import BitmapTextRenderer from './classes/renderer/BitmapTextRenderer';
 import SpriteRenderer from './classes/renderer/SpriteRenderer';
 import TextRenderer from './classes/renderer/TextRenderer';
 import Scene from './classes/Scene';
@@ -15,7 +16,7 @@ import Time from './utils/Time';
  * The MainLoop namespace handle the call of the next frame, updating scene, rendering and so on
  * MainLoop start when calling DE.start();
  */
-class MainLoop {
+export class MainLoop {
   public static readonly DEName = 'MainLoop';
   scenes: Scene[] = [];
   renders: Render[] = [];
@@ -23,7 +24,8 @@ class MainLoop {
   launched = false;
   displayLoader = false;
 
-  private loader: GameObject;
+  /** DO NOT USE */
+  loader: GameObject;
 
   constructor() {
     this.loader = new GameObject({});
@@ -65,17 +67,13 @@ class MainLoop {
         ? (loaderTextRd.text = progression + '%')
         : (loaderTextRd.text = poolName + ': ' + progression + '%');
     });
-    Events.on('ImageManager-pool-complete', (poolName) => {
+    Events.on('ImageManager-pool-complete', () => {
       this.loader.removeAutomatism('animateLoader');
       loaderTextRd.text = '100%';
     });
   }
 
-  updateLoaderImage(loader: {
-    0: string,
-    1: string,
-    2?: any
-  }) {
+  updateLoaderImage(loader: { 0: string; 1: string; 2?: any }) {
     // TOTO créer un type "imageParams"
     this.loader.addRenderer(
       new SpriteRenderer({ spriteName: loader[0], scale: loader[2].scale }),
@@ -114,7 +112,7 @@ class MainLoop {
     gamepad.update(Time.currentTime);
 
     while (Time.timeSinceLastFrame >= Time.frameDelay) {
-      for (let r in this.additionalModules)
+      for (const r in this.additionalModules)
         this.additionalModules[r]._update(Time.frameDelayScaled);
 
       for (let i = 0, r; (r = this.renders[i]); ++i) {
@@ -158,9 +156,9 @@ function checkGameObjectsTextRenderer(go: GameObject) {
     return;
   }
   for (let ir = 0, r; (r = go.renderers[ir]); ++ir) {
-    if (r.localizationKey) {
-      r.text = Localization.get(r.localizationKey);
-      r.checkMaxWidth();
+    if ((r as BitmapTextRenderer|TextRenderer).localizationKey) {
+      (r as BitmapTextRenderer|TextRenderer).text = Localization.get((r as BitmapTextRenderer|TextRenderer).localizationKey);
+      (r as BitmapTextRenderer|TextRenderer).checkMaxWidth();
     }
   }
 }

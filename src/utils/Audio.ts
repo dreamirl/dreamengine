@@ -25,21 +25,24 @@ type LocalSound = {
   howl: howler.Howl;
 };
 
-class Audio {
+export class Audio {
   public static readonly DEName = 'Audio';
-  private _howler = howler;
+  
+  /** DO NOT USE */
+  _howler = howler;
   public get howler() {
     return this._howler;
   }
 
-  private _volume = 1;
+  /** DO NOT USE */
+  _volume = 1;
   public get volume() {
     return this._volume;
   }
   public set volume(value: number) {
     this._volume = value;
 
-    for (let name in this.channels) {
+    for (const name in this.channels) {
       this.setChannelVolume(name, this.mix[name]);
     }
   }
@@ -72,13 +75,13 @@ class Audio {
     channels: Record<string, number>;
     sounds: AudioParam[];
   }) {
-    if(audioParams === undefined){
+    if (audioParams === undefined) {
       this.volume = 1;
       return;
     }
     this.volume = audioParams.masterVolume;
 
-    for (let key in audioParams.channels) {
+    for (const key in audioParams.channels) {
       this.addChannel(key, audioParams.channels[key]);
     }
 
@@ -88,7 +91,7 @@ class Audio {
   loadAudios(audioList: AudioParam[]) {
     audioList.forEach((audioParam) => {
       /* Howler format */
-      let urls = [];
+      const urls: string[] = [];
       for (let i = 0; i < audioParam.formats.length; ++i) {
         urls.push(
           audioParam.path +
@@ -140,8 +143,8 @@ class Audio {
   }
   get(name: string) {
     if (!this.sounds[name]) {
-      console.warn (
-        'DE.Audio.get sound does not exists or yet declared/added => ' + name
+      console.warn(
+        'DE.Audio.get sound does not exists or yet declared/added => ' + name,
       );
       return undefined;
     }
@@ -149,8 +152,8 @@ class Audio {
   }
   getSoundVolume(name: string): number {
     const sound = this.get(name);
-    if(sound) return this.volume * this.mix[sound.channel] * sound.volume;
-    return 0
+    if (sound) return this.volume * this.mix[sound.channel] * sound.volume;
+    return 0;
   }
   setSoundVolume(name: string, volume: number, id?: number) {
     const sound = this.sounds[name];
@@ -161,7 +164,8 @@ class Audio {
     sound.volume = volume;
     return sound.howl.volume(finalVolume);
   }
-  private refreshSoundVolume(name: string) {
+  /** DO NOT USE */
+  public refreshSoundVolume(name: string) {
     const sound = this.sounds[name];
     this.setSoundVolume(name, sound.volume);
   }
@@ -184,8 +188,8 @@ class Audio {
   }
 
   play(name: string, spriteName?: string | undefined, soundID?: number) {
-    const locSound = this.get(name)
-    if(!locSound) return '';
+    const locSound = this.get(name);
+    if (!locSound) return '';
     const sound = locSound.howl;
     // if the sound was preload = false, it must be loaded now !
     if (sound.state() === 'unloaded') {
@@ -197,28 +201,28 @@ class Audio {
   }
 
   pause(name: string, soundID?: number) {
-    const locSound = this.get(name)
-    if(!locSound) return this;
+    const locSound = this.get(name);
+    if (!locSound) return this;
     const sound = locSound.howl;
     sound.pause(soundID);
     return this;
   }
 
   stop(name: string, soundID?: number) {
-    const locSound = this.get(name)
-    if(!locSound) return this;
+    const locSound = this.get(name);
+    if (!locSound) return this;
     const sound = locSound.howl;
     sound.stop(soundID);
     return this;
   }
   mute(name: string, mute: boolean, soundID?: number) {
-    const locSound = this.get(name)
-    if(!locSound) return this;
+    const locSound = this.get(name);
+    if (!locSound) return this;
     const sound = locSound.howl;
     sound.mute(mute, soundID);
     return this;
   }
-  stopAll(channelName: string = 'musics', preserve: string[]) {
+  stopAll(channelName = 'musics', preserve: string[]) {
     if (!this.channels[channelName]) {
       throw 'DE.Audio.stopAll channel does not exists ' + channelName;
     }
@@ -239,7 +243,7 @@ class Audio {
     this.play(name, sprite);
     return this;
   }
-  pauseAll(channelName: string = 'musics', preserve: string[]) {
+  pauseAll(channelName = 'musics', preserve: string[]) {
     if (!this.channels[channelName]) {
       throw 'DE.Audio.pauseAll channel does not exists ' + channelName;
     }

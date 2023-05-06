@@ -2,6 +2,9 @@ import * as PIXI from 'pixi.js';
 import config from '../../config';
 import Localization from '../../utils/Localization';
 import '../renderer/ContainerExtensions';
+import RendererInterface from './RendererInterface';
+import { ContainerExtensions, center, instantiate, setBlackAndWhite, setBrightness, setContrast, setGreyscale, setHue, setSaturation, setScale, setSize, setTint } from '../renderer/ContainerExtensions';
+import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -27,7 +30,7 @@ import '../renderer/ContainerExtensions';
  * => intro.title will do Localization.get( "intro" ).title
  */
 
-export default class BitmapTextRenderer extends PIXI.BitmapText {
+export default class BitmapTextRenderer extends PIXI.BitmapText implements RendererInterface, ContainerExtensions {
   localizationKey: string | undefined;
   maxHeight: number;
 
@@ -40,15 +43,18 @@ export default class BitmapTextRenderer extends PIXI.BitmapText {
       fontSize?: number;
       localizationKey?: string;
       resolution?: number;
-    } = {},
+      scale?: number | Point2D;
+      scaleX?: number;
+      scaleY?: number;
+    } & Partial<Omit<PIXI.BitmapText, 'scale'>> & Partial<RendererInterface> = {},
   ) {
     super(text);
 
-    let _params = params;
+    const _params = params;
     if (!_params.resolution) {
       _params.resolution = config.DEFAULT_TEXT_RESOLUTION;
     }
-    this.instantiate(this, _params);
+    this.instantiate(_params);
     // force string conversion to avoid pure numbers
     text =
       text !== null && text !== undefined && text.toString
@@ -64,8 +70,7 @@ export default class BitmapTextRenderer extends PIXI.BitmapText {
       text = Localization.get(this.localizationKey);
     }
 
-    if(params.fontName)
-      this.fontName = params.fontName;
+    if (params.fontName) this.fontName = params.fontName;
     if (!this.fontName) {
       throw new Error(
         'BitmapTextRender :: No fontName defined -- declaration canceled',
@@ -80,7 +85,8 @@ export default class BitmapTextRenderer extends PIXI.BitmapText {
       );
     }
 
-    this.fontSize = params.fontSize ?? PIXI.BitmapFont.available[this.fontName].size;
+    this.fontSize =
+      params.fontSize ?? PIXI.BitmapFont.available[this.fontName].size;
 
     this.maxWidth = _params.maxWidth ? _params.maxWidth : 0;
     this.checkMaxWidth();
@@ -88,6 +94,26 @@ export default class BitmapTextRenderer extends PIXI.BitmapText {
     this.maxHeight = _params.maxHeight ? _params.maxHeight : 0;
     this.checkMaxHeight();
   }
+  hueFilter?: ColorMatrixFilter | undefined;
+  blackAndWhiteFilter?: ColorMatrixFilter | undefined;
+  saturationFilter?: ColorMatrixFilter | undefined;
+  brightnessFilter?: ColorMatrixFilter | undefined;
+  contrastFilter?: ColorMatrixFilter | undefined;
+  grayscaleFilter?: ColorMatrixFilter | undefined;
+  sleep: boolean = false;
+  preventCenter?: boolean | undefined;
+  _originalTexture?: PIXI.Texture<PIXI.Resource> | undefined;
+  setTint(value: number): void{setTint(this, value);}
+  setHue(rotation: number, multiply: boolean): void{setHue(this, rotation, multiply);}
+  setBlackAndWhite(multiply: boolean): void{setBlackAndWhite(this, multiply);}
+  setSaturation(amount: number, multiply: boolean): void{setSaturation(this, amount, multiply);}
+  setBrightness(b: number, multiply: boolean): void{setBrightness(this, b, multiply);}
+  setContrast(amount: number, multiply: boolean): void{setContrast(this, amount, multiply);}
+  setGreyscale(scale: number, multiply: boolean): void{setGreyscale(this, scale, multiply);}
+  setSize(width: number, height: number, preventCenter: boolean): void{setSize(this, width, height, preventCenter);}
+  setScale(x: number | { x: number; y: number }, y?: number): void{setScale(this, x, y);}
+  center(): void{center(this);}
+  instantiate(params: any): void{instantiate(this, params);}
 
   checkMaxWidth() {
     if (this.maxWidth) {

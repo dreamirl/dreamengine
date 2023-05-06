@@ -40,7 +40,8 @@ function sortGameObjects(container: GameObject | Scene) {
     });
   }
 
-  container._shouldSortChildren = false;
+  // Not doing anything ?
+  // container._shouldSortChildren = false;
 
   container.emit('gameObjects-sorted');
 }

@@ -1,4 +1,4 @@
-﻿import config from '../config';
+import config from '../config';
 import Events from './Events';
 import gamepad, { WaitKeyCallback } from './gamepad';
 import Localization from './Localization';
@@ -13,25 +13,25 @@ import Time from './Time';
  */
 
 type InputInfo = {
-  inputs: Array<{code: string, type: string}>,
-  interval: number,
-  lastCall: number,
-  actions: {},
-  isDown: boolean,
-  isLongPress: boolean,
-  stayOn: boolean,
-  numberCall: number,
-  numberPress: number,
-}
+  inputs: Array<{ code: string; type: string }>;
+  interval: number;
+  lastCall: number;
+  actions: object;
+  isDown: boolean;
+  isLongPress: boolean;
+  stayOn: boolean;
+  numberCall: number;
+  numberPress: number;
+};
 
 type Queue = {
-  keyDown: {[key: string] : Array<any>},
-  keyUp: {[key: string] : Array<any>},
-  btnMoved: {[key: string] : Array<any>},
-  axeMoved: {[key: string] : Array<any>},
-  axeStart: {[key: string] : Array<any>},
-  axeStop: {[key: string] : Array<any>},
-}
+  keyDown: { [key: string]: Array<any> };
+  keyUp: { [key: string]: Array<any> };
+  btnMoved: { [key: string]: Array<any> };
+  axeMoved: { [key: string]: Array<any> };
+  axeStart: { [key: string]: Array<any> };
+  axeStop: { [key: string]: Array<any> };
+};
 
 /**
  * An Inputs lib to detect keyboard and gamepad events, easily bindable and multiple bind
@@ -39,7 +39,7 @@ type Queue = {
  * @namespace Inputs
  */
 
-let _langs = {
+const _langs = {
   en: {
     'leave-page': "By leaving the page you'll lost any progression unsaved.",
   },
@@ -58,7 +58,7 @@ export class Inputs {
   waitForAnyKeyType = 'keyboard';
   waitForAnyKeyCallback: WaitKeyCallback = () => {};
 
-  usedInputs: {[key: string]: InputInfo} = {};
+  usedInputs: { [key: string]: InputInfo } = {};
 
   isWindowFocused = true;
   dontPreventDefault = false;
@@ -191,12 +191,22 @@ export class Inputs {
    * @private
    * @memberOf Inputs
    */
-  init(customInputs: Record<string, {keycodes: string[], interval?: number, isLongPress?: boolean, stayOn?: boolean}>) {
-    let newInputs: {[key: string]: InputInfo} = {};
+  init(
+    customInputs: Record<
+      string,
+      {
+        keycodes: string[];
+        interval?: number;
+        isLongPress?: boolean;
+        stayOn?: boolean;
+      }
+    >,
+  ) {
+    const newInputs: { [key: string]: InputInfo } = {};
 
-    for (let i in customInputs) {
+    for (const i in customInputs) {
       newInputs[i] = {
-        inputs: new Array(),
+        inputs: [],
         interval: customInputs[i].interval || 0,
         lastCall: Date.now(),
         actions: {},
@@ -208,8 +218,9 @@ export class Inputs {
       };
 
       for (let n = 0, I; (I = customInputs[i].keycodes[n]); ++n) {
-        let type: 'KEYBOARD' | 'MOUSE' | 'GAMEPADAXES' | 'GAMEPADBUTTONS' = I[0] == 'K' || I[0] == 'k' ? 'KEYBOARD' : 'MOUSE';
-        let data = I.split('.');
+        let type: 'KEYBOARD' | 'MOUSE' | 'GAMEPADAXES' | 'GAMEPADBUTTONS' =
+          I[0] == 'K' || I[0] == 'k' ? 'KEYBOARD' : 'MOUSE';
+        const data = I.split('.');
         let gamepadID = 0;
         let name: string;
         if (data[0][0] == 'G') {
@@ -226,7 +237,7 @@ export class Inputs {
           name = I.slice(2, I.length);
         }
 
-        if (!typeof this.dbInputs[type].hasOwnProperty(name)) {
+        if (!this.dbInputs[type].hasOwnProperty(name)) {
           console.log(
             "%cWARN: Inputs: An input couldn't be found in the database, did you respect the caseSensitive ?:" +
               type +
@@ -239,15 +250,31 @@ export class Inputs {
         }
 
         if (type == 'GAMEPADBUTTONS') {
-          gamepad.plugBtnToInput(this, i, gamepadID, this.dbInputs[type][name]);
+          const typedName =
+            name as keyof typeof this.dbInputs['GAMEPADBUTTONS'];
+          const input = this.dbInputs[type][typedName];
+          if (input) {
+            gamepad.plugBtnToInput(this, i, gamepadID, input);
+          }
         } else if (type == 'GAMEPADAXES') {
-          gamepad.plugAxeToInput(this, i, gamepadID, this.dbInputs[type][name]);
+          const typedName = name as keyof typeof this.dbInputs['GAMEPADAXES'];
+          const input = this.dbInputs[type][typedName];
+          if (input) {
+            gamepad.plugAxeToInput(this, i, gamepadID, input);
+          }
         }
 
-        newInputs[i].inputs.push({
-          code: this.dbInputs[type][name],
-          type: type,
-        });
+        const inputs = this.dbInputs;
+        const typedType = type as keyof typeof inputs;
+        const typedName = name as keyof typeof inputs[typeof typedType];
+        const input =
+          this.dbInputs[typedType] && this.dbInputs[typedType][typedName];
+        if (input) {
+          newInputs[i].inputs.push({
+            code: input,
+            type,
+          });
+        }
       }
 
       newInputs[i].interval = customInputs[i].interval || 0;
@@ -264,18 +291,18 @@ export class Inputs {
         newInputs[i].lastCall = Date.now() + newInputs[i].interval;
       }
 
-      this.queue['keyDown'][i] = new Array();
-      this.queue['keyUp'][i] = new Array();
+      this.queue['keyDown'][i] = [];
+      this.queue['keyUp'][i] = [];
       // this.queue[ 'mouseDown' ][ i ] = new Array();
       // this.queue[ 'mouseUp' ][ i ]   = new Array();
-      this.queue['btnMoved'][i] = new Array();
-      this.queue['axeMoved'][i] = new Array();
-      this.queue['axeStart'][i] = new Array();
-      this.queue['axeStop'][i] = new Array();
+      this.queue['btnMoved'][i] = [];
+      this.queue['axeMoved'][i] = [];
+      this.queue['axeStart'][i] = [];
+      this.queue['axeStop'][i] = [];
     }
 
-    this.queue['axeMoved']['wheelTop'] = new Array();
-    this.queue['axeMoved']['wheelDown'] = new Array();
+    this.queue['axeMoved']['wheelTop'] = [];
+    this.queue['axeMoved']['wheelDown'] = [];
 
     this.usedInputs = newInputs;
     this.toggleListeners();
@@ -283,7 +310,9 @@ export class Inputs {
     if (config.ALLOW_ONBEFOREUNLOAD) {
       window.onbeforeunload = (_e) => {
         if (!window.leavePage)
-          return _langs[Localization.currentLanguage as ('fr' | 'en')]['leave-page'];
+          return _langs[Localization.currentLanguage as 'fr' | 'en'][
+            'leave-page'
+          ];
         return '';
       };
       window.onunload = (_e) => {
@@ -309,7 +338,7 @@ export class Inputs {
    * @public
    * @memberOf Inputs
    */
-  on(type: keyof Queue, input: string, callback: () => void) {
+  on(type: keyof Queue, input: string, callback: (value: number) => void) {
     if (!this.queue[type][input]) {
       console.log(
         '%cWARN: Inputs: Try to bind on a non existent input ::: ' +
@@ -401,15 +430,39 @@ export class Inputs {
    * @memberOf Inputs
    */
   toggleListeners(canvas?: HTMLCanvasElement, bind?: boolean) {
-    let target = canvas || window;
+    const target = canvas || window;
     if (this.isListening && !bind) {
-      target.removeEventListener('keydown', (e) => this.keyDown(e as KeyboardEvent), false);
-      target.removeEventListener('keyup', (e) => this.keyUp(e as KeyboardEvent), false);
-      target.removeEventListener('keypress', (e) => this.keyPress(e as KeyboardEvent), false);
+      target.removeEventListener(
+        'keydown',
+        (e) => this.keyDown(e as KeyboardEvent),
+        false,
+      );
+      target.removeEventListener(
+        'keyup',
+        (e) => this.keyUp(e as KeyboardEvent),
+        false,
+      );
+      target.removeEventListener(
+        'keypress',
+        (e) => this.keyPress(e as KeyboardEvent),
+        false,
+      );
     } else {
-      target.addEventListener('keydown', (e) => this.keyDown(e as KeyboardEvent), false);
-      target.addEventListener('keyup', (e) => this.keyUp(e as KeyboardEvent), false);
-      target.addEventListener('keypress', (e) => this.keyPress(e as KeyboardEvent), false);
+      target.addEventListener(
+        'keydown',
+        (e) => this.keyDown(e as KeyboardEvent),
+        false,
+      );
+      target.addEventListener(
+        'keyup',
+        (e) => this.keyUp(e as KeyboardEvent),
+        false,
+      );
+      target.addEventListener(
+        'keypress',
+        (e) => this.keyPress(e as KeyboardEvent),
+        false,
+      );
     }
   }
 
@@ -420,13 +473,16 @@ export class Inputs {
    * @param {String} code - key name: up, shift, space, A, etc...
    * @param {String} type - KEYBOARD / GAMEPADBUTTONS / GAMEPADAXES
    */
-  findInputs(code: string, type: 'KEYBOARD' | 'GAMEPADBUTTONS' | 'GAMEPADAXES') {
-    let inputs: string[] = [];
+  findInputs(
+    code: string,
+    type: 'KEYBOARD' | 'GAMEPADBUTTONS' | 'GAMEPADAXES',
+  ) {
+    const inputs: string[] = [];
     // parse all gamesInputs
-    for (let i in this.usedInputs) {
+    for (const i in this.usedInputs) {
       // parse each inputs
-      for (let t in this.usedInputs[i].inputs) {
-        let input = this.usedInputs[i].inputs[t].code,
+      for (const t in this.usedInputs[i].inputs) {
+        const input = this.usedInputs[i].inputs[t].code,
           tp = this.usedInputs[i].inputs[t].type;
 
         if (input == code && tp == type) {
@@ -444,8 +500,8 @@ export class Inputs {
    * @param {DOMEvent} event
    */
   keyDown(event: KeyboardEvent) {
-    let e = event || window.event;
-    let code = e.which || e.keyCode;
+    const e = event || window.event;
+    const code = e.which || e.keyCode;
 
     // we can ignore a list a specified keys (if you are using these for your top-application for example, like F1, F2)
     if (this.ignoreKeys.indexOf(code) != -1) {
@@ -480,7 +536,7 @@ export class Inputs {
       return false;
     }
 
-    let inputsDown = this.findInputs(code.toString(), 'KEYBOARD');
+    const inputsDown = this.findInputs(code.toString(), 'KEYBOARD');
     let shouldPreventDefault = true;
     if (inputsDown !== false) {
       for (let i = 0, input; (input = inputsDown[i]); ++i) {
@@ -532,8 +588,8 @@ export class Inputs {
    * @param {DOMEvent} event
    */
   keyUp(event: KeyboardEvent) {
-    let e = event || window.event;
-    let code = e.which || e.keyCode;
+    const e = event || window.event;
+    const code = e.which || e.keyCode;
 
     if (code == this.dbInputs.KEYBOARD.shift) {
       this.isShiftDown = false;
@@ -547,7 +603,7 @@ export class Inputs {
       let key: keyof typeof this.dbInputs.KEYBOARD;
       let keyName: keyof typeof this.dbInputs.KEYBOARD | undefined = undefined;
       for (key in this.dbInputs.KEYBOARD) {
-        if(this.dbInputs.KEYBOARD[key] === code){
+        if (this.dbInputs.KEYBOARD[key] === code) {
           keyName = key;
           break;
         }
@@ -585,7 +641,7 @@ export class Inputs {
       }
     }
 
-    let inputsUp = this.findInputs(code.toString(), 'KEYBOARD');
+    const inputsUp = this.findInputs(code.toString(), 'KEYBOARD');
     if (inputsUp !== false) {
       for (let i = 0, input; (input = inputsUp[i]); ++i) {
         if (this.usedInputs[input].isDown) {
@@ -616,10 +672,10 @@ export class Inputs {
    * @param {DOMEvent} event
    */
   keyPress(event: KeyboardEvent) {
-    let e = event || window.event;
-    let code = e.key;
+    const e = event || window.event;
+    const code = e.key;
 
-    let inputsPress = this.findInputs(code, 'KEYBOARD');
+    const inputsPress = this.findInputs(code, 'KEYBOARD');
     if (inputsPress !== false) {
       // for ( let i = 0, input; input = inputsPress[ i ]; ++i )
       // {

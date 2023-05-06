@@ -71,7 +71,7 @@ export default class Camera extends AdvancedContainer {
     this.x = (this.renderSizes.x / 2) >> 0;
     this.y = (this.renderSizes.y / 2) >> 0;
 
-    let _params = params || {};
+    const _params = params || {};
 
     this.interactive =
       params.interactive !== undefined ? params.interactive : true;
@@ -218,37 +218,44 @@ export default class Camera extends AdvancedContainer {
    * @memberOf Camera
    */
   _pointerHandler(
-    type: 'Move' | 'Down' | 'Up' | 'Over' | 'Out' | 'Tap' | 'UpOutside',
+    type:
+      | '_customPointerMove'
+      | '_customPointerDown'
+      | '_customPointerUp'
+      | '_customPointerOver'
+      | '_customPointerOut'
+      | '_customPointerTap'
+      | '_customPointerUpOutside',
     event: PIXI.InteractionEvent,
   ) {
-    let pos = {
+    const pos = {
       x: event.data.global.x + (this.pivot.x - this.x),
       y: event.data.global.y + (this.pivot.y - this.y),
     };
 
-    this['_customPointer' + type](pos, event);
+    this[type](pos, event);
   }
 
   _pointermove(e: any) {
-    this._pointerHandler('Move', e);
+    this._pointerHandler('_customPointerMove', e);
   }
   _pointerdown(e: any) {
-    this._pointerHandler('Down', e);
+    this._pointerHandler('_customPointerDown', e);
   }
   _pointerup(e: any) {
-    this._pointerHandler('Up', e);
+    this._pointerHandler('_customPointerUp', e);
   }
   _pointerover(e: any) {
-    this._pointerHandler('Over', e);
+    this._pointerHandler('_customPointerOver', e);
   }
   _pointerout(e: any) {
-    this._pointerHandler('Out', e);
+    this._pointerHandler('_customPointerOut', e);
   }
   _pointertap(e: any) {
-    this._pointerHandler('Tap', e);
+    this._pointerHandler('_customPointerTap', e);
   }
   _pointerupoutside(e: any) {
-    this._pointerHandler('UpOutside', e);
+    this._pointerHandler('_customPointerUpOutside', e);
   }
 
   /**
@@ -257,37 +264,58 @@ export default class Camera extends AdvancedContainer {
    * @private
    * @memberOf Camera
    */
-  private _customPointerMove = function (pos: Point2D, event: PIXI.InteractionEvent) {};
+  private _customPointerMove = function (
+    _pos: Point2D,
+    _event: PIXI.InteractionEvent,
+  ) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerDown = function (pos: Point2D, event: PIXI.InteractionEvent) {};
+  private _customPointerDown = function (
+    _pos: Point2D,
+    _event: PIXI.InteractionEvent,
+  ) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerUp = function (pos: Point2D, event: PIXI.InteractionEvent) {};
+  private _customPointerUp = function (
+    _pos: Point2D,
+    _event: PIXI.InteractionEvent,
+  ) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerOver = function (pos: Point2D, event: PIXI.InteractionEvent) {};
+  private _customPointerOver = function (
+    _pos: Point2D,
+    _event: PIXI.InteractionEvent,
+  ) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerOut = function (pos: Point2D, event: PIXI.InteractionEvent) {};
+  private _customPointerOut = function (
+    _pos: Point2D,
+    _event: PIXI.InteractionEvent,
+  ) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerTap = function (pos: Point2D, event: PIXI.InteractionEvent) {};
+  private _customPointerTap = function (
+    _pos: Point2D,
+    _event: PIXI.InteractionEvent,
+  ) {};
   /**
    * @private
    * @memberOf Camera
    */
-  private _customPointerUpOutside = function (pos: Point2D, event: PIXI.InteractionEvent) {};
+  private _customPointerUpOutside = function (
+    _pos: Point2D,
+    _event: PIXI.InteractionEvent,
+  ) {};
 
   /**
    * this update the lifecycle of the camera, binded on rendering because if a Camera is "off" it doesn't need to be updated
@@ -312,8 +340,8 @@ export default class Camera extends AdvancedContainer {
    * @protected
    * @memberOf Camera
    */
-  checkLimits(qualityRatio: number = 1) {
-    let limits = this.limits;
+  checkLimits(qualityRatio = 1) {
+    const limits = this.limits;
     if (limits.minX != undefined && this.x < limits.minX * qualityRatio) {
       this.x = limits.minX * qualityRatio;
     } else if (

@@ -1,10 +1,13 @@
-import { Container, Point } from 'pixi.js';
+import * as PIXI from 'pixi.js';
 import config from '../config';
 import Events from '../utils/Events';
 import Time from '../utils/Time';
 import AdvancedContainer from './AdvancedContainer';
 import Vector2 from './Vector2';
 import GraphicRenderer from './renderer/GraphicRenderer';
+import RendererInterface from './renderer/RendererInterface';
+import AnimatedTextureRenderer from './renderer/AnimatedTextureRenderer';
+import SpriteRenderer from './renderer/SpriteRenderer';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -32,11 +35,12 @@ import GraphicRenderer from './renderer/GraphicRenderer';
 
 class GameObject extends AdvancedContainer {
   public static DEName = 'GameObject';
-  override parent: GameObject = undefined; // TODO: ZARNA : ajouter Scene quand Scene sera en classe
+  // @ts-ignore
+  override parent: GameObject;
   vector2: Vector2;
-  renderers: (Container | DERenderers)[] = [];
-  renderer: Container;
-  _debugRenderer: Container | undefined;
+  renderers: (PIXI.Container & RendererInterface)[] = [];
+  renderer: PIXI.Container & RendererInterface;
+  _debugRenderer: PIXI.Container | undefined;
   _lastLocalID: string = '';
 
   /**
@@ -68,14 +72,14 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    * @type {String}
    */
-  override readonly name = '';
+  override readonly name: string = '';
 
   /**
    * @public
    * @memberOf GameObject
    * @type {String}
    */
-  tag = '';
+  tag: string = '';
 
   /**
    * Flag used in intern logic (for delete) but can be used outside when it's not conflicting with the engine's logic
@@ -116,7 +120,7 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    * @type {PIXI.Point}
    */
-  worldScale = new Point(1, 1);
+  worldScale = new PIXI.Point(1, 1);
 
   /**
    * can prevent event propagation
@@ -132,16 +136,18 @@ class GameObject extends AdvancedContainer {
   extra: Record<string, any> = {};
 
   constructor(
-    params: Partial<GameObject> & {
+    params: Partial<Omit<GameObject, 'scale'>> & {
       automatisms?: Array<Array<any>>;
-      scale?: number;
+      scale?: number | Point2D;
       scaleX?: number;
       scaleY?: number;
     } = {},
   ) {
     super();
 
-    this.sortableChildren = params.sortableChildren ?? config.DEFAULT_SORTABLE_CHILDREN;
+
+    this.sortableChildren =
+      params.sortableChildren ?? config.DEFAULT_SORTABLE_CHILDREN;
 
     this.id = params.id !== undefined ? params.id : this.id;
     this.name = params.name || '';
@@ -153,22 +159,14 @@ class GameObject extends AdvancedContainer {
 
     this.vector2 = new Vector2(this.x, this.y, this);
 
-    /**
-     * save the scale before z applies (this way you can know the true scale of the object without any modifier)
-     * @public
-     * @memberOf GameObject
-     * @type {PIXI.Point}
-     */
     if (params.scale) {
-      if (params.scale.x) this.scale.set(params.scale.x, params.scale.y);
-      else this.scale.set(params.scale);
+      if ((params.scale as Point2D).x) this.scale.set((params.scale as Point2D).x, (params.scale as Point2D).y);
+      else this.scale.set(params.scale as number);
       delete params.scale;
     }
-    if(params.scaleX)
-      this.scale.set(params.scaleX, this.scale.y);
-    if(params.scaleY)
-    this.scale.set(this.scale.x, params.scaleY);
-    
+    if (params.scaleX) this.scale.set(params.scaleX, this.scale.y);
+    if (params.scaleY) this.scale.set(this.scale.x, params.scaleY);
+
     // call correctly the scale modifier to update zscale and worldScale
 
     if (params.renderer) {
@@ -289,7 +287,7 @@ class GameObject extends AdvancedContainer {
    * if absolute, object will move on world axis instead this own axis
    * @example myObject.translate( { "x": 10, "y": 5 }, false );
    */
-  translate(pos: any, absolute: boolean, ignoreDeltaTime: boolean = true) {
+  translate(pos: any, absolute: boolean, ignoreDeltaTime = true) {
     this.vector2.translate(pos, absolute, ignoreDeltaTime);
     return this;
   }
@@ -301,7 +299,7 @@ class GameObject extends AdvancedContainer {
    * @param {Boolean} absolute
    * if absolute, object will move on world axis instead this own axis
    */
-  translateX(distance: number, absolute: boolean, ignoreDelta: boolean = true) {
+  translateX(distance: number, absolute: boolean, ignoreDelta = true) {
     this.translate({ x: distance, y: 0 }, absolute, ignoreDelta);
     return this;
   }
@@ -313,7 +311,7 @@ class GameObject extends AdvancedContainer {
    * @param {Boolean} absolute
    * if absolute, object will move on world axis instead this own axis
    */
-  translateY(distance: number, absolute: boolean, ignoreDelta: boolean = true) {
+  translateY(distance: number, absolute: boolean, ignoreDelta = true) {
     this.translate({ x: 0, y: distance }, absolute, ignoreDelta);
     return this;
   }
@@ -324,7 +322,7 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    * @param {Float} angle
    */
-  rotate(angle: number, ignoreDelta: boolean = true) {
+  rotate(angle: number, ignoreDelta = true) {
     this.vector2.rotate(angle, ignoreDelta);
     return this;
   }
@@ -338,8 +336,8 @@ class GameObject extends AdvancedContainer {
    * can be a simple position x-y
    */
   lookAt(vector2: any, angleOffset: number) {
-    let origin = { x: 0, y: 0 };
-    let otherPos = vector2.toGlobal ? vector2.toGlobal(origin) : vector2;
+    const origin = { x: 0, y: 0 };
+    const otherPos = vector2.toGlobal ? vector2.toGlobal(origin) : vector2;
     this.rotation = this.vector2.getAngle(otherPos) + (angleOffset || 0);
 
     return this;
@@ -352,14 +350,14 @@ class GameObject extends AdvancedContainer {
    * memberOf GameObject
    * param {PIXI.DisplayObject} rd - the renderer to add
    */
-  addOneRenderer(rd: Container | DERenderers) {
+  addOneRenderer(rd: PIXI.Container & RendererInterface) {
     if (
       rd.anchor &&
       !rd.preventCenter &&
       rd.anchor.x === 0 &&
       rd.anchor.y === 0
     ) {
-      rd.anchor.set(0.5, 0.5);
+      (rd.anchor as PIXI.ObservablePoint).set(0.5, 0.5);
     }
 
     if (this.renderer == undefined) {
@@ -372,7 +370,7 @@ class GameObject extends AdvancedContainer {
     return this;
   }
 
-  addRenderer(...rds: (Container | DERenderers)[]) {
+  addRenderer(...rds: (PIXI.Container & RendererInterface)[]) {
     rds.forEach((r) => this.addOneRenderer(r));
     return this;
   }
@@ -414,7 +412,7 @@ class GameObject extends AdvancedContainer {
       );
     }
 
-    if (object.parent) {
+    if (object.parent && object.parent instanceof GameObject) {
       object.parent.remove(object); //TODO: ZARNA | A review Antoine (j'ai remplacé remove par removeChild vu que y'a pas remove sur PIXI.Container)
     }
 
@@ -456,7 +454,7 @@ class GameObject extends AdvancedContainer {
    * object reference or object index in the gameObjects array
    */
   delete(object: GameObject) {
-    let target = this.remove(object);
+    const target = this.remove(object);
 
     target.killMePlease();
     return this;
@@ -469,7 +467,7 @@ class GameObject extends AdvancedContainer {
    */
   deleteAll() {
     while (this.gameObjects.length) {
-      let target = this.remove(this.gameObjects[0]);
+      const target = this.remove(this.gameObjects[0]);
       target.killMePlease();
     }
     return this;
@@ -503,7 +501,10 @@ class GameObject extends AdvancedContainer {
     this.enable = false;
     this.flag = 'delete';
 
-    if (!this.parent || !this.parent.enable) {
+    if (
+      !this.parent ||
+      (this.parent instanceof GameObject && !this.parent.enable)
+    ) {
       this.killMePlease();
     }
 
@@ -525,8 +526,12 @@ class GameObject extends AdvancedContainer {
    * @example myObject.on( "kill", function( currentObject ){ console.log( "I'm dead in 16 milliseconds !" ); } );
    * @example myObject.on( "killed", function( currentObject ){ console.log( "Ok, now I'm dead" ); } );
    */
-  onKill() {} // TODO: ZARNA | Antoine ok ?
-  onKilled() {} // TODO: ZARNA | Antoine ok ?
+  onKill() {
+    return;
+  } // TODO: ZARNA | Antoine ok ?
+  onKilled() {
+    return;
+  } // TODO: ZARNA | Antoine ok ?
 
   /**
    * this function is called when the update loop remove this GameObject (after an askToKill call)<br>
@@ -572,7 +577,7 @@ class GameObject extends AdvancedContainer {
    * @public
    */
   getGlobalRotation(): number {
-    if (this.parent.getGlobalRotation) {
+    if (this.parent instanceof GameObject && this.parent.getGlobalRotation) {
       return this.rotation + this.parent.getGlobalRotation();
     } else {
       return this.rotation;
@@ -604,9 +609,13 @@ class GameObject extends AdvancedContainer {
 
   // a tester
   getWorldPos(): Point2D {
-    if (this.parent && this.parent.getWorldPos) {
-      let pos = this.parent.getWorldPos();
-      let harmonics = this.parent.vector2.getHarmonics();
+    if (
+      this.parent &&
+      this.parent instanceof GameObject &&
+      this.parent.getWorldPos
+    ) {
+      const pos = this.parent.getWorldPos();
+      const harmonics = this.parent.vector2.getHarmonics();
 
       return {
         x:
@@ -655,7 +664,11 @@ class GameObject extends AdvancedContainer {
    *   , "persistent": false
    * } );
    */
-  addAutomatism(id: string, methodName: string = id, params: Partial<Automatism> = {}) {
+  addAutomatism(
+    id: string,
+    methodName: string = id,
+    params: Partial<Automatism> = {},
+  ) {
     if (!this[methodName as keyof typeof this]) {
       console.warn(
         "%cCouldn't found the method " +
@@ -702,7 +715,7 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    */
   removeAutomatisms() {
-    for (let i in this._automatisms) {
+    for (const i in this._automatisms) {
       delete this._automatisms[i];
     }
   }
@@ -717,7 +730,7 @@ class GameObject extends AdvancedContainer {
    * myObject.inverseAutomatism( "translateY" ); // this will inverse the value applied on the automatized translateY action
    */
   inverseAutomatism(autoName: string) {
-    let at = this._automatisms[autoName];
+    const at = this._automatisms[autoName];
 
     if (at[1].args) {
       for (let i = 0; i < at[1].args.length; ++i) {
@@ -741,12 +754,17 @@ class GameObject extends AdvancedContainer {
   _updateWorldScale() {
     this.worldScale.set(this.scale.x, this.scale.y);
 
-    if (!this.parent || !this.parent._isGameObject) {
+    if (
+      !this.parent ||
+      (this.parent instanceof GameObject && !this.parent._isGameObject)
+    ) {
       return;
     }
 
-    this.worldScale.x = this.worldScale.x * this.parent.worldScale.x;
-    this.worldScale.y = this.worldScale.y * this.parent.worldScale.y;
+    if (this.parent instanceof GameObject) {
+      this.worldScale.x = this.worldScale.x * this.parent.worldScale.x;
+      this.worldScale.y = this.worldScale.y * this.parent.worldScale.y;
+    }
 
     return this;
   }
@@ -757,7 +775,7 @@ class GameObject extends AdvancedContainer {
     }
 
     // execute registered automatisms
-    for (let a in this._automatisms) {
+    for (const a in this._automatisms) {
       const auto = this._automatisms[a];
       auto[1].timeSinceLastCall += Time.frameDelayScaled;
       if (auto[1].timeSinceLastCall > auto[1].interval) {
@@ -798,8 +816,8 @@ class GameObject extends AdvancedContainer {
     // this apply update on each renderer
     if (this.visible) {
       for (let i = 0, r; (r = this.renderers[i]); ++i) {
-        if (r.update!) {
-          r.update(Time.deltaTime);
+          if ((r as AnimatedTextureRenderer|SpriteRenderer).update) {
+          (r as AnimatedTextureRenderer|SpriteRenderer).update();
         }
       }
     }

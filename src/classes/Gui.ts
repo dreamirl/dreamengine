@@ -1,5 +1,4 @@
 import GameObject from './GameObject';
-import Scene from './Scene';
 
 /**
  * @author Grimka / http://dreamirl.com
@@ -14,7 +13,6 @@ import Scene from './Scene';
  * @deprecated
  */
 class Gui extends GameObject {
-
   // support trigger  -nop
   // Gui.prototype.trigger = Gui.prototype.emit;
 
@@ -24,10 +22,10 @@ class Gui extends GameObject {
    * @memberOf Gui
    * @type {Boolean}
    */
-  public get enable() {
+  public override get enable() {
     return this.renderable && this.visible;
   }
-  public set enable(bool) {
+  public override set enable(bool) {
     this.visible = bool;
     this.renderable = bool;
   }

@@ -1,3 +1,4 @@
+import { Container } from 'pixi.js';
 import AdvancedContainer from '../AdvancedContainer';
 import Component from '../Component';
 import GameObject from '../GameObject';
@@ -71,7 +72,7 @@ export default class FocusComponent extends Component {
     this._focusOptions = params;
 
     this.isMyTargetAChild = false;
-    let parentChecker: GameObject | undefined = target.parent;
+    let parentChecker: Container | undefined = target.parent;
     while (parentChecker != undefined) {
       console.log('nb Check');
       if (parentChecker === this.parent) {
