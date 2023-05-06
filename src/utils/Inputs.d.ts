@@ -177,7 +177,7 @@ export declare class Inputs {
      * @public
      * @memberOf Inputs
      */
-    on(type: keyof Queue, input: string, callback: () => void): number | undefined;
+    on(type: keyof Queue, input: string, callback: (value: number) => void): number | undefined;
     /**
      * stop listening an event
      * @public
