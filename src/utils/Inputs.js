@@ -281,7 +281,7 @@ class Inputs {
             return;
         }
         this.queue[type][input].push(callback);
-        return this.queue[type][input].length;
+        return this.queue[type][input].length - 1;
     }
     /**
      * stop listening an event

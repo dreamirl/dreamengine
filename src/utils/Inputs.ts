@@ -1,4 +1,4 @@
-import config from '../config';
+﻿import config from '../config';
 import Events from './Events';
 import gamepad, { WaitKeyCallback } from './gamepad';
 import Localization from './Localization';
@@ -351,7 +351,7 @@ export class Inputs {
     }
 
     this.queue[type][input].push(callback);
-    return this.queue[type][input].length;
+    return this.queue[type][input].length - 1;
   }
 
   /**
