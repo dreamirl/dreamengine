@@ -319,6 +319,12 @@ export class Inputs {
         Events.emit('unload-game');
       };
     }
+
+    Events.on('window-lost-focus', () => {
+      for (const i in this.usedInputs) {
+        this.usedInputs[i].isDown = false;
+      }
+    });
   }
 
   /**

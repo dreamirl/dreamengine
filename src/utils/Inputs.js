@@ -255,6 +255,12 @@ class Inputs {
                 Events_1.default.emit('unload-game');
             };
         }
+
+        Events_1.on('window-lost-focus', () => {
+            for (const i in this.usedInputs) {
+                this.usedInputs[i].isDown = false;
+            }
+        });
     }
     /**
      * return the input data
