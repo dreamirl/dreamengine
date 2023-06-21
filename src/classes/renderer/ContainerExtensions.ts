@@ -1,7 +1,7 @@
-import * as PIXI from 'pixi.js';
 import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
+import * as PIXI from 'pixi.js';
 
-export {};
+export { };
 
 export interface ContainerExtensions {
   hueFilter?: ColorMatrixFilter;
@@ -115,22 +115,25 @@ export const setHue = function (target: PIXI.Container & ContainerExtensions,
   return target;
 };
 
-export const setBlackAndWhite = function (target: PIXI.Container & ContainerExtensions,multiply: boolean) {
+export const setBlackAndWhite = function (target: PIXI.Container & ContainerExtensions, enable: boolean) {
   if (!target.blackAndWhiteFilter) {
     target.blackAndWhiteFilter = new PIXI.filters.ColorMatrixFilter();
-  } else {
-    target.blackAndWhiteFilter.blackAndWhite(false);
   }
+  target.blackAndWhiteFilter.blackAndWhite(true);
 
-  target.blackAndWhiteFilter.blackAndWhite(multiply);
-
-  if (!target.filters || !target.filters.length) {
-    target.filters = [target.blackAndWhiteFilter];
-  } else if (
-    target.filters.length >= 1 &&
-    target.filters.indexOf(target.blackAndWhiteFilter) == -1
-  ) {
-    target.filters = target.filters.concat([target.blackAndWhiteFilter]);
+  if(enable){
+    if (!target.filters || !target.filters.length) {
+      target.filters = [target.blackAndWhiteFilter];
+    } else if (
+      target.filters.length >= 1 &&
+      target.filters.indexOf(target.blackAndWhiteFilter) == -1
+    ) {
+      target.filters = target.filters.concat([target.blackAndWhiteFilter]);
+    }
+  }else if(target.filters){
+    const index = target.filters.indexOf(target.blackAndWhiteFilter);
+    if(index !== -1)
+      target.filters.splice(index, 1);
   }
 
   return target;
