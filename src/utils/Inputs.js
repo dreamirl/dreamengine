@@ -286,7 +286,10 @@ class Inputs {
                 input, 'color:red');
             return;
         }
-        this.queue[type][input].push(callback);
+        if(this.queue[type][input][this.queue[type][input].length - 1] === null)
+            this.queue[type][input][this.queue[type][input].length - 1] = callback
+        else
+            this.queue[type][input].push(callback);
         return this.queue[type][input].length - 1;
     }
     /**
