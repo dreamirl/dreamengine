@@ -218,7 +218,7 @@ const init = (params: InitParams) => {
   Inputs.init(params.inputs || {});
 
   if (!params.preventGamepad) {
-    gamepad.init();
+    gamepad.init(Inputs);
   }
 
   if (!params.onLoad) {

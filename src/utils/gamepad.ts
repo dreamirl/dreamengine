@@ -75,6 +75,7 @@ export class gamepads {
   _gamepads: (Gamepad | null)[] = [];
   gamepadsInfos: { [x: number]: Gamepad | null } = {};
   lastTimeStamps: { [x: number]: number | null } = {};
+  inputs: Inputs;
 
   handleDown: (
     i: string,
@@ -93,7 +94,8 @@ export class gamepads {
 
   update: (_t: number) => void = () => {};
 
-  init() {
+  init(inputs: Inputs) {
+    this.inputs = inputs;
     // Update chrome
     if (detectBrowser('chrome') || navigator.getGamepads) {
       if (config.notifications.gamepadEnable) {
@@ -401,6 +403,7 @@ export class gamepads {
     cTime: number,
     type: string,
   ) {
+    this.inputs.setLastEventType('xbox');
     for (const [ind, lst] of Object.entries(arrayListeners[index].listeners)) {
       const listener = lst as Listener;
 

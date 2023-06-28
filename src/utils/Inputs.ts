@@ -33,6 +33,8 @@ type Queue = {
   axeStop: {[key: string] : Array<any>},
 }
 
+export type InputType = 'keyboard' | 'xbox' | 'play' | 'nintendo';
+
 /**
  * An Inputs lib to detect keyboard and gamepad events, easily bindable and multiple bind
  * !! there is no all KEYBOARD keys, but you can easily add some, and share it if you want, I will add them !!
@@ -65,6 +67,7 @@ export class Inputs {
 
   _keyLocked = false;
   _keyLockNamesExceptions: string[] = [];
+  _lastEventType: InputType = 'keyboard';
 
   public dbInputs = {
     KEYBOARD: {
@@ -446,6 +449,12 @@ export class Inputs {
     return inputs.length > 0 ? inputs : false;
   }
 
+  setLastEventType(type: InputType){
+    if(type === this._lastEventType) return;
+    this._lastEventType = type;
+    Events.emit('Input-Type-Changed', type);
+  }
+
   /**
    * When a keyDown event occurs, it parse it and trigger every match with our custom inputs
    * @public
@@ -453,6 +462,7 @@ export class Inputs {
    * @param {DOMEvent} event
    */
   keyDown(event: KeyboardEvent) {
+    this.setLastEventType('keyboard');
     const e = event || window.event;
     const code = e.which || e.keyCode;
 
@@ -541,6 +551,7 @@ export class Inputs {
    * @param {DOMEvent} event
    */
   keyUp(event: KeyboardEvent) {
+    this.setLastEventType('keyboard');
     const e = event || window.event;
     const code = e.which || e.keyCode;
 
