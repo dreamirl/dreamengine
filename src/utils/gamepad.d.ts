@@ -1,5 +1,5 @@
-import { Inputs } from './Inputs';
 import EventEmitter from 'eventemitter3';
+import { Inputs } from './Inputs';
 declare type Listener = {
     active: boolean;
     force: number;
@@ -33,6 +33,7 @@ export declare class gamepads {
     lastTimeStamps: {
         [x: number]: number | null;
     };
+    inputs: Inputs;
     handleDown: (i: string, eventBus: EventEmitter, listener: Listener, elemForce: number, cTime: number) => boolean | void;
     isWaitingForAnyKey: boolean;
     waitForAnyKeyType: string;
@@ -40,7 +41,7 @@ export declare class gamepads {
     _updateChange: (_t: number) => void;
     _updateRate: (_t: number) => void;
     update: (_t: number) => void;
-    init(): void;
+    init(inputs: Inputs): void;
     filterGamepads(gamepads: (Gamepad | null)[]): (Gamepad | null)[];
     gamepadConnected(e: GamepadEvent): void;
     handleGamepad(gamepad: Gamepad, cTime: number): void;

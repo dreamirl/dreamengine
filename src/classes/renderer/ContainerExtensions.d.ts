@@ -1,5 +1,5 @@
-import * as PIXI from 'pixi.js';
 import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
+import * as PIXI from 'pixi.js';
 export {};
 export interface ContainerExtensions {
     hueFilter?: ColorMatrixFilter;
@@ -35,7 +35,7 @@ export declare const setScale: (target: PIXI.Container & ContainerExtensions, x:
 }, y?: number) => void;
 export declare const setTint: (target: PIXI.Container & ContainerExtensions, value: number) => void;
 export declare const setHue: (target: PIXI.Container & ContainerExtensions, rotation: number, multiply: boolean) => PIXI.Container<PIXI.DisplayObject> & ContainerExtensions;
-export declare const setBlackAndWhite: (target: PIXI.Container & ContainerExtensions, multiply: boolean) => PIXI.Container<PIXI.DisplayObject> & ContainerExtensions;
+export declare const setBlackAndWhite: (target: PIXI.Container & ContainerExtensions, enable: boolean) => PIXI.Container<PIXI.DisplayObject> & ContainerExtensions;
 export declare const setSaturation: (target: PIXI.Container & ContainerExtensions, amount: number, multiply: boolean) => PIXI.Container<PIXI.DisplayObject> & ContainerExtensions;
 export declare const setBrightness: (target: PIXI.Container & ContainerExtensions, b: number, multiply: boolean) => PIXI.Container<PIXI.DisplayObject> & ContainerExtensions;
 export declare const setContrast: (target: PIXI.Container & ContainerExtensions, amount: number, multiply: boolean) => PIXI.Container<PIXI.DisplayObject> & ContainerExtensions;

@@ -11,6 +11,9 @@ export default interface RendererInterface {
     setContrast(amount: number, multiply: boolean): void;
     setGreyscale(scale: number, multiply: boolean): void;
     setSize(width: number, height: number, preventCenter: boolean): void;
-    setScale(x: number | { x: number; y: number }, y?: number): void;
+    setScale(x: number | {
+        x: number;
+        y: number;
+    }, y?: number): void;
     center(): void;
 }

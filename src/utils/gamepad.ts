@@ -1,9 +1,9 @@
-﻿import config from '../config';
+﻿import EventEmitter from 'eventemitter3';
+import config from '../config';
 import Events from './Events';
+import InputsManager, { Inputs } from './Inputs';
 import Localization from './Localization';
 import Notifications from './Notifications';
-import InputsManager, { Inputs } from './Inputs';
-import EventEmitter from 'eventemitter3';
 
 /**
  * Author
@@ -267,6 +267,7 @@ export class gamepads {
       this._gamepads.length = 0;
     }
     this._gamepads.length++;
+    this.inputs.setLastEventType('xbox');
   }
 
   handleGamepad(gamepad: Gamepad, cTime: number) {
@@ -358,6 +359,7 @@ export class gamepads {
     elemForce: number,
   ) {
     if (this.overSensibility(elemForce) && !listener.active) {
+      this.inputs.setLastEventType('xbox');
       eventBus.emit('down' + i, elemForce, i);
       listener.active = true;
     }
@@ -375,6 +377,7 @@ export class gamepads {
   ) {
     if (this.overSensibility(elemForce)) {
       if (!listener.active) {
+        this.inputs.setLastEventType('xbox');
         eventBus.emit('down' + i, elemForce, i);
         listener.active = true;
         listener.timesTamp = cTime;
@@ -387,6 +390,7 @@ export class gamepads {
       }
 
       if (listener.timesTamp! + listener.diffTime! < cTime) {
+        this.inputs.setLastEventType('xbox');
         eventBus.emit('down' + i, elemForce, i);
         listener.timesTamp = cTime;
         listener.diffTime = this._rate;
@@ -403,7 +407,6 @@ export class gamepads {
     cTime: number,
     type: string,
   ) {
-    this.inputs.setLastEventType('xbox');
     for (const [ind, lst] of Object.entries(arrayListeners[index].listeners)) {
       const listener = lst as Listener;
 
@@ -456,6 +459,7 @@ export class gamepads {
             this.isWaitingForAnyKey = false;
           }
         } else {
+          this.inputs.setLastEventType('xbox');
           eventBus.emit('move' + i, elemForce, i);
         }
       }
@@ -494,6 +498,7 @@ export class gamepads {
             this.isWaitingForAnyKey = false;
           }
         } else {
+          this.inputs.setLastEventType('xbox');
           eventBus.emit('up' + i, elemForce, i);
         }
 

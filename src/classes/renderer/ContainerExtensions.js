@@ -104,20 +104,24 @@ const setHue = function (target, rotation, multiply) {
     return target;
 };
 exports.setHue = setHue;
-const setBlackAndWhite = function (target, multiply) {
+const setBlackAndWhite = function (target, enable) {
     if (!target.blackAndWhiteFilter) {
         target.blackAndWhiteFilter = new PIXI.filters.ColorMatrixFilter();
     }
-    else {
-        target.blackAndWhiteFilter.blackAndWhite(false);
+    target.blackAndWhiteFilter.blackAndWhite(true);
+    if (enable) {
+        if (!target.filters || !target.filters.length) {
+            target.filters = [target.blackAndWhiteFilter];
+        }
+        else if (target.filters.length >= 1 &&
+            target.filters.indexOf(target.blackAndWhiteFilter) == -1) {
+            target.filters = target.filters.concat([target.blackAndWhiteFilter]);
+        }
     }
-    target.blackAndWhiteFilter.blackAndWhite(multiply);
-    if (!target.filters || !target.filters.length) {
-        target.filters = [target.blackAndWhiteFilter];
-    }
-    else if (target.filters.length >= 1 &&
-        target.filters.indexOf(target.blackAndWhiteFilter) == -1) {
-        target.filters = target.filters.concat([target.blackAndWhiteFilter]);
+    else if (target.filters) {
+        const index = target.filters.indexOf(target.blackAndWhiteFilter);
+        if (index !== -1)
+            target.filters.splice(index, 1);
     }
     return target;
 };

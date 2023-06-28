@@ -13,7 +13,7 @@ declare type InputInfo = {
     }>;
     interval: number;
     lastCall: number;
-    actions: object;
+    actions: {};
     isDown: boolean;
     isLongPress: boolean;
     stayOn: boolean;
@@ -40,6 +40,7 @@ declare type Queue = {
         [key: string]: Array<any>;
     };
 };
+export declare type InputType = 'keyboard' | 'xbox' | 'play' | 'nintendo';
 export declare class Inputs {
     DEName: string;
     isListening: boolean;
@@ -53,6 +54,7 @@ export declare class Inputs {
     dontPreventDefault: boolean;
     _keyLocked: boolean;
     _keyLockNamesExceptions: string[];
+    _lastEventType: InputType;
     dbInputs: {
         KEYBOARD: {
             up: number;
@@ -210,6 +212,7 @@ export declare class Inputs {
      * @param {String} type - KEYBOARD / GAMEPADBUTTONS / GAMEPADAXES
      */
     findInputs(code: string, type: 'KEYBOARD' | 'GAMEPADBUTTONS' | 'GAMEPADAXES'): false | string[];
+    setLastEventType(type: InputType): void;
     /**
      * When a keyDown event occurs, it parse it and trigger every match with our custom inputs
      * @public

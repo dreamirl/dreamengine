@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.gamepads = void 0;
 const config_1 = __importDefault(require("../config"));
 const Events_1 = __importDefault(require("./Events"));
+const Inputs_1 = __importDefault(require("./Inputs"));
 const Localization_1 = __importDefault(require("./Localization"));
 const Notifications_1 = __importDefault(require("./Notifications"));
-const Inputs_1 = __importDefault(require("./Inputs"));
 /**
  * Author
  @Shocoben / https://github.com/schobbent
@@ -63,7 +63,8 @@ class gamepads {
         this._firstRate = 500;
         this._rate = 150;
     }
-    init() {
+    init(inputs) {
+        this.inputs = inputs;
         // Update chrome
         if (detectBrowser('chrome') || navigator.getGamepads) {
             if (config_1.default.notifications.gamepadEnable) {
@@ -205,6 +206,7 @@ class gamepads {
             this._gamepads.length = 0;
         }
         this._gamepads.length++;
+        this.inputs.setLastEventType('xbox');
     }
     handleGamepad(gamepad, cTime) {
         const index = gamepad.index;
@@ -266,6 +268,7 @@ class gamepads {
     }
     handleDownChange(i, eventBus, listener, elemForce) {
         if (this.overSensibility(elemForce) && !listener.active) {
+            this.inputs.setLastEventType('xbox');
             eventBus.emit('down' + i, elemForce, i);
             listener.active = true;
         }
@@ -273,6 +276,7 @@ class gamepads {
     handleDownRate(i, eventBus, listener, elemForce, cTime) {
         if (this.overSensibility(elemForce)) {
             if (!listener.active) {
+                this.inputs.setLastEventType('xbox');
                 eventBus.emit('down' + i, elemForce, i);
                 listener.active = true;
                 listener.timesTamp = cTime;
@@ -283,6 +287,7 @@ class gamepads {
                 return true;
             }
             if (listener.timesTamp + listener.diffTime < cTime) {
+                this.inputs.setLastEventType('xbox');
                 eventBus.emit('down' + i, elemForce, i);
                 listener.timesTamp = cTime;
                 listener.diffTime = this._rate;
@@ -339,6 +344,7 @@ class gamepads {
                     }
                 }
                 else {
+                    this.inputs.setLastEventType('xbox');
                     eventBus.emit('move' + i, elemForce, i);
                 }
             }
@@ -372,6 +378,7 @@ class gamepads {
                     }
                 }
                 else {
+                    this.inputs.setLastEventType('xbox');
                     eventBus.emit('up' + i, elemForce, i);
                 }
                 listener.active = false;

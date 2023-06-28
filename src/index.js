@@ -180,7 +180,7 @@ const init = (params) => {
     // init input listener with your custom list
     Inputs_1.default.init(params.inputs || {});
     if (!params.preventGamepad) {
-        gamepad_1.default.init();
+        gamepad_1.default.init(Inputs_1.default);
     }
     if (!params.onLoad) {
         console.error('No onLoad given on init, nothing will happen after images load');
