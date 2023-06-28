@@ -43,6 +43,9 @@ declare type Queue = {
 export declare type InputType = 'keyboard' | 'xbox' | 'play' | 'nintendo';
 export declare class Inputs {
     DEName: string;
+    _enable: boolean;
+    get enable(): boolean;
+    set enable(v: boolean);
     isListening: boolean;
     isWaitingForAnyKey: boolean;
     waitForAnyKeyType: string;

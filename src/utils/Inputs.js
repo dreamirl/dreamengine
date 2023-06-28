@@ -25,6 +25,7 @@ const _langs = {
 class Inputs {
     constructor() {
         this.DEName = 'Inputs';
+        this._enable = true;
         this.isListening = false;
         this.isWaitingForAnyKey = false;
         this.waitForAnyKeyType = 'keyboard';
@@ -148,6 +149,11 @@ class Inputs {
         window.addEventListener('blur', () => {
             this.isWindowFocused = false;
         });
+    }
+    get enable() { return this._enable; }
+    set enable(v) {
+        this._enable = v;
+        gamepad_1.default.enable = v;
     }
     /**
      * initialize Inputs listeners with your custom Inputs list
@@ -300,6 +306,8 @@ class Inputs {
      * @memberOf Inputs
      */
     emit(eventType, keyName, val) {
+        if (!this._enable)
+            return;
         if (((this._keyLocked && !this._keyLockNamesExceptions.includes(keyName)) ||
             !this.isWindowFocused) &&
             eventType.search('mouse') == -1) {

@@ -54,6 +54,13 @@ const _langs = {
 export class Inputs {
   DEName = 'Inputs';
 
+  _enable = true;
+  get enable(){ return this._enable;}
+  set enable(v: boolean){ 
+    this._enable = v;
+    gamepad.enable = v;
+  }
+
   isListening = false;
 
   isWaitingForAnyKey = false;
@@ -362,6 +369,7 @@ export class Inputs {
    * @memberOf Inputs
    */
   emit(eventType: keyof Queue, keyName: string, val?: any) {
+    if(!this._enable) return;
     if (
       ((this._keyLocked && !this._keyLockNamesExceptions.includes(keyName)) ||
         !this.isWindowFocused) &&

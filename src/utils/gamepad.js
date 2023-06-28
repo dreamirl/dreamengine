@@ -52,6 +52,7 @@ class gamepads {
         this._gamepads = [];
         this.gamepadsInfos = {};
         this.lastTimeStamps = {};
+        this.enable = true;
         this.handleDown = () => { };
         this.isWaitingForAnyKey = false;
         this.waitForAnyKeyType = 'keyboard';
@@ -199,6 +200,7 @@ class gamepads {
     }*/
     //Firefox handler
     gamepadConnected(e) {
+        var _a;
         Notifications_1.default.create(Localization_1.default.get('onGamepadConnect') ||
             'Gamepad ' + (e.gamepad.index + 1) + ' connected');
         this._gamepads[e.gamepad.index] = e.gamepad;
@@ -206,7 +208,7 @@ class gamepads {
             this._gamepads.length = 0;
         }
         this._gamepads.length++;
-        this.inputs.setLastEventType('xbox');
+        (_a = this.inputs) === null || _a === void 0 ? void 0 : _a.setLastEventType('xbox');
     }
     handleGamepad(gamepad, cTime) {
         const index = gamepad.index;
@@ -267,16 +269,18 @@ class gamepads {
         return false;
     }
     handleDownChange(i, eventBus, listener, elemForce) {
+        var _a;
         if (this.overSensibility(elemForce) && !listener.active) {
-            this.inputs.setLastEventType('xbox');
+            (_a = this.inputs) === null || _a === void 0 ? void 0 : _a.setLastEventType('xbox');
             eventBus.emit('down' + i, elemForce, i);
             listener.active = true;
         }
     }
     handleDownRate(i, eventBus, listener, elemForce, cTime) {
+        var _a, _b;
         if (this.overSensibility(elemForce)) {
             if (!listener.active) {
-                this.inputs.setLastEventType('xbox');
+                (_a = this.inputs) === null || _a === void 0 ? void 0 : _a.setLastEventType('xbox');
                 eventBus.emit('down' + i, elemForce, i);
                 listener.active = true;
                 listener.timesTamp = cTime;
@@ -287,7 +291,7 @@ class gamepads {
                 return true;
             }
             if (listener.timesTamp + listener.diffTime < cTime) {
-                this.inputs.setLastEventType('xbox');
+                (_b = this.inputs) === null || _b === void 0 ? void 0 : _b.setLastEventType('xbox');
                 eventBus.emit('down' + i, elemForce, i);
                 listener.timesTamp = cTime;
                 listener.diffTime = this._rate;
@@ -297,6 +301,9 @@ class gamepads {
         return false;
     }
     handleListeners(index, gamepadInterface, arrayListeners, cTime, type) {
+        var _a, _b;
+        if (!this.enable)
+            return;
         for (const [ind, lst] of Object.entries(arrayListeners[index].listeners)) {
             const listener = lst;
             const i = parseInt(ind);
@@ -344,7 +351,7 @@ class gamepads {
                     }
                 }
                 else {
-                    this.inputs.setLastEventType('xbox');
+                    (_a = this.inputs) === null || _a === void 0 ? void 0 : _a.setLastEventType('xbox');
                     eventBus.emit('move' + i, elemForce, i);
                 }
             }
@@ -378,7 +385,7 @@ class gamepads {
                     }
                 }
                 else {
-                    this.inputs.setLastEventType('xbox');
+                    (_b = this.inputs) === null || _b === void 0 ? void 0 : _b.setLastEventType('xbox');
                     eventBus.emit('up' + i, elemForce, i);
                 }
                 listener.active = false;

@@ -33,7 +33,8 @@ export declare class gamepads {
     lastTimeStamps: {
         [x: number]: number | null;
     };
-    inputs: Inputs;
+    inputs?: Inputs;
+    enable: boolean;
     handleDown: (i: string, eventBus: EventEmitter, listener: Listener, elemForce: number, cTime: number) => boolean | void;
     isWaitingForAnyKey: boolean;
     waitForAnyKeyType: string;
