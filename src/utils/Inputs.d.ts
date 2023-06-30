@@ -58,6 +58,7 @@ export declare class Inputs {
     _keyLocked: boolean;
     _keyLockNamesExceptions: string[];
     _lastEventType: InputType;
+    get usedControllerType(): InputType;
     dbInputs: {
         KEYBOARD: {
             up: number;

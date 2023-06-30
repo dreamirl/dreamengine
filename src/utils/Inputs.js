@@ -155,6 +155,9 @@ class Inputs {
         this._enable = v;
         gamepad_1.default.enable = v;
     }
+    get usedControllerType() {
+        return this._lastEventType;
+    }
     /**
      * initialize Inputs listeners with your custom Inputs list
      * called by the main engine file

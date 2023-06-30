@@ -76,6 +76,10 @@ export class Inputs {
   _keyLockNamesExceptions: string[] = [];
   _lastEventType: InputType = 'keyboard';
 
+  get usedControllerType(){
+    return this._lastEventType;
+  }
+
   public dbInputs = {
     KEYBOARD: {
       up: 38,
