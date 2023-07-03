@@ -92,7 +92,7 @@ export class Tween {
           this.targetValue *
             this.easing(this.currentFrame / this.tweenDuration);
         this.object[this.property] = newValue;
-        if (this.onUpdate != null) {
+        if (this.onUpdate != undefined) {
           this.onUpdate(this.onUpdateParams);
         }
       }
@@ -100,7 +100,7 @@ export class Tween {
     } else {
       this.object[this.property] = this.startValue + this.targetValue;
       this.active = false;
-      if (this.onComplete != null) {
+      if (this.onComplete != undefined) {
         this.onComplete(this.onCompleteParams);
       }
       return true;
