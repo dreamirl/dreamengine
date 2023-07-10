@@ -35,7 +35,7 @@ export default class Component {
     this._onDestroy();
   }
 
-  private _onEnable = () => {};
+  protected _onEnable = () => {};
   public get onEnable() {
     return this._onEnable;
   }
@@ -43,7 +43,7 @@ export default class Component {
     this._onEnable = callback;
   }
 
-  private _onDisable = () => {};
+  protected _onDisable = () => {};
   public get onDisable() {
     return this._onDisable;
   }
@@ -51,7 +51,7 @@ export default class Component {
     this._onDisable = callback;
   }
 
-  private _onDestroy = () => {};
+  protected _onDestroy = () => {};
   public get onDestroy() {
     return this._onDestroy;
   }

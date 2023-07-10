@@ -11,13 +11,13 @@ export default class Component {
     get enable(): boolean;
     set enable(bool: boolean);
     destroy(): void;
-    private _onEnable;
+    protected _onEnable: () => void;
     get onEnable(): () => void;
     set onEnable(callback: () => void);
-    private _onDisable;
+    protected _onDisable: () => void;
     get onDisable(): () => void;
     set onDisable(callback: () => void);
-    private _onDestroy;
+    protected _onDestroy: () => void;
     get onDestroy(): () => void;
     set onDestroy(callback: () => void);
     private _emitter;
