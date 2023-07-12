@@ -40,7 +40,7 @@ declare type Queue = {
         [key: string]: Array<any>;
     };
 };
-export declare type InputType = 'keyboard' | 'xbox' | 'play' | 'nintendo';
+export declare type InputType = 'keyboard' | 'xbox' | 'sony' | 'nintendo';
 export declare class Inputs {
     DEName: string;
     _enable: boolean;

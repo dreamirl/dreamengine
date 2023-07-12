@@ -1,5 +1,5 @@
 import EventEmitter from 'eventemitter3';
-import { Inputs } from './Inputs';
+import { InputType, Inputs } from './Inputs';
 declare type Listener = {
     active: boolean;
     force: number;
@@ -26,7 +26,7 @@ export declare class gamepads {
     _axesListeners: {
         [key: number]: EventEmitter;
     };
-    _gamepads: (Gamepad | null)[];
+    _gamepads: InputType[];
     gamepadsInfos: {
         [x: number]: Gamepad | null;
     };
@@ -35,7 +35,7 @@ export declare class gamepads {
     };
     inputs?: Inputs;
     enable: boolean;
-    handleDown: (i: string, eventBus: EventEmitter, listener: Listener, elemForce: number, cTime: number) => boolean | void;
+    handleDown: (i: string, eventBus: EventEmitter, listener: Listener, elemForce: number, cTime: number, gamepadType: InputType) => boolean | void;
     isWaitingForAnyKey: boolean;
     waitForAnyKeyType: string;
     waitForAnyKeyCallback: WaitKeyCallback;
@@ -45,18 +45,18 @@ export declare class gamepads {
     init(inputs: Inputs): void;
     filterGamepads(gamepads: (Gamepad | null)[]): (Gamepad | null)[];
     gamepadConnected(e: GamepadEvent): void;
-    handleGamepad(gamepad: Gamepad, cTime: number): void;
+    handleGamepad(gamepad: Gamepad, cTime: number, gamepadType: InputType): void;
     disconnectGamepad(index: number): void;
     getGamepadsLength(): number;
     _sensibility: number;
     overSensibility(force: number): boolean;
-    handleDownChange(i: string, eventBus: EventEmitter, listener: Listener, elemForce: number): void;
+    handleDownChange(i: string, eventBus: EventEmitter, listener: Listener, elemForce: number, _cTime: number, gamepadType: InputType): void;
     _firstRate: number;
     _rate: number;
-    handleDownRate(i: string, eventBus: EventEmitter, listener: Listener, elemForce: number, cTime: number): boolean;
+    handleDownRate(i: string, eventBus: EventEmitter, listener: Listener, elemForce: number, cTime: number, gamepadType: InputType): boolean;
     handleListeners(index: number, gamepadInterface: readonly (number | GamepadButton)[], arrayListeners: {
         [key: number]: EventEmitter;
-    }, cTime: number, type: string): void;
+    }, cTime: number, type: string, gamepadType: InputType): void;
     handleGamepadAxes(gamepad: Gamepad): void;
     _checkListeners(o: {
         [key: number]: EventEmitter;

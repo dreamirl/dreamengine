@@ -33,7 +33,7 @@ type Queue = {
   axeStop: {[key: string] : Array<any>},
 }
 
-export type InputType = 'keyboard' | 'xbox' | 'play' | 'nintendo';
+export type InputType = 'keyboard' | 'xbox' | 'sony' | 'nintendo';
 
 /**
  * An Inputs lib to detect keyboard and gamepad events, easily bindable and multiple bind

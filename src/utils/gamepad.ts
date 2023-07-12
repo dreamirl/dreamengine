@@ -1,7 +1,7 @@
 ﻿import EventEmitter from 'eventemitter3';
 import config from '../config';
 import Events from './Events';
-import InputsManager, { Inputs } from './Inputs';
+import InputsManager, { InputType, Inputs } from './Inputs';
 import Localization from './Localization';
 import Notifications from './Notifications';
 
@@ -72,7 +72,7 @@ export class gamepads {
 
   _btnsListeners: { [key: number]: EventEmitter } = {};
   _axesListeners: { [key: number]: EventEmitter } = {};
-  _gamepads: (Gamepad | null)[] = [];
+  _gamepads: InputType[] = [];
   gamepadsInfos: { [x: number]: Gamepad | null } = {};
   lastTimeStamps: { [x: number]: number | null } = {};
   inputs?: Inputs;
@@ -84,6 +84,7 @@ export class gamepads {
     listener: Listener,
     elemForce: number,
     cTime: number,
+    gamepadType: InputType,
   ) => boolean | void = () => {};
 
   isWaitingForAnyKey = false;
@@ -98,70 +99,47 @@ export class gamepads {
   init(inputs: Inputs) {
     this.inputs = inputs;
     // Update chrome
-    if (detectBrowser('chrome') || navigator.getGamepads) {
-      if (config.notifications.gamepadEnable) {
-        Notifications.create(
-          Localization.get('gamepadAvalaible') ||
-            config.notifications.gamepadAvalaible,
-        );
+    if (config.notifications.gamepadEnable) {
+      Notifications.create(
+        Localization.get('gamepadAvalaible') ||
+          config.notifications.gamepadAvalaible,
+      );
+    }
+
+    this._updateChange = (cTime) => {
+      // [] fallback if there is not gamepads API
+      const gamepads = this.filterGamepads(navigator.getGamepads ? navigator.getGamepads() : []);
+
+      for (let i = 0; i < gamepads.length; ++i) {
+        if (gamepads[i]) {
+          if (
+            !this.lastTimeStamps[i] ||
+            this.lastTimeStamps[i] != gamepads[i]!.timestamp
+          ) {
+            this.lastTimeStamps[i] = gamepads[i]!.timestamp;
+            if (gamepads[i] !== null) this.handleGamepad(gamepads[i]!, cTime, this._gamepads[i]!);
+          }
+        } else {
+          this.disconnectGamepad(i);
+        }
       }
+    };
 
-      this._updateChange = (cTime) => {
-        // [] fallback if there is not gamepads API
-        const gamepads = this.filterGamepads(
-          navigator.getGamepads ? navigator.getGamepads() : [],
-        );
+    this._updateRate = (cTime) => {
+      const gamepads = this.filterGamepads(navigator.getGamepads ? navigator.getGamepads() : []);
 
-        for (let i = 0; i < gamepads.length; ++i) {
-          if (gamepads[i]) {
-            if (
-              !this.lastTimeStamps[i] ||
-              this.lastTimeStamps[i] != gamepads[i]!.timestamp
-            ) {
-              this.lastTimeStamps[i] = gamepads[i]!.timestamp;
-              if (gamepads[i] !== null) this.handleGamepad(gamepads[i]!, cTime);
-            }
-          } else {
-            this.disconnectGamepad(i);
-          }
+      for (let i = 0; i < gamepads.length; ++i) {
+        const gamepad = gamepads[i];
+        if (gamepad) {
+          this.handleGamepad(gamepad, cTime, this._gamepads[i]!);
+          continue;
+        } else {
+          this.disconnectGamepad(i);
         }
-      };
+      }
+    };
 
-      this._updateRate = (cTime) => {
-        const gamepads = this.filterGamepads(
-          navigator.getGamepads ? navigator.getGamepads() : [],
-        );
-
-        for (let i = 0; i < gamepads.length; ++i) {
-          const gamepad = gamepads[i];
-          if (gamepad) {
-            this.handleGamepad(gamepad, cTime);
-            continue;
-          } else {
-            this.disconnectGamepad(i);
-          }
-        }
-      };
-
-      this.updateByChange();
-    }
-
-    // Update firefox - seems not working (tried Nightly)
-    else if (detectBrowser('firefox')) {
-      // if ( config.notifications.gamepadEnable )
-      // Notifications.create( Localization.get( "gamepadAvalaible" ) || config.notifications.gamepadAvalaible );
-      /* no gamepad api working right now on Firefox
-      _updateChange = function()
-      {
-        for ( let i =0; i < _gamepads.length; ++i )
-        {
-          if ( _gamepads[ i ] )
-          {
-            
-          }
-        }
-      }*/
-    }
+    this.updateByChange();
 
     window.addEventListener(
       'MozGamepadConnected',
@@ -263,15 +241,21 @@ export class gamepads {
       Localization.get('onGamepadConnect') ||
         'Gamepad ' + (e.gamepad.index + 1) + ' connected',
     );
-    this._gamepads[e.gamepad.index] = e.gamepad;
+    let gamepadType: InputType = 'xbox';
+    if(e.gamepad.id.includes('DualSense')){
+      gamepadType = 'sony';
+    }else if(e.gamepad.id.includes('NSW')){
+      gamepadType = 'nintendo';
+    }
+    this._gamepads[e.gamepad.index] = gamepadType;
     if (!this._gamepads.length) {
       this._gamepads.length = 0;
     }
     this._gamepads.length++;
-    this.inputs?.setLastEventType('xbox');
+    this.inputs?.setLastEventType(gamepadType);
   }
 
-  handleGamepad(gamepad: Gamepad, cTime: number) {
+  handleGamepad(gamepad: Gamepad, cTime: number, gamepadType: InputType) {
     const index = gamepad.index;
     this.gamepadsInfos[index] = gamepad;
     if (this._btnsListeners[index]) {
@@ -281,6 +265,7 @@ export class gamepads {
         this._btnsListeners,
         cTime,
         'buttons',
+        gamepadType,
       );
     }
 
@@ -291,6 +276,7 @@ export class gamepads {
         this._axesListeners,
         cTime,
         'axes',
+        gamepadType,
       );
     }
     if (!gamepadAvalaible[index]) {
@@ -309,7 +295,7 @@ export class gamepads {
 
   disconnectGamepad(index: number) {
     this.lastTimeStamps[index] = null;
-    this._gamepads[index] = null;
+    this._gamepads.splice(index, 1);
     this.gamepadsInfos[index] = null;
     if (gamepadAvalaible[index]) {
       console.log('Disconnect gamepad ' + index, 2);
@@ -328,7 +314,6 @@ export class gamepads {
       }
       Events.emit('disconnectGamepad', index);
       gamepadAvalaible[index] = false;
-      --this._gamepads.length;
     }
   }
 
@@ -358,9 +343,11 @@ export class gamepads {
     eventBus: EventEmitter,
     listener: Listener,
     elemForce: number,
+    _cTime: number,
+    gamepadType: InputType,
   ) {
     if (this.overSensibility(elemForce) && !listener.active) {
-      this.inputs?.setLastEventType('xbox');
+      this.inputs?.setLastEventType(gamepadType);
       eventBus.emit('down' + i, elemForce, i);
       listener.active = true;
     }
@@ -375,10 +362,11 @@ export class gamepads {
     listener: Listener,
     elemForce: number,
     cTime: number,
+    gamepadType: InputType,
   ) {
     if (this.overSensibility(elemForce)) {
       if (!listener.active) {
-        this.inputs?.setLastEventType('xbox');
+        this.inputs?.setLastEventType(gamepadType);
         eventBus.emit('down' + i, elemForce, i);
         listener.active = true;
         listener.timesTamp = cTime;
@@ -391,7 +379,7 @@ export class gamepads {
       }
 
       if (listener.timesTamp! + listener.diffTime! < cTime) {
-        this.inputs?.setLastEventType('xbox');
+        this.inputs?.setLastEventType(gamepadType);
         eventBus.emit('down' + i, elemForce, i);
         listener.timesTamp = cTime;
         listener.diffTime = this._rate;
@@ -407,6 +395,7 @@ export class gamepads {
     arrayListeners: { [key: number]: EventEmitter },
     cTime: number,
     type: string,
+    gamepadType: InputType,
   ) {
     if(!this.enable) return;
     for (const [ind, lst] of Object.entries(arrayListeners[index].listeners)) {
@@ -461,13 +450,13 @@ export class gamepads {
             this.isWaitingForAnyKey = false;
           }
         } else {
-          this.inputs?.setLastEventType('xbox');
+          this.inputs?.setLastEventType(gamepadType);
           eventBus.emit('move' + i, elemForce, i);
         }
       }
       listener.force = elemForce;
 
-      if (this.handleDown(ind, eventBus, listener, elemForce, cTime)) {
+      if (this.handleDown(ind, eventBus, listener, elemForce, cTime, gamepadType)) {
         continue;
       }
 
@@ -500,7 +489,7 @@ export class gamepads {
             this.isWaitingForAnyKey = false;
           }
         } else {
-          this.inputs?.setLastEventType('xbox');
+          this.inputs?.setLastEventType(gamepadType);
           eventBus.emit('up' + i, elemForce, i);
         }
 
