@@ -28,8 +28,8 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
     addOneComponent(component: Component): this;
     removeComponent(componentReference: Component): this;
     getComponent(name: string): Component | undefined;
-    timeout(callback: () => void, interval?: number, persistent?: boolean, id?: string): number;
-    clearTimeout(id: string): this;
+    timeout(callback: () => void, interval?: number, persistent?: boolean): number;
+    clearTimeout(id: number): this;
     fadeTo(value: number, duration: number, onComplete: () => void, onCompleteParams?: any, autostart?: boolean, easing?: (x: number) => number): void;
     fadeOut(duration: number, onComplete: () => void, onCompleteParams?: any, autostart?: boolean, easing?: (x: number) => number): void;
     fadeIn(duration: number, onComplete: () => void, onCompleteParams?: any, autostart?: boolean, easing?: (x: number) => number): void;

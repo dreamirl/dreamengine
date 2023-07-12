@@ -82,8 +82,8 @@ class AdvancedContainer extends PIXI.Container {
     getComponent(name) {
         return this._components.find((v) => v.name === name);
     }
-    timeout(callback, interval = 0, persistent = false, id) {
-        return this.timerComp.invoke(callback, interval, persistent, id);
+    timeout(callback, interval = 0, persistent = false) {
+        return this.timerComp.invoke(callback, interval, persistent);
     }
     clearTimeout(id) {
         this.timerComp.clear(id);
