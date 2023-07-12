@@ -15,16 +15,18 @@ class TimerComponent extends Component_1.default {
          */
         this._timers = {};
         this._name = 'TimerComponent';
+        this.counter = 0;
     }
-    invoke(callback, interval = 0, persistent = false, id = Date.now().toString() + '-' + ((Math.random() * 20) >> 0)) {
-        this._timers[id] = {
+    invoke(callback, interval = 0, persistent = false) {
+        this._timers[this.counter] = {
             callback,
             interval,
             persistent,
-            id,
+            id: this.counter,
             timeSinceLastCall: 0,
         };
-        return id;
+        this.counter++;
+        return this.counter;
     }
     clear(id) {
         delete this._timers[id];

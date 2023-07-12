@@ -48,7 +48,7 @@ declare global {
     callback: () => void;
     interval: number;
     persistent?: boolean;
-    id?: string;
+    id?: number;
     timeSinceLastCall: number;
   };
 

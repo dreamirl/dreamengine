@@ -8,8 +8,9 @@ export default class TimerComponent extends Component {
      */
     private _timers;
     protected _name: string;
-    invoke(callback: () => void, interval?: number, persistent?: boolean, id?: string): string;
-    clear(id: string): void;
+    counter: number;
+    invoke(callback: () => void, interval?: number, persistent?: boolean): number;
+    clear(id: number): void;
     /**
      * apply the shake each update
      * You shouldn't call or change this method

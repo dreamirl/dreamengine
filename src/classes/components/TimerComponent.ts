@@ -7,28 +7,30 @@ export default class TimerComponent extends Component {
    * @memberOf GameObject
    * @type {Object}
    */
-  private _timers: Record<string, TimerComponentData> = {};
+  private _timers: Record<number, TimerComponentData> = {};
 
   protected override _name = 'TimerComponent';
+
+  counter = 0;
 
   invoke(
     callback: () => void,
     interval = 0,
     persistent = false,
-    id = Date.now().toString() + '-' + ((Math.random() * 20) >> 0),
   ) {
-    this._timers[id] = {
+    this._timers[this.counter] = {
       callback,
       interval,
       persistent,
-      id,
+      id: this.counter,
       timeSinceLastCall: 0,
     };
-
-    return id;
+    
+    this.counter++;
+    return this.counter;
   }
 
-  clear(id: string) {
+  clear(id: number) {
     delete this._timers[id];
   }
 
