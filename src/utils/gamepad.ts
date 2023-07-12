@@ -79,7 +79,7 @@ export class gamepads {
   enable = true;
 
   handleDown: (
-    i: string,
+    i: number,
     eventBus: EventEmitter,
     listener: Listener,
     elemForce: number,
@@ -117,7 +117,7 @@ export class gamepads {
             this.lastTimeStamps[i] != gamepads[i]!.timestamp
           ) {
             this.lastTimeStamps[i] = gamepads[i]!.timestamp;
-            if (gamepads[i] !== null) this.handleGamepad(gamepads[i]!, cTime, this._gamepads[i]!);
+            if (gamepads[i] !== null) this.handleGamepad(gamepads[i]!, cTime, this._gamepads[i]);
           }
         } else {
           this.disconnectGamepad(i);
@@ -339,7 +339,7 @@ export class gamepads {
   }
 
   handleDownChange(
-    i: string,
+    i: number,
     eventBus: EventEmitter,
     listener: Listener,
     elemForce: number,
@@ -348,6 +348,7 @@ export class gamepads {
   ) {
     if (this.overSensibility(elemForce) && !listener.active) {
       this.inputs?.setLastEventType(gamepadType);
+      i = gamepadType === 'nintendo' && i < 3 ? (i + 2) % 3 : i;
       eventBus.emit('down' + i, elemForce, i);
       listener.active = true;
     }
@@ -357,7 +358,7 @@ export class gamepads {
   _rate = 150;
 
   handleDownRate(
-    i: string,
+    i: number,
     eventBus: EventEmitter,
     listener: Listener,
     elemForce: number,
@@ -367,6 +368,7 @@ export class gamepads {
     if (this.overSensibility(elemForce)) {
       if (!listener.active) {
         this.inputs?.setLastEventType(gamepadType);
+        i = gamepadType === 'nintendo' && i < 3 ? (i + 2) % 3 : i;
         eventBus.emit('down' + i, elemForce, i);
         listener.active = true;
         listener.timesTamp = cTime;
@@ -380,6 +382,7 @@ export class gamepads {
 
       if (listener.timesTamp! + listener.diffTime! < cTime) {
         this.inputs?.setLastEventType(gamepadType);
+        i = gamepadType === 'nintendo' && i < 3 ? (i + 2) % 3 : i;
         eventBus.emit('down' + i, elemForce, i);
         listener.timesTamp = cTime;
         listener.diffTime = this._rate;
@@ -456,7 +459,7 @@ export class gamepads {
       }
       listener.force = elemForce;
 
-      if (this.handleDown(ind, eventBus, listener, elemForce, cTime, gamepadType)) {
+      if (this.handleDown(i, eventBus, listener, elemForce, cTime, gamepadType)) {
         continue;
       }
 
@@ -490,7 +493,8 @@ export class gamepads {
           }
         } else {
           this.inputs?.setLastEventType(gamepadType);
-          eventBus.emit('up' + i, elemForce, i);
+          let index = gamepadType === 'nintendo' && i < 3 ? (i + 2) % 3 : i;
+          eventBus.emit('up' + index, elemForce, index);
         }
 
         listener.active = false;

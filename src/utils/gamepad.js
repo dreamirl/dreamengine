@@ -260,6 +260,7 @@ class gamepads {
         var _a;
         if (this.overSensibility(elemForce) && !listener.active) {
             (_a = this.inputs) === null || _a === void 0 ? void 0 : _a.setLastEventType(gamepadType);
+            i = gamepadType === 'nintendo' && i < 3 ? (i + 2) % 3 : i;
             eventBus.emit('down' + i, elemForce, i);
             listener.active = true;
         }
@@ -269,6 +270,7 @@ class gamepads {
         if (this.overSensibility(elemForce)) {
             if (!listener.active) {
                 (_a = this.inputs) === null || _a === void 0 ? void 0 : _a.setLastEventType(gamepadType);
+                i = gamepadType === 'nintendo' && i < 3 ? (i + 2) % 3 : i;
                 eventBus.emit('down' + i, elemForce, i);
                 listener.active = true;
                 listener.timesTamp = cTime;
@@ -280,6 +282,7 @@ class gamepads {
             }
             if (listener.timesTamp + listener.diffTime < cTime) {
                 (_b = this.inputs) === null || _b === void 0 ? void 0 : _b.setLastEventType(gamepadType);
+                i = gamepadType === 'nintendo' && i < 3 ? (i + 2) % 3 : i;
                 eventBus.emit('down' + i, elemForce, i);
                 listener.timesTamp = cTime;
                 listener.diffTime = this._rate;
@@ -344,7 +347,7 @@ class gamepads {
                 }
             }
             listener.force = elemForce;
-            if (this.handleDown(ind, eventBus, listener, elemForce, cTime, gamepadType)) {
+            if (this.handleDown(i, eventBus, listener, elemForce, cTime, gamepadType)) {
                 continue;
             }
             if (!this.overSensibility(elemForce) && listener.active) {
@@ -374,7 +377,8 @@ class gamepads {
                 }
                 else {
                     (_b = this.inputs) === null || _b === void 0 ? void 0 : _b.setLastEventType(gamepadType);
-                    eventBus.emit('up' + i, elemForce, i);
+                    let index = gamepadType === 'nintendo' && i < 3 ? (i + 2) % 3 : i;
+                    eventBus.emit('up' + index, elemForce, index);
                 }
                 listener.active = false;
                 listener.count = 0;

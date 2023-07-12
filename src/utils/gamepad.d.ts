@@ -35,7 +35,7 @@ export declare class gamepads {
     };
     inputs?: Inputs;
     enable: boolean;
-    handleDown: (i: string, eventBus: EventEmitter, listener: Listener, elemForce: number, cTime: number, gamepadType: InputType) => boolean | void;
+    handleDown: (i: number, eventBus: EventEmitter, listener: Listener, elemForce: number, cTime: number, gamepadType: InputType) => boolean | void;
     isWaitingForAnyKey: boolean;
     waitForAnyKeyType: string;
     waitForAnyKeyCallback: WaitKeyCallback;
@@ -50,10 +50,10 @@ export declare class gamepads {
     getGamepadsLength(): number;
     _sensibility: number;
     overSensibility(force: number): boolean;
-    handleDownChange(i: string, eventBus: EventEmitter, listener: Listener, elemForce: number, _cTime: number, gamepadType: InputType): void;
+    handleDownChange(i: number, eventBus: EventEmitter, listener: Listener, elemForce: number, _cTime: number, gamepadType: InputType): void;
     _firstRate: number;
     _rate: number;
-    handleDownRate(i: string, eventBus: EventEmitter, listener: Listener, elemForce: number, cTime: number, gamepadType: InputType): boolean;
+    handleDownRate(i: number, eventBus: EventEmitter, listener: Listener, elemForce: number, cTime: number, gamepadType: InputType): boolean;
     handleListeners(index: number, gamepadInterface: readonly (number | GamepadButton)[], arrayListeners: {
         [key: number]: EventEmitter;
     }, cTime: number, type: string, gamepadType: InputType): void;
