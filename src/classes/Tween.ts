@@ -56,14 +56,16 @@ export class Tween {
     tweens.push(this);
   }
 
-  setOnUpdate(callback: (arg?: any) => void, parameters?: any) {
+  setOnUpdate(callback: (arg?: any) => void, parameters?: any): Tween {
     this.onUpdate = callback;
     this.onUpdateParams = parameters;
+    return this;
   }
 
-  setOnComplete(callback: (arg?: any) => void, parameters?: any) {
+  setOnComplete(callback: (arg?: any) => void, parameters?: any): Tween {
     this.onComplete = callback;
     this.onCompleteParams = parameters;
+    return this;
   }
 
   start() {

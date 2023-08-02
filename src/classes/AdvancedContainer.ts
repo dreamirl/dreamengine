@@ -92,7 +92,7 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
     autostart = true,
     easing: (x: number) => number = Tween.Easing.noEase,
   ) {
-    new Tween.Tween(
+    return new Tween.Tween(
       this,
       'alpha',
       value,
@@ -109,14 +109,7 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
     autostart = true,
     easing: (x: number) => number = Tween.Easing.noEase,
   ) {
-    new Tween.Tween(
-      this,
-      'alpha',
-      0,
-      duration,
-      autostart,
-      easing,
-    ).setOnComplete(onComplete, onCompleteParams || {});
+    return this.fadeTo(0, duration, onComplete, onCompleteParams, autostart, easing);
   }
 
   fadeIn(
@@ -126,14 +119,7 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
     autostart = true,
     easing: (x: number) => number = Tween.Easing.noEase,
   ) {
-    new Tween.Tween(
-      this,
-      'alpha',
-      1,
-      duration,
-      autostart,
-      easing,
-    ).setOnComplete(onComplete, onCompleteParams || {});
+    return this.fadeTo(1, duration, onComplete, onCompleteParams, autostart, easing);
   }
 
   /**
