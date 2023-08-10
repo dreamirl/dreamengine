@@ -9,7 +9,7 @@ export default class TimerComponent extends Component {
     private _timers;
     protected _name: string;
     counter: number;
-    invoke(callback: () => void, interval?: number, persistent?: boolean): number;
+    invoke(callback: () => void, interval?: number, persistent?: boolean, id?: number): number;
     clear(id: number): void;
     /**
      * apply the shake each update

@@ -272,6 +272,23 @@ class Vector2 extends PIXI.Container {
         return Math.sqrt(x + y);
     }
     /**
+     * return squared distance with an other Vector2
+     * @public
+     * @memberOf Vector2
+     * @param {Vector2} other
+     * @returns {Int} distance result
+     */
+    /****
+     * getSquaredDistance@Int( other@Vector2 )
+     */
+    getSquaredDistance(other) {
+        let x = this.x - other.x;
+        x *= x;
+        let y = this.y - other.y;
+        y *= y;
+        return x + y;
+    }
+    /**
      * trigger a circle collision with an other Vector and a range
      * @public
      * @memberOf Vector2

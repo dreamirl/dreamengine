@@ -75,8 +75,8 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
     return this._components.find((v) => v.name === name);
   }
 
-  timeout(callback: () => void, interval = 0, persistent = false) {
-    return this.timerComp.invoke(callback, interval, persistent);
+  timeout(callback: () => void, interval = 0, persistent = false, id: number | undefined = undefined) {
+    return this.timerComp.invoke(callback, interval, persistent, id);
   }
 
   clearTimeout(id: number) {

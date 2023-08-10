@@ -82,21 +82,21 @@ class AdvancedContainer extends PIXI.Container {
     getComponent(name) {
         return this._components.find((v) => v.name === name);
     }
-    timeout(callback, interval = 0, persistent = false) {
-        return this.timerComp.invoke(callback, interval, persistent);
+    timeout(callback, interval = 0, persistent = false, id = undefined) {
+        return this.timerComp.invoke(callback, interval, persistent, id);
     }
     clearTimeout(id) {
         this.timerComp.clear(id);
         return this;
     }
     fadeTo(value, duration, onComplete, onCompleteParams, autostart = true, easing = Tween_1.default.Easing.noEase) {
-        new Tween_1.default.Tween(this, 'alpha', value, duration, autostart, easing).setOnComplete(onComplete, onCompleteParams || {});
+        return new Tween_1.default.Tween(this, 'alpha', value, duration, autostart, easing).setOnComplete(onComplete, onCompleteParams || {});
     }
     fadeOut(duration, onComplete, onCompleteParams, autostart = true, easing = Tween_1.default.Easing.noEase) {
-        new Tween_1.default.Tween(this, 'alpha', 0, duration, autostart, easing).setOnComplete(onComplete, onCompleteParams || {});
+        return this.fadeTo(0, duration, onComplete, onCompleteParams, autostart, easing);
     }
     fadeIn(duration, onComplete, onCompleteParams, autostart = true, easing = Tween_1.default.Easing.noEase) {
-        new Tween_1.default.Tween(this, 'alpha', 1, duration, autostart, easing).setOnComplete(onComplete, onCompleteParams || {});
+        return this.fadeTo(1, duration, onComplete, onCompleteParams, autostart, easing);
     }
     /**
      * check the documentation on GameObject for all shake features

@@ -28,11 +28,11 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
     addOneComponent(component: Component): this;
     removeComponent(componentReference: Component): this;
     getComponent(name: string): Component | undefined;
-    timeout(callback: () => void, interval?: number, persistent?: boolean): number;
+    timeout(callback: () => void, interval?: number, persistent?: boolean, id?: number | undefined): number;
     clearTimeout(id: number): this;
-    fadeTo(value: number, duration: number, onComplete: () => void, onCompleteParams?: any, autostart?: boolean, easing?: (x: number) => number): void;
-    fadeOut(duration: number, onComplete: () => void, onCompleteParams?: any, autostart?: boolean, easing?: (x: number) => number): void;
-    fadeIn(duration: number, onComplete: () => void, onCompleteParams?: any, autostart?: boolean, easing?: (x: number) => number): void;
+    fadeTo(value: number, duration: number, onComplete: () => void, onCompleteParams?: any, autostart?: boolean, easing?: (x: number) => number): import("./Tween").Tween;
+    fadeOut(duration: number, onComplete: () => void, onCompleteParams?: any, autostart?: boolean, easing?: (x: number) => number): import("./Tween").Tween;
+    fadeIn(duration: number, onComplete: () => void, onCompleteParams?: any, autostart?: boolean, easing?: (x: number) => number): import("./Tween").Tween;
     /**
      * check the documentation on GameObject for all shake features
      * @protected

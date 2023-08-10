@@ -17,17 +17,16 @@ export default class TimerComponent extends Component {
     callback: () => void,
     interval = 0,
     persistent = false,
+    id: number = ++this.counter
   ) {
-    this._timers[this.counter] = {
+    this._timers[id] = {
       callback,
       interval,
       persistent,
-      id: this.counter,
+      id: id,
       timeSinceLastCall: 0,
     };
-    
-    this.counter++;
-    return this.counter;
+    return id;
   }
 
   clear(id: number) {

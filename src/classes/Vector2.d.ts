@@ -121,6 +121,17 @@ declare class Vector2 extends PIXI.Container {
      */
     getDistance(other: Vector2): number;
     /**
+     * return squared distance with an other Vector2
+     * @public
+     * @memberOf Vector2
+     * @param {Vector2} other
+     * @returns {Int} distance result
+     */
+    /****
+     * getSquaredDistance@Int( other@Vector2 )
+     */
+    getSquaredDistance(other: Vector2): number;
+    /**
      * trigger a circle collision with an other Vector and a range
      * @public
      * @memberOf Vector2

@@ -37,10 +37,12 @@ class Tween {
     setOnUpdate(callback, parameters) {
         this.onUpdate = callback;
         this.onUpdateParams = parameters;
+        return this;
     }
     setOnComplete(callback, parameters) {
         this.onComplete = callback;
         this.onCompleteParams = parameters;
+        return this;
     }
     start() {
         this.active = true;

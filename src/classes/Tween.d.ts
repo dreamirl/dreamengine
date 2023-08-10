@@ -13,8 +13,8 @@ export declare class Tween {
     onCompleteParams?: any;
     easing: (x: number) => number;
     constructor(object: any, property: string, targetValue: number, tweenDuration: number, autostart?: boolean, easing?: (x: number) => number);
-    setOnUpdate(callback: (arg?: any) => void, parameters?: any): void;
-    setOnComplete(callback: (arg?: any) => void, parameters?: any): void;
+    setOnUpdate(callback: (arg?: any) => void, parameters?: any): Tween;
+    setOnComplete(callback: (arg?: any) => void, parameters?: any): Tween;
     start(): void;
     initIterations(): void;
     update(deltaTime: number): boolean;

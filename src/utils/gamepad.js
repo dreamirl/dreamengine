@@ -186,7 +186,7 @@ class gamepads {
         Notifications_1.default.create(Localization_1.default.get('onGamepadConnect') ||
             'Gamepad ' + (e.gamepad.index + 1) + ' connected');
         let gamepadType = 'xbox';
-        if (e.gamepad.id.includes('DualSense')) {
+        if (e.gamepad.id.includes('DualSense') || e.gamepad.id.includes('Wireless')) {
             gamepadType = 'sony';
         }
         else if (e.gamepad.id.includes('NSW')) {
