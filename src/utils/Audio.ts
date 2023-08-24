@@ -222,13 +222,27 @@ export class Audio {
     sound.mute(mute, soundID);
     return this;
   }
-  stopAll(channelName = 'musics', preserve: string[] = []) {
+  stopAll(channelName = 'musics', preserve: string[]) {
     if (!this.channels[channelName]) {
       throw 'DE.Audio.stopAll channel does not exists ' + channelName;
     }
     this.channels[channelName].forEach((soundName) => {
       if (!preserve.includes(soundName)) {
         this.stop(soundName);
+      }
+    });
+    return this;
+  }
+  fadeOutAll(channelName = 'musics', duration: number, preserve: string[] = []) {
+    if (!this.channels[channelName]) {
+      throw 'DE.Audio.stopAll channel does not exists ' + channelName;
+    }
+    this.channels[channelName].forEach((soundName) => {
+      if (!preserve.includes(soundName)) {
+        const sound = this.get(soundName);
+        if(sound){
+          sound.howl.fade(sound.howl.volume(), 0, duration);
+        }
       }
     });
     return this;
