@@ -50,10 +50,8 @@ export class Save {
       this.version = window.localStorage.getItem(this.namespace);
     }
 
-    this.saveModel = saveModel;
-
     // load save from storage
-    for (const i in this.saveModel) {
+    for (const i in saveModel) {
       this.saveModel[i] = this.get(i);
     }
 
