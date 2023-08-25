@@ -122,7 +122,12 @@ export class Save {
       const load = window.localStorage.getItem(
         this.namespace + this.version + key,
       );
-      if (load != undefined) this.saveModel[key] = JSON.parse(load);
+      try {
+        this.saveModel[key] = JSON.parse(load);
+      }
+      catch(e) {
+        this.saveModel[key] = undefined;
+      }
     }
     return this.saveModel[key];
   }
