@@ -6,10 +6,9 @@ import config from './config';
 import MainLoop from './MainLoop';
 
 // Utils
-import Events from './utils/Events';
-import Time from './utils/Time';
 import Achievements from './utils/Achievements';
 import Audio, { AudioParam } from './utils/Audio';
+import Events from './utils/Events';
 import gamepad from './utils/gamepad';
 import ImageManager, { InitFunctionParam } from './utils/ImageManager';
 import Inputs from './utils/Inputs';
@@ -17,6 +16,7 @@ import Localization from './utils/Localization';
 import Notifications from './utils/Notifications';
 import Platform from './utils/Platform';
 import Save, { SaveModel } from './utils/Save';
+import Time from './utils/Time';
 
 import Camera from './classes/Camera';
 import Gui from './classes/Gui';
@@ -158,6 +158,9 @@ const onLoad = () => {
 const on = (eventName: string, listener: (...args: any) => void) => {
   Events.on(eventName, listener);
 };
+const removeListener = (eventName: string, listener: (...args: any) => void) => {
+  Events.removeListener(eventName, listener);
+}
 const emit = (eventName: string, ...params: Array<any>) => {
   Events.emit(eventName, ...params);
 };
@@ -312,6 +315,7 @@ export default {
   trigger,
   emit,
   on,
+  removeListener,
   onLoad,
   unPause,
   pause,
