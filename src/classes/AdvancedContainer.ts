@@ -7,6 +7,7 @@ import ShakeComponent from './components/ShakeComponent';
 import TimerComponent from './components/TimerComponent';
 import { ContainerExtensions, center, setBlackAndWhite, setBrightness, setContrast, setGreyscale, setHue, setSaturation, setScale, setSize, setTint } from './renderer/ContainerExtensions';
 import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
+import FadeComponent from './components/FadeComponent';
 
 export default class AdvancedContainer extends PIXI.Container implements ContainerExtensions {
   hueFilter?: ColorMatrixFilter | undefined;
@@ -31,6 +32,15 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
       this.addComponent(this._shakeComp);
     }
     return this._shakeComp;
+  }
+
+  private _fadeComp?: FadeComponent = undefined;
+  private get fadeComp() {
+    if (!this._fadeComp) {
+      this._fadeComp = new FadeComponent(this);
+      this.addComponent(this._fadeComp);
+    }
+    return this._fadeComp;
   }
 
   private _timerComp?: TimerComponent = undefined;
@@ -84,42 +94,42 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
     return this;
   }
 
-  fadeTo(
-    value: number,
-    duration: number,
-    onComplete: () => void,
-    onCompleteParams?: any,
-    autostart = true,
-    easing: (x: number) => number = Tween.Easing.noEase,
+  /**
+   * quick access to the FadeComponent
+   */
+  fade(
+    from: number = 1,
+    to: number = 0,
+    duration: number = 500,
+    force: boolean = true,
+    callback?: () => void,
   ) {
-    return new Tween.Tween(
-      this,
-      'alpha',
-      value,
-      duration,
-      autostart,
-      easing,
-    ).setOnComplete(onComplete, onCompleteParams || {});
+    this.fadeComp.fade(from, to, duration, force, callback);
+    return this;
+  }
+
+  fadeTo(
+    to: number = 0,
+    duration: number = 500,
+    force: boolean = true,
+    callback?: () => void,
+  ) {
+    this.fadeComp.fadeTo(to, duration, force, callback);
+    return this;
   }
 
   fadeOut(
-    duration: number,
-    onComplete: () => void,
-    onCompleteParams?: any,
-    autostart = true,
-    easing: (x: number) => number = Tween.Easing.noEase,
+    duration: number = 500,
+    force: boolean = true,
+    callback?: () => void,
   ) {
-    return this.fadeTo(0, duration, onComplete, onCompleteParams, autostart, easing);
+    this.fadeComp.fadeOut(duration, force, callback);
+    return this;
   }
 
-  fadeIn(
-    duration: number,
-    onComplete: () => void,
-    onCompleteParams?: any,
-    autostart = true,
-    easing: (x: number) => number = Tween.Easing.noEase,
-  ) {
-    return this.fadeTo(1, duration, onComplete, onCompleteParams, autostart, easing);
+  fadeIn(duration: number = 500, force: boolean = true, callback?: () => void) {
+    this.fadeComp.fadeIn(duration, force, callback);
+    return this;
   }
 
   /**
