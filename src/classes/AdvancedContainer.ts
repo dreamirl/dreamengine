@@ -101,8 +101,8 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
     from: number = 1,
     to: number = 0,
     duration: number = 500,
-    force: boolean = true,
     callback?: () => void,
+    force: boolean = true,
   ) {
     this.fadeComp.fade(from, to, duration, force, callback);
     return this;
@@ -111,8 +111,8 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
   fadeTo(
     to: number = 0,
     duration: number = 500,
-    force: boolean = true,
     callback?: () => void,
+    force: boolean = true,
   ) {
     this.fadeComp.fadeTo(to, duration, force, callback);
     return this;
@@ -120,14 +120,14 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
 
   fadeOut(
     duration: number = 500,
-    force: boolean = true,
     callback?: () => void,
+    force: boolean = true,
   ) {
     this.fadeComp.fadeOut(duration, force, callback);
     return this;
   }
 
-  fadeIn(duration: number = 500, force: boolean = true, callback?: () => void) {
+  fadeIn(duration: number = 500, callback?: () => void, force: boolean = true) {
     this.fadeComp.fadeIn(duration, force, callback);
     return this;
   }
