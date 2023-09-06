@@ -35,6 +35,7 @@ export class Tween {
     tweenDuration: number,
     autostart = true,
     easing: (x: number) => number = noEase,
+    autoHandled = true,
   ) {
     this.object = object;
     const properties = property.split('.');
@@ -53,7 +54,8 @@ export class Tween {
     this.tweenDuration = tweenDuration;
     this.easing = easing;
 
-    tweens.push(this);
+    if(autoHandled)
+      tweens.push(this);
   }
 
   setOnUpdate(callback: (arg?: any) => void, parameters?: any): Tween {
