@@ -83,6 +83,7 @@ export class Tween {
     if (!this.active) {
       return false;
     }
+    if(this.object.destroyed) return true;
     if (this.currentFrame == 0) {
       this.initIterations();
     }
@@ -291,10 +292,7 @@ function update(deltaTime: number) {
   for (let i = 0; i < tweens.length; ++i) {
     const tween = tweens[i];
     if (tween.update(deltaTime)) {
-      const index = tweens.indexOf(tween);
-      if (index != -1) {
-        tweens.splice(index, 1);
-      }
+      tweens.splice(i, 1);
       i--;
     }
   }
