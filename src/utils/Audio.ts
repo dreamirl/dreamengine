@@ -233,7 +233,7 @@ export class Audio {
     });
     return this;
   }
-  fadeOutAll(channelName = 'musics', duration: number, preserve: string[] = []) {
+  fadeOutAll(channelName = 'musics', duration: number, preserve: string[] = [], cb?: (howl: howler.Howl) => void) {
     if (!this.channels[channelName]) {
       throw 'DE.Audio.stopAll channel does not exists ' + channelName;
     }
@@ -242,6 +242,7 @@ export class Audio {
         const sound = this.get(soundName);
         if(sound){
           sound.howl.fade(sound.howl.volume(), 0, duration);
+          if(cb) cb(sound.howl);
         }
       }
     });
