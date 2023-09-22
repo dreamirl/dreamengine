@@ -240,7 +240,7 @@ export class Audio {
     this.channels[channelName].forEach((soundName) => {
       if (!preserve.includes(soundName)) {
         const sound = this.get(soundName);
-        if(sound){
+        if(sound && sound.howl.playing()){
           sound.howl.fade(sound.howl.volume(), 0, duration);
           if(cb) cb(sound.howl);
         }
