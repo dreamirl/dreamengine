@@ -242,7 +242,7 @@ export class Audio {
         const sound = this.get(soundName);
         if(sound && sound.howl.playing()){
           sound.howl.fade(sound.howl.volume(), 0, duration);
-          if(cb) cb(sound.howl);
+          if(cb) sound.howl.once('fade', () => cb(sound.howl));
         }
       }
     });
