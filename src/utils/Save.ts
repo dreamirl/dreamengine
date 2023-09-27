@@ -27,7 +27,7 @@ export class Save {
 
   saveModel: SaveModel = {};
   namespace = 'My-Dreamengine-Game';
-  version: string | null = null;
+  version: string = '0.0.0';
 
   useLocalStorage = true;
 
@@ -47,7 +47,8 @@ export class Save {
 
     this.version = about.gameVersion;
     if (ignoreVersion) {
-      this.version = window.localStorage.getItem(this.namespace);
+      const storageVersion = window.localStorage.getItem(this.namespace);
+      if (storageVersion !== null) this.version = storageVersion;
     }
 
     // load save from storage
@@ -70,7 +71,6 @@ export class Save {
     }
 
     // setup the last version of the game, and rewrite datas
-    this.version = about.gameVersion;
     window.localStorage.setItem(this.namespace, this.version);
     for (const i in this.saveModel) {
       if (typeof this.saveModel[i] === 'string')
