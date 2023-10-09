@@ -75,6 +75,7 @@ export class ImageManager {
   baseUrl: string;
 
   pools: PoolType = { default: [] };
+  loadedPools: string[] = [];
   spritesData: Record<string, SpriteData>;
 
   /** DO NOT USE */
@@ -151,6 +152,16 @@ export class ImageManager {
   loadPool(poolName: string, customEventName?: string, resetLoader = false) {
     const self = this;
 
+    if(poolName !== 'default'){
+      if(this.loadedPools.find((val) => val === poolName)){ 
+        console.warn('Pool', poolName, 'is already loaded');
+        setTimeout(() => {
+          self._onComplete(poolName, customEventName);
+        }, 500);
+        return;
+      }
+      this.loadedPools.push(poolName);
+    }
     if (this.pools[poolName].length == 0) {
       setTimeout(() => {
         self._onComplete(poolName, customEventName);
@@ -285,6 +296,9 @@ export class ImageManager {
    * @memberOf ImageManager
    */
   unloadPool(poolName: string) {
+    const poolIndex = this.loadedPools.indexOf(poolName);
+    if(poolIndex === -1) return;
+    this.loadedPools.splice(poolIndex, 1);
     const pool = this.pools[poolName];
     for (let i = 0, res, t = pool.length; i < t; ++i) {
       res = pool[i];
