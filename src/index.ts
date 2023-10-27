@@ -243,13 +243,13 @@ const init = (params: InitParams) => {
         0: 'loader',
         1: params.loader.url || 'loader.png',
         2: {
-          totalFrame: params.loader.totalFrame || 16,
-          interval: params.loader.interval || 45,
+          totalFrame: params.loader.totalFrame || 1,
+          interval: params.loader.interval || 0,
           animated:
             params.loader.animated !== undefined
               ? params.loader.animated
-              : true,
-          scale: params.loader.scale || 1,
+              : false,
+          scale: params.loader.scale || 0.15,
         },
       };
       Events.once('ImageManager-loader-loaded', () => {
