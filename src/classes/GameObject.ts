@@ -681,7 +681,7 @@ class GameObject extends AdvancedContainer {
     }
 
     const automatism: Automatism = {
-      interval: params.interval || Time.frameDelay,
+      interval: params.interval ?? 0,
       timeSinceLastCall: 0,
       methodName,
       value1: params.value1 || undefined,
