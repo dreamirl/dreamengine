@@ -61,6 +61,13 @@ export class Save {
     this.loadSave(this.saveModel, true);
   }
 
+  removeSave(key: string){
+    if(this.exists(key)){
+      window.localStorage.removeItem(this.namespace + this.version + key);
+      delete this.saveModel[key];
+    }
+  }
+
   updateSave() {
     if (!this.useLocalStorage) {
       return;
@@ -139,7 +146,7 @@ export class Save {
    */
   exists(key: string) {
     const value = this.get(key);
-    return !(value === 'undefined' || value === undefined);
+    return !(value === 'undefined' || value === undefined || value === null);
   }
 
   /**
