@@ -94,6 +94,11 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
     return this;
   }
 
+  clearAllTimeout(){
+    this.timerComp.clearAll();
+    return this;
+  }
+
   /**
    * quick access to the FadeComponent
    */
