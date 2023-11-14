@@ -204,7 +204,8 @@ export class Audio {
     const locSound = this.get(name);
     if (!locSound) return this;
     const sound = locSound.howl;
-    sound.pause(soundID);
+    if(sound.playing())
+      sound.pause(soundID);
     return this;
   }
 
@@ -222,7 +223,7 @@ export class Audio {
     sound.mute(mute, soundID);
     return this;
   }
-  stopAll(channelName = 'musics', preserve: string[]) {
+  stopAll(channelName = 'musics', preserve: string[] = []) {
     if (!this.channels[channelName]) {
       throw 'DE.Audio.stopAll channel does not exists ' + channelName;
     }
@@ -258,7 +259,7 @@ export class Audio {
     this.play(name, sprite);
     return this;
   }
-  pauseAll(channelName = 'musics', preserve: string[]) {
+  pauseAll(channelName = 'musics', preserve: string[] = []) {
     if (!this.channels[channelName]) {
       throw 'DE.Audio.pauseAll channel does not exists ' + channelName;
     }
@@ -273,10 +274,30 @@ export class Audio {
     channelName: string,
     name: string,
     sprite: string,
-    preserve: string[],
+    preserve: string[] = [],
   ) {
     this.pauseAll(channelName, preserve);
     this.play(name, sprite);
+    return this;
+  }
+  playAllPaused(channelName = 'musics', preserve: string[] = []){
+    if (!this.channels[channelName]) {
+      throw 'DE.Audio.pauseAll channel does not exists ' + channelName;
+    }
+    this.channels[channelName].forEach((soundName) => {
+      if (!preserve.includes(soundName)) {
+        const locSound = this.get(soundName);
+        if (!locSound) return;
+        const sound = locSound.howl;
+        const ids = sound._getSoundIds();
+        ids.forEach((id: number) => {
+          const soundId = sound._soundById(id);
+          if(soundId._paused && !soundId._ended){
+            sound.play(id);
+          } 
+        })
+      }
+    });
     return this;
   }
 
