@@ -9,7 +9,7 @@ import Events from './Events';
 */
 
 export type SaveModel = {
-  [x: string]: string | number | object | Array<any> | SaveModel;
+  [key: string]: any
 };
 
 /**
@@ -130,7 +130,7 @@ export class Save {
         this.namespace + this.version + key,
       );
       try {
-        this.saveModel[key] = JSON.parse(load);
+        this.saveModel[key] = JSON.parse(load!);
       }
       catch(e) {
         this.saveModel[key] = undefined;
