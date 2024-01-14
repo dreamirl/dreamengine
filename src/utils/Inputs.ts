@@ -33,6 +33,8 @@ type Queue = {
   axeStop: {[key: string] : Array<any>},
 }
 
+type InputMapping = Record<string, {keycodes: string[], interval?: number, isLongPress?: boolean, stayOn?: boolean}>;
+
 export type InputType = 'keyboard' | 'xbox' | 'sony' | 'nintendo';
 
 /**
@@ -205,7 +207,33 @@ export class Inputs {
    * @private
    * @memberOf Inputs
    */
-  init(customInputs: Record<string, {keycodes: string[], interval?: number, isLongPress?: boolean, stayOn?: boolean}>) {
+  init(customInputs: InputMapping) {
+    this.registerInputs(customInputs);
+
+    this.queue['axeMoved']['wheelTop'] = new Array();
+    this.queue['axeMoved']['wheelDown'] = new Array();
+
+    this.toggleListeners();
+
+    if (config.ALLOW_ONBEFOREUNLOAD) {
+      window.onbeforeunload = (_e) => {
+        if (!window.leavePage)
+          return _langs[Localization.currentLanguage as ('fr' | 'en')]['leave-page'];
+        return '';
+      };
+      window.onunload = (_e) => {
+        Events.emit('unload-game');
+      };
+    }
+
+    Events.on('window-lost-focus', () => {
+      for (const i in this.usedInputs) {
+        this.usedInputs[i].isDown = false;
+      }
+    });
+  }
+
+  registerInputs(customInputs: InputMapping) {
     let newInputs: {[key: string]: InputInfo} = {};
 
     for (let i in customInputs) {
@@ -287,29 +315,10 @@ export class Inputs {
       this.queue['axeStart'][i] = new Array();
       this.queue['axeStop'][i] = new Array();
     }
-
-    this.queue['axeMoved']['wheelTop'] = new Array();
-    this.queue['axeMoved']['wheelDown'] = new Array();
-
-    this.usedInputs = newInputs;
-    this.toggleListeners();
-
-    if (config.ALLOW_ONBEFOREUNLOAD) {
-      window.onbeforeunload = (_e) => {
-        if (!window.leavePage)
-          return _langs[Localization.currentLanguage as ('fr' | 'en')]['leave-page'];
-        return '';
-      };
-      window.onunload = (_e) => {
-        Events.emit('unload-game');
-      };
-    }
-
-    Events.on('window-lost-focus', () => {
-      for (const i in this.usedInputs) {
-        this.usedInputs[i].isDown = false;
-      }
-    });
+    this.usedInputs = {
+      ...this.usedInputs,
+      ...newInputs
+    };
   }
 
   /**
