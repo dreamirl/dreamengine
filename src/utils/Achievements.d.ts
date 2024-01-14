@@ -1,19 +1,19 @@
-declare type ObjectiveEqualType = 'equal' | '=' | '==';
-declare type ObjectiveOtherType = 'increment' | '+' | '++' | '>=' | '<';
-declare type EqualObjective = {
+type ObjectiveEqualType = 'equal' | '=' | '==';
+type ObjectiveOtherType = 'increment' | '+' | '++' | '>=' | '<';
+type EqualObjective = {
     type: ObjectiveEqualType;
     target: string | number;
 };
-declare type OtherObjective = {
+type OtherObjective = {
     type: ObjectiveOtherType;
     target: number;
 };
-export declare type Objective = EqualObjective | OtherObjective;
-export declare type UserObjective = {
+export type Objective = EqualObjective | OtherObjective;
+export type UserObjective = {
     value: number | string;
     complete?: boolean;
 };
-export declare type Achievement = {
+export type Achievement = {
     namespace: string;
     names: Record<string, string>;
     descriptions: Record<string, string>;
@@ -21,7 +21,7 @@ export declare type Achievement = {
     reward: any[];
     order: number;
 };
-export declare type UserAchievement = {
+export type UserAchievement = {
     objectives: Record<string, UserObjective>;
     complete?: boolean;
 };

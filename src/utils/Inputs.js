@@ -23,6 +23,14 @@ const _langs = {
     },
 };
 class Inputs {
+    get enable() { return this._enable; }
+    set enable(v) {
+        this._enable = v;
+        gamepad_1.default.enable = v;
+    }
+    get usedControllerType() {
+        return this._lastEventType;
+    }
     constructor() {
         this.DEName = 'Inputs';
         this._enable = true;
@@ -150,14 +158,6 @@ class Inputs {
             this.isWindowFocused = false;
         });
     }
-    get enable() { return this._enable; }
-    set enable(v) {
-        this._enable = v;
-        gamepad_1.default.enable = v;
-    }
-    get usedControllerType() {
-        return this._lastEventType;
-    }
     /**
      * initialize Inputs listeners with your custom Inputs list
      * called by the main engine file
@@ -165,6 +165,27 @@ class Inputs {
      * @memberOf Inputs
      */
     init(customInputs) {
+        this.registerInputs(customInputs);
+        this.queue['axeMoved']['wheelTop'] = new Array();
+        this.queue['axeMoved']['wheelDown'] = new Array();
+        this.toggleListeners();
+        if (config_1.default.ALLOW_ONBEFOREUNLOAD) {
+            window.onbeforeunload = (_e) => {
+                if (!window.leavePage)
+                    return _langs[Localization_1.default.currentLanguage]['leave-page'];
+                return '';
+            };
+            window.onunload = (_e) => {
+                Events_1.default.emit('unload-game');
+            };
+        }
+        Events_1.default.on('window-lost-focus', () => {
+            for (const i in this.usedInputs) {
+                this.usedInputs[i].isDown = false;
+            }
+        });
+    }
+    registerInputs(customInputs) {
         let newInputs = {};
         for (let i in customInputs) {
             newInputs[i] = {
@@ -237,25 +258,10 @@ class Inputs {
             this.queue['axeStart'][i] = new Array();
             this.queue['axeStop'][i] = new Array();
         }
-        this.queue['axeMoved']['wheelTop'] = new Array();
-        this.queue['axeMoved']['wheelDown'] = new Array();
-        this.usedInputs = newInputs;
-        this.toggleListeners();
-        if (config_1.default.ALLOW_ONBEFOREUNLOAD) {
-            window.onbeforeunload = (_e) => {
-                if (!window.leavePage)
-                    return _langs[Localization_1.default.currentLanguage]['leave-page'];
-                return '';
-            };
-            window.onunload = (_e) => {
-                Events_1.default.emit('unload-game');
-            };
-        }
-        Events_1.default.on('window-lost-focus', () => {
-            for (const i in this.usedInputs) {
-                this.usedInputs[i].isDown = false;
-            }
-        });
+        this.usedInputs = {
+            ...this.usedInputs,
+            ...newInputs
+        };
     }
     /**
      * return the input data

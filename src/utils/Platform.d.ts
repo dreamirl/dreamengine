@@ -13,7 +13,7 @@
  * this can be a problem for some Promise function
  * But should be most likely fine
  */
-export declare type product = {
+export type product = {
     realCurrency: boolean;
     user_id: string;
     date: {
@@ -125,6 +125,8 @@ export declare class Platform {
      * send an event to gtag if it exist
      */
     pushAnalytic(eventName: string, data: any): void;
+    setFullScreen(fullScreen?: boolean): void;
+    isFullScreen(): boolean;
 }
 declare class user {
     _data: any;

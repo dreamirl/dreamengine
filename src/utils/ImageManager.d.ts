@@ -11,18 +11,18 @@ import * as PIXI from 'pixi.js';
  * Handle images, ready to use spritesImages, json sheets, json particles files or custom files
  * @namespace ImageManagser
  */
-declare type InitImageData = {
+type InitImageData = {
     0: string;
     1: string;
     2?: any;
 } | string;
-declare type PoolContent = {
+type PoolContent = {
     name?: string;
     url: string;
     parameters?: any;
 };
-declare type PoolType = Record<string, PoolContent[]>;
-declare type SpriteData = {
+type PoolType = Record<string, PoolContent[]>;
+type SpriteData = {
     totalLine: number;
     totalFrame: number;
     startFrame: number;
@@ -44,6 +44,7 @@ export declare class ImageManager {
     ratioToConception: number;
     baseUrl: string;
     pools: PoolType;
+    loadedPools: string[];
     spritesData: Record<string, SpriteData>;
     /** DO NOT USE */
     _waitingPools: {

@@ -4,8 +4,8 @@ import { UserAchievement } from './Achievements';
  @Inateno / http://inateno.com / http://dreamirl.com
 
 */
-export declare type SaveModel = {
-    [x: string]: string | number | object | Array<any> | SaveModel;
+export type SaveModel = {
+    [key: string]: any;
 };
 /**
  * singleton to make save easy, you can override save method to make yours
@@ -21,7 +21,7 @@ export declare class Save {
     DEName: string;
     saveModel: SaveModel;
     namespace: string;
-    version: string | null;
+    version: string;
     useLocalStorage: boolean;
     /**
      * init the save (called by the engine: DE.init), you can ignoreVersion to get the previous one and update it
@@ -32,6 +32,7 @@ export declare class Save {
       * @param {Boolean} ignoreVersion - will read old save if true
       */
     init(saveModel?: SaveModel, ignoreVersion?: boolean): void;
+    removeSave(key: string): void;
     updateSave(): void;
     /**
      * load the save from the localStorage, automatically called from Save.init
@@ -47,7 +48,7 @@ export declare class Save {
      * @protected
      * @param {String} key - the key of the data you want from your scheme "saveModel"
      */
-    get(key: string): string | number | object | any[] | SaveModel;
+    get(key: string): any;
     /**
      * checks the existance of a key
      * returns true if the key exists, false if it doesn't

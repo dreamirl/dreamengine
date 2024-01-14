@@ -7,7 +7,7 @@
  * (and set padding on the parent to simulate a margin)</b>
  * @namespace Notifications
  */
-export declare type NotificationOptions = {
+export type NotificationOptions = {
     /**
      * The duration of the notification in milliseconds.
      * (default: 3500)
@@ -46,7 +46,7 @@ export declare type NotificationOptions = {
      */
     templateName: string;
 };
-export declare type NotificationCreateResult = {
+export type NotificationCreateResult = {
     id: string;
     notificationElement: HTMLDivElement;
 };

@@ -30,6 +30,11 @@ class TimerComponent extends Component_1.default {
     clear(id) {
         delete this._timers[id];
     }
+    clearAll() {
+        for (const key in this._timers) {
+            delete this._timers[key];
+        }
+    }
     /**
      * apply the shake each update
      * You shouldn't call or change this method

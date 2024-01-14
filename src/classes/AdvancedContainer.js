@@ -32,12 +32,14 @@ const FocusComponent_1 = __importDefault(require("./components/FocusComponent"))
 const ShakeComponent_1 = __importDefault(require("./components/ShakeComponent"));
 const TimerComponent_1 = __importDefault(require("./components/TimerComponent"));
 const ContainerExtensions_1 = require("./renderer/ContainerExtensions");
+const FadeComponent_1 = __importDefault(require("./components/FadeComponent"));
 class AdvancedContainer extends PIXI.Container {
     constructor() {
         super(...arguments);
         this.sleep = false;
         this._components = [];
         this._shakeComp = undefined;
+        this._fadeComp = undefined;
         this._timerComp = undefined;
         this._focusComp = undefined;
     }
@@ -47,6 +49,13 @@ class AdvancedContainer extends PIXI.Container {
             this.addComponent(this._shakeComp);
         }
         return this._shakeComp;
+    }
+    get fadeComp() {
+        if (!this._fadeComp) {
+            this._fadeComp = new FadeComponent_1.default(this);
+            this.addComponent(this._fadeComp);
+        }
+        return this._fadeComp;
     }
     get timerComp() {
         if (!this._timerComp) {
@@ -89,14 +98,28 @@ class AdvancedContainer extends PIXI.Container {
         this.timerComp.clear(id);
         return this;
     }
-    fadeTo(value, duration, onComplete, onCompleteParams, autostart = true, easing = Tween_1.default.Easing.noEase) {
-        return new Tween_1.default.Tween(this, 'alpha', value, duration, autostart, easing).setOnComplete(onComplete, onCompleteParams || {});
+    clearAllTimeout() {
+        this.timerComp.clearAll();
+        return this;
     }
-    fadeOut(duration, onComplete, onCompleteParams, autostart = true, easing = Tween_1.default.Easing.noEase) {
-        return this.fadeTo(0, duration, onComplete, onCompleteParams, autostart, easing);
+    /**
+     * quick access to the FadeComponent
+     */
+    fade(from = 1, to = 0, duration = 500, callback, force = true) {
+        this.fadeComp.fade(from, to, duration, force, callback);
+        return this;
     }
-    fadeIn(duration, onComplete, onCompleteParams, autostart = true, easing = Tween_1.default.Easing.noEase) {
-        return this.fadeTo(1, duration, onComplete, onCompleteParams, autostart, easing);
+    fadeTo(to = 0, duration = 500, callback, force = true) {
+        this.fadeComp.fadeTo(to, duration, force, callback);
+        return this;
+    }
+    fadeOut(duration = 500, callback, force = true) {
+        this.fadeComp.fadeOut(duration, force, callback);
+        return this;
+    }
+    fadeIn(duration = 500, callback, force = true) {
+        this.fadeComp.fadeIn(duration, force, callback);
+        return this;
     }
     /**
      * check the documentation on GameObject for all shake features

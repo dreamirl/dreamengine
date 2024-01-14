@@ -1,10 +1,10 @@
 import '../css/default.css';
 import * as PIXI from 'pixi.js';
 import { GameAboutInfo } from './about';
-import Time from './utils/Time';
 import { AudioParam } from './utils/Audio';
 import { InitFunctionParam } from './utils/ImageManager';
 import { SaveModel } from './utils/Save';
+import Time from './utils/Time';
 import Camera from './classes/Camera';
 import Gui from './classes/Gui';
 import Render from './classes/Render';
@@ -23,7 +23,7 @@ import Component from './classes/Component';
 import ShakeComponent from './classes/components/ShakeComponent';
 import TimerComponent from './classes/components/TimerComponent';
 import GameObject from './classes/GameObject';
-declare type InitParams = {
+type InitParams = {
     onReady: () => void;
     onLoad?: () => void;
     inputs?: Record<string, {
@@ -176,6 +176,7 @@ declare const _default: {
     trigger: (eventName: string, ...params: any[]) => void;
     emit: (eventName: string, ...params: any[]) => void;
     on: (eventName: string, listener: (...args: any) => void) => void;
+    removeListener: (eventName: string, listener: (...args: any) => void) => void;
     onLoad: () => void;
     unPause: () => void;
     pause: () => void;

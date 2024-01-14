@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js';
 import { DisplayObject } from 'pixi.js';
 import Camera from './Camera';
 import Gui from './Gui';
-declare type UpdatableClasses = Camera | Gui;
+type UpdatableClasses = Camera | Gui;
 declare class UpdatableContainer extends PIXI.Container {
     constructor();
     updatables: UpdatableClasses[];

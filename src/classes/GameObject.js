@@ -590,6 +590,7 @@ class GameObject extends AdvancedContainer_1.default {
      * } );
      */
     addAutomatism(id, methodName = id, params = {}) {
+        var _a;
         if (!this[methodName]) {
             console.warn("%cCouldn't found the method " +
                 methodName +
@@ -597,7 +598,7 @@ class GameObject extends AdvancedContainer_1.default {
             return;
         }
         const automatism = {
-            interval: params.interval || Time_1.default.frameDelay,
+            interval: (_a = params.interval) !== null && _a !== void 0 ? _a : 0,
             timeSinceLastCall: 0,
             methodName,
             value1: params.value1 || undefined,

@@ -1,9 +1,9 @@
+import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 import * as PIXI from 'pixi.js';
 import '../renderer/ContainerExtensions';
-import RendererInterface from './RendererInterface';
 import { ContainerExtensions } from '../renderer/ContainerExtensions';
-import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
-export declare type SpriteDataType = {
+import RendererInterface from './RendererInterface';
+export type SpriteDataType = {
     startFrame: number;
     endFrame: number;
     totalFrame: number;
@@ -56,7 +56,7 @@ export default class SpriteRenderer extends PIXI.Sprite implements RendererInter
     baseTexture?: PIXI.BaseTexture<PIXI.Resource>;
     normalName?: string;
     baseNormalTexture?: PIXI.BaseTexture<PIXI.Resource>;
-    constructor(params: Partial<Omit<PIXI.Sprite, 'scale'>> & {
+    constructor(params: Partial<Omit<PIXI.Sprite, 'scale' | 'anchor'>> & {
         spriteName?: string | undefined;
         spriteUrl?: string | undefined;
         textureName?: string | undefined;
@@ -78,6 +78,7 @@ export default class SpriteRenderer extends PIXI.Sprite implements RendererInter
         tint?: number;
         filters?: any;
         scale?: number | Point2D;
+        anchor?: Point2D;
         scaleX?: number;
         scaleY?: number;
         hue?: number | {

@@ -1,4 +1,4 @@
-export declare type GameAboutInfo = {
+export type GameAboutInfo = {
     engineVersion: string;
     gameName: string;
     gameVersion: string;

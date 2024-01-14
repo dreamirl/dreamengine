@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { InputType, Inputs } from './Inputs';
-declare type Listener = {
+type Listener = {
     active: boolean;
     force: number;
     noRate: boolean;
@@ -8,7 +8,7 @@ declare type Listener = {
     diffTime?: number;
     count?: number;
 };
-export declare type WaitKeyCallback = (x: {
+export type WaitKeyCallback = (x: {
     success: boolean;
     type: string;
     gamepadType?: string;

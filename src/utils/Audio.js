@@ -160,7 +160,8 @@ class Audio {
         if (!locSound)
             return this;
         const sound = locSound.howl;
-        sound.pause(soundID);
+        if (sound.playing())
+            sound.pause(soundID);
         return this;
     }
     stop(name, soundID) {
@@ -179,7 +180,7 @@ class Audio {
         sound.mute(mute, soundID);
         return this;
     }
-    stopAll(channelName = 'musics', preserve) {
+    stopAll(channelName = 'musics', preserve = []) {
         if (!this.channels[channelName]) {
             throw 'DE.Audio.stopAll channel does not exists ' + channelName;
         }
@@ -190,12 +191,28 @@ class Audio {
         });
         return this;
     }
+    fadeOutAll(channelName = 'musics', duration, preserve = [], cb) {
+        if (!this.channels[channelName]) {
+            throw 'DE.Audio.stopAll channel does not exists ' + channelName;
+        }
+        this.channels[channelName].forEach((soundName) => {
+            if (!preserve.includes(soundName)) {
+                const sound = this.get(soundName);
+                if (sound && sound.howl.playing()) {
+                    sound.howl.fade(sound.howl.volume(), 0, duration);
+                    if (cb)
+                        sound.howl.once('fade', () => cb(sound.howl));
+                }
+            }
+        });
+        return this;
+    }
     stopAllAndPlay(name, sprite, channelName, preserve = []) {
         this.stopAll(channelName, preserve);
         this.play(name, sprite);
         return this;
     }
-    pauseAll(channelName = 'musics', preserve) {
+    pauseAll(channelName = 'musics', preserve = []) {
         if (!this.channels[channelName]) {
             throw 'DE.Audio.pauseAll channel does not exists ' + channelName;
         }
@@ -206,9 +223,30 @@ class Audio {
         });
         return this;
     }
-    pauseAllAndPlay(channelName, name, sprite, preserve) {
+    pauseAllAndPlay(channelName, name, sprite, preserve = []) {
         this.pauseAll(channelName, preserve);
         this.play(name, sprite);
+        return this;
+    }
+    playAllPaused(channelName = 'musics', preserve = []) {
+        if (!this.channels[channelName]) {
+            throw 'DE.Audio.pauseAll channel does not exists ' + channelName;
+        }
+        this.channels[channelName].forEach((soundName) => {
+            if (!preserve.includes(soundName)) {
+                const locSound = this.get(soundName);
+                if (!locSound)
+                    return;
+                const sound = locSound.howl;
+                const ids = sound._getSoundIds();
+                ids.forEach((id) => {
+                    const soundId = sound._soundById(id);
+                    if (soundId._paused && !soundId._ended) {
+                        sound.play(id);
+                    }
+                });
+            }
+        });
         return this;
     }
     /**

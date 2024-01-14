@@ -1,5 +1,5 @@
 import howler from 'howler';
-export declare type AudioParam = {
+export type AudioParam = {
     name: string;
     path: string;
     formats: string[];
@@ -15,7 +15,7 @@ export declare type AudioParam = {
     autoplay?: boolean;
     sprite?: howler.SoundSpriteDefinitions;
 };
-declare type LocalSound = {
+type LocalSound = {
     name: string;
     channel: string;
     volume: number;
@@ -57,10 +57,12 @@ export declare class Audio {
     pause(name: string, soundID?: number): this;
     stop(name: string, soundID?: number): this;
     mute(name: string, mute: boolean, soundID?: number): this;
-    stopAll(channelName: string | undefined, preserve: string[]): this;
+    stopAll(channelName?: string, preserve?: string[]): this;
+    fadeOutAll(channelName: string | undefined, duration: number, preserve?: string[], cb?: (howl: howler.Howl) => void): this;
     stopAllAndPlay(name: string, sprite?: string, channelName?: string, preserve?: string[]): this;
-    pauseAll(channelName: string | undefined, preserve: string[]): this;
-    pauseAllAndPlay(channelName: string, name: string, sprite: string, preserve: string[]): this;
+    pauseAll(channelName?: string, preserve?: string[]): this;
+    pauseAllAndPlay(channelName: string, name: string, sprite: string, preserve?: string[]): this;
+    playAllPaused(channelName?: string, preserve?: string[]): this;
     /**
      * Play a sound randomly with the given array.
      * If using sprites, will use the first value of names.

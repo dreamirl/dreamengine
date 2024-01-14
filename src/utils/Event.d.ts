@@ -16,7 +16,7 @@
  Nb: GameObjects - Camera have already Events
 **/
 import EventEmitter from 'eventemitter3';
-declare type EngineEventsTypes = {
+type EngineEventsTypes = {
     debugModeChanged: number;
 };
 export default class Event<TGameEventsTypes extends Record<string, any>, TEventsTypes = TGameEventsTypes & EngineEventsTypes> {

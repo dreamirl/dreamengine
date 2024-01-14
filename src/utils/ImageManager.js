@@ -43,6 +43,7 @@ class ImageManager {
     constructor() {
         this.DEName = 'ImageManager';
         this.pools = { default: [] };
+        this.loadedPools = [];
         // quality var define what we need and how to use it
         this.pathPrefix = '';
         this.imageNotRatio = false;
@@ -101,6 +102,16 @@ class ImageManager {
      */
     loadPool(poolName, customEventName, resetLoader = false) {
         const self = this;
+        if (poolName !== 'default') {
+            if (this.loadedPools.find((val) => val === poolName)) {
+                console.warn('Pool', poolName, 'is already loaded');
+                setTimeout(() => {
+                    self._onComplete(poolName, customEventName);
+                }, 500);
+                return;
+            }
+            this.loadedPools.push(poolName);
+        }
         if (this.pools[poolName].length == 0) {
             setTimeout(() => {
                 self._onComplete(poolName, customEventName);
@@ -212,6 +223,10 @@ class ImageManager {
      * @memberOf ImageManager
      */
     unloadPool(poolName) {
+        const poolIndex = this.loadedPools.indexOf(poolName);
+        if (poolIndex === -1)
+            return;
+        this.loadedPools.splice(poolIndex, 1);
         const pool = this.pools[poolName];
         for (let i = 0, res, t = pool.length; i < t; ++i) {
             res = pool[i];

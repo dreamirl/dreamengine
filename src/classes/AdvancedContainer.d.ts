@@ -19,6 +19,8 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
     private _components;
     private _shakeComp?;
     private get shakeComp();
+    private _fadeComp?;
+    private get fadeComp();
     private _timerComp?;
     private get timerComp();
     protected _focusComp?: FocusComponent;
@@ -30,9 +32,14 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
     getComponent(name: string): Component | undefined;
     timeout(callback: () => void, interval?: number, persistent?: boolean, id?: number | undefined): number;
     clearTimeout(id: number): this;
-    fadeTo(value: number, duration: number, onComplete: () => void, onCompleteParams?: any, autostart?: boolean, easing?: (x: number) => number): import("./Tween").Tween;
-    fadeOut(duration: number, onComplete: () => void, onCompleteParams?: any, autostart?: boolean, easing?: (x: number) => number): import("./Tween").Tween;
-    fadeIn(duration: number, onComplete: () => void, onCompleteParams?: any, autostart?: boolean, easing?: (x: number) => number): import("./Tween").Tween;
+    clearAllTimeout(): this;
+    /**
+     * quick access to the FadeComponent
+     */
+    fade(from?: number, to?: number, duration?: number, callback?: () => void, force?: boolean): this;
+    fadeTo(to?: number, duration?: number, callback?: () => void, force?: boolean): this;
+    fadeOut(duration?: number, callback?: () => void, force?: boolean): this;
+    fadeIn(duration?: number, callback?: () => void, force?: boolean): this;
     /**
      * check the documentation on GameObject for all shake features
      * @protected

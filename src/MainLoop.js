@@ -63,7 +63,9 @@ class MainLoop {
     }
     updateLoaderImage(loader) {
         // TOTO créer un type "imageParams"
-        this.loader.addRenderer(new SpriteRenderer_1.default({ spriteName: loader[0], scale: loader[2].scale }));
+        const sprite = new SpriteRenderer_1.default({ spriteName: loader[0], scale: loader[2].scale });
+        this.loader.addRenderer(sprite);
+        this.loader.renderer.y = sprite.height / 2 + 10;
     }
     loop() {
         if (!this.launched) {
@@ -77,8 +79,8 @@ class MainLoop {
         }
         if (this.displayLoader) {
             for (let i = 0, j; (j = this.renders[i]); i++) {
-                this.loader.x = j.pixiRenderer.width * 0.5;
-                this.loader.y = j.pixiRenderer.height * 0.5;
+                this.loader.x = j.pixiRenderer.width * 0.5 / j.pixiRenderer.resolution;
+                this.loader.y = j.pixiRenderer.height * 0.5 / j.pixiRenderer.resolution;
                 this.loader.update(Time_1.default.currentTime);
                 j.directRender(this.loader);
             }

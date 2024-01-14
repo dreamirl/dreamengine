@@ -74,6 +74,9 @@ class gamepads {
         this._updateChange = (cTime) => {
             // [] fallback if there is not gamepads API
             const gamepads = this.filterGamepads(navigator.getGamepads ? navigator.getGamepads() : []);
+            while (gamepads.length < this._gamepads.length) {
+                this.disconnectGamepad(gamepads.length);
+            }
             for (let i = 0; i < gamepads.length; ++i) {
                 if (gamepads[i]) {
                     if (!this.lastTimeStamps[i] ||
@@ -83,21 +86,18 @@ class gamepads {
                             this.handleGamepad(gamepads[i], cTime, this._gamepads[i]);
                     }
                 }
-                else {
-                    this.disconnectGamepad(i);
-                }
             }
         };
         this._updateRate = (cTime) => {
             const gamepads = this.filterGamepads(navigator.getGamepads ? navigator.getGamepads() : []);
+            while (gamepads.length < this._gamepads.length) {
+                this.disconnectGamepad(gamepads.length);
+            }
             for (let i = 0; i < gamepads.length; ++i) {
                 const gamepad = gamepads[i];
                 if (gamepad) {
                     this.handleGamepad(gamepad, cTime, this._gamepads[i]);
                     continue;
-                }
-                else {
-                    this.disconnectGamepad(i);
                 }
             }
         };

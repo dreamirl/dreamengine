@@ -1,7 +1,7 @@
 export interface LocalizationObject {
     [key: string]: string | LocalizationObject;
 }
-export declare type LocalizationInitializationOptions = {
+export type LocalizationInitializationOptions = {
     /**
      * Whether to use the short language code as a fallback when the full language code is not available in the 'get' method.
      * For example, if the language is `fr_FR` and the dictionary does not contain the value for `fr_FR` but contains the value for `fr`, then the value for `fr` will be used.

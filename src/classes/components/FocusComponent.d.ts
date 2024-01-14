@@ -1,7 +1,7 @@
 import AdvancedContainer from '../AdvancedContainer';
 import Component from '../Component';
 import GameObject from '../GameObject';
-export declare type FocusOption = {
+export type FocusOption = {
     offset?: Point2D;
     x?: boolean;
     y?: boolean;

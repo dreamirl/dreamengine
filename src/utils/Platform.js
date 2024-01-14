@@ -104,6 +104,18 @@ class Platform {
     pushAnalytic(eventName, data) {
         gtag('event', eventName, data);
     }
+    setFullScreen(fullScreen) {
+        if (fullScreen === undefined) { // Means we want to toggle fullScreen
+            fullScreen = document.fullscreenElement === null;
+        }
+        if (fullScreen)
+            document.body.requestFullscreen();
+        else
+            document.exitFullscreen();
+    }
+    isFullScreen() {
+        return document.fullscreenElement !== null;
+    }
 }
 exports.Platform = Platform;
 function gtag(..._args) { }

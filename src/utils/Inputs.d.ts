@@ -6,7 +6,7 @@ import { WaitKeyCallback } from './gamepad';
  * ContributorsList
  @Inateno
  */
-declare type InputInfo = {
+type InputInfo = {
     inputs: Array<{
         code: string;
         type: string;
@@ -20,7 +20,7 @@ declare type InputInfo = {
     numberCall: number;
     numberPress: number;
 };
-declare type Queue = {
+type Queue = {
     keyDown: {
         [key: string]: Array<any>;
     };
@@ -40,7 +40,13 @@ declare type Queue = {
         [key: string]: Array<any>;
     };
 };
-export declare type InputType = 'keyboard' | 'xbox' | 'sony' | 'nintendo';
+type InputMapping = Record<string, {
+    keycodes: string[];
+    interval?: number;
+    isLongPress?: boolean;
+    stayOn?: boolean;
+}>;
+export type InputType = 'keyboard' | 'xbox' | 'sony' | 'nintendo';
 export declare class Inputs {
     DEName: string;
     _enable: boolean;
@@ -166,12 +172,8 @@ export declare class Inputs {
      * @private
      * @memberOf Inputs
      */
-    init(customInputs: Record<string, {
-        keycodes: string[];
-        interval?: number;
-        isLongPress?: boolean;
-        stayOn?: boolean;
-    }>): void;
+    init(customInputs: InputMapping): void;
+    registerInputs(customInputs: InputMapping): void;
     /**
      * return the input data
      * @public

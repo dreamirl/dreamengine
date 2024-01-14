@@ -16,7 +16,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChainedTween = exports.Tween = exports.tweens = void 0;
 exports.tweens = [];
 class Tween {
-    constructor(object, property, targetValue, tweenDuration, autostart = true, easing = noEase) {
+    constructor(object, property, targetValue, tweenDuration, autostart = true, easing = noEase, autoHandled = true) {
         this.object = object;
         const properties = property.split('.');
         this.property = properties[properties.length - 1];
@@ -32,7 +32,8 @@ class Tween {
         this.currentFrame = 0;
         this.tweenDuration = tweenDuration;
         this.easing = easing;
-        exports.tweens.push(this);
+        if (autoHandled)
+            exports.tweens.push(this);
     }
     setOnUpdate(callback, parameters) {
         this.onUpdate = callback;
@@ -57,6 +58,8 @@ class Tween {
         if (!this.active) {
             return false;
         }
+        if (this.object.destroyed)
+            return true;
         if (this.currentFrame == 0) {
             this.initIterations();
         }
@@ -230,10 +233,7 @@ function update(deltaTime) {
     for (let i = 0; i < exports.tweens.length; ++i) {
         const tween = exports.tweens[i];
         if (tween.update(deltaTime)) {
-            const index = exports.tweens.indexOf(tween);
-            if (index != -1) {
-                exports.tweens.splice(index, 1);
-            }
+            exports.tweens.splice(i, 1);
             i--;
         }
     }

@@ -21,7 +21,7 @@ class Save {
         this.DEName = 'Save';
         this.saveModel = {};
         this.namespace = 'My-Dreamengine-Game';
-        this.version = null;
+        this.version = '0.0.0';
         this.useLocalStorage = true;
     }
     /**
@@ -40,15 +40,22 @@ class Save {
             this.namespace = about_1.default.namespace;
         this.version = about_1.default.gameVersion;
         if (ignoreVersion) {
-            this.version = window.localStorage.getItem(this.namespace);
+            const storageVersion = window.localStorage.getItem(this.namespace);
+            if (storageVersion !== null)
+                this.version = storageVersion;
         }
-        this.saveModel = saveModel;
         // load save from storage
-        for (const i in this.saveModel) {
+        for (const i in saveModel) {
             this.saveModel[i] = this.get(i);
         }
         Events_1.default.on('unload-game', () => this.saveAll());
         this.loadSave(this.saveModel, true);
+    }
+    removeSave(key) {
+        if (this.exists(key)) {
+            window.localStorage.removeItem(this.namespace + this.version + key);
+            delete this.saveModel[key];
+        }
     }
     updateSave() {
         if (!this.useLocalStorage) {
@@ -59,7 +66,6 @@ class Save {
             window.localStorage.removeItem(this.namespace + this.version + i);
         }
         // setup the last version of the game, and rewrite datas
-        this.version = about_1.default.gameVersion;
         window.localStorage.setItem(this.namespace, this.version);
         for (const i in this.saveModel) {
             if (typeof this.saveModel[i] === 'string')
@@ -97,8 +103,12 @@ class Save {
     get(key) {
         if (!(key in this.saveModel)) {
             const load = window.localStorage.getItem(this.namespace + this.version + key);
-            if (load != undefined)
+            try {
                 this.saveModel[key] = JSON.parse(load);
+            }
+            catch (e) {
+                this.saveModel[key] = undefined;
+            }
         }
         return this.saveModel[key];
     }
@@ -109,7 +119,7 @@ class Save {
      */
     exists(key) {
         const value = this.get(key);
-        return !(value === 'undefined' || value === undefined);
+        return !(value === 'undefined' || value === undefined || value === null);
     }
     /**
      * save the value with the given key

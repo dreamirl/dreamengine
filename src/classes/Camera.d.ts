@@ -6,7 +6,7 @@ import AdvancedContainer from './AdvancedContainer';
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
  */
-declare type CameraParams = {
+type CameraParams = {
     interactive?: boolean;
     name?: string;
     backgroundImage?: string;

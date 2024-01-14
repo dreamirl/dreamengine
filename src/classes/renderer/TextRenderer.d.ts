@@ -1,8 +1,8 @@
+import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 import * as PIXI from 'pixi.js';
 import '../renderer/ContainerExtensions';
-import RendererInterface from './RendererInterface';
 import { ContainerExtensions } from '../renderer/ContainerExtensions';
-import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
+import RendererInterface from './RendererInterface';
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
  */
@@ -30,6 +30,7 @@ export default class TextRenderer extends PIXI.Text implements RendererInterface
     maxWidth?: number;
     localizationKey?: string;
     constructor(text: string, params?: {
+        anchor?: Point2D;
         scale?: number | Point2D;
         scaleX?: number;
         scaleY?: number;
@@ -38,7 +39,7 @@ export default class TextRenderer extends PIXI.Text implements RendererInterface
         resolution?: number;
         localizationKey?: string;
         textStyle?: Partial<PIXI.TextStyle>;
-    } & Partial<Omit<PIXI.Text, 'scale'>> & Partial<RendererInterface>);
+    } & Partial<Omit<PIXI.Text, 'scale' | 'anchor'>> & Partial<RendererInterface>);
     checkMaxWidth(): void;
     getWidth(): number;
     getHeight(): number;

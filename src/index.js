@@ -32,10 +32,9 @@ const about_1 = __importDefault(require("./about"));
 const config_1 = __importDefault(require("./config"));
 const MainLoop_1 = __importDefault(require("./MainLoop"));
 // Utils
-const Events_1 = __importDefault(require("./utils/Events"));
-const Time_1 = __importDefault(require("./utils/Time"));
 const Achievements_1 = __importDefault(require("./utils/Achievements"));
 const Audio_1 = __importDefault(require("./utils/Audio"));
+const Events_1 = __importDefault(require("./utils/Events"));
 const gamepad_1 = __importDefault(require("./utils/gamepad"));
 const ImageManager_1 = __importDefault(require("./utils/ImageManager"));
 const Inputs_1 = __importDefault(require("./utils/Inputs"));
@@ -43,6 +42,7 @@ const Localization_1 = __importDefault(require("./utils/Localization"));
 const Notifications_1 = __importDefault(require("./utils/Notifications"));
 const Platform_1 = __importDefault(require("./utils/Platform"));
 const Save_1 = __importDefault(require("./utils/Save"));
+const Time_1 = __importDefault(require("./utils/Time"));
 const Camera_1 = __importDefault(require("./classes/Camera"));
 const Gui_1 = __importDefault(require("./classes/Gui"));
 const Render_1 = __importDefault(require("./classes/Render"));
@@ -132,6 +132,9 @@ const onLoad = () => {
 const on = (eventName, listener) => {
     Events_1.default.on(eventName, listener);
 };
+const removeListener = (eventName, listener) => {
+    Events_1.default.removeListener(eventName, listener);
+};
 const emit = (eventName, ...params) => {
     Events_1.default.emit(eventName, ...params);
 };
@@ -197,12 +200,12 @@ const init = (params) => {
                 0: 'loader',
                 1: params.loader.url || 'loader.png',
                 2: {
-                    totalFrame: params.loader.totalFrame || 16,
-                    interval: params.loader.interval || 45,
+                    totalFrame: params.loader.totalFrame || 1,
+                    interval: params.loader.interval || 0,
                     animated: params.loader.animated !== undefined
                         ? params.loader.animated
-                        : true,
-                    scale: params.loader.scale || 1,
+                        : false,
+                    scale: params.loader.scale || 0.15,
                 },
             };
             Events_1.default.once('ImageManager-loader-loaded', () => {
@@ -260,6 +263,7 @@ exports.default = {
     trigger,
     emit,
     on,
+    removeListener,
     onLoad,
     unPause,
     pause,
