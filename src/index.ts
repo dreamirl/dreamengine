@@ -34,6 +34,7 @@ import SpriteRenderer from './classes/renderer/SpriteRenderer';
 import TextRenderer from './classes/renderer/TextRenderer';
 import TextureRenderer from './classes/renderer/TextureRenderer';
 import TilingRenderer from './classes/renderer/TilingRenderer';
+import VideoRenderer from './classes/renderer/VideoRenderer';
 
 // Custom classes
 import Component from './classes/Component';
@@ -277,6 +278,7 @@ export default {
   GraphicRenderer,
   NineSliceRenderer,
   AnimatedTextureRenderer,
+  VideoRenderer,
 
   // Utils
   config,
