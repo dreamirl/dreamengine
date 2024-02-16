@@ -7,19 +7,16 @@ import Audio from '../../utils/Audio';
 
 
 export default class VideoRenderer extends PIXI.Sprite implements ContainerExtensions, RendererInterface{
-    video: PIXI.Sprite;
     videoResource: PIXI.VideoResource;
 
     constructor(params = {}, videoPath: string, width = 1920, height = 1080, loop = false){
-        super();
-        this.instantiate(params);
         const introVideo = PIXI.Texture.from(videoPath);
+        super(introVideo);
+        this.instantiate(params);
         this.videoResource = introVideo.baseTexture.resource as PIXI.VideoResource;
         this.videoResource.source.loop = loop;
-
-        this.video = new PIXI.Sprite(introVideo);
-        this.video.width = width;
-        this.video.height = height;
+        this.width = width;
+        this.height = height;
         this.videoResource.source.currentTime = 0;
         this.videoResource.source.play();
     }
@@ -36,7 +33,9 @@ export default class VideoRenderer extends PIXI.Sprite implements ContainerExten
         return this.videoResource.destroyed;
     }
 
-    
+    pause(){
+        this.videoResource.source.pause();
+    }
 
     hueFilter?: ColorMatrixFilter | undefined;
     blackAndWhiteFilter?: ColorMatrixFilter | undefined;
