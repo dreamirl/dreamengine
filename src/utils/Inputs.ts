@@ -77,9 +77,14 @@ export class Inputs {
   _keyLocked = false;
   _keyLockNamesExceptions: string[] = [];
   _lastEventType: InputType = 'keyboard';
+  _lastGamepadType: InputType = 'xbox';
 
   get usedControllerType(){
     return this._lastEventType;
+  }
+
+  get usedGamepadType(){
+    return this._lastGamepadType;
   }
 
   public dbInputs = {
@@ -473,6 +478,9 @@ export class Inputs {
   setLastEventType(type: InputType){
     if(type === this._lastEventType) return;
     this._lastEventType = type;
+    if(type !== 'keyboard'){
+      this._lastGamepadType = type;
+    }
     Events.emit('Input-Type-Changed', type);
   }
 
