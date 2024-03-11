@@ -211,13 +211,15 @@ class GameObject extends AdvancedContainer {
       });
     }
 
-    Events.on('change-debug', (debug, _level) => {
-      if (debug) {
-        this._createDebugRenderer();
-      } else {
-        this._destroyDebugRenderer();
-      }
-    });
+    Events.on('change-debug', this.OnDebugChange);
+  }
+
+  private OnDebugChange = (debug: boolean, _level: number) => {
+    if (debug) {
+      this._createDebugRenderer();
+    } else {
+      this._destroyDebugRenderer();
+    }
   }
 
   public get automatisms() {
@@ -832,6 +834,11 @@ class GameObject extends AdvancedContainer {
     }
 
     this._lastLocalID = this.position.scope._localID;
+  }
+
+  override destroy(options?: boolean | PIXI.IDestroyOptions | undefined): void {
+    Events.removeListener('change-debug', this.OnDebugChange);
+    super.destroy(options);
   }
 }
 
