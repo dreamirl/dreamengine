@@ -242,7 +242,9 @@ export class Audio {
       if (!preserve.includes(soundName)) {
         const sound = this.get(soundName);
         if(sound && sound.howl.playing()){
-          sound.howl.fade(sound.howl.volume(), 0, duration);
+          let vol = sound.howl.volume();
+          if(Number.isNaN(vol)) vol = 0;
+          sound.howl.fade(vol, 0, duration);
           if(cb) sound.howl.once('fade', () => cb(sound.howl));
         }
       }
