@@ -131,12 +131,17 @@ export class Achievements<T extends Achievement> {
       );
     }
 
+    this.userAchievements = userAchievements || Save.loadAchievements();
+
     this.achievements = [];
     for (let i = 0, a; (a = list[i]); ++i) {
       this.achievements.push(a);
-    }
 
-    this.userAchievements = userAchievements || Save.loadAchievements();
+      this.achievements[i]
+      if(!this.userAchievements[a.namespace]){
+        this.userAchievements[a.namespace] = {objectives: {}};
+      }
+    }
 
     Events.on('games-datas', (objectiveName: string, value: string | number) =>
       this.checkEvent(objectiveName, value),
@@ -151,7 +156,8 @@ export class Achievements<T extends Achievement> {
    * @param value - The value of the objective or the value to increment by (if the objective is an increment).
    * @example DE.emit( "games-datas", "objective-name", myValue );
    */
-  public checkEvent(eventName: string, value: string | number) {
+  public checkEvent(eventName: string, value: string | number) 
+  {
     for (
       let i = 0, achievement, userAchievement: UserAchievement;
       (achievement = this.achievements[i]);
@@ -181,7 +187,8 @@ export class Achievements<T extends Achievement> {
    * @param namespace - Achievement namespace
    * @example if ( DE.Achievements.isUnlock( "commander" ) )
    */
-  public isUnlock(namespace: string): boolean {
+  public isUnlock(namespace: string): boolean 
+  {
     for (const achievement of this.achievements) {
       if (achievement.namespace == namespace)
         return this.userAchievements[namespace]?.complete || false;
@@ -211,13 +218,6 @@ export class Achievements<T extends Achievement> {
       return;
     }
 
-    if (
-      !this.userAchievements[achievement.namespace] ||
-      !this.userAchievements[achievement.namespace].objectives
-    ) {
-      this.userAchievements[achievement.namespace] = { objectives: {} };
-    }
-
     const userAchievement = this.userAchievements[achievement.namespace];
 
     switch (objective.type) {
@@ -244,10 +244,12 @@ export class Achievements<T extends Achievement> {
         break;
     }
 
+    Events.emit('set-achievement-progress', targetKey , userAchievement.objectives[targetKey].value)
     this.checkUnlock(achievement);
   }
 
-  private checkUnlock(achievement: Achievement) {
+  private checkUnlock(achievement: Achievement) 
+  {
     const userAchievementObjectives =
       this.userAchievements[achievement.namespace].objectives;
     const objectives = achievement.objectives;
@@ -334,6 +336,7 @@ export class Achievements<T extends Achievement> {
     Notifications.create(txt, config.notifications.achievementUnlockDuration);
     Audio.play('achievement-unlocked');
     Events.emit('achievement-unlocked', achievement.namespace);
+    Events.emit('store-achievement-progress');
   }
 }
 
