@@ -4,6 +4,7 @@ export default interface RendererInterface {
     preventCenter?: boolean;
     anchor?: PIXI.ObservablePoint | Point2D;
     tint: number;
+    texture: any;
     setTint(value: number): void;
     setHue(rotation: number, multiply: boolean): void;
     setBlackAndWhite(multiply: boolean): void;

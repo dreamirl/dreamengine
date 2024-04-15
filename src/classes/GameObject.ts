@@ -372,6 +372,14 @@ class GameObject extends AdvancedContainer {
     return this;
   }
 
+  getRendererWidth(){
+    return this.renderer?.texture.width
+  }
+
+  getRendererHeight(){
+    return this.renderer?.texture.height
+  }
+
   addRenderer(...rds: (PIXI.Container & RendererInterface)[]) {
     rds.forEach((r) => this.addOneRenderer(r));
     return this;
