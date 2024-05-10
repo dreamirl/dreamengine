@@ -568,8 +568,8 @@ class GameObject extends AdvancedContainer {
     //   this.children = [];
     // }
 
-    for (let i = 0, obj; i < this.gameObjects.length; ++i) {
-      obj = this.remove(this.gameObjects[i]);
+    while (this.gameObjects.length > 0) {
+      let obj = this.remove(this.gameObjects[0]);
       obj.killMePlease();
     }
 
