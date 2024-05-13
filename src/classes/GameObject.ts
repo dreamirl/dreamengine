@@ -145,7 +145,6 @@ class GameObject extends AdvancedContainer {
   ) {
     super();
 
-
     this.sortableChildren =
       params.sortableChildren ?? config.DEFAULT_SORTABLE_CHILDREN;
 
@@ -160,7 +159,11 @@ class GameObject extends AdvancedContainer {
     this.vector2 = new Vector2(this.x, this.y, this);
 
     if (params.scale) {
-      if ((params.scale as Point2D).x) this.scale.set((params.scale as Point2D).x, (params.scale as Point2D).y);
+      if ((params.scale as Point2D).x)
+        this.scale.set(
+          (params.scale as Point2D).x,
+          (params.scale as Point2D).y,
+        );
       else this.scale.set(params.scale as number);
       delete params.scale;
     }
@@ -220,7 +223,7 @@ class GameObject extends AdvancedContainer {
     } else {
       this._destroyDebugRenderer();
     }
-  }
+  };
 
   public get automatisms() {
     return this._automatisms;
@@ -372,16 +375,39 @@ class GameObject extends AdvancedContainer {
     return this;
   }
 
-  getRendererWidth(){
-    return this.renderer?.texture.width
+  /**
+   * remove a renderer from the gameObject
+   * this remove the renderer in the distinct array AND remove the render from PIXI child.
+   * @public
+   * memberOf GameObject
+   * param {PIXI.DisplayObject} rd - the renderer to remove
+   */
+  removeOneRenderer(rd: PIXI.Container & RendererInterface) {
+    this.renderers.splice(this.renderers.indexOf(rd), 1);
+    this.removeChild(rd);
+
+    if (this.renderers.length === 0) {
+      this.renderer = undefined;
+    }
+
+    return this;
   }
 
-  getRendererHeight(){
-    return this.renderer?.texture.height
+  getRendererWidth() {
+    return this.renderer?.texture.width;
+  }
+
+  getRendererHeight() {
+    return this.renderer?.texture.height;
   }
 
   addRenderer(...rds: (PIXI.Container & RendererInterface)[]) {
     rds.forEach((r) => this.addOneRenderer(r));
+    return this;
+  }
+
+  removeRenderer(...rds: (PIXI.Container & RendererInterface)[]) {
+    rds.forEach((r) => this.removeOneRenderer(r));
     return this;
   }
 
@@ -826,8 +852,8 @@ class GameObject extends AdvancedContainer {
     // this apply update on each renderer
     if (this.visible) {
       for (let i = 0, r; (r = this.renderers[i]); ++i) {
-          if ((r as AnimatedTextureRenderer|SpriteRenderer).update) {
-          (r as AnimatedTextureRenderer|SpriteRenderer).update();
+        if ((r as AnimatedTextureRenderer | SpriteRenderer).update) {
+          (r as AnimatedTextureRenderer | SpriteRenderer).update();
         }
       }
     }
