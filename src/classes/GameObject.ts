@@ -604,6 +604,11 @@ class GameObject extends AdvancedContainer {
       // baseTexture: this.destroyTextureOnKill, //TODO: ZARNA | A review Antoine : this.destroyTextureOnKill n'existe pas ?
       // texture: this.destroyTextureOnKill, //TODO: ZARNA | A review Antoine : this.destroyTextureOnKill n'existe pas ?
     });
+
+    this.removeRenderer(...this.renderers);
+    this.parent = undefined;
+    this.vector2.gameObject = undefined;
+    this.vector2 = undefined;
   }
 
   /**
