@@ -21,9 +21,23 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
   preventCenter?: boolean | undefined;
   tint?: number | undefined;
   _originalTexture?: PIXI.Texture<PIXI.Resource> | undefined;
-
-
+  
   private _components: Component[] = [];
+
+  override destroy(params: any) {
+
+    while (this._components.length > 0) {
+      let comp = this._components[0];
+      this.removeComponent(comp);
+      comp.destroy();
+    }
+    this._shakeComp = undefined;
+    this._fadeComp = undefined;
+    this._timerComp = undefined;
+    this._focusComp = undefined;
+
+    super.destroy(params);
+  }
 
   private _shakeComp?: ShakeComponent = undefined;
   private get shakeComp() {
@@ -77,7 +91,11 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
   }
 
   removeComponent(componentReference: Component) {
-    this._components.splice(this._components.indexOf(componentReference), 1);
+    const index = this._components.indexOf(componentReference);
+
+    if (index !== -1) {
+      this._components.splice(index, 1);
+    }
     return this;
   }
 
