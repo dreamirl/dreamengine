@@ -7,6 +7,14 @@ export default class Component {
 
   constructor(public readonly parent: AdvancedContainer) {}
 
+  public destroy() {
+    if (this.parent) {
+      this.parent.removeComponent(this);
+    }
+    this._onDestroy();
+    this._emitter.removeAllListeners();
+  }
+
   _update(time: number) {
     if (this.enable === false) {
       return;
