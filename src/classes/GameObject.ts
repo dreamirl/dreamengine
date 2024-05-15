@@ -583,6 +583,8 @@ class GameObject extends AdvancedContainer {
       return;
     }
 
+    Events.removeListener('change-debug', this.OnDebugChange);
+
     this.enable = false;
     this.flag = 'deleted';
 
@@ -887,11 +889,6 @@ class GameObject extends AdvancedContainer {
     }
 
     this._lastLocalID = this.position.scope._localID;
-  }
-
-  override destroy(options?: boolean | PIXI.IDestroyOptions | undefined): void {
-    Events.removeListener('change-debug', this.OnDebugChange);
-    super.destroy(options);
   }
 }
 
