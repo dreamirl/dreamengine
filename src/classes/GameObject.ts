@@ -73,6 +73,7 @@ class GameObject extends AdvancedContainer {
    * @type {String}
    */
   override readonly name: string = '';
+  private debugName: string;
 
   /**
    * @public
@@ -597,19 +598,12 @@ class GameObject extends AdvancedContainer {
       obj.killMePlease();
     }
 
-    this.destroy({
-      children: true,
-      // baseTexture: this.destroyTextureOnKill, //TODO: ZARNA | A review Antoine : this.destroyTextureOnKill n'existe pas ?
-      // texture: this.destroyTextureOnKill, //TODO: ZARNA | A review Antoine : this.destroyTextureOnKill n'existe pas ?
-    });
-
     if (!this._killArgs.preventEvents && !this._killArgs.preventKilledEvent) {
       if (this.onKilled) this.onKilled();
+
       this.emit('killed', this);
     }
 
-    this.removeRenderer(...this.renderers);
-    this.parent = undefined;
     if (this.vector2) {
       this.vector2.gameObject = undefined;
     }
@@ -620,6 +614,15 @@ class GameObject extends AdvancedContainer {
     this.removeAllListeners();
     this.worldScale = undefined;
     delete this._killArgs;
+
+    this.destroy({
+      children: true,
+      // baseTexture: this.destroyTextureOnKill, //TODO: ZARNA | A review Antoine : this.destroyTextureOnKill n'existe pas ?
+      // texture: this.destroyTextureOnKill, //TODO: ZARNA | A review Antoine : this.destroyTextureOnKill n'existe pas ?
+    });
+
+    this.removeRenderer(...this.renderers);
+    this.parent = undefined;
   }
 
   /**
