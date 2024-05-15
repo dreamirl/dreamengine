@@ -19,6 +19,7 @@ export default class ShakeComponent extends Component {
   };
   private _selfDestruct = false;
   protected override _name = 'ShakeComponent';
+  protected override _parent: AdvancedContainer;
 
   constructor(
     parent: AdvancedContainer,
@@ -34,6 +35,7 @@ export default class ShakeComponent extends Component {
       this._selfDestruct = selfDestruct;
       this.shake(xRange, yRange, duration, callback);
     }
+    this._parent = parent;
   }
 
   /**
@@ -74,8 +76,8 @@ export default class ShakeComponent extends Component {
 
     const shake = this._shakeData;
     // restore previous shake
-    this.parent.x -= shake.prevX;
-    this.parent.y -= shake.prevY;
+    this._parent.x -= shake.prevX;
+    this._parent.y -= shake.prevY;
     shake.duration -= time;
     // old way - Date.now() - this._shakeData.startedAt > this._shakeData.duration )
     if (shake.duration <= 0) {
@@ -83,7 +85,7 @@ export default class ShakeComponent extends Component {
       shake.prevX = 0;
       shake.prevY = 0;
 
-      this.parent.emit('shakeEnd');
+      this._parent.emit('shakeEnd');
 
       shake.callback();
       if (this._selfDestruct) {
@@ -97,7 +99,7 @@ export default class ShakeComponent extends Component {
     shake.prevY =
       (-(Math.random() * shake.yRange) + Math.random() * shake.yRange) >> 0;
 
-    this.parent.x += shake.prevX;
-    this.parent.y += shake.prevY;
+    this._parent.x += shake.prevX;
+    this._parent.y += shake.prevY;
   }
 }

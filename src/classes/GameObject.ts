@@ -4,9 +4,9 @@ import Events from '../utils/Events';
 import Time from '../utils/Time';
 import AdvancedContainer from './AdvancedContainer';
 import Vector2 from './Vector2';
+import AnimatedTextureRenderer from './renderer/AnimatedTextureRenderer';
 import GraphicRenderer from './renderer/GraphicRenderer';
 import RendererInterface from './renderer/RendererInterface';
-import AnimatedTextureRenderer from './renderer/AnimatedTextureRenderer';
 import SpriteRenderer from './renderer/SpriteRenderer';
 
 /**
@@ -144,7 +144,6 @@ class GameObject extends AdvancedContainer {
     } = {},
   ) {
     super();
-
     this.sortableChildren =
       params.sortableChildren ?? config.DEFAULT_SORTABLE_CHILDREN;
 
@@ -579,13 +578,12 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    */
   killMePlease() {
-    if (!this._killArgs.preventEvents && !this._killArgs.preventKilledEvent) {
-      if (this.onKilled) this.onKilled();
-      this.emit('killed', this);
+    if (this.flag === 'deleted') {
+      return;
     }
 
     this.enable = false;
-    this.flag = '';
+    this.flag = 'deleted';
 
     //TODO: ZARNA | A review Antoine : certain que c'est toujours utile/le cas ?
     // check if object isn't already destroyed and there is children inside 'cause PIXI don't do it
@@ -605,10 +603,23 @@ class GameObject extends AdvancedContainer {
       // texture: this.destroyTextureOnKill, //TODO: ZARNA | A review Antoine : this.destroyTextureOnKill n'existe pas ?
     });
 
+    if (!this._killArgs.preventEvents && !this._killArgs.preventKilledEvent) {
+      if (this.onKilled) this.onKilled();
+      this.emit('killed', this);
+    }
+
     this.removeRenderer(...this.renderers);
     this.parent = undefined;
-    this.vector2.gameObject = undefined;
+    if (this.vector2) {
+      this.vector2.gameObject = undefined;
+    }
     this.vector2 = undefined;
+    delete this.extra;
+    this._debugRenderer = undefined;
+    this.removeAutomatisms();
+    this.removeAllListeners();
+    this.worldScale = undefined;
+    delete this._killArgs;
   }
 
   /**

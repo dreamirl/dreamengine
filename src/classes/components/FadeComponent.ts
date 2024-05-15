@@ -5,6 +5,7 @@ export default class FadeComponent extends Component {
   private _fadeData: any;
   private selfDestruct;
   protected override _name = 'FadeComponent';
+  protected override _parent: AdvancedContainer;
 
   constructor(
     parent: AdvancedContainer,
@@ -21,6 +22,8 @@ export default class FadeComponent extends Component {
       this.fade(from, to, duration, force, callback);
       this.selfDestruct = selfDestruct;
     }
+
+    this._parent = parent;
   }
 
   fade(
@@ -51,25 +54,25 @@ export default class FadeComponent extends Component {
   }
 
   fadeTo(to: number, duration: number, force: boolean, callback = () => {}) {
-    this.fade(this.parent.alpha, to, duration, force, callback);
+    this.fade(this._parent.alpha, to, duration, force, callback);
   }
 
   fadeOut(duration: number, force: boolean, callback = () => {}) {
     if (force) {
       this.enable = true;
-      this.parent.alpha = this.parent.alpha > 0 ? this.parent.alpha : 1; // make sure to prevent any blink side effect
+      this._parent.alpha = this._parent.alpha > 0 ? this._parent.alpha : 1; // make sure to prevent any blink side effect
     }
 
-    this.fade(this.parent.alpha, 0, duration, force, callback);
+    this.fade(this._parent.alpha, 0, duration, force, callback);
   }
 
   fadeIn(duration: number, force: boolean, callback = () => {}) {
     if (force) {
       this.enable = true;
-      this.parent.alpha = this.parent.alpha < 1 ? this.parent.alpha : 0; // make sure to prevent any blink side effect
+      this._parent.alpha = this._parent.alpha < 1 ? this._parent.alpha : 0; // make sure to prevent any blink side effect
     }
 
-    this.fade(this.parent.alpha, 1, duration, force, callback);
+    this.fade(this._parent.alpha, 1, duration, force, callback);
   }
 
   override update(time: number) {
@@ -78,22 +81,22 @@ export default class FadeComponent extends Component {
         (time / this._fadeData.oDuration) *
         this._fadeData.dir *
         this._fadeData.fadeScale;
-      this.parent.alpha += this._fadeData.stepVal;
+      this._parent.alpha += this._fadeData.stepVal;
       this._fadeData.duration -= time;
 
       if (
-        (this._fadeData.dir < 0 && this.parent.alpha <= this._fadeData.to) ||
-        (this._fadeData.dir > 0 && this.parent.alpha >= this._fadeData.to) ||
-        this.parent.alpha < 0 ||
-        this.parent.alpha > 1
+        (this._fadeData.dir < 0 && this._parent.alpha <= this._fadeData.to) ||
+        (this._fadeData.dir > 0 && this._parent.alpha >= this._fadeData.to) ||
+        this._parent.alpha < 0 ||
+        this._parent.alpha > 1
       ) {
-        this.parent.alpha = this._fadeData.to;
+        this._parent.alpha = this._fadeData.to;
       }
 
       if (this._fadeData.duration <= 0) {
         this._fadeData.done = true;
 
-        this.parent.emit('fadeEnd', this);
+        this._parent.emit('fadeEnd', this);
 
         this._fadeData.callback();
         if (this.selfDestruct) this.destroy();

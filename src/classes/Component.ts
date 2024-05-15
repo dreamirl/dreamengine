@@ -1,16 +1,23 @@
-import AdvancedContainer from './AdvancedContainer';
 import * as PIXI from 'pixi.js';
+import AdvancedContainer from './AdvancedContainer';
 
 export default class Component {
   private _enable = true;
   protected _name = 'Component';
+  protected _parent: AdvancedContainer | undefined;
 
-  constructor(public readonly parent: AdvancedContainer) {}
+  constructor(parent: AdvancedContainer) {
+    this._parent = parent;
+  }
 
-  public destroy() {
-    if (this.parent) {
-      this.parent.removeComponent(this);
+  public destroy(removeFromParent: boolean = true) {
+    this.enable = false;
+
+    if (removeFromParent && this._parent && this._parent.removeComponent) {
+      this._parent.removeComponent(this);
     }
+
+    this._parent = undefined;
     this._onDestroy();
     this._emitter.removeAllListeners();
   }
@@ -36,11 +43,6 @@ export default class Component {
     this._enable = bool;
     if (bool) this.onEnable();
     else this.onDisable();
-  }
-
-  public destroy() {
-    this.parent.removeComponent(this);
-    this._onDestroy();
   }
 
   protected _onEnable = () => {};

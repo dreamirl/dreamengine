@@ -1,13 +1,13 @@
+import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 import * as PIXI from 'pixi.js';
 import Component from './Component';
 import GameObject from './GameObject';
 import Tween from './Tween';
+import FadeComponent from './components/FadeComponent';
 import FocusComponent, { FocusOption } from './components/FocusComponent';
 import ShakeComponent from './components/ShakeComponent';
 import TimerComponent from './components/TimerComponent';
 import { ContainerExtensions, center, setBlackAndWhite, setBrightness, setContrast, setGreyscale, setHue, setSaturation, setScale, setSize, setTint } from './renderer/ContainerExtensions';
-import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
-import FadeComponent from './components/FadeComponent';
 
 export default class AdvancedContainer extends PIXI.Container implements ContainerExtensions {
   hueFilter?: ColorMatrixFilter | undefined;
@@ -28,8 +28,7 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
 
     while (this._components.length > 0) {
       let comp = this._components[0];
-      this.removeComponent(comp);
-      comp.destroy();
+      this.removeComponent(comp, true);
     }
     this._shakeComp = undefined;
     this._fadeComp = undefined;
@@ -90,12 +89,17 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
     return this;
   }
 
-  removeComponent(componentReference: Component) {
+  removeComponent(componentReference: Component, destroy: boolean = true) {
     const index = this._components.indexOf(componentReference);
 
+    if (destroy) {
+      componentReference.destroy(false);
+    }
+    
     if (index !== -1) {
       this._components.splice(index, 1);
     }
+
     return this;
   }
 

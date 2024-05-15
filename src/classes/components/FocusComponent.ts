@@ -16,11 +16,14 @@ export default class FocusComponent extends Component {
   private _focusOffsets: Point2D = { x: 0, y: 0 };
   protected override _name = 'FocusComponent';
   private isMyTargetAChild = false;
+  protected override _parent: AdvancedContainer;
 
   constructor(parent: AdvancedContainer, target?: GameObject) {
     super(parent);
 
     this.target = target!;
+
+    this._parent = parent;
   }
 
   override update(_time: number) {
@@ -34,26 +37,26 @@ export default class FocusComponent extends Component {
     }
 
     // TODO: to fix (to finish)
-    // let parentPos = this.parent.getGlobalPosition();
-    // if (this.parent.getWorldPos) {
-    //   parentPos = this.parent.getWorldPos();
+    // let parentPos = this._parent.getGlobalPosition();
+    // if (this._parent.getWorldPos) {
+    //   parentPos = this._parent.getWorldPos();
     // } else {
-    //   parentPos = this.parent;
+    //   parentPos = this._parent;
     // }
     if (this._focusOptions.x) {
       if (this.isMyTargetAChild) {
-        this.parent.x =
-          2 * this.parent.pivot.x - (pos.x + this._focusOffsets.x);
-      } else this.parent.x = pos.x + this._focusOffsets.x;
+        this._parent.x =
+          2 * this._parent.pivot.x - (pos.x + this._focusOffsets.x);
+      } else this._parent.x = pos.x + this._focusOffsets.x;
     }
     if (this._focusOptions.y) {
       if (this.isMyTargetAChild) {
-        this.parent.y =
-          2 * this.parent.pivot.y - (pos.y + this._focusOffsets.y);
-      } else this.parent.y = pos.y + this._focusOffsets.y;
+        this._parent.y =
+          2 * this._parent.pivot.y - (pos.y + this._focusOffsets.y);
+      } else this._parent.y = pos.y + this._focusOffsets.y;
     }
     if (this._focusOptions.rotation) {
-      this.parent.rotation = this.target.rotation;
+      this._parent.rotation = this.target.rotation;
     }
   }
 
@@ -75,7 +78,7 @@ export default class FocusComponent extends Component {
     let parentChecker: Container | undefined = target.parent;
     while (parentChecker != undefined) {
       console.log('nb Check');
-      if (parentChecker === this.parent) {
+      if (parentChecker === this._parent) {
         this.isMyTargetAChild = true;
         parentChecker = undefined;
       } else {
