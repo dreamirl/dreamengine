@@ -180,7 +180,9 @@ class Render extends EventEmitter {
     }
 
     for (let i = 0, c = this.mainContainer.updatables.length; i < c; ++i) {
+      //@ts-ignore offer the possibility to create this function to prevent usage of events to prevent memory leak
       if (this.mainContainer.updatables[i].OnDebugChange) {
+        //@ts-ignore
         this.mainContainer.updatables[i].OnDebugChange(debug, _level);
       }
     }

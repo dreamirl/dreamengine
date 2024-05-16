@@ -72,7 +72,6 @@ class GameObject extends AdvancedContainer {
    * @type {String}
    */
   override readonly name: string = '';
-  private debugName: string;
 
   /**
    * @public
@@ -388,6 +387,7 @@ class GameObject extends AdvancedContainer {
     this.removeChild(rd);
 
     if (this.renderers.length === 0) {
+      //@ts-ignore force memory clear
       this.renderer = undefined;
     }
 
@@ -608,12 +608,16 @@ class GameObject extends AdvancedContainer {
     if (this.vector2) {
       this.vector2.gameObject = undefined;
     }
+    //@ts-ignore force memory clear
     this.vector2 = undefined;
+    //@ts-ignore force memory clear
     delete this.extra;
     this._debugRenderer = undefined;
     this.removeAutomatisms();
     this.removeAllListeners();
+    //@ts-ignore force memory clear
     this.worldScale = undefined;
+    //@ts-ignore force memory clear
     delete this._killArgs;
 
     this.destroy({
@@ -623,6 +627,7 @@ class GameObject extends AdvancedContainer {
     });
 
     this.removeRenderer(...this.renderers);
+    //@ts-ignore force memory clear
     this.parent = undefined;
   }
 
