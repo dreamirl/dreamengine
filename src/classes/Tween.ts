@@ -27,6 +27,7 @@ export class Tween {
   onComplete?: (params?: any) => void;
   onCompleteParams?: any;
   easing: (x: number) => number;
+  finished = false;
 
   constructor(
     object: any,
@@ -72,6 +73,12 @@ export class Tween {
 
   start() {
     this.active = true;
+    this.finished = false;
+  }
+
+  stop() {
+    this.finished = true;
+    this.active = false;
   }
 
   initIterations() {
@@ -82,10 +89,10 @@ export class Tween {
   }
 
   update(deltaTime: number) {
+    if (this.finished || this.object?.destroyed) return true;
     if (!this.active) {
       return false;
     }
-    if(this.object.destroyed) return true;
     if (this.currentFrame == 0) {
       this.initIterations();
     }
@@ -105,20 +112,24 @@ export class Tween {
     } else {
       this.object[this.property] = this.startValue + this.targetValue;
       this.active = false;
+      this.finished = true;
       if (this.onComplete != undefined) {
         this.onComplete(this.onCompleteParams);
       }
-      delete this.object;
-      delete this.onUpdate;
-      delete this.onUpdateParams;
-      delete this.onComplete;
-      delete this.onCompleteParams;
-      //@ts-ignore force memory clear
-      delete this.startValue;
-      //@ts-ignore force memory clear
-      delete this.targetValue;
       return true;
     }
+  }
+
+  destroy() {
+    delete this.object;
+    delete this.onUpdate;
+    delete this.onUpdateParams;
+    delete this.onComplete;
+    delete this.onCompleteParams;
+    //@ts-ignore force memory clear
+    delete this.startValue;
+    //@ts-ignore force memory clear
+    delete this.targetValue;
   }
 }
 
@@ -303,6 +314,7 @@ function update(deltaTime: number) {
   for (let i = 0; i < tweens.length; ++i) {
     const tween = tweens[i];
     if (tween.update(deltaTime)) {
+      tween.destroy();
       tweens.splice(i, 1);
       i--;
     }
@@ -359,7 +371,13 @@ export class ChainedTween extends Tween {
         this.onComplete(this.onCompleteParams);
       }
       this.complete = true;
+      this.destroy();
     }
+  }
+
+  override destroy() {
+    this.cancel();
+    super.destroy();
   }
 
   override update() {
@@ -370,7 +388,9 @@ export class ChainedTween extends Tween {
   }
 
   cancel() {
-    this.tweensChained = [];
+    for (let i = 0; i < this.tweensChained.length; ++i) {
+      this.tweensChained[i].stop();
+    }
   }
 }
 
