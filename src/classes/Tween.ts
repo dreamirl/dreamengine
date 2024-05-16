@@ -108,6 +108,15 @@ export class Tween {
       if (this.onComplete != undefined) {
         this.onComplete(this.onCompleteParams);
       }
+      delete this.object;
+      delete this.onUpdate;
+      delete this.onUpdateParams;
+      delete this.onComplete;
+      delete this.onCompleteParams;
+      //@ts-ignore force memory clear
+      delete this.startValue;
+      //@ts-ignore force memory clear
+      delete this.targetValue;
       return true;
     }
   }
