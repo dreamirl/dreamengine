@@ -525,8 +525,8 @@ class GameObject extends AdvancedContainer {
    * @example myObject.askToKill();
    * @example myObject.askToKill( { preventEvents: true } );
    */
-  askToKill(params: any) {
-    this._killArgs = params || {};
+  askToKill(params: any = {}) {
+    this._killArgs = params;
 
     if (!this._killArgs.preventEvents && !this._killArgs.preventKillEvent) {
       if (this.onKill) {
