@@ -142,6 +142,22 @@ export class MainLoop {
 
 const mainLoop = new MainLoop();
 
+Events.on('change-debug', (debug: boolean, _level: number) => {
+  for (const r in mainLoop.additionalModules) {
+    if (mainLoop.additionalModules[r].OnDebugChange) {
+      mainLoop.additionalModules[r].OnDebugChange(debug, _level);
+    }
+  }
+
+  for (let i = 0, r; (r = mainLoop.renders[i]); ++i) {
+    r.OnDebugChange(debug, _level);
+  }
+
+  for (let i = 0, s; (s = mainLoop.scenes[i]); ++i) {
+    s.OnDebugChange(debug, _level);
+  }
+});
+
 Events.on('lang-changed', () => {
   for (let i = 0, s; (s = mainLoop.scenes[i]); ++i) {
     for (let ii = 0, g; (g = s.gameObjects[ii]); ++ii) {

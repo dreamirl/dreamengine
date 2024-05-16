@@ -1,7 +1,7 @@
 import { Container } from 'pixi.js';
 import MainLoop from '../MainLoop';
-import GameObject from './GameObject';
 import config from '../config';
+import GameObject from './GameObject';
 
 /**
  * @author Inateno / http://inateno.com / http://dreamirl.com
@@ -71,6 +71,12 @@ class Scene extends Container {
   public set enable(bool: boolean) {
     this._enable = bool;
   }
+
+  public OnDebugChange(debug: boolean, _level: number) {
+    for (let i = 0, c = this.gameObjects.length; i < c; ++i) {
+      this.gameObjects[i].OnDebugChange(debug, _level);
+    }
+  };
 
   /**
    * add all given gameObjects inside the scene, if you add only one gameObject, call addOne

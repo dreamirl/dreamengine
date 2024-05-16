@@ -1,9 +1,8 @@
 import EventEmitter from 'eventemitter3';
 import * as PIXI from 'pixi.js';
 import { DisplayObject } from 'pixi.js';
-import config from '../config';
 import MainLoop from '../MainLoop';
-import Events from '../utils/Events';
+import config from '../config';
 import Time from '../utils/Time';
 import Camera from './Camera';
 import Gui from './Gui';
@@ -165,14 +164,6 @@ class Render extends EventEmitter {
     this.debugRender.y = 10;
     this.debugRender.x = 10;
 
-    Events.on('change-debug', (_debug, level) => {
-      if (level > 0) {
-        this.mainContainer.addChild(this.debugRender);
-      } else {
-        this.mainContainer.removeChild(this.debugRender);
-      }
-    });
-
     this._resizeMode = params.resizeMode || null;
 
     if (id) {
@@ -180,6 +171,20 @@ class Render extends EventEmitter {
       this.divId = id;
     }
   }
+
+  public OnDebugChange(debug: boolean, _level: number) {
+    if (_level > 0) {
+      this.mainContainer.addChild(this.debugRender);
+    } else {
+      this.mainContainer.removeChild(this.debugRender);
+    }
+
+    for (let i = 0, c = this.mainContainer.updatables.length; i < c; ++i) {
+      if (this.mainContainer.updatables[i].OnDebugChange) {
+        this.mainContainer.updatables[i].OnDebugChange(debug, _level);
+      }
+    }
+  };
 
   /**
    * create the parent div, add it to the dom, add this render to the MainLoop

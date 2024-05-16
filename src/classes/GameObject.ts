@@ -1,6 +1,5 @@
 import * as PIXI from 'pixi.js';
 import config from '../config';
-import Events from '../utils/Events';
 import Time from '../utils/Time';
 import AdvancedContainer from './AdvancedContainer';
 import Vector2 from './Vector2';
@@ -213,15 +212,17 @@ class GameObject extends AdvancedContainer {
         this.addAutomatism(auto[0], auto[1], auto[2] ? auto[2] : undefined);
       });
     }
-
-    Events.on('change-debug', this.OnDebugChange);
   }
 
-  private OnDebugChange = (debug: boolean, _level: number) => {
+  public OnDebugChange(debug: boolean, _level: number) {
     if (debug) {
       this._createDebugRenderer();
     } else {
       this._destroyDebugRenderer();
+    }
+
+    for (let i = 0, c = this.gameObjects.length; i < c; ++i) {
+      this.gameObjects[i].OnDebugChange(debug, _level);
     }
   };
 
@@ -582,8 +583,6 @@ class GameObject extends AdvancedContainer {
     if (this.flag === 'deleted') {
       return;
     }
-
-    Events.removeListener('change-debug', this.OnDebugChange);
 
     this.enable = false;
     this.flag = 'deleted';
