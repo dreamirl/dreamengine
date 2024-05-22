@@ -24,7 +24,7 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
   
   private _components: Component[] = [];
 
-  override destroy(params: any) {
+  override destroy(params: any = {}) {
 
     while (this._components.length > 0) {
       let comp = this._components[0];
