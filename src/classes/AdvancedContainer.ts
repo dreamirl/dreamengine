@@ -85,6 +85,12 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
     return this;
   }
   addOneComponent(component: Component) {
+    const index = this._components.indexOf(component);
+    if (index !== -1) {
+      console.warn('You are adding the same component twice in an AdvancedContainer (GameObject), you should not do that.');
+      return;
+    }
+
     this._components.push(component);
     return this;
   }
