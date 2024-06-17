@@ -1,4 +1,4 @@
-﻿import * as PIXI from 'pixi.js';
+import * as PIXI from 'pixi.js';
 import about from '../about';
 import config from '../config';
 import Events from './Events';
@@ -151,13 +151,22 @@ export class ImageManager {
    */
   loadPool(poolName: string, customEventName?: string, resetLoader = false) {
     const self = this;
+    
+    if (PIXI_LOADER.loading) {
+      // console.log( "WARN ImageManager: PIXI loader is already loading stuff, this call has been queued" );
+      this._waitingPools.push({
+        name: poolName,
+        customEventName: customEventName,
+      });
+      return;
+    }
 
     if (poolName !== 'default') {
-      if (this.loadedPools.find((val) => val === poolName)) {
+      if (this.loadedPools.includes(poolName)) {
         console.warn('Pool', poolName, 'is already loaded');
         setTimeout(() => {
           self._onComplete(poolName, customEventName);
-        }, 100);
+        }, 500);
         return;
       }
       this.loadedPools.push(poolName);
@@ -165,16 +174,7 @@ export class ImageManager {
     if (this.pools[poolName].length == 0) {
       setTimeout(() => {
         self._onComplete(poolName, customEventName);
-      }, 100);
-      return;
-    }
-
-    if (PIXI_LOADER.loading) {
-      // console.log( "WARN ImageManager: PIXI loader is already loading stuff, this call has been queued" );
-      this._waitingPools.push({
-        name: poolName,
-        customEventName: customEventName,
-      });
+      }, 500);
       return;
     }
 
@@ -296,18 +296,18 @@ export class ImageManager {
    * @memberOf ImageManager
    */
   unloadPool(poolName: string) {
-    console.warn('Unload pool name', poolName);
+    console.log('Unload pool name', poolName);
     const poolIndex = this.loadedPools.indexOf(poolName);
     if (poolIndex === -1) return;
     this.loadedPools.splice(poolIndex, 1);
     const pool = this.pools[poolName];
     for (let i = 0, res, t = pool.length; i < t; ++i) {
       res = pool[i];
+      console.log('Unload pool item: ', res);
 
       const pack = PIXI_LOADER.resources[res.name || res.url];
 
       if (pack) {
-        console.warn('Unload pool item: ', res);
         let textures = pack.textures;
 
         for (const tx in textures) {
@@ -327,7 +327,7 @@ export class ImageManager {
       } else {
         const txCache =
           PIXI.utils.TextureCache[
-            PIXI_LOADER.resources[res.name || res.url].url
+            PIXI_LOADER.resources[res.name || res.url]?.url
           ];
 
         if (txCache) {
