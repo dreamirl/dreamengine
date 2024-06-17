@@ -80,7 +80,7 @@ export class ImageManager {
 
   /** DO NOT USE */
   _waitingPools: { name: string; customEventName?: string }[];
-  
+
   /** DO NOT USE */
   _waitingSolo: InitImageData[];
 
@@ -152,8 +152,8 @@ export class ImageManager {
   loadPool(poolName: string, customEventName?: string, resetLoader = false) {
     const self = this;
 
-    if(poolName !== 'default'){
-      if(this.loadedPools.find((val) => val === poolName)){ 
+    if (poolName !== 'default') {
+      if (this.loadedPools.find((val) => val === poolName)) {
         console.warn('Pool', poolName, 'is already loaded');
         setTimeout(() => {
           self._onComplete(poolName, customEventName);
@@ -296,21 +296,50 @@ export class ImageManager {
    * @memberOf ImageManager
    */
   unloadPool(poolName: string) {
+    console.warn('Unload pool name', poolName);
     const poolIndex = this.loadedPools.indexOf(poolName);
-    if(poolIndex === -1) return;
+    if (poolIndex === -1) return;
     this.loadedPools.splice(poolIndex, 1);
     const pool = this.pools[poolName];
     for (let i = 0, res, t = pool.length; i < t; ++i) {
       res = pool[i];
 
-      PIXI.utils.TextureCache[
-        PIXI_LOADER.resources[res.name || res.url].url
-      ].destroy(true);
+      const pack = PIXI_LOADER.resources[res.name || res.url];
 
-      // needed ?
-      // PIXI doesn't remove it from resources after the texture has been destroyed
-      // what is the best practice for this ?
-      delete PIXI_LOADER.resources[pool[i].name || pool[i].url];
+      if (pack) {
+        console.warn('Unload pool item: ', res);
+        let textures = pack.textures;
+
+        for (const tx in textures) {
+          textures[tx].destroy();
+          delete textures[tx];
+        }
+
+        textures = undefined;
+
+        pack.spritesheet?.destroy(true);
+        delete pack.spritesheet;
+
+        if (pack.extension === 'json') {
+          delete PIXI_LOADER.resources[(res.name || res.url) + '_image'];
+        }
+        delete PIXI_LOADER.resources[res.name || res.url];
+      } else {
+        const txCache =
+          PIXI.utils.TextureCache[
+            PIXI_LOADER.resources[res.name || res.url].url
+          ];
+
+        if (txCache) {
+          txCache.destroy(true);
+          delete PIXI_LOADER.resources[res.name || res.url];
+        } else {
+          console.warn(
+            'Impossible to unload the asset from the pool, maybe the code does not support this kind of stuff',
+            res,
+          );
+        }
+      }
     }
   }
 }
