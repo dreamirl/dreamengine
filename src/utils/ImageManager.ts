@@ -157,7 +157,7 @@ export class ImageManager {
         console.warn('Pool', poolName, 'is already loaded');
         setTimeout(() => {
           self._onComplete(poolName, customEventName);
-        }, 500);
+        }, 100);
         return;
       }
       this.loadedPools.push(poolName);
@@ -165,7 +165,7 @@ export class ImageManager {
     if (this.pools[poolName].length == 0) {
       setTimeout(() => {
         self._onComplete(poolName, customEventName);
-      }, 500);
+      }, 100);
       return;
     }
 
