@@ -151,7 +151,7 @@ export class ImageManager {
    */
   loadPool(poolName: string, customEventName?: string, resetLoader = false) {
     const self = this;
-    
+
     if (PIXI_LOADER.loading) {
       // console.log( "WARN ImageManager: PIXI loader is already loading stuff, this call has been queued" );
       this._waitingPools.push({
@@ -296,49 +296,65 @@ export class ImageManager {
    * @memberOf ImageManager
    */
   unloadPool(poolName: string) {
-    console.log('Unload pool name', poolName);
+    console.warn('Unload pool name', poolName);
     const poolIndex = this.loadedPools.indexOf(poolName);
     if (poolIndex === -1) return;
     this.loadedPools.splice(poolIndex, 1);
     const pool = this.pools[poolName];
     for (let i = 0, res, t = pool.length; i < t; ++i) {
       res = pool[i];
-      console.log('Unload pool item: ', res);
 
-      const pack = PIXI_LOADER.resources[res.name || res.url];
+      this.unloadAsset(res.name || res.url, res);
+    }
+  }
 
-      if (pack) {
-        let textures = pack.textures;
+  /**
+   * unload a specific asset (clean memory)
+   * @public
+   * @memberOf ImageManager
+   */
+  unloadAsset(assetName: string, originalResource: any) {
+    const pack = PIXI_LOADER.resources[assetName];
 
-        for (const tx in textures) {
-          textures[tx].destroy();
-          delete textures[tx];
-        }
+    if (pack) {
+      console.warn('Unload asset: ', originalResource);
 
-        textures = undefined;
-
-        pack.spritesheet?.destroy(true);
-        delete pack.spritesheet;
-
-        if (pack.extension === 'json') {
-          delete PIXI_LOADER.resources[(res.name || res.url) + '_image'];
-        }
-        delete PIXI_LOADER.resources[res.name || res.url];
-      } else {
-        const txCache =
-          PIXI.utils.TextureCache[
-            PIXI_LOADER.resources[res.name || res.url]?.url
-          ];
-
-        if (txCache) {
-          txCache.destroy(true);
-          delete PIXI_LOADER.resources[res.name || res.url];
-        } else {
-          console.warn(
-            'Impossible to unload the asset from the pool, maybe the code does not support this kind of stuff',
-            res,
+      if (pack.data?.meta?.related_multi_packs?.length) {
+        pack.data.meta.related_multi_packs.forEach((subPack: string) => {
+          this.unloadAsset(
+            subPack.replace('.json', ''),
+            subPack.replace('.json', ''),
           );
-        }
+        });
+      }
+      let textures = pack.textures;
+
+      for (const tx in textures) {
+        textures[tx].destroy();
+        delete textures[tx];
+      }
+
+      textures = undefined;
+
+      pack.spritesheet?.destroy(true);
+      delete pack.spritesheet;
+
+      if (pack.extension === 'json') {
+        delete PIXI_LOADER.resources[assetName + '_image'];
+      }
+      delete PIXI_LOADER.resources[assetName];
+    } else {
+      const txCache =
+        PIXI.utils.TextureCache[PIXI_LOADER.resources[assetName].url];
+
+      if (txCache) {
+        txCache.destroy(true);
+        delete PIXI_LOADER.resources[assetName];
+      } else {
+        console.warn(
+          'Impossible to unload the asset from the pool, maybe the code does not support this kind of stuff',
+          originalResource,
+        );
       }
     }
   }
