@@ -112,15 +112,19 @@ const start = () => {
       // hack to leave the promise context swallowing throws
       setTimeout(() => {
         if (!Platform.preventEngineLoader) {
+          // wait the loading image to be loaded before firing the rest
+          Events.once('ImageManager-loader-loaded', () => {
+            Events.once(
+              'ImageManager-pool-' + _defaultPoolName + '-loaded',
+              () => {
+                setTimeout(() => onLoad(), 500);
+              },
+            );
+            ImageManager.loadPool(_defaultPoolName);
+          });
+
           MainLoop.createLoader();
           MainLoop.displayLoader = true;
-          Events.once(
-            'ImageManager-pool-' + _defaultPoolName + '-loaded',
-            () => {
-              setTimeout(() => onLoad(), 500);
-            },
-          );
-          ImageManager.loadPool(_defaultPoolName);
         } else {
           onLoad();
         }
@@ -159,9 +163,12 @@ const onLoad = () => {
 const on = (eventName: string, listener: (...args: any) => void) => {
   Events.on(eventName, listener);
 };
-const removeListener = (eventName: string, listener: (...args: any) => void) => {
+const removeListener = (
+  eventName: string,
+  listener: (...args: any) => void,
+) => {
   Events.removeListener(eventName, listener);
-}
+};
 const emit = (eventName: string, ...params: Array<any>) => {
   Events.emit(eventName, ...params);
 };
@@ -250,7 +257,7 @@ const init = (params: InitParams) => {
             params.loader.animated !== undefined
               ? params.loader.animated
               : false,
-          scale: params.loader.scale || 0.15,
+          scale: params.loader.scale || 0.4,
         },
       };
       Events.once('ImageManager-loader-loaded', () => {
