@@ -51,7 +51,7 @@ export const instantiate = function (target: any, params: any) {
 
     for (const i in params) {
       if (target[i] && target[i].set) {
-        if (params[i].x !== undefined || params[i].y !== undefined) {
+        if (params[i] && (params[i].x !== undefined || params[i].y !== undefined)) {
           target[i].set(params[i].x || 0, params[i].y || 0);
         } else {
           target[i].set(params[i]);
