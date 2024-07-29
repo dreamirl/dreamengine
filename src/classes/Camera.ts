@@ -16,10 +16,10 @@ type CameraParams = {
   backgroundImage?: string;
   backgroundColor?: number;
   scale?: Point2D | number;
-  minX: number;
-  maxX: number;
-  minY: number;
-  maxY: number;
+  minX?: number;
+  maxX?: number;
+  minY?: number;
+  maxY?: number;
   scene: Scene;
 };
 
