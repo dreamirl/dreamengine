@@ -1,183 +1,245 @@
-import config from 'DE.config';
-import about from 'DE.about';
-import Events from 'DE.Events';
-import Audio from 'DE.Audio';
-import Notifications from 'DE.Notifications';
-import Localization from 'DE.Localization';
-import Save from 'DE.Save';
-
-// achievement-unlock added in dictionary
-const langs = {
-  en: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% unlocked</div>",
-  fr: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% débloqué</div>",
-  es: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% desbloqueado</div>",
-  pt: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% desbloqueado</div>",
-  de: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% entriegelt</div>",
-  it: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% sbloccato</div>",
-  ru: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% разблокирован</div>",
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Achievements = void 0;
+const config_1 = __importDefault(require("../config"));
+const Audio_1 = __importDefault(require("./Audio"));
+const Events_1 = __importDefault(require("./Events"));
+const Localization_1 = __importDefault(require("./Localization"));
+const Notifications_1 = __importDefault(require("./Notifications"));
+const Save_1 = __importDefault(require("./Save"));
+// Achievement-unlock values added in dictionary
+const langs = {
+    en: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% unlocked</div>",
+    fr: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% débloqué</div>",
+    es: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% desbloqueado</div>",
+    pt: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% desbloqueado</div>",
+    de: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% entriegelt</div>",
+    it: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% sbloccato</div>",
+    ru: "<div class='ingame-achievement'><img src='%path%' alt='%name%' />%name% разблокирован</div>",
+};
+function isObjectiveComplete(achievement, objectiveName) {
+    if (achievement.complete) {
+        return true;
+    }
+    const objective = achievement.objectives[objectiveName];
+    if (!objective) {
+        return false;
+    }
+    return !!objective.complete;
+}
 /**
- * @author Inateno / http://inateno.com / http://dreamirl.com
- */
-
-/**
- * provide a system to create achievements. Use events in the engine to detect unlockeds
+ * Provide a system to create achievements.
+ * Use events module to detect an unlocked achievement.
  * @namespace Achievements
  */
-const Achievements = new (function () {
-  this.DEName = 'Achievements';
-  this.achievements = [];
-  this.userAchievements = {};
-
-  this.achievementsUrl = 'img/achievements/';
-
-  this.init = function (list, userAchievements) {
-    for (var i in langs) {
-      if (!Localization.dictionary[i]) {
-        continue;
-      }
-      Localization.dictionary[i]['achievement-unlock'] = langs[i];
+class Achievements {
+    constructor() {
+        /**
+         * List of all achievements
+         * @type {Achievement[]}
+         */
+        this.achievements = [];
+        /**
+         * Object containing all unlocked achievements
+         * @type {Record<string, Achievement>}
+         */
+        this.userAchievements = {};
+        /**
+         * Url to the folder containing the achievement images.
+         * @type {string}
+         */
+        this.achievementImagesUrl = 'img/achievements/';
+        /**
+         * Extension of the achievement images.
+         * @type {string}
+         * @default '.png'
+         */
+        this.achievementImageExtension = '.png';
     }
-    // Save.saveAchievements( {} ); // if you want clean your achievements
-    this.achievements = [];
-    for (var i = 0, a; (a = list[i]); ++i) {
-      this.achievements.push(a);
+    /**
+     * Url to the folder containing the achievement images.
+     * @deprecated Use 'achievementImagesUrl' instead
+     * @type {string}
+     */
+    get achievementsUrl() {
+        return this.achievementImagesUrl;
     }
-    this.userAchievements = userAchievements || Save.loadAchievements();
-  };
-
-  /**
-   * when engine trigger an event "games-datas", checkEvent handle the name and value to
-   * find a corresponding achievement
-   * you shouldn't use this method directly and use the Events
-   * @memberOf Achievements
-   * @protected
-   * @param {String} eventName - event correspond to an objective
-   * @param {params} value - your value
-   * @example DE.trigger( "games-datas", "objective-name", myValue );
-   */
-  this.checkEvent = function (eventName, value) {
-    for (var i = 0, a, ua; (a = this.achievements[i]); ++i) {
-      ua = this.userAchievements[a.namespace];
-      for (var t in a.objectives) {
-        if (
-          t != eventName ||
-          (ua &&
-            (ua.complete || (ua.objectives[t] && ua.objectives[t].complete)))
-        ) {
-          continue;
+    set achievementsUrl(url) {
+        this.achievementImagesUrl = url;
+    }
+    /**
+     * Initialize the 'achievements' module.
+     * @param {Achievement[]} list - List of achievements
+     * @param {Record<string, Achievement>} userAchievements - List of unlocked achievements
+     */
+    init(list, userAchievements) {
+        const availableLanguagesFromLocalization = Localization_1.default.avalaibleLang;
+        for (const lang in langs) {
+            if (!availableLanguagesFromLocalization.includes(lang)) {
+                continue;
+            }
+            Localization_1.default.addDictionary({
+                [lang]: { 'achievement-unlock': langs[lang] },
+            }, true);
         }
-        this.updateValue(a, t, value);
-      }
-    }
-    Save.saveAchievements(this.userAchievements);
-  };
-
-  /**
-   * if you wanna check manually if an achievement is unlocked use this method
-   * @memberOf Achievements
-   * @protected
-   * @param {String} namespace - achievement namespace
-   * @example if ( DE.Achievements.isUnlock( "commander" ) )
-   */
-  this.isUnlock = function (namespace) {
-    for (var i = 0, a, ua; (a = this.achievements[i]); ++i) {
-      if (a.namespace == namespace) {
-        return this.userAchievements[namespace]
-          ? this.userAchievements[namespace].complete
-          : false;
-      }
-    }
-  };
-
-  this.updateValue = function (achievement, targetKey, value) {
-    var objective = achievement.objectives[targetKey];
-    if (
-      !this.userAchievements[achievement.namespace] ||
-      !this.userAchievements[achievement.namespace].objectives
-    ) {
-      this.userAchievements[achievement.namespace] = { objectives: {} };
-    }
-    var uach = this.userAchievements[achievement.namespace];
-    switch (objective.type) {
-      case 'increment':
-        if (!uach.objectives[targetKey]) {
-          uach.objectives[targetKey] = { value: 0 };
+        this.achievements = [];
+        for (let i = 0, a; (a = list[i]); ++i) {
+            this.achievements.push(a);
         }
-        uach.objectives[targetKey].value += value || 1;
-        break;
-      default:
-        // equal, >=, <, other ?
-        uach.objectives[targetKey] = { value: value };
-        break;
+        this.userAchievements = userAchievements || Save_1.default.loadAchievements();
+        Events_1.default.on('games-datas', (objectiveName, value) => this.checkEvent(objectiveName, value));
     }
-    this.checkUnlock(achievement);
-  };
-
-  this.checkUnlock = function (achievement) {
-    var ua = this.userAchievements[achievement.namespace].objectives;
-    var objectives = achievement.objectives;
-    var achComplete = true,
-      ob,
-      obComplete;
-    for (var i in objectives) {
-      if (!ua[i]) {
-        achComplete = false;
-        continue;
-      }
-      if (ua[i].complete) {
-        continue;
-      }
-      ob = objectives[i];
-      obComplete = true;
-      switch (ob.type) {
-        case 'equal':
-          if (ob.target != ua[i].value) {
-            obComplete = false;
-          }
-          break;
-        case 'increment':
-        case '>=':
-          if (ob.target >= ua[i].value) {
-            obComplete = false;
-          }
-          break;
-        case '<':
-          if (ob.target < ua[i].value) {
-            obComplete = false;
-          }
-          break;
-      }
-      if (obComplete) {
-        ua[i].complete = true;
-      } else {
-        achComplete = false;
-      }
+    /**
+     * When engine trigger an event "games-datas", checkEvent handle the name and value to find a corresponding achievement and check objectives' completion.
+     * You shouldn't use this method directly and use the Events.
+     * @memberOf Achievements
+     * @param eventName - The name of the objective.
+     * @param value - The value of the objective or the value to increment by (if the objective is an increment).
+     * @example DE.emit( "games-datas", "objective-name", myValue );
+     */
+    checkEvent(eventName, value) {
+        for (let i = 0, achievement, userAchievement; (achievement = this.achievements[i]); ++i) {
+            userAchievement = this.userAchievements[achievement.namespace];
+            for (const objectiveName in achievement.objectives) {
+                if (objectiveName != eventName) {
+                    continue;
+                }
+                if (isObjectiveComplete(userAchievement, objectiveName)) {
+                    continue;
+                }
+                this.updateValue(achievement, objectiveName, value);
+            }
+        }
+        Save_1.default.saveAchievements(this.userAchievements);
     }
-
-    if (achComplete) {
-      this.unlocked(achievement);
+    /**
+     * Check if an achievement is unlocked.
+     * @memberOf Achievements
+     * @param namespace - Achievement namespace
+     * @example if ( DE.Achievements.isUnlock( "commander" ) )
+     */
+    isUnlock(namespace) {
+        var _a;
+        for (const achievement of this.achievements) {
+            if (achievement.namespace == namespace)
+                return ((_a = this.userAchievements[namespace]) === null || _a === void 0 ? void 0 : _a.complete) || false;
+        }
+        console.warn(`Achievement '${namespace}' not found`);
+        return false;
     }
-  };
-
-  this.unlocked = function (achievement) {
-    this.userAchievements[achievement.namespace].complete = true;
-    var name =
-      achievement.names[Localization.currentLang] ||
-      achievement.names.en ||
-      'null';
-    var url = this.achievementsUrl + achievement.namespace + '.png';
-    var txt = (Localization.get('achievement-unlock') || '%name% unlocked')
-      .replace(/%name%/gi, name)
-      .replace(/%path%/gi, url);
-
-    Notifications.create(txt, config.notifications.achievementUnlockDuration);
-    Audio.fx.play('achievement-unlocked');
-    Events.trigger('achievement-unlocked', achievement.namespace);
-  };
-
-  Events.on('games-datas', this.checkEvent, this);
-})();
-
-export default Achievements;
+    /**
+     * Update the value of an objective.
+     * @param achievement - The achievement the objective belongs to
+     * @param targetKey - The name of the objective
+     * @param value - The updated value or the amount to increment by (if the objective is an increment)
+     */
+    updateValue(achievement, targetKey, value) {
+        const objective = achievement.objectives[targetKey];
+        if (!objective) {
+            console.warn(`Objective '${targetKey}' not found in achievement '${achievement.namespace}'`);
+            return;
+        }
+        if (!this.userAchievements[achievement.namespace] ||
+            !this.userAchievements[achievement.namespace].objectives) {
+            this.userAchievements[achievement.namespace] = { objectives: {} };
+        }
+        const userAchievement = this.userAchievements[achievement.namespace];
+        switch (objective.type) {
+            case 'increment':
+            case '+':
+            case '++':
+                if (!userAchievement.objectives[targetKey]) {
+                    userAchievement.objectives[targetKey] = { value: 0 };
+                }
+                const userObjectiveValue = userAchievement.objectives[targetKey].value;
+                if (typeof value === 'number' &&
+                    typeof userObjectiveValue === 'number') {
+                    userAchievement.objectives[targetKey].value += value || 1;
+                }
+                break;
+            default:
+                // 'equal', '>=', '<', other
+                userAchievement.objectives[targetKey] = { value: value };
+                break;
+        }
+        this.checkUnlock(achievement);
+    }
+    checkUnlock(achievement) {
+        const userAchievementObjectives = this.userAchievements[achievement.namespace].objectives;
+        const objectives = achievement.objectives;
+        let achievementComplete = true;
+        for (const objectiveName in objectives) {
+            if (!userAchievementObjectives[objectiveName]) {
+                achievementComplete = false;
+                continue;
+            }
+            if (userAchievementObjectives[objectiveName].complete) {
+                continue;
+            }
+            const objective = objectives[objectiveName];
+            let objectiveComplete = true;
+            switch (objective.type) {
+                case '=':
+                case '==':
+                case 'equal':
+                    if (objective.target != userAchievementObjectives[objectiveName].value) {
+                        objectiveComplete = false;
+                    }
+                    break;
+                case 'increment':
+                case '+':
+                case '++':
+                case '>=':
+                    if (userAchievementObjectives[objectiveName].value !== undefined &&
+                        userAchievementObjectives[objectiveName].value <=
+                            objective.target) {
+                        objectiveComplete = false;
+                    }
+                    break;
+                case '<':
+                    if (userAchievementObjectives[objectiveName].value !== undefined &&
+                        userAchievementObjectives[objectiveName].value >
+                            objective.target) {
+                        objectiveComplete = false;
+                    }
+                    break;
+                default:
+            }
+            if (objectiveComplete) {
+                userAchievementObjectives[objectiveName].complete = true;
+            }
+            else {
+                achievementComplete = false;
+            }
+        }
+        if (achievementComplete) {
+            this.unlocked(achievement);
+        }
+    }
+    /**
+     * Unlock an achievement.
+     * @param {Achievement} achievement
+     */
+    unlocked(achievement) {
+        this.userAchievements[achievement.namespace].complete = true;
+        const name = achievement.names[Localization_1.default.currentLanguage] ||
+            achievement.names.en ||
+            'null';
+        const url = this.achievementImagesUrl +
+            achievement.namespace +
+            this.achievementImageExtension;
+        const txt = (Localization_1.default.get('achievement-unlock') || '%name% unlocked')
+            .replace(/%name%/gi, name)
+            .replace(/%path%/gi, url);
+        Notifications_1.default.create(txt, config_1.default.notifications.achievementUnlockDuration);
+        Audio_1.default.play('achievement-unlocked');
+        Events_1.default.emit('achievement-unlocked', achievement.namespace);
+    }
+}
+exports.Achievements = Achievements;
+Achievements.DEName = 'Achievements';
+const achievements = new Achievements();
+exports.default = achievements;

@@ -1,9 +1,8 @@
-import EventEmitter from 'eventemitter3';
-
-const Events = new EventEmitter();
-Events.Emitter = EventEmitter;
-Events.DEName = 'Events';
-
-Events.trigger = Events.emit;
-
-export default Events;
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const Event_1 = __importDefault(require("./Event"));
+const ev = new Event_1.default();
+exports.default = ev;
