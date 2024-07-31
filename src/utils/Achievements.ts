@@ -174,6 +174,18 @@ export class Achievements<T extends Achievement> {
           continue;
         }
 
+        // this is specifically to be able to retrieve the information
+        // without considering the local save
+        // because usually external APIs are not easily syncable with the local save
+        // better to listen this event rather than "set-achievement-progress" for Steam for example
+        Events.emit(
+          'external-check-achievement-progress',
+          objectiveName,
+          achievement.objectives[objectiveName].type,
+          userAchievement.objectives[objectiveName].value,
+          value,
+        );
+
         if (isObjectiveComplete(userAchievement, objectiveName)) {
           continue;
         }
@@ -251,8 +263,8 @@ export class Achievements<T extends Achievement> {
       'set-achievement-progress',
       targetKey,
       userAchievement.objectives[targetKey].value,
+      value,
     );
-    Events.emit('store-achievement-progress');
     this.checkUnlock(achievement);
   }
 
@@ -343,7 +355,6 @@ export class Achievements<T extends Achievement> {
     Notifications.create(txt, config.notifications.achievementUnlockDuration);
     Audio.play('achievement-unlocked');
     Events.emit('achievement-unlocked', achievement.namespace);
-    Events.emit('store-achievement-progress');
   }
 }
 
