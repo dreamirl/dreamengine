@@ -182,7 +182,7 @@ export class Achievements<T extends Achievement> {
           'external-check-achievement-progress',
           objectiveName,
           achievement.objectives[objectiveName].type,
-          userAchievement.objectives[objectiveName].value,
+          userAchievement.objectives[objectiveName]?.value,
           value,
         );
 
