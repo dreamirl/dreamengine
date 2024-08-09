@@ -1,4 +1,6 @@
-﻿import config from '../config';
+﻿import DE from '@dreamirl/dreamengine';
+import inputs from '../../../../../src/data/inputs';
+import config from '../config';
 import Events from './Events';
 import gamepad, { WaitKeyCallback } from './gamepad';
 import Localization from './Localization';
@@ -206,6 +208,31 @@ export class Inputs {
     });
   }
 
+  saveDefaultGamepad() {
+    let gamepadControls = DE.Save.get('gamepad_controls');
+    if (!gamepadControls || Object.keys(gamepadControls.inputs).length === 0) {
+      gamepadControls = {inputs: new Map<string, string>()};
+    } else if (!(gamepadControls.inputs instanceof Map)) {
+      gamepadControls.inputs = new Map(gamepadControls.inputs);
+    }
+
+    Object.entries(inputs).forEach(([inputName, keys]) => {
+      let key = undefined;
+      keys.keycodes.forEach((curKey) => {
+        if (curKey[0] === 'G' && curKey.indexOf("B.") !== -1) {
+          key = curKey.substring(curKey.indexOf("B.") + 2);
+        }
+      });
+
+      if (!gamepadControls.inputs.has(inputName) && key) {
+        gamepadControls.inputs.set(inputName, key);
+      }
+    });
+
+    gamepadControls.inputs = [...gamepadControls.inputs];
+    DE.Save.save('gamepad_controls', gamepadControls);
+  }
+
   /**
    * initialize Inputs listeners with your custom Inputs list
    * called by the main engine file
@@ -213,6 +240,7 @@ export class Inputs {
    * @memberOf Inputs
    */
   init(customInputs: InputMapping) {
+    this.saveDefaultGamepad();
     this.registerInputs(customInputs);
 
     this.queue['axeMoved']['wheelTop'] = new Array();
@@ -240,6 +268,13 @@ export class Inputs {
 
   registerInputs(customInputs: InputMapping) {
     let newInputs: {[key: string]: InputInfo} = {};
+    
+    let gamepadControls = DE.Save.get('gamepad_controls');
+    if (!gamepadControls) {
+      gamepadControls = {inputs: new Map<string, string>()};
+    } else if (!(gamepadControls.inputs instanceof Map)) {
+      gamepadControls.inputs = new Map(gamepadControls.inputs);
+    }
 
     for (let i in customInputs) {
       newInputs[i] = {
@@ -286,7 +321,11 @@ export class Inputs {
         }
 
         if (type == 'GAMEPADBUTTONS') {
+          if (gamepadControls.inputs.has(i)) {
+              gamepad.plugBtnToInput(this, i, gamepadID, this.dbInputs.GAMEPADBUTTONS[gamepadControls.inputs.get(i)]);
+          } else {
           gamepad.plugBtnToInput(this, i, gamepadID, this.dbInputs[type][name]);
+          }
         } else if (type == 'GAMEPADAXES') {
           gamepad.plugAxeToInput(this, i, gamepadID, this.dbInputs[type][name]);
         }

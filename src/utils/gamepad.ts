@@ -1,7 +1,8 @@
-﻿import EventEmitter from 'eventemitter3';
+﻿import Save from '@dreamirl/dreamengine/src/utils/Save';
+import EventEmitter from 'eventemitter3';
 import config from '../config';
 import Events from './Events';
-import InputsManager, { InputType, Inputs } from './Inputs';
+import Inputs, { InputType, default as InputsManager } from './Inputs';
 import Localization from './Localization';
 import Notifications from './Notifications';
 
@@ -72,6 +73,7 @@ export class gamepads {
 
   _btnsListeners: { [key: number]: EventEmitter } = {};
   _axesListeners: { [key: number]: EventEmitter } = {};
+  _inputsCallback: Map<string, ((x: number) => void)[]> = new Map();
   _gamepads: InputType[] = [];
   gamepadsInfos: { [x: number]: Gamepad | null } = {};
   lastTimeStamps: { [x: number]: number | null } = {};
@@ -615,6 +617,7 @@ export class gamepads {
     callBack: (x: number) => void,
     noRate: boolean,
   ) {
+
     this.addListener(
       this._btnsListeners,
       padIndex,
@@ -623,6 +626,8 @@ export class gamepads {
       callBack,
       noRate,
     );
+
+    return callBack;
   }
 
   onBtnMove(
@@ -639,6 +644,8 @@ export class gamepads {
       callBack,
       noRate,
     );
+
+    return callBack;
   }
 
   onBtnUp(
@@ -655,6 +662,8 @@ export class gamepads {
       callBack,
       noRate,
     );
+
+    return callBack;
   }
 
   //del Btns
@@ -761,40 +770,80 @@ export class gamepads {
     this.delAllListeners(this._btnsListeners);
   }
 
+  removeInputCallbacks(inputName: string) {
+    this._inputsCallback.delete(inputName);
+  }
+
+  resetInputs(inputs) {
+    this.delAllListeners(this._btnsListeners);
+    this._inputsCallback.clear();
+
+    let gamepadControls = Save.get('gamepad_controls');
+    if (!gamepadControls) {
+      gamepadControls = { inputs: new Map<string, string>() };
+    } else if (!(gamepadControls.inputs instanceof Map)) {
+      gamepadControls.inputs = new Map(gamepadControls.inputs);
+    }
+
+    Object.entries(inputs).forEach(([inputName, keys]) => {
+      let key = undefined;
+      keys.keycodes.forEach((curKey) => {
+        if (curKey[0] === 'G' && curKey.indexOf("B.") !== -1) {
+          key = curKey.substring(curKey.indexOf("B.") + 2);
+
+          this.plugBtnToInput(this.inputs, inputName, 0, Inputs.dbInputs.GAMEPADBUTTONS[key], false);
+          this.plugBtnToInput(this.inputs, inputName, 1, Inputs.dbInputs.GAMEPADBUTTONS[key], false);
+
+          gamepadControls.inputs.set(inputName, key);
+        }
+      });
+    });
+
+    gamepadControls.inputs = [...gamepadControls.inputs];
+    Save.save('gamepad_controls', gamepadControls);
+  }
+
   plugBtnToInput(
     inputs: Inputs,
     inputName: string,
     padIndex: number,
     num: number,
   ) {
-    this.onBtnDown(
-      padIndex,
-      num,
-      (force: number) => {
-        inputs.usedInputs[inputName].isDown = true;
-        inputs.emit('keyDown', inputName, force);
-      },
-      false,
-    );
+  let callbacks: ((force: number) => void)[] = [];
+  
+  callbacks.push(this.onBtnDown(
+    padIndex,
+    num,
+    (force: number) => {
+      inputs.usedInputs[inputName].isDown = true;
+      inputs.emit('keyDown', inputName, force);
+    },
+    false,
+  ));
 
-    this.onBtnUp(
-      padIndex,
-      num,
-      (force: number) => {
-        inputs.usedInputs[inputName].isDown = false;
-        inputs.emit('keyUp', inputName, force);
-      },
-      false,
-    );
+  callbacks.push(this.onBtnUp(
+    padIndex,
+    num,
+    (force: number) => {
+      inputs.usedInputs[inputName].isDown = true;
+      inputs.emit('keyUp', inputName, force);
+    },
+    false,
+  ));
 
-    this.onBtnMove(
-      padIndex,
-      num,
-      (force: number) => {
-        inputs.emit('btnMoved', inputName, force);
-      },
-      false,
-    );
+  callbacks.push(this.onBtnMove(
+    padIndex,
+    num,
+    (force: number) => {
+      inputs.usedInputs[inputName].isDown = true;
+      inputs.emit('btnMoved', inputName, force);
+    },
+    false,
+  ));
+
+  if (!this._inputsCallback.has(inputName)) {
+    this._inputsCallback.set(inputName, callbacks);
+  }
   }
 
   plugAxeToInput(
