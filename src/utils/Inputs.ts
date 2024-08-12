@@ -1,5 +1,4 @@
 ﻿import Save from '@dreamirl/dreamengine/src/utils/Save';
-import inputs from '../../../../../src/data/inputs';
 import config from '../config';
 import Events from './Events';
 import gamepad, { WaitKeyCallback } from './gamepad';
@@ -208,10 +207,10 @@ export class Inputs {
     });
   }
 
-  saveDefaultGamepad() {
+  saveDefaultGamepad(customInputs: InputMapping) {
     let gamepadControls = gamepad.getSavedControls();
 
-    Object.entries(inputs).forEach(([inputName, keys]) => {
+    Object.entries(customInputs).forEach(([inputName, keys]) => {
       let key = undefined;
       keys.keycodes.forEach((curKey) => {
         if (curKey[0] === 'G' && curKey.indexOf("B.") !== -1) {
@@ -235,7 +234,7 @@ export class Inputs {
    * @memberOf Inputs
    */
   init(customInputs: InputMapping) {
-    this.saveDefaultGamepad();
+    this.saveDefaultGamepad(customInputs);
     this.registerInputs(customInputs);
 
     this.queue['axeMoved']['wheelTop'] = new Array();
@@ -264,12 +263,7 @@ export class Inputs {
   registerInputs(customInputs: InputMapping) {
     let newInputs: {[key: string]: InputInfo} = {};
     
-    let gamepadControls = Save.get('gamepad_controls');
-    if (!gamepadControls) {
-      gamepadControls = {inputs: new Map<string, string>()};
-    } else if (!(gamepadControls.inputs instanceof Map)) {
-      gamepadControls.inputs = new Map(gamepadControls.inputs);
-    }
+    let gamepadControls = gamepad.getSavedControls();
 
     for (let i in customInputs) {
       newInputs[i] = {

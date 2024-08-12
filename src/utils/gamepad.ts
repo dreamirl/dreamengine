@@ -575,31 +575,40 @@ export class gamepads {
     if (!gamepadControls) {
       gamepadControls = { inputs: new Map<string, string>() };
     } else if (!(gamepadControls.inputs instanceof Map)) {
-      gamepadControls.inputs = new Map(gamepadControls.inputs);
+      if (Object.keys(gamepadControls.inputs).length === 0) {
+        gamepadControls.inputs = new Map<string, string>();
+      } else {
+        gamepadControls.inputs = new Map(gamepadControls.inputs);
+      }
     }
 
     return gamepadControls;
   }
 
   switchKey(curKeyId: number, newKeyId: number, inputNames: string[]) {
+    if (curKeyId === newKeyId) {
+      console.warn('You tried to change the action(s) ' + inputNames + ' with the same input : ' + curKeyId.toString());
+      return;
+    }
+
     inputNames.forEach(inputName => {
     //Getting the index of the inputName in the list (the corresponding callback is at the same index)
-    let inputId = this._btnsListeners[0].inputNames.indexOf(inputName);
+    let inputId = this._btnsListeners[0].inputNames.indexOf(inputName) * 3;
 
-    if (inputId === -1) {
+    if (inputId < 0) {
       console.error('Tried to access the gamepad event of input ' + inputName + ' but it does not exist.');
       return;
     }
   
     //Removing the listeners of the previous key
-    for (let i = 0; i < 2; i++) {
-    this._btnsListeners[i].eventEmitter.removeListener('down' + curKeyId, this._btnsListeners[i].callBacks[inputId]);
-    this._btnsListeners[i].eventEmitter.removeListener('up' + curKeyId, this._btnsListeners[i].callBacks[inputId+1]);
-    this._btnsListeners[i].eventEmitter.removeListener('move' + curKeyId, this._btnsListeners[i].callBacks[inputId+2]);
+    for (const key in this._btnsListeners) {
+      this._btnsListeners[key].eventEmitter.removeListener('down' + curKeyId, this._btnsListeners[key].callBacks[inputId]);
+      this._btnsListeners[key].eventEmitter.removeListener('up' + curKeyId, this._btnsListeners[key].callBacks[inputId+1]);
+      this._btnsListeners[key].eventEmitter.removeListener('move' + curKeyId, this._btnsListeners[key].callBacks[inputId+2]);
     }
 
     this._btnsListeners[0].callBacks.splice(inputId, 3);
-    this._btnsListeners[0].inputNames.splice(inputId, 3);
+    this._btnsListeners[0].inputNames.splice(inputId / 3, 1);
 
     //Adding the listeners of the new key
     this.plugBtnToInput(Inputs, inputName, 0, newKeyId);
@@ -625,10 +634,8 @@ export class gamepads {
     padIndex: number,
     num: number,
     action: string,
-    inputName: string,
   ) {
     if (o[padIndex]) {
-      let inputId = o[padIndex].inputNames.indexOf(inputName);
       o[padIndex].eventEmitter.removeListener(action + num);
     }
   }
@@ -689,8 +696,6 @@ export class gamepads {
       noRate,
       inputName,
     );
-
-    this._btnsListeners[padIndex].inputNames.push(inputName);
   }
 
   //del Btns
@@ -800,10 +805,10 @@ export class gamepads {
   resetInputs(inputs: Record<string, { keycodes: string[] }>) {
     this.delAllListeners(this._btnsListeners);
     
-    this._btnsListeners[0].inputNames = [];
-    this._btnsListeners[1].inputNames = [];
-    this._btnsListeners[0].callBacks = [];
-    this._btnsListeners[1].callBacks = [];
+    for (const key in this._btnsListeners) {
+      this._btnsListeners[key].inputNames = [];
+      this._btnsListeners[key].callBacks = [];
+    }
 
     let gamepadControls = this.getSavedControls();
 
@@ -811,7 +816,6 @@ export class gamepads {
       let key = undefined;
       keys.keycodes.forEach((curKey) => {
         if (curKey[0] === 'G' && curKey.indexOf("B.") !== -1) {
-          console.log('GOOD', curKey);
           key = curKey.substring(curKey.indexOf("B.") + 2);
 
           let padIndex = curKey.includes('0') ? 0 : 1;
@@ -819,7 +823,6 @@ export class gamepads {
 
           gamepadControls.inputs.set(inputName, key);
         } else {
-          console.log('BAD', curKey);
         }
       });
     });
@@ -860,6 +863,8 @@ export class gamepads {
     inputName,
     'move'
     );
+
+    this._btnsListeners[padIndex].inputNames.push(inputName);
   }
 
   plugAxeToInput(
