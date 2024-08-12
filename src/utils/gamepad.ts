@@ -2,7 +2,7 @@
 import EventEmitter from 'eventemitter3';
 import config from '../config';
 import Events from './Events';
-import Inputs, { InputType, default as InputsManager } from './Inputs';
+import Inputs, { InputType } from './Inputs';
 import Localization from './Localization';
 import Notifications from './Notifications';
 
@@ -442,10 +442,10 @@ export class gamepads {
               continue;
             }
 
-            let key: keyof typeof InputsManager.dbInputs.GAMEPADBUTTONS;
+            let key: keyof typeof this.inputs.dbInputs.GAMEPADBUTTONS;
             let keyName: string | undefined = undefined;
-            for (key in InputsManager.dbInputs.GAMEPADBUTTONS) {
-              if (InputsManager.dbInputs.GAMEPADBUTTONS[key] == i) {
+            for (key in this.inputs.dbInputs.GAMEPADBUTTONS) {
+              if (this.inputs.dbInputs.GAMEPADBUTTONS[key] == i) {
                 keyName = key;
                 break;
               }
@@ -480,12 +480,12 @@ export class gamepads {
           }
 
           if (type === 'buttons') {
-            let key: keyof typeof InputsManager.dbInputs.GAMEPADBUTTONS;
+            let key: keyof typeof this.inputs.dbInputs.GAMEPADBUTTONS;
             let keyName:
-              | keyof typeof InputsManager.dbInputs.GAMEPADBUTTONS
+              | keyof typeof this.inputs.dbInputs.GAMEPADBUTTONS
               | undefined = undefined;
-            for (key in InputsManager.dbInputs.GAMEPADBUTTONS) {
-              if (InputsManager.dbInputs.GAMEPADBUTTONS[key] == i) {
+            for (key in this.inputs.dbInputs.GAMEPADBUTTONS) {
+              if (this.inputs.dbInputs.GAMEPADBUTTONS[key] == i) {
                 keyName = key;
                 break;
               }
@@ -570,6 +570,17 @@ export class gamepads {
     if (o[padIndex].eventEmitter.listeners[num]) o[padIndex].eventEmitter.listeners[num].noRate = noRate;
   }
 
+  getSavedControls() {
+    let gamepadControls = Save.get('gamepad_controls');
+    if (!gamepadControls) {
+      gamepadControls = { inputs: new Map<string, string>() };
+    } else if (!(gamepadControls.inputs instanceof Map)) {
+      gamepadControls.inputs = new Map(gamepadControls.inputs);
+    }
+
+    return gamepadControls;
+  }
+
   switchKey(curKeyId: number, newKeyId: number, inputNames: string[]) {
     inputNames.forEach(inputName => {
     //Getting the index of the inputName in the list (the corresponding callback is at the same index)
@@ -587,30 +598,22 @@ export class gamepads {
     this._btnsListeners[i].eventEmitter.removeListener('move' + curKeyId, this._btnsListeners[i].callBacks[inputId+2]);
     }
 
-    for (let i = 0; i < 3; i++) {
-    this._btnsListeners[0].callBacks.splice(inputId, 1);
-    this._btnsListeners[0].inputNames.splice(inputId, 1);
-    }
+    this._btnsListeners[0].callBacks.splice(inputId, 3);
+    this._btnsListeners[0].inputNames.splice(inputId, 3);
 
     //Adding the listeners of the new key
     this.plugBtnToInput(Inputs, inputName, 0, newKeyId);
 
     //Getting the key name
     let newKeyName: string = '';
-    for (const key in Inputs.dbInputs.GAMEPADBUTTONS) {
-      console.log(Inputs.dbInputs.GAMEPADBUTTONS[key as keyof typeof Inputs.dbInputs.GAMEPADBUTTONS]);
-      if (Inputs.dbInputs.GAMEPADBUTTONS[key as keyof typeof Inputs.dbInputs.GAMEPADBUTTONS] === Number(newKeyId)) {
+    for (const key in this.inputs.dbInputs.GAMEPADBUTTONS) {
+      if (this.inputs.dbInputs.GAMEPADBUTTONS[key as keyof typeof this.inputs.dbInputs.GAMEPADBUTTONS] === Number(newKeyId)) {
         newKeyName = key;
       }
     }
 
     //Saving the modifications
-    let gamepadControls = Save.get('gamepad_controls');
-    if (!gamepadControls) {
-      gamepadControls = { inputs: new Map<string, string>() };
-    } else if (!(gamepadControls.inputs instanceof Map)) {
-      gamepadControls.inputs = new Map(gamepadControls.inputs);
-    }
+    let gamepadControls = this.getSavedControls();
     gamepadControls.inputs.set(inputName, newKeyName);
     gamepadControls.inputs = [...gamepadControls.inputs];
     Save.save('gamepad_controls', gamepadControls);
@@ -626,7 +629,7 @@ export class gamepads {
   ) {
     if (o[padIndex]) {
       let inputId = o[padIndex].inputNames.indexOf(inputName);
-      o[padIndex].eventEmitter.removeListener(action + num, o[padIndex].eventEmitter);
+      o[padIndex].eventEmitter.removeListener(action + num);
     }
   }
 
@@ -794,26 +797,29 @@ export class gamepads {
     this.delAllListeners(this._btnsListeners);
   }
 
-  resetInputs(inputs) {
+  resetInputs(inputs: Record<string, { keycodes: string[] }>) {
     this.delAllListeners(this._btnsListeners);
+    
+    this._btnsListeners[0].inputNames = [];
+    this._btnsListeners[1].inputNames = [];
+    this._btnsListeners[0].callBacks = [];
+    this._btnsListeners[1].callBacks = [];
 
-    let gamepadControls = Save.get('gamepad_controls');
-    if (!gamepadControls) {
-      gamepadControls = { inputs: new Map<string, string>() };
-    } else if (!(gamepadControls.inputs instanceof Map)) {
-      gamepadControls.inputs = new Map(gamepadControls.inputs);
-    }
+    let gamepadControls = this.getSavedControls();
 
     Object.entries(inputs).forEach(([inputName, keys]) => {
       let key = undefined;
       keys.keycodes.forEach((curKey) => {
         if (curKey[0] === 'G' && curKey.indexOf("B.") !== -1) {
+          console.log('GOOD', curKey);
           key = curKey.substring(curKey.indexOf("B.") + 2);
 
-          this.plugBtnToInput(this.inputs, inputName, 0, Inputs.dbInputs.GAMEPADBUTTONS[key]);
-          this.plugBtnToInput(this.inputs, inputName, 1, Inputs.dbInputs.GAMEPADBUTTONS[key]);
+          let padIndex = curKey.includes('0') ? 0 : 1;
+          this.plugBtnToInput(this.inputs, inputName, padIndex, this.inputs.dbInputs.GAMEPADBUTTONS[key]);
 
           gamepadControls.inputs.set(inputName, key);
+        } else {
+          console.log('BAD', curKey);
         }
       });
     });
@@ -854,7 +860,6 @@ export class gamepads {
     inputName,
     'move'
     );
-    console.log('PLUG', padIndex, inputName, num);
   }
 
   plugAxeToInput(

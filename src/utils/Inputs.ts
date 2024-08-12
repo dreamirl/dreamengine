@@ -1,4 +1,4 @@
-﻿import DE from '@dreamirl/dreamengine';
+﻿import Save from '@dreamirl/dreamengine/src/utils/Save';
 import inputs from '../../../../../src/data/inputs';
 import config from '../config';
 import Events from './Events';
@@ -209,12 +209,7 @@ export class Inputs {
   }
 
   saveDefaultGamepad() {
-    let gamepadControls = DE.Save.get('gamepad_controls');
-    if (!gamepadControls || Object.keys(gamepadControls.inputs).length === 0) {
-      gamepadControls = {inputs: new Map<string, string>()};
-    } else if (!(gamepadControls.inputs instanceof Map)) {
-      gamepadControls.inputs = new Map(gamepadControls.inputs);
-    }
+    let gamepadControls = gamepad.getSavedControls();
 
     Object.entries(inputs).forEach(([inputName, keys]) => {
       let key = undefined;
@@ -230,7 +225,7 @@ export class Inputs {
     });
 
     gamepadControls.inputs = [...gamepadControls.inputs];
-    DE.Save.save('gamepad_controls', gamepadControls);
+    Save.save('gamepad_controls', gamepadControls);
   }
 
   /**
@@ -269,7 +264,7 @@ export class Inputs {
   registerInputs(customInputs: InputMapping) {
     let newInputs: {[key: string]: InputInfo} = {};
     
-    let gamepadControls = DE.Save.get('gamepad_controls');
+    let gamepadControls = Save.get('gamepad_controls');
     if (!gamepadControls) {
       gamepadControls = {inputs: new Map<string, string>()};
     } else if (!(gamepadControls.inputs instanceof Map)) {
