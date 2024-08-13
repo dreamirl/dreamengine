@@ -10,7 +10,11 @@ export default class Component {
     this._parent = parent;
   }
 
-  public destroy(removeFromParent: boolean = true) {
+  public get parent() {
+    return this._parent;
+  }
+
+  public destroy(removeFromParent = true) {
     this.enable = false;
 
     if (removeFromParent && this._parent && this._parent.removeComponent) {
@@ -70,7 +74,7 @@ export default class Component {
   }
 
   private _emitter = new PIXI.utils.EventEmitter();
-  public get emitter(){
+  public get emitter() {
     return this._emitter;
   }
 }
