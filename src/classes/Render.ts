@@ -163,6 +163,7 @@ class Render extends EventEmitter {
 
     this.debugRender.y = 10;
     this.debugRender.x = 10;
+    this.debugRender.zIndex = 100000000;
 
     this._resizeMode = params.resizeMode || null;
 
@@ -186,7 +187,7 @@ class Render extends EventEmitter {
         this.mainContainer.updatables[i].OnDebugChange(debug, _level);
       }
     }
-  };
+  }
 
   /**
    * create the parent div, add it to the dom, add this render to the MainLoop
@@ -435,6 +436,7 @@ class Render extends EventEmitter {
    */
   add(container: UpdatableClasses) {
     this.mainContainer.add(container);
+    this.mainContainer.sortChildren();
     // TODO need ? this.scenes.push( scene );
 
     return this;
