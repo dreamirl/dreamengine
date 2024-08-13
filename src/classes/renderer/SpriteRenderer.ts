@@ -3,7 +3,20 @@ import * as PIXI from 'pixi.js';
 import ImageManager from '../../utils/ImageManager';
 import Time from '../../utils/Time';
 import '../renderer/ContainerExtensions';
-import { ContainerExtensions, center, instantiate, setBlackAndWhite, setBrightness, setContrast, setGreyscale, setHue, setSaturation, setScale, setSize, setTint } from '../renderer/ContainerExtensions';
+import {
+  ContainerExtensions,
+  center,
+  instantiate,
+  setBlackAndWhite,
+  setBrightness,
+  setContrast,
+  setGreyscale,
+  setHue,
+  setSaturation,
+  setScale,
+  setSize,
+  setTint,
+} from '../renderer/ContainerExtensions';
 import RendererInterface from './RendererInterface';
 
 export type SpriteDataType = {
@@ -34,30 +47,34 @@ export type SpriteDataType = {
  *   renderer: new DE.SpriteRenderer( { "spriteName": "ship", "scale": 0.7, "offsetY": -30 } )
  * } );
  */
-export default class SpriteRenderer extends PIXI.Sprite implements RendererInterface, ContainerExtensions {
-  public startFrame: number;
-  public endFrame: number;
-  private _currentFrame: number;
-  public startLine: number;
-  private _currentLine: number;
-  public totalFrame: number;
-  public totalLine: number;
-  public interval: number;
-  private _nextAnim: number;
-  public animated: boolean;
-  public isPaused: boolean;
-  public reversed: boolean;
-  public isOver: number;
-  public loop: boolean;
-  public pingPongMode: boolean;
-  public spriteName?: string;
+export default class SpriteRenderer
+  extends PIXI.Sprite
+  implements RendererInterface, ContainerExtensions
+{
+  public startFrame = 0;
+  public endFrame = 0;
+  private _currentFrame = 0;
+  public startLine = 0;
+  public endLine = 0;
+  private _currentLine = 0;
+  public totalFrame = 0;
+  public totalLine = 0;
+  public interval = 0;
+  private _nextAnim = 0;
+  public animated = false;
+  public isPaused = false;
+  public reversed = false;
+  public isOver = 0;
+  public loop = false;
+  public pingPongMode = false;
+  public fw = 0;
+  public fh = 0;
+
+  public spriteName = '';
   public isAtlasTexture?: boolean;
   public spriteData?: SpriteDataType;
   public lastAnim?: number;
   public normalTexture?: PIXI.Texture<PIXI.Resource>;
-  public fw: number;
-  public fh: number;
-  public endLine?: number;
   public baseTexture?: PIXI.BaseTexture<PIXI.Resource>;
   public normalName?: string;
   public baseNormalTexture?: PIXI.BaseTexture<PIXI.Resource>;
@@ -65,8 +82,8 @@ export default class SpriteRenderer extends PIXI.Sprite implements RendererInter
   constructor(
     params: Partial<Omit<PIXI.Sprite, 'scale' | 'anchor'>> & {
       spriteName?: string | undefined;
-      spriteUrl?: string | undefined;
       textureName?: string | undefined;
+      spriteUrl?: string | undefined;
       spriteData?: SpriteDataType;
       startFrame?: number;
       endFrame?: number;
@@ -82,7 +99,7 @@ export default class SpriteRenderer extends PIXI.Sprite implements RendererInter
       pingPongMode?: boolean;
       loop?: boolean;
       normal?: string;
-      tint?: number;
+      tint?: PIXI.ColorSource;
       filters?: any;
       scale?: number | Point2D;
       anchor?: Point2D;
@@ -114,6 +131,7 @@ export default class SpriteRenderer extends PIXI.Sprite implements RendererInter
     const tempSpriteName =
       params.spriteName || params.spriteUrl || params.textureName;
     delete params.spriteName;
+    delete params.textureName;
     if (!tempSpriteName) {
       throw new Error(
         'SpriteRenderer :: No spriteName defined -- declaration canceled',
@@ -150,129 +168,14 @@ export default class SpriteRenderer extends PIXI.Sprite implements RendererInter
       this.spriteData = params.spriteData;
     }
 
-    //Nb: every value here is set to 0/null/undefined, at the end of the declaration changeSprite is called and everything is correctly set here
-    /**
-     * @public
-     * @memberOf SpriteRenderer
-     * @type {Int}
-     */
-    this.startFrame = 0;
-
-    /**
-     * @public
-     * @memberOf SpriteRenderer
-     * @type {Int}
-     */
-    this.endFrame = 0;
-
-    /**
-     * @public
-     * @memberOf SpriteRenderer
-     * @type {Int}
-     */
-    this._currentFrame = 0;
-
-    /**
-     * @public
-     * @memberOf SpriteRenderer
-     * @type {Int}
-     */
-    this.startLine = 0;
-
-    /**
-     * @public
-     * @memberOf SpriteRenderer
-     * @type {Int}
-     */
-    this._currentLine = 0;
-
-    /**
-     * @public
-     * @memberOf SpriteRenderer
-     * @type {Int}
-     */
-    this.totalFrame = 0;
-
-    /**
-     * @public
-     * @memberOf SpriteRenderer
-     * @type {Int}
-     */
-    this.totalLine = 0;
-
-    /**
-     * time in ms
-     * @public
-     * @memberOf SpriteRenderer
-     * @type {Int}
-     */
-    this.interval = 0;
-
-    /**
-     * @private
-     * @memberOf SpriteRenderer
-     * @type {Int}
-     */
-    this._nextAnim = 0;
-
-    /**
-     * @public
-     * @memberOf SpriteRenderer
-     * @type {Int}
-     */
-    this.animated = false;
-
-    /**
-     * @public
-     * @memberOf SpriteRenderer
-     * @type {Int}
-     */
-    this.isPaused = false;
-
-    /**
-     * @public
-     * @memberOf SpriteRenderer
-     * @type {Int}
-     */
-    this.reversed = false;
-
-    /**
-     * @public
-     * @memberOf SpriteRenderer
-     * @type {Int}
-     */
-    this.isOver = 0;
-
-    /**
-     * @public
-     * @memberOf SpriteRenderer
-     * @type {Int}
-     */
-    this.loop = false;
-
-    //this._tint = params.tint || undefined;
-
-    /**
-     * if true animation will play normal then reversed then normal....
-     * @public
-     * @memberOf SpriteRenderer
-     * @type {Boolean}
-     */
-    this.pingPongMode = false;
-
-    //Tkt
-    this.fw = 0;
-    this.fh = 0;
-
-    this.scale = { x: 1, y: 1 };
-
+    this.scale.set(1, 1);
     /**
      * @public
      * This function is called when the animation is over. Overwrite this function
      * @memberOf SpriteRenderer
      */
     this.onAnimEnd = () => {};
-    this.changeSprite(this.spriteName!, params);
+    this.changeSprite(this.spriteName, params);
 
     this.instantiate(params);
     // was used to handle quality change
@@ -285,9 +188,11 @@ export default class SpriteRenderer extends PIXI.Sprite implements RendererInter
     //   this.frameSizes.height = ImageManager.spritesData[ this.spriteName ].heightFrame;
     // }, this );
   }
+
   private static _getTexture(spriteName: string) {
     if (ImageManager.spritesData[spriteName]) {
       return PIXI.utils.TextureCache[
+        /* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
         PIXI.Loader.shared.resources[spriteName].url
       ];
     } else {
@@ -464,7 +369,7 @@ export default class SpriteRenderer extends PIXI.Sprite implements RendererInter
       pingPongMode?: boolean;
       loop?: boolean;
       normal?: string;
-      tint?: number;
+      tint?: PIXI.ColorSource;
       filters?: any;
       hue?:
         | number
@@ -580,7 +485,7 @@ export default class SpriteRenderer extends PIXI.Sprite implements RendererInter
       );
     }
 
-    this.setTint(params.tint || 0xffffff);
+    this.setTint(params.tint || (0xffffff as PIXI.ColorSource));
 
     if (params.filters) {
       this.filters = params.filters;
@@ -657,68 +562,89 @@ export default class SpriteRenderer extends PIXI.Sprite implements RendererInter
   brightnessFilter?: ColorMatrixFilter | undefined;
   contrastFilter?: ColorMatrixFilter | undefined;
   grayscaleFilter?: ColorMatrixFilter | undefined;
-  sleep: boolean = false;
+  sleep = false;
   preventCenter?: boolean | undefined;
   _originalTexture?: PIXI.Texture<PIXI.Resource> | undefined;
-  setTint(value: number): void{setTint(this, value);}
-  setHue(rotation: number, multiply: boolean): void{setHue(this, rotation, multiply);}
-  setBlackAndWhite(multiply: boolean): void{setBlackAndWhite(this, multiply);}
-  setSaturation(amount: number, multiply: boolean): void{setSaturation(this, amount, multiply);}
-  setBrightness(b: number, multiply: boolean): void{setBrightness(this, b, multiply);}
-  setContrast(amount: number, multiply: boolean): void{setContrast(this, amount, multiply);}
-  setGreyscale(scale: number, multiply: boolean): void{setGreyscale(this, scale, multiply);}
-  setSize(width: number, height: number, preventCenter: boolean): void{setSize(this, width, height, preventCenter);}
-  setScale(x: number | { x: number; y: number }, y?: number): void{setScale(this, x, y);}
-  center(): void{center(this);}
-  instantiate(params: any): void{instantiate(this, params);}
+  setTint(value: PIXI.ColorSource): void {
+    setTint(this, value);
+  }
+  setHue(rotation: number, multiply: boolean): void {
+    setHue(this, rotation, multiply);
+  }
+  setBlackAndWhite(multiply: boolean): void {
+    setBlackAndWhite(this, multiply);
+  }
+  setSaturation(amount: number, multiply: boolean): void {
+    setSaturation(this, amount, multiply);
+  }
+  setBrightness(b: number, multiply: boolean): void {
+    setBrightness(this, b, multiply);
+  }
+  setContrast(amount: number, multiply: boolean): void {
+    setContrast(this, amount, multiply);
+  }
+  setGreyscale(scale: number, multiply: boolean): void {
+    setGreyscale(this, scale, multiply);
+  }
+  setSize(width: number, height: number, preventCenter: boolean): void {
+    setSize(this, width, height, preventCenter);
+  }
+  setScale(x: number | { x: number; y: number }, y?: number): void {
+    setScale(this, x, y);
+  }
+  center(): void {
+    center(this);
+  }
+  instantiate(params: any): void {
+    instantiate(this, params);
+  }
 
   static DEName = 'SpriteRenderer';
-}
 
-Object.defineProperties(SpriteRenderer.prototype, {
-  currentFrame: {
-    get: function () {
-      return this._currentFrame;
-    },
-    set: function (frame) {
-      if (frame >= this.endFrame) {
-        this._currentFrame = this.endFrame;
-      } else if (frame < this.startFrame) {
-        this._currentFrame = this.startFrame;
-      } else {
-        this._currentFrame = frame;
-      }
+  get currentFrame() {
+    return this._currentFrame;
+  }
 
+  set currentFrame(frame: number) {
+    if (frame >= this.endFrame) {
+      this._currentFrame = this.endFrame;
+    } else if (frame < this.startFrame) {
+      this._currentFrame = this.startFrame;
+    } else {
+      this._currentFrame = frame;
+    }
+
+    if (this._originalTexture) {
       this._originalTexture.frame.x = this._currentFrame * this.fw;
       this._originalTexture.updateUvs();
+    }
 
-      if (this.normalTexture) {
-        this.normalTexture.frame.x = this._currentFrame * this.fw;
-        this.normalTexture.updateUvs();
-      }
-    },
-  },
+    if (this.normalTexture) {
+      this.normalTexture.frame.x = this._currentFrame * this.fw;
+      this.normalTexture.updateUvs();
+    }
+  }
 
-  currentLine: {
-    get: function () {
-      return this._currentLine;
-    },
-    set: function (line) {
-      if (line >= this.endLine) {
-        this._currentLine = this.endLine;
-      } else if (line < this.startLine) {
-        this._currentLine = this.startLine;
-      } else {
-        this._currentLine = line;
-      }
+  get currentLine() {
+    return this._currentLine;
+  }
+  set currentLine(line) {
+    if (line >= this.endLine) {
+      this._currentLine = this.endLine;
+    } else if (line < this.startLine) {
+      this._currentLine = this.startLine;
+    } else {
+      this._currentLine = line;
+    }
 
+    if (this._originalTexture) {
       this._originalTexture.frame.y = this._currentLine * this.fh;
       this._originalTexture.updateUvs();
+    }
 
-      if (this.normalTexture) {
-        this.normalTexture.frame.y = this._currentLine * this.fh;
-        this.normalTexture.updateUvs();
-      }
-    },
-  },
-});
+    if (this.normalTexture) {
+      this.normalTexture.frame.y = this._currentLine * this.fh;
+      this.normalTexture.updateUvs();
+    }
+  }
+}

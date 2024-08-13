@@ -40,7 +40,7 @@ class GameObject extends AdvancedContainer {
   renderers: (PIXI.Container & RendererInterface)[] = [];
   renderer: PIXI.Container & RendererInterface;
   _debugRenderer: PIXI.Container | undefined;
-  _lastLocalID: string = '';
+  _lastLocalID = '';
 
   /**
    * If false, the object wont be updated anymore (but still renderer).
@@ -78,7 +78,7 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    * @type {String}
    */
-  tag: string = '';
+  tag = '';
 
   /**
    * Flag used in intern logic (for delete) but can be used outside when it's not conflicting with the engine's logic
@@ -87,7 +87,7 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    * @type {String}
    */
-  flag: string = '';
+  flag = '';
 
   /**
    * @readOnly
@@ -101,7 +101,7 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    * @type {Object}
    */
-  _automatisms: Record<string, { 0: string; 1: Automatism }> = {};
+  _automatisms: Record<string, Automatism> = {};
 
   /**
    * used to make distinction between gameObject and pure PIXI DisplayObject
@@ -136,7 +136,7 @@ class GameObject extends AdvancedContainer {
 
   constructor(
     params: Partial<Omit<GameObject, 'scale'>> & {
-      automatisms?: Array<Array<any>>;
+      automatisms?: Record<string, Automatism>;
       scale?: number | Point2D;
       scaleX?: number;
       scaleY?: number;
@@ -206,10 +206,20 @@ class GameObject extends AdvancedContainer {
 
     //console.log('Automatisms:', automatisms, 'params:', params);
     // this have to be at the end because we can define function just before
-    if (automatisms) {
+    if (automatisms instanceof Array) {
+      console.warn(
+        'DreamEngine Deprecation warning, due to types enforcement, the automatisms declaration has changed to "Record<string, Automatism>". Example: automatisms: { identifier: params }',
+      );
       automatisms.forEach((auto) => {
-        this.addAutomatism(auto[0], auto[1], auto[2] ? auto[2] : undefined);
+        this.addAutomatism(auto[0], {
+          methodName: auto[1],
+          ...(auto[2] ?? {}),
+        });
       });
+    } else {
+      for (const i in automatisms) {
+        this.addAutomatism(i, automatisms[i]);
+      }
     }
   }
 
@@ -223,7 +233,7 @@ class GameObject extends AdvancedContainer {
     for (let i = 0, c = this.gameObjects.length; i < c; ++i) {
       this.gameObjects[i].OnDebugChange(debug, _level);
     }
-  };
+  }
 
   public get automatisms() {
     return this._automatisms;
@@ -595,7 +605,7 @@ class GameObject extends AdvancedContainer {
     // }
 
     while (this.gameObjects.length > 0) {
-      let obj = this.remove(this.gameObjects[0]);
+      const obj = this.remove(this.gameObjects[0]);
       obj.killMePlease();
     }
 
@@ -725,15 +735,14 @@ class GameObject extends AdvancedContainer {
    *   , "persistent": false
    * } );
    */
-  addAutomatism(
-    id: string,
-    methodName: string = id,
-    params: Partial<Automatism> = {},
-  ) {
-    if (!this[methodName as keyof typeof this]) {
+  addAutomatism(id: string, params: Partial<Automatism> = {}) {
+    if (!params.methodName) {
+      params.methodName = id;
+    }
+    if (!this[params.methodName as keyof typeof this]) {
       console.warn(
         "%cCouldn't found the method " +
-          methodName +
+          params.methodName +
           ' in your GameObject prototype',
         1,
         'color:red',
@@ -744,14 +753,14 @@ class GameObject extends AdvancedContainer {
     const automatism: Automatism = {
       interval: params.interval ?? 0,
       timeSinceLastCall: 0,
-      methodName,
+      methodName: params.methodName,
       value1: params.value1 || undefined,
       value2: params.value2 || undefined,
       args: params.args || undefined,
       persistent: params.persistent != false ? true : false,
     };
 
-    this._automatisms[id] = { 0: automatism.methodName, 1: automatism };
+    this._automatisms[id] = automatism;
   }
 
   /**
@@ -793,13 +802,13 @@ class GameObject extends AdvancedContainer {
   inverseAutomatism(autoName: string) {
     const at = this._automatisms[autoName];
 
-    if (at[1].args) {
-      for (let i = 0; i < at[1].args.length; ++i) {
-        at[1].args[i] = -at[1].args[i];
+    if (at.args) {
+      for (let i = 0; i < at.args.length; ++i) {
+        at.args[i] = -at.args[i];
       }
     } else {
-      at[1].value1 = -at[1].value1;
-      at[1].value2 = -at[1].value2;
+      at.value1 = -at.value1;
+      at.value2 = -at.value2;
     }
   }
 
@@ -838,24 +847,24 @@ class GameObject extends AdvancedContainer {
     // execute registered automatisms
     for (const a in this._automatisms) {
       const auto = this._automatisms[a];
-      auto[1].timeSinceLastCall += Time.frameDelayScaled;
-      if (auto[1].timeSinceLastCall > auto[1].interval) {
-        auto[1].timeSinceLastCall -= auto[1].interval;
+      auto.timeSinceLastCall += Time.frameDelayScaled;
+      if (auto.timeSinceLastCall > auto.interval) {
+        auto.timeSinceLastCall -= auto.interval;
         // i think calling apply each update is slower than calling v1/v2. Should benchmark this
 
-        const localMethod = this[auto[1].methodName as keyof typeof this];
+        const localMethod = this[auto.methodName as keyof typeof this];
         if (typeof localMethod === 'function') {
-          if (auto[1].args) {
-            localMethod.call(this, ...auto[1].args);
+          if (auto.args) {
+            localMethod.call(this, ...auto.args);
           } else {
-            localMethod.call(this, auto[1].value1, auto[1].value2);
+            localMethod.call(this, auto.value1, auto.value2);
           }
         } else {
-          console.warn('Automatism call is not a function', auto[1].methodName);
+          console.warn('Automatism call is not a function', auto.methodName);
         }
 
         // if this one isn't persistent delete it
-        if (!auto[1].persistent) {
+        if (!auto.persistent) {
           delete this._automatisms[a];
         }
       }

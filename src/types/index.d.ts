@@ -53,4 +53,23 @@ declare global {
   };
 
   type Nullable<T> = T | null;
+
+  type InitImageData = [string, string, SpriteData] | string;
+
+  type PoolContent = { name?: string; url: string; parameters?: any };
+  type PoolType = Record<string, PoolContent[]>;
+
+  type EnforcedSpriteData = {
+    totalLine: number;
+    totalFrame: number;
+    startFrame: number;
+    endFrame: number;
+    interval: number;
+    reversed: boolean;
+    loop: boolean;
+    animated: boolean;
+    pingPongMode: boolean;
+  };
+
+  type SpriteData = Partial<EnforcedSpriteData>;
 }

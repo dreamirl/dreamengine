@@ -247,21 +247,20 @@ const init = (params: InitParams) => {
 
       // load the loader sprite image
       params.loader = params.loader || {};
-      const loader = {
-        0: 'loader',
-        1: params.loader.url || 'loader.png',
-        2: {
+      const loader = [
+        'loader',
+        params.loader.url || 'loader.png',
+        {
           totalFrame: params.loader.totalFrame || 1,
           interval: params.loader.interval || 0,
           animated:
             params.loader.animated !== undefined
               ? params.loader.animated
               : false,
-          scale: params.loader.scale || 0.4,
         },
-      };
+      ] as InitImageData;
       Events.once('ImageManager-loader-loaded', () => {
-        MainLoop.updateLoaderImage(loader);
+        MainLoop.updateLoaderImage(loader, params?.loader?.scale ?? 0.4);
       });
       ImageManager.load(loader);
     }

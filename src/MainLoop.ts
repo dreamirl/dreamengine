@@ -73,12 +73,10 @@ export class MainLoop {
     });
   }
 
-  updateLoaderImage(loader: { 0: string; 1: string; 2?: any }) {
+  updateLoaderImage(loader: InitImageData, scale: number) {
     // TOTO créer un type "imageParams"
-    const sprite = new SpriteRenderer({ spriteName: loader[0], scale: loader[2].scale });
-    this.loader.addRenderer(
-      sprite,
-    );
+    const sprite = new SpriteRenderer({ spriteName: loader[0], scale });
+    this.loader.addRenderer(sprite);
     this.loader.renderer.y = sprite.height / 2 + 10;
   }
 
@@ -97,8 +95,10 @@ export class MainLoop {
 
     if (this.displayLoader) {
       for (let i = 0, j; (j = this.renders[i]); i++) {
-        this.loader.x = j.pixiRenderer.width * 0.5 / j.pixiRenderer.resolution;
-        this.loader.y = j.pixiRenderer.height * 0.5 / j.pixiRenderer.resolution;
+        this.loader.x =
+          (j.pixiRenderer.width * 0.5) / j.pixiRenderer.resolution;
+        this.loader.y =
+          (j.pixiRenderer.height * 0.5) / j.pixiRenderer.resolution;
         this.loader.update(Time.currentTime);
         j.directRender(this.loader);
       }
@@ -174,9 +174,11 @@ function checkGameObjectsTextRenderer(go: GameObject) {
     return;
   }
   for (let ir = 0, r; (r = go.renderers[ir]); ++ir) {
-    if ((r as BitmapTextRenderer|TextRenderer).localizationKey) {
-      (r as BitmapTextRenderer|TextRenderer).text = Localization.get((r as BitmapTextRenderer|TextRenderer).localizationKey);
-      (r as BitmapTextRenderer|TextRenderer).checkMaxWidth();
+    if ((r as BitmapTextRenderer | TextRenderer).localizationKey) {
+      (r as BitmapTextRenderer | TextRenderer).text = Localization.get(
+        (r as BitmapTextRenderer | TextRenderer).localizationKey,
+      );
+      (r as BitmapTextRenderer | TextRenderer).checkMaxWidth();
     }
   }
 }

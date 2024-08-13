@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js';
+﻿import * as PIXI from 'pixi.js';
 import about from '../about';
 import config from '../config';
 import Events from './Events';
@@ -30,36 +30,16 @@ import Events from './Events';
     Event.emit( "loadFilesStart" );
   } );
   */
-type InitImageData =
-  | {
-      0: string;
-      1: string;
-      2?: any;
-    }
-  | string;
 
-type PoolContent = { name?: string; url: string; parameters?: any };
-type PoolType = Record<string, PoolContent[]>;
-
-type SpriteData = {
-  totalLine: number;
-  totalFrame: number;
-  startFrame: number;
-  endFrame: number;
-  interval: number;
-  reversed: boolean;
-  loop: boolean;
-  animated: boolean;
-  pingPongMode: boolean;
+export type InitFunctionParam = {
+  [poolName: string]: InitImageData[]; // indique que chaque paramètre doit correspondre à un nombre
+  default: InitImageData[]; // définit un paramètre par défaut obligatoire
 };
 
-export interface InitFunctionParam {
-  [parametre: string]: InitImageData[]; // indique que chaque paramètre doit correspondre à un nombre
-  default: InitImageData[]; // définit un paramètre par défaut obligatoire
-}
-
-const PIXI_LOADER = PIXI.Loader.shared;
-PIXI_LOADER.pre((resource, next) => {
+/* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
+const PIXI_LOADER = PIXI.Loader.shared as PIXI.Loader;
+/* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
+PIXI_LOADER.pre((resource: any, next: () => void) => {
   if (resource.url.split('://').length > 1) {
     resource.crossOrigin = true;
     // resource.loadType = PIXI.loaders.Resource.LOAD_TYPE.XHR;
@@ -76,7 +56,7 @@ export class ImageManager {
 
   pools: PoolType = { default: [] };
   loadedPools: string[] = [];
-  spritesData: Record<string, SpriteData>;
+  spritesData: Record<string, EnforcedSpriteData>;
 
   /** DO NOT USE */
   _waitingPools: { name: string; customEventName?: string }[];
@@ -105,6 +85,7 @@ export class ImageManager {
    */
   init(baseUrl: string, pools: InitFunctionParam) {
     this.baseUrl = baseUrl;
+    /* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
     PIXI_LOADER.baseUrl = baseUrl;
 
     this.pools = {};
@@ -115,24 +96,14 @@ export class ImageManager {
       this.pools[i] = [];
       for (let n = 0; n < Object.keys(p).length; ++n) {
         const data = p[n];
+        // if we are loading a tilesheet like an export from TexturePacker
         if (typeof data === 'string') {
           this.pools[i].push({ url: data });
         } else if (typeof data[0] === typeof data[1]) {
           if (!data[2]) {
             data[2] = {};
           }
-          this.spritesData[data[0]] = {
-            totalLine: data[2].totalLine || 1,
-            totalFrame: data[2].totalFrame || 1,
-            startFrame: data[2].startFrame || 0,
-            endFrame: data[2].endFrame || data[2].totalFrame - 1 || 0,
-            interval: data[2].interval || 16,
-            reversed: data[2].reversed || false,
-            loop: data[2].loop !== undefined ? data[2].loop : true,
-            animated: data[2].animated !== undefined ? data[2].animated : true,
-            pingPongMode:
-              data[2].pingPongMode !== undefined ? data[2].pingPongMode : false,
-          };
+          this.spritesData[data[0]] = generateSpriteData(data[2]);
           this.pools[i].push({ name: data[0], url: data[1] + version });
         } else {
           console.error(
@@ -152,6 +123,7 @@ export class ImageManager {
   loadPool(poolName: string, customEventName?: string, resetLoader = false) {
     const self = this;
 
+    /* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
     if (PIXI_LOADER.loading) {
       // console.log( "WARN ImageManager: PIXI loader is already loading stuff, this call has been queued" );
       this._waitingPools.push({
@@ -182,9 +154,11 @@ export class ImageManager {
       PIXI_LOADER.reset();
     }
 
-    PIXI_LOADER.onProgress.add((loader, _resource) => {
+    /* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
+    PIXI_LOADER.onProgress.add((loader: PIXI.Loader) => {
       self._onProgress(poolName, loader, customEventName);
     });
+    /* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
     PIXI_LOADER.add(this.pools[poolName]).load(() => {
       self._onComplete(poolName, customEventName);
     });
@@ -199,17 +173,20 @@ export class ImageManager {
     Events.emit(
       'ImageManager-pool-progress',
       poolName,
+      /* @ts-ignore TODO progress is not accessible in PIXI V6, but it's to much work as PIXI V8 is completely different */
       loader.progress.toString().slice(0, 5),
     );
     Events.emit(
       'ImageManager-pool-' + poolName + '-progress',
       poolName,
+      /* @ts-ignore TODO progress is not accessible in PIXI V6, but it's to much work as PIXI V8 is completely different */
       loader.progress.toString().slice(0, 5),
     );
     if (customEventName)
       Events.emit(
         'ImageManager-' + customEventName + '-progress',
         poolName,
+        /* @ts-ignore TODO progress is not accessible in PIXI V6, but it's to much work as PIXI V8 is completely different */
         loader.progress.toString().slice(0, 5),
       );
   }
@@ -242,8 +219,11 @@ export class ImageManager {
    * @memberOf ImageManager
    */
   load(data: InitImageData) {
+    /* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
     if (PIXI_LOADER.resources[data[0]]) {
+      /* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
       PIXI.utils.TextureCache[PIXI_LOADER.resources[data[0]].url].destroy();
+      /* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
       delete PIXI_LOADER.resources[data[0]];
     }
 
@@ -254,18 +234,7 @@ export class ImageManager {
         data[2] = {};
       }
 
-      this.spritesData[data[0]] = {
-        totalLine: data[2].totalLine || 1,
-        totalFrame: data[2].totalFrame || 1,
-        startFrame: data[2].startFrame || 0,
-        endFrame: data[2].endFrame || data[2].totalFrame - 1 || 0,
-        interval: data[2].interval || 16,
-        reversed: data[2].reversed || false,
-        loop: data[2].loop !== undefined ? data[2].loop : true,
-        animated: data[2].animated !== undefined ? data[2].animated : true,
-        pingPongMode:
-          data[2].pingPongMode !== undefined ? data[2].pingPongMode : false,
-      };
+      this.spritesData[data[0]] = generateSpriteData(data[2]);
       let url = data[1];
       // external images don't receive the version as they could already have custom params
       if (url.split('://').length === 1) {
@@ -274,6 +243,7 @@ export class ImageManager {
       dataLoad = { name: data[0], url };
     }
 
+    /* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
     if (PIXI_LOADER.loading) {
       // console.log( "WARN ImageManager: PIXI loader is already loading stuff, this call has been queued" );
       this._waitingSolo.push(data);
@@ -281,9 +251,11 @@ export class ImageManager {
     }
 
     const self = this;
+    /* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
     PIXI_LOADER.add(dataLoad as PoolContent).load(() => {
       // PIXI_LOADER.reset();
       // TODO find a way to prevent "success" trigger if the image failed to load
+      /* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
       PIXI_LOADER.onProgress.detachAll();
       if (typeof dataLoad === 'string') self._onComplete('', dataLoad);
       else self._onComplete('', (dataLoad as PoolContent).name);
@@ -314,6 +286,7 @@ export class ImageManager {
    * @memberOf ImageManager
    */
   unloadAsset(assetName: string, originalResource: any) {
+    /* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
     const pack = PIXI_LOADER.resources[assetName];
 
     if (pack) {
@@ -340,15 +313,19 @@ export class ImageManager {
       delete pack.spritesheet;
 
       if (pack.extension === 'json') {
+        /* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
         delete PIXI_LOADER.resources[assetName + '_image'];
       }
+      /* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
       delete PIXI_LOADER.resources[assetName];
     } else {
       const txCache =
+        /* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
         PIXI.utils.TextureCache[PIXI_LOADER.resources[assetName].url];
 
       if (txCache) {
         txCache.destroy(true);
+        /* @ts-ignore type fail but doc says it's ok: https://pixijs.download/v6.5.1/docs/PIXI.Loader.html */
         delete PIXI_LOADER.resources[assetName];
       } else {
         console.warn(
@@ -362,3 +339,18 @@ export class ImageManager {
 
 const imgManag = new ImageManager();
 export default imgManag;
+
+function generateSpriteData(spriteData: SpriteData): EnforcedSpriteData {
+  return {
+    totalLine: spriteData.totalLine ?? 1,
+    totalFrame: spriteData.totalFrame ?? 1,
+    startFrame: spriteData.startFrame ?? 0,
+    endFrame: spriteData.endFrame ?? (spriteData.totalFrame ?? 1) - 1 ?? 0,
+    interval: spriteData.interval ?? 16,
+    reversed: spriteData.reversed ?? false,
+    loop: spriteData.loop !== undefined ? spriteData.loop : true,
+    animated: spriteData.animated !== undefined ? spriteData.animated : true,
+    pingPongMode:
+      spriteData.pingPongMode !== undefined ? spriteData.pingPongMode : false,
+  };
+}

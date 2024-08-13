@@ -1,7 +1,7 @@
 import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 import * as PIXI from 'pixi.js';
 
-export { };
+export {};
 
 export interface ContainerExtensions {
   hueFilter?: ColorMatrixFilter;
@@ -13,9 +13,9 @@ export interface ContainerExtensions {
   sleep: boolean;
   anchor?: PIXI.ObservablePoint;
   preventCenter?: boolean;
-  tint?: number;
+  tint?: PIXI.ColorSource;
   _originalTexture?: PIXI.Texture<PIXI.Resource>;
-  setTint(value: number): void;
+  setTint(value: PIXI.ColorSource): void;
   setHue(rotation: number, multiply: boolean): void;
   setBlackAndWhite(multiply: boolean): void;
   setSaturation(amount: number, multiply: boolean): void;
@@ -44,14 +44,17 @@ export const instantiate = function (target: any, params: any) {
     delete params.opacity;
     delete params.size;
 
-    if(params.anchor && target.anchor){
+    if (params.anchor && target.anchor) {
       target.anchor.x = params.anchor.x;
       target.anchor.y = params.anchor.y;
     }
 
     for (const i in params) {
       if (target[i] && target[i].set) {
-        if (params[i] && (params[i].x !== undefined || params[i].y !== undefined)) {
+        if (
+          params[i] &&
+          (params[i].x !== undefined || params[i].y !== undefined)
+        ) {
           target[i].set(params[i].x || 0, params[i].y || 0);
         } else {
           target[i].set(params[i]);
@@ -67,7 +70,8 @@ export const instantiate = function (target: any, params: any) {
   // }
 };
 
-export const setScale = function (target: PIXI.Container & ContainerExtensions,
+export const setScale = function (
+  target: PIXI.Container & ContainerExtensions,
   x: number | { x: number; y: number },
   y?: number,
 ) {
@@ -84,14 +88,18 @@ export const setScale = function (target: PIXI.Container & ContainerExtensions,
   }
 };
 
-export const setTint = function (target: PIXI.Container & ContainerExtensions,value: number) {
+export const setTint = function (
+  target: PIXI.Container & ContainerExtensions,
+  value: PIXI.ColorSource,
+) {
   target.tint = value || 0xffffff;
   // if (target._originalTexture) {
   //   target._originalTexture.tint = target.tint;
   // }
 };
 
-export const setHue = function (target: PIXI.Container & ContainerExtensions,
+export const setHue = function (
+  target: PIXI.Container & ContainerExtensions,
   rotation: number,
   multiply: boolean,
 ) {
@@ -115,13 +123,16 @@ export const setHue = function (target: PIXI.Container & ContainerExtensions,
   return target;
 };
 
-export const setBlackAndWhite = function (target: PIXI.Container & ContainerExtensions, enable: boolean) {
+export const setBlackAndWhite = function (
+  target: PIXI.Container & ContainerExtensions,
+  enable: boolean,
+) {
   if (!target.blackAndWhiteFilter) {
     target.blackAndWhiteFilter = new PIXI.filters.ColorMatrixFilter();
   }
   target.blackAndWhiteFilter.blackAndWhite(true);
 
-  if(enable){
+  if (enable) {
     if (!target.filters || !target.filters.length) {
       target.filters = [target.blackAndWhiteFilter];
     } else if (
@@ -130,16 +141,16 @@ export const setBlackAndWhite = function (target: PIXI.Container & ContainerExte
     ) {
       target.filters = target.filters.concat([target.blackAndWhiteFilter]);
     }
-  }else if(target.filters){
+  } else if (target.filters) {
     const index = target.filters.indexOf(target.blackAndWhiteFilter);
-    if(index !== -1)
-      target.filters.splice(index, 1);
+    if (index !== -1) target.filters.splice(index, 1);
   }
 
   return target;
 };
 
-export const setSaturation = function (target: PIXI.Container & ContainerExtensions,
+export const setSaturation = function (
+  target: PIXI.Container & ContainerExtensions,
   amount: number,
   multiply: boolean,
 ) {
@@ -163,7 +174,8 @@ export const setSaturation = function (target: PIXI.Container & ContainerExtensi
   return target;
 };
 
-export const setBrightness = function (target: PIXI.Container & ContainerExtensions,
+export const setBrightness = function (
+  target: PIXI.Container & ContainerExtensions,
   b: number,
   multiply: boolean,
 ) {
@@ -187,7 +199,8 @@ export const setBrightness = function (target: PIXI.Container & ContainerExtensi
   return target;
 };
 
-export const setContrast = function (target: PIXI.Container & ContainerExtensions,
+export const setContrast = function (
+  target: PIXI.Container & ContainerExtensions,
   amount: number,
   multiply: boolean,
 ) {
@@ -211,7 +224,8 @@ export const setContrast = function (target: PIXI.Container & ContainerExtension
   return target;
 };
 
-export const setGreyscale = function (target: PIXI.Container & ContainerExtensions,
+export const setGreyscale = function (
+  target: PIXI.Container & ContainerExtensions,
   scale: number,
   multiply: boolean,
 ) {
@@ -235,7 +249,8 @@ export const setGreyscale = function (target: PIXI.Container & ContainerExtensio
   return target;
 };
 
-export const setSize = function (target: PIXI.Container & ContainerExtensions,
+export const setSize = function (
+  target: PIXI.Container & ContainerExtensions,
   width: number,
   height: number,
   preventCenter: boolean,
@@ -251,7 +266,7 @@ export const setSize = function (target: PIXI.Container & ContainerExtensions,
   }
 };
 
-export const center = function (target: PIXI.Container & ContainerExtensions,) {
+export const center = function (target: PIXI.Container & ContainerExtensions) {
   if (target.anchor && target.anchor.set) {
     target.anchor.set(0.5, 0.5);
   } else {
