@@ -392,7 +392,7 @@ export default class SpriteRenderer
         | number
         | { value: number; multiply: boolean }
         | Array<number & boolean>;
-    },
+    } = {},
   ) {
     params = params || {};
     this.spriteName = spriteName;
@@ -403,7 +403,8 @@ export default class SpriteRenderer
       );
     }
 
-    const d = this.spriteData || ImageManager.spritesData[this.spriteName];
+    const d =
+      this.spriteData || ImageManager.spritesData[this.spriteName] || {};
 
     this.startFrame = params.startFrame || d.startFrame || 0;
     this.endFrame = params.endFrame || d.endFrame || d.totalFrame - 1 || 0;
