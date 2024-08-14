@@ -1,5 +1,5 @@
 export * as PIXI from 'pixi.js';
-export type { default as about, GameAboutInfo } from './about';
+export type { GameAboutInfo, default as about } from './about';
 export { default as CONFIG } from './config';
 export { default as MainLoop } from './MainLoop';
 
@@ -43,14 +43,15 @@ export { default as ShakeComponent } from './classes/components/ShakeComponent';
 export { default as TimerComponent } from './classes/components/TimerComponent';
 export { default as GameObject } from './classes/GameObject';
 export { default as Tween } from './classes/Tween';
+export { default as sortGameObjects } from './utils/sortGameObjects';
 
-import { default as CONFIG } from './config';
+import config from './config';
 import main from './main';
 export const init = main.init;
 export const start = main.start;
 // export const start = main.onLoad;
 // export const customOnLoad = () => main.customOnLoad();
-export const VERSION = CONFIG.VERSION;
+export const VERSION = config.VERSION;
 // quick event access
 export const on = (eventName: string, listener: (...args: any) => void) => {
   main.on(eventName, listener);
