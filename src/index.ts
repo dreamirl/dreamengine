@@ -8,7 +8,10 @@ export { default as Achievements } from './utils/Achievements';
 export type { default as Audio, AudioParam } from './utils/Audio';
 export { default as Events } from './utils/Events';
 export { default as gamepad } from './utils/gamepad';
-export type { default as ImageManager, InitFunctionParam } from './utils/ImageManager';
+export type {
+  default as ImageManager,
+  InitFunctionParam,
+} from './utils/ImageManager';
 export { default as Inputs } from './utils/Inputs';
 export { default as Localization } from './utils/Localization';
 export { default as Notifications } from './utils/Notifications';
@@ -41,7 +44,7 @@ export { default as TimerComponent } from './classes/components/TimerComponent';
 export { default as GameObject } from './classes/GameObject';
 export { default as Tween } from './classes/Tween';
 
-import { CONFIG } from '@dreamirl/dreamengine/src/index.ts-test export 1';
+import { default as CONFIG } from './config';
 import main from './main';
 export const init = main.init;
 export const start = main.start;
