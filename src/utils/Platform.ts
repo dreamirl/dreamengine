@@ -145,6 +145,14 @@ export class Platform {
     return Promise.reject();
   }
 
+    /**
+  * canBeInDevMode
+  * @memberOf Platform
+  */
+    canBeInDevMode() {
+      return false;
+    }
+
   /**
    * pushAnalytic
    * @memberOf Platform
