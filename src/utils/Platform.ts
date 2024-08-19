@@ -146,18 +146,10 @@ export class Platform {
   }
 
   /**
-  * canBeInDevMode
+  * getDebugMode
   * @memberOf Platform
   */
-  canBeInDevMode() {
-    return false;
-   }
-
-  /**
-  * getDevMode
-  * @memberOf Platform
-  */
-  getDevMode() {
+  getDebugMode() {
     return false;
   };
   
