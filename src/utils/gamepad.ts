@@ -2,7 +2,7 @@
 import EventEmitter from 'eventemitter3';
 import config from '../config';
 import Events from './Events';
-import Inputs, { InputType } from './Inputs';
+import InputsManager, { InputType, Inputs } from './Inputs';
 import Localization from './Localization';
 import Notifications from './Notifications';
 
@@ -611,7 +611,7 @@ export class gamepads {
     this._btnsListeners[0].inputNames.splice(inputId / 3, 1);
 
     //Adding the listeners of the new key
-    this.plugBtnToInput(Inputs, inputName, 0, newKeyId);
+    this.plugBtnToInput(InputsManager, inputName, 0, newKeyId);
 
     //Getting the key name
     let newKeyName: string = '';
