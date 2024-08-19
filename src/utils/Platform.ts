@@ -146,10 +146,10 @@ export class Platform {
   }
 
   /**
-  * getDebugMode
+  * isDebugMode
   * @memberOf Platform
   */
-  getDebugMode() {
+  isDebugMode() {
     return false;
   };
   
