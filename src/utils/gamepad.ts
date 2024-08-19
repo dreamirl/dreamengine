@@ -1,4 +1,5 @@
-﻿import EventEmitter from 'eventemitter3';
+﻿import Save from '@dreamirl/dreamengine/src/utils/Save';
+import EventEmitter from 'eventemitter3';
 import config from '../config';
 import Events from './Events';
 import InputsManager, { InputType, Inputs } from './Inputs';
@@ -66,16 +67,20 @@ export type WaitKeyCallback = (x: {
 
 const gamepadAvalaible: boolean[] = [];
 
+type InputCb = {
+  inputNames: string[],
+  callBacks: ((x: number) => void)[],
+  eventEmitter: EventEmitter;
+};
+
 export class gamepads {
   DEName = 'gamepad';
   isGamepadConnected = false;
-
-  _btnsListeners: { [key: number]: EventEmitter } = {};
-  _axesListeners: { [key: number]: EventEmitter } = {};
+  _btnsListeners: { [key: number]: InputCb } = {};
+  _axesListeners: { [key: number]: InputCb } = {};
   _gamepads: InputType[] = [];
   gamepadsInfos: { [x: number]: Gamepad | null } = {};
   lastTimeStamps: { [x: number]: number | null } = {};
-  inputs?: Inputs;
   enable = true;
 
   handleDown: (
@@ -97,7 +102,6 @@ export class gamepads {
   update: (_t: number) => void = () => {};
 
   init(inputs: Inputs) {
-    this.inputs = inputs;
     // Update chrome
     if (config.notifications.gamepadEnable) {
       Notifications.create(
@@ -256,7 +260,7 @@ export class gamepads {
       this._gamepads.length = 0;
     }
     this._gamepads.length++;
-    this.inputs?.setLastEventType(gamepadType);
+    InputsManager?.setLastEventType(gamepadType);
   }
 
   handleGamepad(gamepad: Gamepad, cTime: number, gamepadType: InputType) {
@@ -351,7 +355,7 @@ export class gamepads {
     gamepadType: InputType,
   ) {
     if (this.overSensibility(elemForce) && !listener.active) {
-      this.inputs?.setLastEventType(gamepadType);
+      InputsManager?.setLastEventType(gamepadType);
       i = gamepadType === 'nintendo' && i < 3 ? (i + 2) % 3 : i;
       eventBus.emit('down' + i, elemForce, i);
       listener.active = true;
@@ -371,7 +375,7 @@ export class gamepads {
   ) {
     if (this.overSensibility(elemForce)) {
       if (!listener.active) {
-        this.inputs?.setLastEventType(gamepadType);
+        InputsManager?.setLastEventType(gamepadType);
         i = gamepadType === 'nintendo' && i < 3 ? (i + 2) % 3 : i;
         eventBus.emit('down' + i, elemForce, i);
         listener.active = true;
@@ -385,7 +389,7 @@ export class gamepads {
       }
 
       if (listener.timesTamp! + listener.diffTime! < cTime) {
-        this.inputs?.setLastEventType(gamepadType);
+        InputsManager?.setLastEventType(gamepadType);
         i = gamepadType === 'nintendo' && i < 3 ? (i + 2) % 3 : i;
         eventBus.emit('down' + i, elemForce, i);
         listener.timesTamp = cTime;
@@ -399,13 +403,13 @@ export class gamepads {
   handleListeners(
     index: number,
     gamepadInterface: readonly (number | GamepadButton)[],
-    arrayListeners: { [key: number]: EventEmitter },
+    arrayListeners: { [key: number]: InputCb },
     cTime: number,
     type: string,
     gamepadType: InputType,
   ) {
     if(!this.enable) return;
-    for (const [ind, lst] of Object.entries(arrayListeners[index].listeners)) {
+    for (const [ind, lst] of Object.entries(arrayListeners[index].eventEmitter.listeners)) {
       const listener = lst as Listener;
 
       const i = parseInt(ind);
@@ -457,13 +461,13 @@ export class gamepads {
             this.isWaitingForAnyKey = false;
           }
         } else {
-          this.inputs?.setLastEventType(gamepadType);
-          eventBus.emit('move' + i, elemForce, i);
+          InputsManager?.setLastEventType(gamepadType);
+          eventBus.eventEmitter.emit('move' + i, elemForce, i);
         }
       }
       listener.force = elemForce;
 
-      if (this.handleDown(i, eventBus, listener, elemForce, cTime, gamepadType)) {
+      if (this.handleDown(i, eventBus.eventEmitter, listener, elemForce, cTime, gamepadType)) {
         continue;
       }
 
@@ -496,9 +500,9 @@ export class gamepads {
             this.isWaitingForAnyKey = false;
           }
         } else {
-          this.inputs?.setLastEventType(gamepadType);
+          InputsManager?.setLastEventType(gamepadType);
           let index = gamepadType === 'nintendo' && i < 3 ? (i + 2) % 3 : i;
-          eventBus.emit('up' + index, elemForce, index);
+          eventBus.eventEmitter.emit('up' + index, elemForce, index);
         }
 
         listener.active = false;
@@ -515,64 +519,127 @@ export class gamepads {
         // @ts-ignore
         !this._axesListeners[gamepad.index].listeners[i]
       ) {
-        this._btnsListeners[gamepad.index].emit('down' + i);
+        this._btnsListeners[gamepad.index].eventEmitter.emit('down' + i);
 
         // @ts-ignore
-        if (this._btnsListeners[gamepad.index].listeners[i]) {
+        if (this._btnsListeners[gamepad.index].eventEmitter.listeners[i]) {
           // @ts-ignore
-          this._btnsListeners[gamepad.index].listeners[i] = true;
+          this._btnsListeners[gamepad.index].eventEmitter.listeners[i] = true;
         }
         continue;
       }
     }
   }
 
+
+
   _checkListeners(
-    o: { [key: number]: EventEmitter },
+    o: { [key: number]: InputCb },
     padIndex: number,
     num: number,
   ) {
     if (!o[padIndex]) {
-      o[padIndex] = new Events.Emitter();
-      o[padIndex].listeners = () => [];
+      o[padIndex] = {eventEmitter: new Events.Emitter(), inputNames: [], callBacks: []};
+      o[padIndex].eventEmitter.listeners = () => [];
       // addEvent( o[ padIndex ] );
     }
 
     // @ts-ignore
-    if (typeof o[padIndex].listeners[num] == 'undefined') {
+    if (typeof o[padIndex].eventEmitter.listeners[num] == 'undefined') {
       // @ts-ignore
-      o[padIndex].listeners[num] = { active: false, force: 0 };
+      o[padIndex].eventEmitter.listeners[num] = { active: false, force: 0 };
     }
   }
 
   addListener(
-    o: { [key: number]: EventEmitter },
+    o: { [key: number]: InputCb },
     padIndex: number,
     num: number,
     action: string,
     callBack: (x: number) => void,
     noRate: boolean,
+    inputName: string
   ) {
     this._checkListeners(o, padIndex, num);
-    o[padIndex].on(action + num, callBack);
+    o[padIndex].eventEmitter.on(action + num, callBack);
+    o[padIndex].callBacks.push(callBack);
 
     // @ts-ignore
-    if (o[padIndex].listeners[num]) o[padIndex].listeners[num].noRate = noRate;
+    if (o[padIndex].eventEmitter.listeners[num]) o[padIndex].eventEmitter.listeners[num].noRate = noRate;
+  }
+
+  getSavedControls() {
+    let gamepadControls = Save.get('gamepad_controls');
+    if (!gamepadControls) {
+      gamepadControls = { inputs: new Map<string, string>() };
+    } else if (!(gamepadControls.inputs instanceof Map)) {
+      if (Object.keys(gamepadControls.inputs).length === 0) {
+        gamepadControls.inputs = new Map<string, string>();
+      } else {
+        gamepadControls.inputs = new Map(gamepadControls.inputs);
+      }
+    }
+
+    return gamepadControls;
+  }
+
+  switchKey(curKeyId: number, newKeyId: number, inputNames: string[]) {
+    if (curKeyId === newKeyId) {
+      console.warn('You tried to change the action(s) ' + inputNames + ' with the same input : ' + curKeyId.toString());
+      return;
+    }
+
+    inputNames.forEach(inputName => {
+    //Getting the index of the inputName in the list (the corresponding callback is at the same index)
+    let inputId = this._btnsListeners[0].inputNames.indexOf(inputName) * 3;
+
+    if (inputId < 0) {
+      console.error('Tried to access the gamepad event of input ' + inputName + ' but it does not exist.');
+      return;
+    }
+  
+    //Removing the listeners of the previous key
+    for (const key in this._btnsListeners) {
+      this._btnsListeners[key].eventEmitter.removeListener('down' + curKeyId, this._btnsListeners[key].callBacks[inputId]);
+      this._btnsListeners[key].eventEmitter.removeListener('up' + curKeyId, this._btnsListeners[key].callBacks[inputId+1]);
+      this._btnsListeners[key].eventEmitter.removeListener('move' + curKeyId, this._btnsListeners[key].callBacks[inputId+2]);
+    }
+
+    this._btnsListeners[0].callBacks.splice(inputId, 3);
+    this._btnsListeners[0].inputNames.splice(inputId / 3, 1);
+
+    //Adding the listeners of the new key
+    this.plugBtnToInput(InputsManager, inputName, 0, newKeyId);
+
+    //Getting the key name
+    let newKeyName: string = '';
+    for (const key in InputsManager.dbInputs.GAMEPADBUTTONS) {
+      if (InputsManager.dbInputs.GAMEPADBUTTONS[key as keyof typeof InputsManager.dbInputs.GAMEPADBUTTONS] === Number(newKeyId)) {
+        newKeyName = key;
+      }
+    }
+
+    //Saving the modifications
+    let gamepadControls = this.getSavedControls();
+    gamepadControls.inputs.set(inputName, newKeyName);
+    gamepadControls.inputs = [...gamepadControls.inputs];
+    Save.save('gamepad_controls', gamepadControls);
+    });
   }
 
   delListener(
-    o: { [key: number]: EventEmitter },
+    o: { [key: number]: InputCb },
     padIndex: number,
     num: number,
     action: string,
   ) {
     if (o[padIndex]) {
-      o[padIndex].removeListener(action + num);
+      o[padIndex].eventEmitter.removeListener(action + num);
     }
   }
 
   delAllOfnum(
-    o: { [key: number]: EventEmitter },
+    o: { [key: number]: InputCb },
     padIndex: number,
     num: number,
   ) {
@@ -585,20 +652,20 @@ export class gamepads {
     this.delListener(o, padIndex, num, 'move');
 
     // @ts-ignore
-    delete o[padIndex].listeners[num];
+    delete o[padIndex].eventEmitter.listeners[num];
   }
 
-  delAllListenersOfIndex(o: { [key: number]: EventEmitter }, padIndex: number) {
+  delAllListenersOfIndex(o: { [key: number]: InputCb }, padIndex: number) {
     if (!o[padIndex]) {
       return;
     }
 
-    for (const i in o[padIndex].listeners) {
+    for (const i in o[padIndex].eventEmitter.listeners) {
       this.delAllOfnum(o, padIndex, parseFloat(i));
     }
   }
 
-  delAllListeners(o: { [key: number]: EventEmitter }) {
+  delAllListeners(o: { [key: number]: InputCb }) {
     if (!o) {
       return;
     }
@@ -609,51 +676,23 @@ export class gamepads {
   }
 
   //On Btns
-  onBtnDown(
+  onBtn(
     padIndex: number,
     num: number,
     callBack: (x: number) => void,
     noRate: boolean,
+    inputName: string,
+    state: string,
   ) {
-    this.addListener(
-      this._btnsListeners,
-      padIndex,
-      num,
-      'down',
-      callBack,
-      noRate,
-    );
-  }
 
-  onBtnMove(
-    padIndex: number,
-    num: number,
-    callBack: (x: number) => void,
-    noRate: boolean,
-  ) {
     this.addListener(
       this._btnsListeners,
       padIndex,
       num,
-      'move',
+      state,
       callBack,
       noRate,
-    );
-  }
-
-  onBtnUp(
-    padIndex: number,
-    num: number,
-    callBack: (x: number) => void,
-    noRate: boolean,
-  ) {
-    this.addListener(
-      this._btnsListeners,
-      padIndex,
-      num,
-      'up',
-      callBack,
-      noRate,
+      inputName,
     );
   }
 
@@ -761,40 +800,69 @@ export class gamepads {
     this.delAllListeners(this._btnsListeners);
   }
 
+  resetInputs(inputs: Record<string, { keycodes: string[] }>) {
+    this.delAllListeners(this._btnsListeners);
+    
+    for (const key in this._btnsListeners) {
+      this._btnsListeners[key].inputNames = [];
+      this._btnsListeners[key].callBacks = [];
+    }
+
+    let gamepadControls = this.getSavedControls();
+
+    Object.entries(inputs).forEach(([inputName, keys]) => {
+      let key = undefined;
+      keys.keycodes.forEach((curKey) => {
+        if (curKey[0] === 'G' && curKey.indexOf("B.") !== -1) {
+          key = curKey.substring(curKey.indexOf("B.") + 2);
+
+          let padIndex = curKey.includes('0') ? 0 : 1;
+          this.plugBtnToInput(InputsManager, inputName, padIndex, InputsManager.dbInputs.GAMEPADBUTTONS[key]);
+
+          gamepadControls.inputs.set(inputName, key);
+        } else {
+        }
+      });
+    });
+
+    gamepadControls.inputs = [...gamepadControls.inputs];
+    Save.save('gamepad_controls', gamepadControls);
+  }
+
   plugBtnToInput(
     inputs: Inputs,
     inputName: string,
     padIndex: number,
     num: number,
   ) {
-    this.onBtnDown(
-      padIndex,
-      num,
-      (force: number) => {
-        inputs.usedInputs[inputName].isDown = true;
-        inputs.emit('keyDown', inputName, force);
-      },
-      false,
+    this.onBtn(padIndex, num, (force: number) => {
+      inputs.usedInputs[inputName].isDown = true;
+      inputs.emit('keyDown', inputName, force);
+    },
+    false,
+    inputName,
+    'down'
     );
 
-    this.onBtnUp(
-      padIndex,
-      num,
-      (force: number) => {
-        inputs.usedInputs[inputName].isDown = false;
-        inputs.emit('keyUp', inputName, force);
-      },
-      false,
+    this.onBtn(padIndex, num, (force: number) => {
+      inputs.usedInputs[inputName].isDown = true;
+      inputs.emit('keyUp', inputName, force);
+    },
+    false,
+    inputName,
+    'up'
     );
 
-    this.onBtnMove(
-      padIndex,
-      num,
-      (force: number) => {
-        inputs.emit('btnMoved', inputName, force);
-      },
-      false,
+    this.onBtn(padIndex, num, (force: number) => {
+      inputs.usedInputs[inputName].isDown = true;
+      inputs.emit('btnMoved', inputName, force);
+    },
+    false,
+    inputName,
+    'move'
     );
+
+    this._btnsListeners[padIndex].inputNames.push(inputName);
   }
 
   plugAxeToInput(
