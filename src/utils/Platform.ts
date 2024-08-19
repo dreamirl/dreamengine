@@ -157,7 +157,7 @@ export class Platform {
   * setDevMode
   * @memberOf Platform
   */
-  getDevMode = function () {
+  getDevMode() {
     return false;
   };
   
