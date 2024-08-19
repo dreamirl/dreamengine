@@ -146,6 +146,23 @@ export class Platform {
   }
 
   /**
+  * isDebugMode
+  * @memberOf Platform
+  */
+  isDebugMode() {
+    return false;
+  };
+
+  /**
+  * isTranslatorMode
+  * @memberOf Platform
+  */
+  isTranslatorMode() {
+    return false;
+  };
+  
+
+  /**
    * pushAnalytic
    * @memberOf Platform
    * send an event to gtag if it exist
