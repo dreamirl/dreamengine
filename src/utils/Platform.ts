@@ -152,6 +152,14 @@ export class Platform {
   isDebugMode() {
     return false;
   };
+
+  /**
+  * isTranslatorMode
+  * @memberOf Platform
+  */
+  isTranslatorMode() {
+    return false;
+  };
   
 
   /**
