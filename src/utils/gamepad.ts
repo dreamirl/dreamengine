@@ -81,7 +81,6 @@ export class gamepads {
   _gamepads: InputType[] = [];
   gamepadsInfos: { [x: number]: Gamepad | null } = {};
   lastTimeStamps: { [x: number]: number | null } = {};
-  inputs?: Inputs;
   enable = true;
 
   handleDown: (
@@ -103,7 +102,6 @@ export class gamepads {
   update: (_t: number) => void = () => {};
 
   init(inputs: Inputs) {
-    this.inputs = inputs;
     // Update chrome
     if (config.notifications.gamepadEnable) {
       Notifications.create(
@@ -262,7 +260,7 @@ export class gamepads {
       this._gamepads.length = 0;
     }
     this._gamepads.length++;
-    this.inputs?.setLastEventType(gamepadType);
+    InputsManager?.setLastEventType(gamepadType);
   }
 
   handleGamepad(gamepad: Gamepad, cTime: number, gamepadType: InputType) {
@@ -357,7 +355,7 @@ export class gamepads {
     gamepadType: InputType,
   ) {
     if (this.overSensibility(elemForce) && !listener.active) {
-      this.inputs?.setLastEventType(gamepadType);
+      InputsManager?.setLastEventType(gamepadType);
       i = gamepadType === 'nintendo' && i < 3 ? (i + 2) % 3 : i;
       eventBus.emit('down' + i, elemForce, i);
       listener.active = true;
@@ -377,7 +375,7 @@ export class gamepads {
   ) {
     if (this.overSensibility(elemForce)) {
       if (!listener.active) {
-        this.inputs?.setLastEventType(gamepadType);
+        InputsManager?.setLastEventType(gamepadType);
         i = gamepadType === 'nintendo' && i < 3 ? (i + 2) % 3 : i;
         eventBus.emit('down' + i, elemForce, i);
         listener.active = true;
@@ -391,7 +389,7 @@ export class gamepads {
       }
 
       if (listener.timesTamp! + listener.diffTime! < cTime) {
-        this.inputs?.setLastEventType(gamepadType);
+        InputsManager?.setLastEventType(gamepadType);
         i = gamepadType === 'nintendo' && i < 3 ? (i + 2) % 3 : i;
         eventBus.emit('down' + i, elemForce, i);
         listener.timesTamp = cTime;
@@ -442,10 +440,10 @@ export class gamepads {
               continue;
             }
 
-            let key: keyof typeof this.inputs.dbInputs.GAMEPADBUTTONS;
+            let key: keyof typeof InputsManager.dbInputs.GAMEPADBUTTONS;
             let keyName: string | undefined = undefined;
-            for (key in this.inputs.dbInputs.GAMEPADBUTTONS) {
-              if (this.inputs.dbInputs.GAMEPADBUTTONS[key] == i) {
+            for (key in InputsManager.dbInputs.GAMEPADBUTTONS) {
+              if (InputsManager.dbInputs.GAMEPADBUTTONS[key] == i) {
                 keyName = key;
                 break;
               }
@@ -463,7 +461,7 @@ export class gamepads {
             this.isWaitingForAnyKey = false;
           }
         } else {
-          this.inputs?.setLastEventType(gamepadType);
+          InputsManager?.setLastEventType(gamepadType);
           eventBus.eventEmitter.emit('move' + i, elemForce, i);
         }
       }
@@ -480,12 +478,12 @@ export class gamepads {
           }
 
           if (type === 'buttons') {
-            let key: keyof typeof this.inputs.dbInputs.GAMEPADBUTTONS;
+            let key: keyof typeof InputsManager.dbInputs.GAMEPADBUTTONS;
             let keyName:
-              | keyof typeof this.inputs.dbInputs.GAMEPADBUTTONS
+              | keyof typeof InputsManager.dbInputs.GAMEPADBUTTONS
               | undefined = undefined;
-            for (key in this.inputs.dbInputs.GAMEPADBUTTONS) {
-              if (this.inputs.dbInputs.GAMEPADBUTTONS[key] == i) {
+            for (key in InputsManager.dbInputs.GAMEPADBUTTONS) {
+              if (InputsManager.dbInputs.GAMEPADBUTTONS[key] == i) {
                 keyName = key;
                 break;
               }
@@ -502,7 +500,7 @@ export class gamepads {
             this.isWaitingForAnyKey = false;
           }
         } else {
-          this.inputs?.setLastEventType(gamepadType);
+          InputsManager?.setLastEventType(gamepadType);
           let index = gamepadType === 'nintendo' && i < 3 ? (i + 2) % 3 : i;
           eventBus.eventEmitter.emit('up' + index, elemForce, index);
         }
@@ -615,8 +613,8 @@ export class gamepads {
 
     //Getting the key name
     let newKeyName: string = '';
-    for (const key in this.inputs.dbInputs.GAMEPADBUTTONS) {
-      if (this.inputs.dbInputs.GAMEPADBUTTONS[key as keyof typeof this.inputs.dbInputs.GAMEPADBUTTONS] === Number(newKeyId)) {
+    for (const key in InputsManager.dbInputs.GAMEPADBUTTONS) {
+      if (InputsManager.dbInputs.GAMEPADBUTTONS[key as keyof typeof InputsManager.dbInputs.GAMEPADBUTTONS] === Number(newKeyId)) {
         newKeyName = key;
       }
     }
@@ -819,7 +817,7 @@ export class gamepads {
           key = curKey.substring(curKey.indexOf("B.") + 2);
 
           let padIndex = curKey.includes('0') ? 0 : 1;
-          this.plugBtnToInput(this.inputs, inputName, padIndex, this.inputs.dbInputs.GAMEPADBUTTONS[key]);
+          this.plugBtnToInput(InputsManager, inputName, padIndex, InputsManager.dbInputs.GAMEPADBUTTONS[key]);
 
           gamepadControls.inputs.set(inputName, key);
         } else {
