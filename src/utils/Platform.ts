@@ -154,7 +154,7 @@ export class Platform {
    }
 
   /**
-  * setDevMode
+  * getDevMode
   * @memberOf Platform
   */
   getDevMode() {
