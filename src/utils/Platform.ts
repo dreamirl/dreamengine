@@ -145,13 +145,22 @@ export class Platform {
     return Promise.reject();
   }
 
-    /**
+  /**
   * canBeInDevMode
   * @memberOf Platform
   */
-    canBeInDevMode() {
-      return false;
-    }
+  canBeInDevMode() {
+    return false;
+   }
+
+  /**
+  * setDevMode
+  * @memberOf Platform
+  */
+  getDevMode = function () {
+    return false;
+  };
+  
 
   /**
    * pushAnalytic
