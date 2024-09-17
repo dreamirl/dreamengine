@@ -85,6 +85,8 @@ export default class BitmapTextRenderer extends PIXI.BitmapText implements Rende
       );
     }
 
+    PIXI.BitmapFont.available[this.fontName].pageTextures[0].baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
+
     this.fontSize =
       params.fontSize ?? PIXI.BitmapFont.available[this.fontName].size;
 
