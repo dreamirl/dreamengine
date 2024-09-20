@@ -53,10 +53,6 @@ function isObjectiveComplete(
   achievement: UserAchievement,
   objectiveName: string,
 ): boolean {
-  if (achievement.complete) {
-    return true;
-  }
-
   const objective = achievement.objectives[objectiveName];
 
   if (!objective) {
@@ -338,22 +334,26 @@ export class Achievements<T extends Achievement> {
    * @param {Achievement} achievement
    */
   public unlocked(achievement: Achievement) {
+    const wasAlreadyComplete = this.userAchievements[achievement.namespace].complete;
     this.userAchievements[achievement.namespace].complete = true;
 
-    const name =
-      achievement.names[Localization.currentLanguage] ||
-      achievement.names.en ||
-      'null';
-    const url =
-      this.achievementImagesUrl +
-      achievement.namespace +
-      this.achievementImageExtension;
-    const txt = (Localization.get('achievement-unlock') || '%name% unlocked')
-      .replace(/%name%/gi, name)
-      .replace(/%path%/gi, url);
+    if (!wasAlreadyComplete) {
+      const name =
+        achievement.names[Localization.currentLanguage] ||
+        achievement.names.en ||
+        'null';
+      const url =
+        this.achievementImagesUrl +
+        achievement.namespace +
+        this.achievementImageExtension;
+      const txt = (Localization.get('achievement-unlock') || '%name% unlocked')
+        .replace(/%name%/gi, name)
+        .replace(/%path%/gi, url);
 
-    Notifications.create(txt, config.notifications.achievementUnlockDuration);
-    Audio.play('achievement-unlocked');
+      Notifications.create(txt, config.notifications.achievementUnlockDuration);
+      Audio.play('achievement-unlocked');
+    }
+    // re-trigger the event even if it's already completed because it can relly on external API/SDK
     Events.emit('achievement-unlocked', achievement.namespace);
   }
 }
