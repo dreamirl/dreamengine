@@ -122,9 +122,6 @@ const start = () => {
             );
             ImageManager.loadPool(_defaultPoolName);
           });
-
-          MainLoop.createLoader();
-          MainLoop.displayLoader = true;
         } else {
           onLoad();
         }
@@ -263,6 +260,8 @@ const init = (params: InitParams) => {
       Events.once('ImageManager-loader-loaded', () => {
         MainLoop.updateLoaderImage(loader);
       });
+      MainLoop.createLoader();
+      MainLoop.displayLoader = true;
       ImageManager.load(loader);
     }
   }
