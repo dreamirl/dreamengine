@@ -64,7 +64,7 @@ class GameObject extends AdvancedContainer {
    * @memberOf GameObject
    * @type {String}
    */
-  readonly id = (Math.random() * 999999999) >> 0;
+  readonly id: string;
 
   /**
    * @public
@@ -146,7 +146,7 @@ class GameObject extends AdvancedContainer {
     this.sortableChildren =
       params.sortableChildren ?? config.DEFAULT_SORTABLE_CHILDREN;
 
-    this.id = params.id !== undefined ? params.id : this.id;
+    this.id = params.id !== undefined ? params.id : ((Math.random() * 999999999) >> 0).toString();
     this.name = params.name || '';
     this.tag = params.tag || '';
 
