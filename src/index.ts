@@ -1,5 +1,50 @@
 import '../css/default.css';
 
+export * as PIXI from 'pixi.js';
+export type { default as about, GameAboutInfo } from './about';
+export { default as CONFIG } from './config';
+export { default as MainLoop } from './MainLoop';
+
+// Utils
+export { default as Achievements } from './utils/Achievements';
+export type { default as Audio, AudioParam } from './utils/Audio';
+export { default as Events } from './utils/Events';
+export { default as gamepad } from './utils/gamepad';
+export { default as ImageManager } from './utils/ImageManager';
+export type { InitFunctionParam } from './utils/ImageManager';
+export { default as Inputs } from './utils/Inputs';
+export { default as Localization } from './utils/Localization';
+export { default as Notifications } from './utils/Notifications';
+export { default as Platform } from './utils/Platform';
+export type { default as Save, SaveModel } from './utils/Save';
+export { default as Time } from './utils/Time';
+
+export { default as Camera } from './classes/Camera';
+export { default as Gui } from './classes/Gui';
+export { default as Render } from './classes/Render';
+export { default as Scene } from './classes/Scene';
+export { default as Vector2 } from './classes/Vector2';
+
+// Engine custom renderers
+export { default as AnimatedTextureRenderer } from './classes/renderer/AnimatedTextureRenderer';
+export { default as BitmapTextRenderer } from './classes/renderer/BitmapTextRenderer';
+export { default as GraphicRenderer } from './classes/renderer/GraphicRenderer';
+export { default as NineSliceRenderer } from './classes/renderer/NineSliceRenderer';
+export { default as RectRenderer } from './classes/renderer/RectRenderer';
+export { default as SpriteRenderer } from './classes/renderer/SpriteRenderer';
+export { default as TextRenderer } from './classes/renderer/TextRenderer';
+export { default as TextureRenderer } from './classes/renderer/TextureRenderer';
+export { default as TilingRenderer } from './classes/renderer/TilingRenderer';
+export { default as VideoRenderer } from './classes/renderer/VideoRenderer';
+
+// Custom classes
+export { default as Component } from './classes/Component';
+export { default as ShakeComponent } from './classes/components/ShakeComponent';
+export { default as TimerComponent } from './classes/components/TimerComponent';
+export { default as GameObject } from './classes/GameObject';
+export { default as Tween } from './classes/Tween';
+export { default as sortGameObjects } from './utils/sortGameObjects';
+
 import * as PIXI from 'pixi.js';
 import about, { GameAboutInfo } from './about';
 import config from './config';
@@ -330,3 +375,60 @@ export default {
   start,
   isPaused,
 };
+
+declare global {
+  namespace DE {
+    export {
+      // Renderers
+      TextureRenderer,
+      SpriteRenderer,
+      TilingRenderer,
+      TextRenderer,
+      BitmapTextRenderer,
+      RectRenderer,
+      GraphicRenderer,
+      NineSliceRenderer,
+      AnimatedTextureRenderer,
+      VideoRenderer,
+
+      // Utils
+      about,
+      Events,
+      Time,
+      Save,
+      Audio,
+      ImageManager,
+      MainLoop,
+      Inputs,
+      gamepad,
+      Localization,
+      Notifications,
+      Achievements,
+      Render,
+      Scene,
+      Gui,
+      Camera,
+      Vector2,
+      Tween,
+
+      // GameObject
+      GameObject,
+      Component,
+      ShakeComponent,
+      TimerComponent,
+      Platform,
+      PIXI,
+      init,
+      customOnLoad,
+      trigger,
+      emit,
+      on,
+      removeListener,
+      onLoad,
+      unPause,
+      pause,
+      start,
+      isPaused,
+    };
+  }
+}
