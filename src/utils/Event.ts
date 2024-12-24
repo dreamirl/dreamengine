@@ -25,7 +25,7 @@ export default class Event<
   TGameEventsTypes extends Record<string, any>,
   TEventsTypes = TGameEventsTypes & EngineEventsTypes,
 > {
-  private readonly emitter = new EventEmitter();
+  readonly emitter = new EventEmitter();
 
   public Emitter = EventEmitter;
 
