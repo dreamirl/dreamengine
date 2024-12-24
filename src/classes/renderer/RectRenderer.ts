@@ -1,6 +1,5 @@
 import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 import * as PIXI from 'pixi.js';
-import { ILineStyleOptions } from 'pixi.js';
 import '../renderer/ContainerExtensions';
 import {
   ContainerExtensions,
@@ -33,6 +32,17 @@ import RendererInterface from './RendererInterface';
  * } );
  */
 
+type LineStyleProps = {
+  width?: number;
+  color?: number;
+  alpha?: number;
+  alignment?: number;
+  native?: boolean;
+  cap?: PIXI.LINE_CAP;
+  join?: PIXI.LINE_JOIN;
+  miterLimit?: number;
+};
+
 export default class RectRenderer
   extends PIXI.Graphics
   implements RendererInterface, ContainerExtensions
@@ -42,7 +52,7 @@ export default class RectRenderer
     height?: number;
     fill?: boolean;
     color?: number;
-    lineStyle?: [options?: ILineStyleOptions];
+    lineStyle?: LineStyleProps;
   };
 
   texture: PIXI.Texture<PIXI.Resource> | undefined;
@@ -51,13 +61,13 @@ export default class RectRenderer
     width: number,
     height: number,
     color: number,
-    params: Partial<Omit<PIXI.Graphics, 'scale'>> & {
+    params: Partial<Omit<PIXI.Graphics, 'scale' | 'lineStyle'>> & {
       scale?: number | Point2D;
       scaleX?: number;
       scaleY?: number;
       color?: number;
       fill?: boolean;
-      lineStyle?: [options?: ILineStyleOptions];
+      lineStyle?: LineStyleProps;
     } & Partial<RendererInterface> = {},
   ) {
     super();
@@ -92,15 +102,15 @@ export default class RectRenderer
     height?: number;
     color?: number;
     fill?: boolean;
-    lineStyle?: [options?: ILineStyleOptions];
+    lineStyle?: LineStyleProps;
   }) {
     this.clear();
 
     if (params && (params.lineStyle || this._initial.lineStyle)) {
       if (params.lineStyle !== undefined) {
-        this.lineStyle.apply(this, params.lineStyle); // 4, 0xFF3300, 1);
+        this.lineStyle(params.lineStyle); // 4, 0xFF3300, 1);
       } else if (this._initial.lineStyle !== undefined) {
-        this.lineStyle.apply(this, this._initial.lineStyle); // 4, 0xFF3300, 1);
+        this.lineStyle(this._initial.lineStyle); // 4, 0xFF3300, 1);
       }
     }
 
