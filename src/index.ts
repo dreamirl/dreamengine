@@ -86,7 +86,7 @@ import Component from './classes/Component';
 import ShakeComponent from './classes/components/ShakeComponent';
 import TimerComponent from './classes/components/TimerComponent';
 import GameObject from './classes/GameObject';
-import Tween from './classes/Tween';
+import * as Tween from './classes/Tween';
 
 type InitParams = {
   onReady: () => void;
