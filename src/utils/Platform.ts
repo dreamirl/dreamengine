@@ -171,20 +171,30 @@ export class Platform {
   pushAnalytic(eventName: string, data: any) {
     gtag('event', eventName, data);
   }
- 
+
   setFullScreen(fullScreen?: boolean){
     if(fullScreen === undefined){ // Means we want to toggle fullScreen
       fullScreen = document.fullscreenElement === null;
     }
-     if(fullScreen)
-       document.body.requestFullscreen();
-     else
-       document.exitFullscreen();
-   }
- 
-   isFullScreen(){
-     return document.fullscreenElement !== null;
-   }
+    if(fullScreen)
+      document.body.requestFullscreen();
+    else
+      document.exitFullscreen();
+  }
+
+  isFullScreen(){
+    return document.fullscreenElement !== null;
+  }
+
+  // dummy loadSave function
+  async loadSave() {
+    return Promise.resolve();
+  }
+
+  // dummy writeSave function
+  async writeSave() {
+    return Promise.resolve();
+  }
 }
 
 function gtag(..._args: any) {}
