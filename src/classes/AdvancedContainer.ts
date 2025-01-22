@@ -191,22 +191,24 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
     autostart = true,
     easing: (x: number) => number = Tween.Easing.noEase,
   ) {
-    new Tween.Tween(
-      this,
-      'scale.x',
-      targetScale.x,
-      duration,
-      autostart,
-      easing,
-    );
-    new Tween.Tween(
-      this,
-      'scale.y',
-      targetScale.y,
-      duration,
-      autostart,
-      easing,
-    ).setOnComplete(onComplete, onCompleteParams || {});
+    return [
+      new Tween.Tween(
+        this,
+        'scale.x',
+        targetScale.x,
+        duration,
+        autostart,
+        easing,
+      ),
+      new Tween.Tween(
+        this,
+        'scale.y',
+        targetScale.y,
+        duration,
+        autostart,
+        easing,
+      ).setOnComplete(onComplete, onCompleteParams || {})
+    ];
   }
 
   moveTo(
