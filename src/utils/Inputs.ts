@@ -503,7 +503,7 @@ export class Inputs {
     return inputs.length > 0 ? inputs : false;
   }
 
-  setLastEventType(type: InputType){
+  setLastEventType(type: InputType = 'keyboard'){
     if(type === this._lastEventType) return;
     this._lastEventType = type;
     if(type !== 'keyboard'){
