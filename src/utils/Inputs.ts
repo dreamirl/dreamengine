@@ -183,7 +183,7 @@ export class Inputs {
       RVertical: 3,
     },
     MOUSE: {},
-  };
+  } as const;
   public debugKeys = [123];
   public ignoreKeys = [116, 122, 123];
   public isShiftDown = false;
@@ -261,9 +261,8 @@ export class Inputs {
   }
 
   registerInputs(customInputs: InputMapping) {
-    let newInputs: {[key: string]: InputInfo} = {};
-    
-    let gamepadControls = gamepad.getSavedControls();
+    const newInputs: {[key: string]: InputInfo} = {};
+    const gamepadControls = gamepad.getSavedControls();
 
     for (let i in customInputs) {
       newInputs[i] = {
@@ -310,8 +309,9 @@ export class Inputs {
         }
 
         if (type == 'GAMEPADBUTTONS') {
-          if (gamepadControls.inputs.has(i)) {
-              gamepad.plugBtnToInput(this, i, gamepadID, this.dbInputs.GAMEPADBUTTONS[gamepadControls.inputs.get(i)]);
+          const gamepadInput = gamepadControls.inputs.get(i);
+          if (gamepadInput) {
+              gamepad.plugBtnToInput(this, i, gamepadID, this.dbInputs.GAMEPADBUTTONS[gamepadInput]);
           } else {
           gamepad.plugBtnToInput(this, i, gamepadID, this.dbInputs[type][name]);
           }
@@ -539,6 +539,7 @@ export class Inputs {
       this.isShiftDown = true;
     } else if (this.isShiftDown && code == this.dbInputs.KEYBOARD.tab) {
       Events.emit('toggle-nebula');
+      return;
     }
 
     // PS: you need this to be able to fill a form or whatever because it does a preventDefault which break standard DOM interaction

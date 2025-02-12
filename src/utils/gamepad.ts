@@ -558,7 +558,7 @@ export class gamepads {
     action: string,
     callBack: (x: number) => void,
     noRate: boolean,
-    inputName: string
+    inputName?: string
   ) {
     this._checkListeners(o, padIndex, num);
     o[padIndex].eventEmitter.on(action + num, callBack);
@@ -568,7 +568,7 @@ export class gamepads {
     if (o[padIndex].eventEmitter.listeners[num]) o[padIndex].eventEmitter.listeners[num].noRate = noRate;
   }
 
-  getSavedControls() {
+  getSavedControls(): { inputs: Map<string, string> } {
     let gamepadControls = Save.get('gamepad_controls');
     if (!gamepadControls) {
       gamepadControls = { inputs: new Map<string, string>() };
@@ -831,9 +831,9 @@ export class gamepads {
 
   plugBtnToInput(
     inputs: Inputs,
-    inputName: string,
-    padIndex: number,
-    num: number,
+    inputName: string, // Dreamengine input name, like "jump"
+    padIndex: number, // gamepad index
+    num: number, // native gamepad int associated with the physical button
   ) {
     this.onBtn(padIndex, num, (force: number) => {
       inputs.usedInputs[inputName].isDown = true;
@@ -867,9 +867,9 @@ export class gamepads {
 
   plugAxeToInput(
     Inputs: Inputs,
-    inputName: string,
-    padIndex: number,
-    num: number,
+    inputName: string, // Dreamengine input name, like "jump"
+    padIndex: number, // gamepad index
+    num: number, // native gamepad int associated with the physical button
   ) {
     this.onAxeStart(
       padIndex,
