@@ -146,21 +146,20 @@ export class Platform {
   }
 
   /**
-  * isDebugMode
-  * @memberOf Platform
-  */
+   * isDebugMode
+   * @memberOf Platform
+   */
   isDebugMode() {
     return false;
-  };
+  }
 
   /**
-  * isTranslatorMode
-  * @memberOf Platform
-  */
+   * isTranslatorMode
+   * @memberOf Platform
+   */
   isTranslatorMode() {
     return false;
-  };
-  
+  }
 
   /**
    * pushAnalytic
@@ -172,17 +171,16 @@ export class Platform {
     gtag('event', eventName, data);
   }
 
-  setFullScreen(fullScreen?: boolean){
-    if(fullScreen === undefined){ // Means we want to toggle fullScreen
+  setFullScreen(fullScreen?: boolean) {
+    if (fullScreen === undefined) {
+      // Means we want to toggle fullScreen
       fullScreen = document.fullscreenElement === null;
     }
-    if(fullScreen)
-      document.body.requestFullscreen();
-    else
-      document.exitFullscreen();
+    if (fullScreen) document.body.requestFullscreen();
+    else document.exitFullscreen();
   }
 
-  isFullScreen(){
+  isFullScreen() {
     return document.fullscreenElement !== null;
   }
 
@@ -192,7 +190,7 @@ export class Platform {
   }
 
   // dummy writeSave function
-  async writeSave() {
+  async writeSave(): Promise<string | void> {
     return Promise.resolve();
   }
 }
