@@ -1,5 +1,5 @@
 export * as PIXI from 'pixi.js';
-export type { GameAboutInfo, default as about } from './about';
+export type { default as about, GameAboutInfo } from './about';
 export { default as CONFIG } from './config';
 export { default as MainLoop } from './MainLoop';
 
@@ -49,8 +49,6 @@ import config from './config';
 import main from './main';
 export const init = main.init;
 export const start = main.start;
-// export const start = main.onLoad;
-// export const customOnLoad = () => main.customOnLoad();
 export const VERSION = config.VERSION;
 // quick event access
 export const on = (eventName: string, listener: (...args: any) => void) => {
@@ -72,4 +70,161 @@ export const unPause = main.unPause;
 export const pause = main.pause;
 export const isPaused = main.isPaused;
 
-export default main;
+// export default main;
+import * as PIXI from 'pixi.js';
+import about, { GameAboutInfo } from './about';
+import MainLoop from './MainLoop';
+
+// Utils
+import Achievements from './utils/Achievements';
+import Audio, { AudioParam } from './utils/Audio';
+import Events from './utils/Events';
+import gamepad from './utils/gamepad';
+import ImageManager, { InitFunctionParam } from './utils/ImageManager';
+import Inputs from './utils/Inputs';
+import Localization from './utils/Localization';
+import Notifications from './utils/Notifications';
+import Platform from './utils/Platform';
+import Save, { SaveModel } from './utils/Save';
+import Time from './utils/Time';
+
+import Camera from './classes/Camera';
+import Gui from './classes/Gui';
+import Render from './classes/Render';
+import Scene from './classes/Scene';
+import Vector2 from './classes/Vector2';
+
+// Engine custom renderers
+import AnimatedTextureRenderer from './classes/renderer/AnimatedTextureRenderer';
+import BitmapTextRenderer from './classes/renderer/BitmapTextRenderer';
+import GraphicRenderer from './classes/renderer/GraphicRenderer';
+import NineSliceRenderer from './classes/renderer/NineSliceRenderer';
+import RectRenderer from './classes/renderer/RectRenderer';
+import SpriteRenderer from './classes/renderer/SpriteRenderer';
+import TextRenderer from './classes/renderer/TextRenderer';
+import TextureRenderer from './classes/renderer/TextureRenderer';
+import TilingRenderer from './classes/renderer/TilingRenderer';
+import VideoRenderer from './classes/renderer/VideoRenderer';
+
+// Custom classes
+import Component from './classes/Component';
+import ShakeComponent from './classes/components/ShakeComponent';
+import TimerComponent from './classes/components/TimerComponent';
+import GameObject from './classes/GameObject';
+import Tween from './classes/Tween';
+
+export default {
+  // Renderers
+  TextureRenderer,
+  SpriteRenderer,
+  TilingRenderer,
+  TextRenderer,
+  BitmapTextRenderer,
+  RectRenderer,
+  GraphicRenderer,
+  NineSliceRenderer,
+  AnimatedTextureRenderer,
+  VideoRenderer,
+
+  // Utils
+  config,
+  about,
+  Events,
+  Time,
+  Save,
+  Audio,
+  ImageManager,
+  MainLoop,
+  Inputs,
+  gamepad,
+  Localization,
+  Notifications,
+  Achievements,
+  Render,
+  Scene,
+  Gui,
+  Camera,
+  Vector2,
+  Tween,
+
+  // GameObject
+  GameObject,
+  Component,
+  ShakeComponent,
+  TimerComponent,
+  Platform,
+  PIXI,
+
+  CONFIG: config,
+  VERSION: config.VERSION,
+
+  init,
+  trigger,
+  emit,
+  on,
+  removeListener,
+  unPause,
+  pause,
+  start,
+  isPaused,
+  main,
+};
+
+declare global {
+  namespace DE {
+    export {
+      // Renderers
+      TextureRenderer,
+      SpriteRenderer,
+      TilingRenderer,
+      TextRenderer,
+      BitmapTextRenderer,
+      RectRenderer,
+      GraphicRenderer,
+      NineSliceRenderer,
+      AnimatedTextureRenderer,
+      VideoRenderer,
+
+      // Utils
+      about,
+      Events,
+      Time,
+      Save,
+      Audio,
+      ImageManager,
+      MainLoop,
+      Inputs,
+      gamepad,
+      Localization,
+      Notifications,
+      Achievements,
+      Render,
+      Scene,
+      Gui,
+      Camera,
+      Vector2,
+      Tween,
+
+      // GameObject
+      GameObject,
+      Component,
+      ShakeComponent,
+      TimerComponent,
+      Platform,
+      PIXI,
+      init,
+      trigger,
+      emit,
+      on,
+      removeListener,
+      unPause,
+      pause,
+      start,
+      isPaused,
+      AudioParam,
+      InitFunctionParam,
+      SaveModel,
+      GameAboutInfo,
+    };
+  }
+}

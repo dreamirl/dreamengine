@@ -17,7 +17,7 @@ import Platform from './utils/Platform';
 import Save, { SaveModel } from './utils/Save';
 import Time from './utils/Time';
 
-type InitParams = {
+export type InitParams = {
   onReady: () => void;
   onLoad?: () => void;
   inputs?: Record<
