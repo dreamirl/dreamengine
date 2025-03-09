@@ -13,27 +13,35 @@ import Time from './Time';
  */
 
 type InputInfo = {
-  inputs: Array<{code: string, type: string}>,
-  interval: number,
-  lastCall: number,
-  actions: {},
-  isDown: boolean,
-  isLongPress: boolean,
-  stayOn: boolean,
-  numberCall: number,
-  numberPress: number,
-}
+  inputs: Array<{ code: string; type: string }>;
+  interval: number;
+  lastCall: number;
+  actions: {};
+  isDown: boolean;
+  isLongPress: boolean;
+  stayOn: boolean;
+  numberCall: number;
+  numberPress: number;
+};
 
 type Queue = {
-  keyDown: {[key: string] : Array<any>},
-  keyUp: {[key: string] : Array<any>},
-  btnMoved: {[key: string] : Array<any>},
-  axeMoved: {[key: string] : Array<any>},
-  axeStart: {[key: string] : Array<any>},
-  axeStop: {[key: string] : Array<any>},
-}
+  keyDown: { [key: string]: Array<any> };
+  keyUp: { [key: string]: Array<any> };
+  btnMoved: { [key: string]: Array<any> };
+  axeMoved: { [key: string]: Array<any> };
+  axeStart: { [key: string]: Array<any> };
+  axeStop: { [key: string]: Array<any> };
+};
 
-type InputMapping = Record<string, {keycodes: string[], interval?: number, isLongPress?: boolean, stayOn?: boolean}>;
+type InputMapping = Record<
+  string,
+  {
+    keycodes: string[];
+    interval?: number;
+    isLongPress?: boolean;
+    stayOn?: boolean;
+  }
+>;
 
 export type InputType = 'keyboard' | 'xbox' | 'sony' | 'nintendo';
 
@@ -57,8 +65,10 @@ export class Inputs {
   DEName = 'Inputs';
 
   _enable = true;
-  get enable(){ return this._enable;}
-  set enable(v: boolean){ 
+  get enable() {
+    return this._enable;
+  }
+  set enable(v: boolean) {
     this._enable = v;
     gamepad.enable = v;
   }
@@ -69,7 +79,7 @@ export class Inputs {
   waitForAnyKeyType = 'keyboard';
   waitForAnyKeyCallback: WaitKeyCallback = () => {};
 
-  usedInputs: {[key: string]: InputInfo} = {};
+  usedInputs: { [key: string]: InputInfo } = {};
 
   isWindowFocused = true;
   dontPreventDefault = false;
@@ -79,11 +89,11 @@ export class Inputs {
   _lastEventType: InputType = 'keyboard';
   _lastGamepadType: InputType = 'xbox';
 
-  get usedControllerType(){
+  get usedControllerType() {
     return this._lastEventType;
   }
 
-  get usedGamepadType(){
+  get usedGamepadType() {
     return this._lastGamepadType;
   }
 
@@ -223,7 +233,9 @@ export class Inputs {
     if (config.ALLOW_ONBEFOREUNLOAD) {
       window.onbeforeunload = (_e) => {
         if (!window.leavePage)
-          return _langs[Localization.currentLanguage as ('fr' | 'en')]['leave-page'];
+          return _langs[Localization.currentLanguage as 'fr' | 'en'][
+            'leave-page'
+          ];
         return '';
       };
       window.onunload = (_e) => {
@@ -239,7 +251,7 @@ export class Inputs {
   }
 
   registerInputs(customInputs: InputMapping) {
-    let newInputs: {[key: string]: InputInfo} = {};
+    let newInputs: { [key: string]: InputInfo } = {};
 
     for (let i in customInputs) {
       newInputs[i] = {
@@ -255,7 +267,8 @@ export class Inputs {
       };
 
       for (let n = 0, I; (I = customInputs[i].keycodes[n]); ++n) {
-        let type: 'KEYBOARD' | 'MOUSE' | 'GAMEPADAXES' | 'GAMEPADBUTTONS' = I[0] == 'K' || I[0] == 'k' ? 'KEYBOARD' : 'MOUSE';
+        let type: 'KEYBOARD' | 'MOUSE' | 'GAMEPADAXES' | 'GAMEPADBUTTONS' =
+          I[0] == 'K' || I[0] == 'k' ? 'KEYBOARD' : 'MOUSE';
         let data = I.split('.');
         let gamepadID = 0;
         let name: string;
@@ -285,14 +298,18 @@ export class Inputs {
           continue;
         }
 
+        const code =
+          this.dbInputs[type][
+            name as keyof (typeof this.dbInputs)[typeof type]
+          ];
         if (type == 'GAMEPADBUTTONS') {
-          gamepad.plugBtnToInput(this, i, gamepadID, this.dbInputs[type][name]);
+          gamepad.plugBtnToInput(this, i, gamepadID, code);
         } else if (type == 'GAMEPADAXES') {
-          gamepad.plugAxeToInput(this, i, gamepadID, this.dbInputs[type][name]);
+          gamepad.plugAxeToInput(this, i, gamepadID, code);
         }
 
         newInputs[i].inputs.push({
-          code: this.dbInputs[type][name],
+          code,
           type: type,
         });
       }
@@ -322,7 +339,7 @@ export class Inputs {
     }
     this.usedInputs = {
       ...this.usedInputs,
-      ...newInputs
+      ...newInputs,
     };
   }
 
@@ -355,10 +372,9 @@ export class Inputs {
       return;
     }
 
-    if(this.queue[type][input][this.queue[type][input].length - 1] === null)
-      this.queue[type][input][this.queue[type][input].length - 1] = callback
-    else
-      this.queue[type][input].push(callback);
+    if (this.queue[type][input][this.queue[type][input].length - 1] === null)
+      this.queue[type][input][this.queue[type][input].length - 1] = callback;
+    else this.queue[type][input].push(callback);
     return this.queue[type][input].length - 1;
   }
 
@@ -387,7 +403,7 @@ export class Inputs {
    * @memberOf Inputs
    */
   emit(eventType: keyof Queue, keyName: string, val?: any) {
-    if(!this._enable) return;
+    if (!this._enable) return;
     if (
       ((this._keyLocked && !this._keyLockNamesExceptions.includes(keyName)) ||
         !this.isWindowFocused) &&
@@ -441,13 +457,37 @@ export class Inputs {
   toggleListeners(canvas?: HTMLCanvasElement, bind?: boolean) {
     let target = canvas || window;
     if (this.isListening && !bind) {
-      target.removeEventListener('keydown', (e) => this.keyDown(e as KeyboardEvent), false);
-      target.removeEventListener('keyup', (e) => this.keyUp(e as KeyboardEvent), false);
-      target.removeEventListener('keypress', (e) => this.keyPress(e as KeyboardEvent), false);
+      target.removeEventListener(
+        'keydown',
+        (e) => this.keyDown(e as KeyboardEvent),
+        false,
+      );
+      target.removeEventListener(
+        'keyup',
+        (e) => this.keyUp(e as KeyboardEvent),
+        false,
+      );
+      target.removeEventListener(
+        'keypress',
+        (e) => this.keyPress(e as KeyboardEvent),
+        false,
+      );
     } else {
-      target.addEventListener('keydown', (e) => this.keyDown(e as KeyboardEvent), false);
-      target.addEventListener('keyup', (e) => this.keyUp(e as KeyboardEvent), false);
-      target.addEventListener('keypress', (e) => this.keyPress(e as KeyboardEvent), false);
+      target.addEventListener(
+        'keydown',
+        (e) => this.keyDown(e as KeyboardEvent),
+        false,
+      );
+      target.addEventListener(
+        'keyup',
+        (e) => this.keyUp(e as KeyboardEvent),
+        false,
+      );
+      target.addEventListener(
+        'keypress',
+        (e) => this.keyPress(e as KeyboardEvent),
+        false,
+      );
     }
   }
 
@@ -458,7 +498,10 @@ export class Inputs {
    * @param {String} code - key name: up, shift, space, A, etc...
    * @param {String} type - KEYBOARD / GAMEPADBUTTONS / GAMEPADAXES
    */
-  findInputs(code: string, type: 'KEYBOARD' | 'GAMEPADBUTTONS' | 'GAMEPADAXES') {
+  findInputs(
+    code: string,
+    type: 'KEYBOARD' | 'GAMEPADBUTTONS' | 'GAMEPADAXES',
+  ) {
     let inputs: string[] = [];
     // parse all gamesInputs
     for (let i in this.usedInputs) {
@@ -475,10 +518,10 @@ export class Inputs {
     return inputs.length > 0 ? inputs : false;
   }
 
-  setLastEventType(type: InputType){
-    if(type === this._lastEventType) return;
+  setLastEventType(type: InputType) {
+    if (type === this._lastEventType) return;
     this._lastEventType = type;
-    if(type !== 'keyboard'){
+    if (type !== 'keyboard') {
       this._lastGamepadType = type;
     }
     Events.emit('Input-Type-Changed', type);
