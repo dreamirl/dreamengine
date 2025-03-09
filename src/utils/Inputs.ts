@@ -415,7 +415,7 @@ export class Inputs {
    * @public
    * @memberOf Inputs
    */
-  stopListening(type: keyof Queue, input: string, index: number) {
+  stopListening(type: keyof Queue, input: string, index?: number) {
     if (index !== undefined) {
       this.queue[type][input][index] = null;
       return;
