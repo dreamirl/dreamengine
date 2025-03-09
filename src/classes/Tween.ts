@@ -55,8 +55,7 @@ export class Tween {
     this.tweenDuration = tweenDuration;
     this.easing = easing;
 
-    if(autoHandled)
-      tweens.push(this);
+    if (autoHandled) tweens.push(this);
   }
 
   setOnUpdate(callback: (arg?: any) => void, parameters?: any): Tween {
@@ -395,9 +394,10 @@ export class ChainedTween extends Tween {
 }
 
 export default {
+  tweens,
   Tween,
   ChainedTween,
-  update,
+  tweenUpdater: update,
   Easing: {
     noEase,
     inSine,
@@ -430,7 +430,5 @@ export default {
     inBounce,
     outBounce,
     inOutBounce,
-  },
-};
-
-//export default Tween;
+  } as const,
+} as const;

@@ -42,7 +42,7 @@ export { default as Component } from './classes/Component';
 export { default as ShakeComponent } from './classes/components/ShakeComponent';
 export { default as TimerComponent } from './classes/components/TimerComponent';
 export { default as GameObject } from './classes/GameObject';
-export { default as Tween } from './classes/Tween';
+export { default as TweenManager } from './classes/Tween';
 export { default as sortGameObjects } from './utils/sortGameObjects';
 
 import config from './config';
@@ -111,7 +111,9 @@ import Component from './classes/Component';
 import ShakeComponent from './classes/components/ShakeComponent';
 import TimerComponent from './classes/components/TimerComponent';
 import GameObject from './classes/GameObject';
-import Tween from './classes/Tween';
+import TweenManager, { ChainedTween, Tween, tweens } from './classes/Tween';
+const Easing = TweenManager.Easing;
+const tweenUpdater = TweenManager.tweenUpdater;
 
 export default {
   // Renderers
@@ -145,7 +147,7 @@ export default {
   Gui,
   Camera,
   Vector2,
-  Tween,
+  TweenManager,
 
   // GameObject
   GameObject,
@@ -203,7 +205,6 @@ declare global {
       Gui,
       Camera,
       Vector2,
-      Tween,
 
       // GameObject
       GameObject,
@@ -226,5 +227,9 @@ declare global {
       SaveModel,
       GameAboutInfo,
     };
+  }
+
+  namespace DE.TweenManager {
+    export { Tween, ChainedTween, Easing, tweenUpdater, tweens };
   }
 }
