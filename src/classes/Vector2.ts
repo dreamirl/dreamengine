@@ -10,7 +10,7 @@ const _PI = Math.PI;
 /**
  * @constructor Scene
  */
-class Vector2 extends PIXI.Container {
+class Vector2 extends PIXI.Container implements Point2D {
   public static DEName = 'Vector2';
 
   private _x = 0;
@@ -81,7 +81,7 @@ class Vector2 extends PIXI.Container {
    * @param {Boolean} [ignoreDelta] if you want to prevent deltaTime adjustment
    * @returns {Vector2} this current instance
    */
-  translate(vector2: Vector2, absolute?: boolean, ignoreDelta = true) {
+  translate(vector2: Point2D, absolute?: boolean, ignoreDelta = true) {
     if ((!vector2.x && vector2.x != 0) || (!vector2.y && vector2.y != 0)) {
       throw new Error(vector2 + ' is not a Vector2');
     }
@@ -172,7 +172,7 @@ class Vector2 extends PIXI.Container {
    * @param {Vector2} b second vector2
    * @returns {Vector2} this current instance
    */
-  getVector(a: Vector2, b: Vector2) {
+  getVector(a: Point2D, b: Point2D) {
     if (
       (!a.x && a.x != 0) ||
       (!a.y && a.y != 0) ||
@@ -194,7 +194,7 @@ class Vector2 extends PIXI.Container {
    * @param {Vector2} vector2
    * @returns {Float} radians value
    */
-  getVectorAngle(vector2: Vector2) {
+  getVectorAngle(vector2: Point2D) {
     return (Math.atan2(vector2.y, vector2.x) + _PI * 0.5) % (_PI * 2);
   }
 
@@ -207,7 +207,7 @@ class Vector2 extends PIXI.Container {
    * @param {Vector2} b second vector2
    * @returns {Float} dotProduct result
    */
-  dotProduct(a: Vector2, b?: Vector2) {
+  dotProduct(a: Point2D, b?: Point2D) {
     if (!a.x || !a.y) {
       throw new Error('Vector2 need two Vector2 to return dotProduct');
     }
@@ -225,7 +225,7 @@ class Vector2 extends PIXI.Container {
    * @param {Vector2} b second vector2
    * @returns {Float} angle result
    */
-  getAngle(otherA: Vector2, otherB?: Vector2) {
+  getAngle(otherA: Point2D, otherB?: Point2D) {
     if (!otherB) {
       otherB = this;
 
@@ -243,7 +243,7 @@ class Vector2 extends PIXI.Container {
   /**
    * I keep this function because I accidentally coded something fun with, so... :D
    */
-  wtfAngle(a: Vector2, b?: Vector2) {
+  wtfAngle(a: Point2D, b?: Point2D) {
     let tmp_vectorB: Vector2;
     if (b && b.x) {
       tmp_vectorB = new Vector2(b.x, b.y).normalize();
@@ -264,7 +264,7 @@ class Vector2 extends PIXI.Container {
   /****
    * getDistance@Int( other@Vector2 )
    */
-  getDistance(other: Vector2) {
+  getDistance(other: Point2D) {
     let x = this.x - other.x;
     x *= x;
     let y = this.y - other.y;
@@ -282,7 +282,7 @@ class Vector2 extends PIXI.Container {
   /****
    * getSquaredDistance@Int( other@Vector2 )
    */
-  getSquaredDistance(other: Vector2){
+  getSquaredDistance(other: Point2D) {
     let x = this.x - other.x;
     x *= x;
     let y = this.y - other.y;
@@ -298,7 +298,7 @@ class Vector2 extends PIXI.Container {
    * @param {Float} range
    * @returns {Boolean} isInRange result
    */
-  isInRangeFrom(other: Vector2, range: number) {
+  isInRangeFrom(other: Point2D, range: number) {
     range *= range;
     let x = this.x - other.x;
     x *= x;
@@ -336,7 +336,7 @@ class Vector2 extends PIXI.Container {
    * @param {Vector2|Float} Vector2 or x / y
    * @returns {Vector2} this current instance
    */
-  setPosition(first: Vector2 | number, y?: number) {
+  setPosition(first: Point2D | number, y?: number) {
     if (typeof first === 'number') {
       this.x = first != undefined ? first : this.x;
       this.y = y != undefined ? y : this.y;
@@ -347,7 +347,7 @@ class Vector2 extends PIXI.Container {
     return this;
   }
 
-  set(first: Vector2 | number, y?: number) {
+  set(first: Point2D | number, y?: number) {
     this.setPosition(first, y);
   }
 

@@ -193,3 +193,7 @@ declare const _default: {
   isPaused: () => boolean;
 };
 export default _default;
+
+declare global {
+  type Point2D = { x: number; y: number };
+}
