@@ -1,4 +1,4 @@
-import howler from 'howler';
+import howler, { SoundSpriteDefinitions } from 'howler';
 import about from '../about';
 
 export type AudioParam = {
@@ -15,7 +15,7 @@ export type AudioParam = {
   mute?: boolean; // = false;
   html5?: boolean; // = false;
   autoplay?: boolean; // = false;
-  sprite?: howler.SoundSpriteDefinitions; // = {}
+  sprite?: { [key: string]: number[] }; // howler.SoundSpriteDefinitions; // = {}
 };
 
 type LocalSound = {
@@ -27,7 +27,7 @@ type LocalSound = {
 
 export class Audio {
   public static readonly DEName = 'Audio';
-  
+
   /** DO NOT USE */
   _howler = howler;
   public get howler() {
@@ -106,7 +106,7 @@ export class Audio {
         src: urls,
         autoplay: audioParam.autoplay || false,
         loop: audioParam.loop || false,
-        sprite: audioParam.sprite,
+        sprite: audioParam.sprite as SoundSpriteDefinitions,
         html5: audioParam.html5 !== undefined ? audioParam.html5 : false,
         preload: audioParam.preload !== undefined ? audioParam.preload : true,
         mute: audioParam.mute || false,
@@ -204,8 +204,7 @@ export class Audio {
     const locSound = this.get(name);
     if (!locSound) return this;
     const sound = locSound.howl;
-    if(sound.playing())
-      sound.pause(soundID);
+    if (sound.playing()) sound.pause(soundID);
     return this;
   }
 
@@ -234,18 +233,23 @@ export class Audio {
     });
     return this;
   }
-  fadeOutAll(channelName = 'musics', duration: number, preserve: string[] = [], cb?: (howl: howler.Howl) => void) {
+  fadeOutAll(
+    channelName = 'musics',
+    duration: number,
+    preserve: string[] = [],
+    cb?: (howl: howler.Howl) => void,
+  ) {
     if (!this.channels[channelName]) {
       throw 'DE.Audio.stopAll channel does not exists ' + channelName;
     }
     this.channels[channelName].forEach((soundName) => {
       if (!preserve.includes(soundName)) {
         const sound = this.get(soundName);
-        if(sound && sound.howl.playing()){
+        if (sound && sound.howl.playing()) {
           let vol = sound.howl.volume();
-          if(Number.isNaN(vol)) vol = 0;
+          if (Number.isNaN(vol)) vol = 0;
           sound.howl.fade(vol, 0, duration);
-          if(cb) sound.howl.once('fade', () => cb(sound.howl));
+          if (cb) sound.howl.once('fade', () => cb(sound.howl));
         }
       }
     });
@@ -282,7 +286,7 @@ export class Audio {
     this.play(name, sprite);
     return this;
   }
-  playAllPaused(channelName = 'musics', preserve: string[] = []){
+  playAllPaused(channelName = 'musics', preserve: string[] = []) {
     if (!this.channels[channelName]) {
       throw 'DE.Audio.pauseAll channel does not exists ' + channelName;
     }
@@ -294,10 +298,10 @@ export class Audio {
         const ids = sound._getSoundIds();
         ids.forEach((id: number) => {
           const soundId = sound._soundById(id);
-          if(soundId._paused && !soundId._ended){
+          if (soundId._paused && !soundId._ended) {
             sound.play(id);
-          } 
-        })
+          }
+        });
       }
     });
     return this;

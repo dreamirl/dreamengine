@@ -77,4 +77,6 @@ export default class Component {
   public get emitter() {
     return this._emitter;
   }
+
+  public OnDebugChange?: (debugActive: boolean, debugLevel: number) => void;
 }

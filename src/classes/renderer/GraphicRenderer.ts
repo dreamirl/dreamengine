@@ -35,6 +35,19 @@ export default class GraphicRenderer
   extends PIXI.Graphics
   implements RendererInterface, ContainerExtensions
 {
+  private _texture: undefined;
+
+  get texture() {
+    console.error(
+      'Texture is not supposed to be get or set on graphic renderer',
+    );
+    return this._texture;
+  }
+
+  set texture(value: PIXI.Texture<PIXI.Resource> | undefined) {
+    throw new Error('Texture is not settable on graphic renderer');
+  }
+
   constructor(
     methods?: any[],
     params?: Partial<Omit<GraphicRenderer, 'scale'>> &
@@ -68,7 +81,6 @@ export default class GraphicRenderer
   sleep: boolean = false;
   preventCenter?: boolean | undefined;
   _originalTexture?: PIXI.Texture<PIXI.Resource> | undefined;
-  texture: PIXI.Texture<PIXI.Resource> | undefined;
   setTint(value: number): void {
     setTint(this, value);
   }

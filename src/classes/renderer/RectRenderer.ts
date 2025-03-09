@@ -1,5 +1,6 @@
 import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 import * as PIXI from 'pixi.js';
+import { ILineStyleOptions } from 'pixi.js';
 import '../renderer/ContainerExtensions';
 import {
   ContainerExtensions,
@@ -32,17 +33,6 @@ import RendererInterface from './RendererInterface';
  * } );
  */
 
-type LineStyleProps = {
-  width?: number;
-  color?: number;
-  alpha?: number;
-  alignment?: number;
-  native?: boolean;
-  cap?: PIXI.LINE_CAP;
-  join?: PIXI.LINE_JOIN;
-  miterLimit?: number;
-};
-
 export default class RectRenderer
   extends PIXI.Graphics
   implements RendererInterface, ContainerExtensions
@@ -52,7 +42,7 @@ export default class RectRenderer
     height?: number;
     fill?: boolean;
     color?: number;
-    lineStyle?: LineStyleProps;
+    lineStyle?: ILineStyleOptions;
   };
 
   texture: PIXI.Texture<PIXI.Resource> | undefined;
@@ -67,7 +57,7 @@ export default class RectRenderer
       scaleY?: number;
       color?: number;
       fill?: boolean;
-      lineStyle?: LineStyleProps;
+      lineStyle?: ILineStyleOptions;
     } & Partial<RendererInterface> = {},
   ) {
     super();
@@ -102,7 +92,7 @@ export default class RectRenderer
     height?: number;
     color?: number;
     fill?: boolean;
-    lineStyle?: LineStyleProps;
+    lineStyle?: ILineStyleOptions;
   }) {
     this.clear();
 
@@ -148,7 +138,7 @@ export default class RectRenderer
   brightnessFilter?: ColorMatrixFilter | undefined;
   contrastFilter?: ColorMatrixFilter | undefined;
   grayscaleFilter?: ColorMatrixFilter | undefined;
-  sleep: boolean = false;
+  sleep = false;
   preventCenter?: boolean | undefined;
   _originalTexture?: PIXI.Texture<PIXI.Resource> | undefined;
   setTint(value: number): void {

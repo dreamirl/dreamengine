@@ -76,7 +76,7 @@ class Scene extends Container {
     for (let i = 0, c = this.gameObjects.length; i < c; ++i) {
       this.gameObjects[i].OnDebugChange(debug, _level);
     }
-  };
+  }
 
   /**
    * add all given gameObjects inside the scene, if you add only one gameObject, call addOne

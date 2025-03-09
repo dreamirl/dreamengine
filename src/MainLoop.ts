@@ -73,12 +73,9 @@ export class MainLoop {
     });
   }
 
-  updateLoaderImage(loader: { 0: string; 1: string; 2?: any }) {
+  updateLoaderImage(loader: InitImageData, scale: number) {
     // TOTO créer un type "imageParams"
-    const sprite = new SpriteRenderer({
-      spriteName: loader[0],
-      scale: loader[2].scale,
-    });
+    const sprite = new SpriteRenderer({ spriteName: loader[0], scale });
     this.loader.addRenderer(sprite);
     this.loader.renderer.y = sprite.height / 2 + 10;
   }
