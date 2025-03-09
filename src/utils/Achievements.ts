@@ -264,6 +264,23 @@ export class Achievements<T extends Achievement> {
     this.checkUnlock(achievement);
   }
 
+  /**
+   * Force check if an achievement is unlocked.
+   * checkAchievement is private and should not be called directly but due to JavaScript object mutation and Steam achievements sync, we need to call it manually depending on the context (like in Noreya).
+   * @memberOf Achievements
+   * @param achievement - Achievement
+   * @example DE.Achievements.forceCheckUnlock(achievement);
+   */
+  public forceCheckUnlock(achievement: Achievement) {
+    this.checkUnlock(achievement);
+  }
+
+  /**
+   * Check if an achievement is unlocked.
+   * @memberOf Achievements
+   * @param namespace - Achievement namespace
+   * @example if ( DE.Achievements.isUnlock( "commander" ) )
+   */
   private checkUnlock(achievement: Achievement) {
     const userAchievementObjectives =
       this.userAchievements[achievement.namespace].objectives;
@@ -334,7 +351,8 @@ export class Achievements<T extends Achievement> {
    * @param {Achievement} achievement
    */
   public unlocked(achievement: Achievement) {
-    const wasAlreadyComplete = this.userAchievements[achievement.namespace].complete;
+    const wasAlreadyComplete =
+      this.userAchievements[achievement.namespace].complete;
     this.userAchievements[achievement.namespace].complete = true;
 
     if (!wasAlreadyComplete) {
