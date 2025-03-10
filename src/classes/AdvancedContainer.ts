@@ -186,7 +186,7 @@ export default class AdvancedContainer extends PIXI.Container implements Contain
   scaleTo(
     targetScale: Point2D,
     duration: number,
-    onComplete: () => void,
+    onComplete: () => void = () => {},
     onCompleteParams?: any,
     autostart = true,
     easing: (x: number) => number = Tween.Easing.noEase,
