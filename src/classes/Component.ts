@@ -22,7 +22,7 @@ export default class Component {
     }
 
     this._parent = undefined;
-    this._onDestroy();
+    this.onDestroy();
     this._emitter.removeAllListeners();
   }
 
@@ -49,29 +49,9 @@ export default class Component {
     else this.onDisable();
   }
 
-  protected _onEnable = () => {};
-  public get onEnable() {
-    return this._onEnable;
-  }
-  public set onEnable(callback: () => void) {
-    this._onEnable = callback;
-  }
-
-  protected _onDisable = () => {};
-  public get onDisable() {
-    return this._onDisable;
-  }
-  public set onDisable(callback: () => void) {
-    this._onDisable = callback;
-  }
-
-  protected _onDestroy = () => {};
-  public get onDestroy() {
-    return this._onDestroy;
-  }
-  public set onDestroy(callback: () => void) {
-    this._onDestroy = callback;
-  }
+  public onEnable() {};
+  public onDisable() {};
+  public onDestroy() {};
 
   private _emitter = new PIXI.utils.EventEmitter();
   public get emitter() {
