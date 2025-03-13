@@ -45,6 +45,6 @@
     "@types/howler": "^2.2.7",
     "pixi-filters": "^4.1.6",
     "querystring": "^0.2.1",
-    "typescript": "^4.7.4"
+    "typescript": "^5.4.3"
   }
 }
